@@ -95,27 +95,38 @@ weathertunes/
 ├── src/
 │   ├── assets/        # Images and static files (like logos)
 │   ├── components/    # Reusable UI components (buttons, cards, etc.)
-│   ├── lib/           # Utility functions (helpers used across the app)
-│   ├── pages/         # Page components (each route/page in your app)
-│   ├── App.tsx        # Main React component, sets up the app structure
-│   ├── main.tsx       # Entry point, sets up React and routing
-│   ├── index.css      # Global styles (Tailwind CSS)
-│   └── App.css        # App-specific styles
-├── public/            # Static files served as-is (like favicon)
-├── package.json       # Project metadata and scripts
-├── vite.config.ts     # Vite configuration (build tool settings)
-└── README.md          # This file
+│   ├── lib/          # Utility functions (helpers used across the app)
+│   ├── pages/        # Page components (each route/page in the app)
+│   ├── App.tsx       # Main React component, sets up the app structure
+│   ├── main.tsx      # Entry point, sets up React and routing
+│   ├── index.css     # Global styles (Tailwind CSS)
+│   └── App.css       # App-specific styles
+├── public/           # Static files served as-is (like favicon)
+├── package.json      # Project metadata and dependencies
+└── vite.config.ts    # Vite configuration (build tool settings)
 ```
 
 **What do these folders do?**
 
-- `src/assets/`: Store images and static files you want to use in your app.
+- `src/assets/`: Store images and static files used in the application.
 - `src/components/`: Place for reusable UI pieces (like buttons, headers, etc.).
-- `src/lib/`: Utility/helper functions that can be used anywhere in your app.
-- `src/pages/`: Each file here is a different page (or route) in your app.
+- `src/lib/`: Utility/helper functions that can be used throughout the application.
+- `src/pages/`: Each file here represents a different page (or route) in the application.
 - `src/App.tsx`: The main component that brings everything together.
-- `src/main.tsx`: The entry point; this is where React starts your app and sets up routing.
-- `src/index.css` and `src/App.css`: Where you put your global and app-specific styles.
+- `src/main.tsx`: The entry point; this is where React starts the application and sets up routing.
+- `src/index.css` and `src/App.css`: Where global and app-specific styles are defined.
+
+**What about all these other files in root?**
+
+The project includes several configuration files that typically won't need modification unless making specific changes:
+
+- `tsconfig.json` and `tsconfig.app.json`: TypeScript configuration files that control type checking and compilation settings
+- `tsconfig.node.json`: TypeScript configuration specifically for Vite's build process
+- `eslint.config.js`: Configuration for ESLint, which helps catch code errors and enforce style rules
+- `.prettierrc` and `.prettierignore`: Settings for Prettier, which automatically formats code
+- `components.json`: Configuration for shadcn/ui components
+- `.gitignore`: Specifies which files Git should ignore
+- `index.html`: The HTML entry point for the Vite application
 
 ---
 
