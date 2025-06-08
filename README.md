@@ -48,6 +48,7 @@ npm -v
 - **`npx`** is a tool that comes with npm (version 5.2+). It lets you run commands from packages that you haven't installed globally. For example, `npx prettier --write .` will run Prettier even if you haven't installed it in your project, always using the latest version available.
 
 In this README, you'll see both `npm` and `npx` used:
+
 - Use `npm` to install dependencies.
 - Use `npx` to run tools and CLIs directly from the command line.
 
@@ -87,7 +88,7 @@ npm run dev
 
 ## Project Structure
 
-Understanding the project structure is key to being comfortable as you build. Here's a breakdown of the most important folders and files:
+## Project Structure Overview
 
 ```
 weathertunes/
@@ -211,11 +212,9 @@ Components are reusable pieces of UI. The `src/components/` folder is where you 
 
 ## Linting and Formatting
 
-- **Prettier** automatically formats your code to keep everything neat and consistent.
-
 ### Using Prettier
 
-Prettier is already set up in this project. You can use it to automatically format your code files.
+Prettier automatically formats your code to keep everything neat and consistent. You can use it to automatically format your code files.
 
 - **Format all files in the project:**
 
@@ -307,6 +306,7 @@ The main component library for this project is [shadcn/ui](https://ui.shadcn.com
   It looks like you are using React 19. Some packages may fail to install due to peer dependency issues in npm (see https://ui.shadcn.com/react-19).
   How would you like to proceed?
   ```
+
   **Select the `legacy-peer-deps` option** when prompted. This will allow the installation to complete successfully.
 
 - If you want to add a block (a group of components for a specific UI section), you can:
