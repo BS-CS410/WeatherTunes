@@ -1,6 +1,6 @@
 # WeatherTunes
 
-Welcome to **WeatherTunes**! This project is a modern web application built with [React](https://react.dev/), [TypeScript](https://www.typescriptlang.org/), and [Vite](https://vitejs.dev/). It uses [Tailwind CSS](https://tailwindcss.com/) for styling and is structured to be beginner-friendly for new web developers.
+Welcome to **WeatherTunes**! This project is a modern web application built with [React](https://react.dev/), [TypeScript](https://www.typescriptlang.org/) and [Vite](https://vitejs.dev/). It uses [Tailwind CSS](https://tailwindcss.com/) for styling and is structured to be beginner-friendly for new web developers.
 
 ---
 
@@ -22,7 +22,7 @@ Welcome to **WeatherTunes**! This project is a modern web application built with
 
 ## Project Overview
 
-WeatherTunes is a template React project using Vite for fast development, TypeScript for type safety, and Tailwind CSS for utility-first styling. It is set up for easy extension, so you can add new pages and components as you learn. The project is organized to help you understand where different parts of your app live and how they work together.
+WeatherTunes is a web application that connects to your Spotify account and plays music according to the current weather in your location. It is built using Vite for fast development, TypeScript for type safety and Tailwind CSS for utility-first styling.
 
 ---
 
@@ -41,6 +41,15 @@ You can check if you have these installed by running:
 node -v
 npm -v
 ```
+
+### What are `npm` and `npx`?
+
+- **`npm`** is the Node.js package manager. You use it to install packages (libraries, tools, etc.) into your project or globally on your system. For example, `npm install react` adds React to your project.
+- **`npx`** is a tool that comes with npm (version 5.2+). It lets you run commands from packages that you haven't installed globally. For example, `npx prettier --write .` will run Prettier even if you haven't installed it in your project, always using the latest version available.
+
+In this README, you'll see both `npm` and `npx` used:
+- Use `npm` to install dependencies.
+- Use `npx` to run tools and CLIs directly from the command line.
 
 ### Installation
 
@@ -202,14 +211,139 @@ Components are reusable pieces of UI. The `src/components/` folder is where you 
 
 ## Linting and Formatting
 
-- **ESLint** checks your code for errors and enforces style rules.
-- **Prettier** automatically formats your code.
+- **Prettier** automatically formats your code to keep everything neat and consistent.
 
-To check for lint errors:
+### Using Prettier
 
-```bash
-npm run lint
-```
+Prettier is already set up in this project. You can use it to automatically format your code files.
+
+- **Format all files in the project:**
+
+  ```bash
+  npx prettier --write .
+  ```
+
+  This will format all supported files in your project.
+
+- **Format a specific file:**
+
+  ```bash
+  npx prettier --write src/components/Button.jsx
+  ```
+
+- **Format on save (recommended):**
+  Most code editors (like VS Code) can be set up to run Prettier every time you save a file. Look for a Prettier extension or plugin for your editor and enable "Format on Save" in your settings.
+
+- **Configuration:**
+  - The `.prettierrc` file in the project root contains Prettier settings (currently using defaults).
+  - The `.prettierignore` file lists files and folders to ignore when formatting.
+
+### Using ESLint
+
+ESLint is a tool that checks your code for errors and enforces consistent code style. It helps catch bugs and keeps your codebase clean.
+
+- **Check your code for lint errors:**
+
+  ```bash
+  npm run lint
+  ```
+
+  This will scan your project and list any issues or warnings.
+
+- **Fix issues automatically:**
+  Many issues can be fixed automatically. Run:
+
+  ```bash
+  npx eslint . --fix
+  ```
+
+  This will try to fix as many problems as possible in your code files.
+
+- **Lint on save (recommended):**
+  Most editors (like VS Code) have ESLint extensions that can show errors and warnings as you type, and even fix issues when you save a file. Look for an ESLint extension/plugin for your editor and enable "Fix on Save" in your settings.
+
+- **Configuration:**
+  - The `eslint.config.js` file in the project root contains the ESLint rules and settings for this project.
+
+---
+
+## Using shadcn/ui for Components and Blocks
+
+The main component library for this project is [shadcn/ui](https://ui.shadcn.com/). This library provides a huge set of accessible, customizable React components built with Tailwind CSS. The reason we use Tailwind is to make it easy to style and customize these components.
+
+### Why shadcn/ui?
+
+- **Copy-paste or CLI install:** You can add only the components you need, keeping your project lightweight.
+- **Fully customizable:** All components use Tailwind CSS, so you can easily change their look and feel.
+- **Accessible and modern:** Components are built with accessibility and best practices in mind.
+
+### How to Add a shadcn/ui Component or Block
+
+#### 1. Find the Component or Block
+
+- Visit the [shadcn/ui components page](https://ui.shadcn.com/docs/components) or [blocks page](https://ui.shadcn.com/blocks).
+- Browse and pick the component or block you want to add (e.g., Button, Card, Dialog, etc.).
+
+#### 2. Add the Component Using the CLI
+
+- Open your terminal in the project root.
+- Run the following command, replacing `component-name` with the name of the component you want (e.g., `button`, `card`, `dialog`):
+
+  ```bash
+  npx shadcn@latest add component-name
+  ```
+
+  Example:
+
+  ```bash
+  npx shadcn@latest add button card
+  ```
+
+  This will add the Button and Card components to your project under `src/components/ui/`.
+
+- If you are using React 19, the CLI may prompt you with:
+
+  ```text
+  It looks like you are using React 19. Some packages may fail to install due to peer dependency issues in npm (see https://ui.shadcn.com/react-19).
+  How would you like to proceed?
+  ```
+  **Select the `legacy-peer-deps` option** when prompted. This will allow the installation to complete successfully.
+
+- If you want to add a block (a group of components for a specific UI section), you can:
+  - Copy the code from the [blocks page](https://ui.shadcn.com/blocks) and paste it into a new file in your `src/components/` directory, **or**
+  - If a block is available via the CLI, use its name in the command above.
+
+#### 3. Import and Use the Component
+
+- Import the new component in your page or component file:
+  ```jsx
+  import { Button } from "@/components/ui/button";
+  import { Card } from "@/components/ui/card";
+  ```
+- Use it in your JSX:
+  ```jsx
+  <Button>Click me</Button>
+  <Card>...</Card>
+  ```
+
+#### 4. Customizing Components
+
+- All shadcn/ui components use Tailwind classes, so you can add or change classes to customize their appearance.
+- You can also edit the component files directly in `src/components/ui/` to change their structure or behavior.
+
+#### 5. Keeping Components Up to Date
+
+- To check for updates to a component, run:
+  ```bash
+  npx shadcn@latest diff component-name
+  ```
+- To update, follow the CLI prompts or re-add the component.
+
+#### 6. More Resources
+
+- [shadcn/ui documentation](https://ui.shadcn.com/docs/cli)
+- [Component list](https://ui.shadcn.com/docs/components)
+- [Blocks list](https://ui.shadcn.com/blocks)
 
 ---
 
