@@ -1,12 +1,16 @@
 import "./App.css";
+import { Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
-import { Routes, Route } from "react-router-dom";
+import NavBar from "./components/NavBar";
 
 function App() {
   return (
     <>
-      <main className="main-content">
+      {/* Shared NavBar */}
+      <NavBar />
+      {/* Page Content */}
+      <main className="p-4">
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/" element={<Home />} />
