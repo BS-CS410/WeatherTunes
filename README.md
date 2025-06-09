@@ -4,6 +4,32 @@
 
 ---
 
+## Better Documentation
+
+✨ - Good starting point
+
+📕 - Reference work
+
+### React
+- ✨ [Quick Start](https://react.dev/learn)
+- [Thinking in React](https://react.dev/learn/thinking-in-react)
+- 📕 [React Reference](https://react.dev/reference/react)
+
+### Tailwind CSS
+- ✨ [Styling with Utility Classes](https://tailwindcss.com/docs/styling-with-utility-classes)
+- [`hover`, `focus` and other states](https://tailwindcss.com/docs/hover-focus-and-other-states)
+- [Theme Variables](https://tailwindcss.com/docs/theme)
+  - 📕 [Default theme variable reference](https://tailwindcss.com/docs/theme#default-theme-variable-reference)
+- [Colors](https://tailwindcss.com/docs/colors)
+  - 📕 [Default color palette reference](https://tailwindcss.com/docs/colors#default-color-palette-reference)
+
+### shadcn/ui
+- ✨ [Introduction](https://ui.shadcn.com/docs)
+- 📕 [List of Components](https://ui.shadcn.com/docs/components)
+- 📕 [List of Blocks](https://ui.shadcn.com/blocks)
+
+---
+
 ## Table of Contents
 
 - [Getting Started](#getting-started)
