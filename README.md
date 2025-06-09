@@ -4,32 +4,6 @@
 
 ---
 
-## Better Documentation
-
-✨ - Good starting point
-
-📕 - Reference work
-
-### React
-- ✨ [Quick Start](https://react.dev/learn)
-- [Thinking in React](https://react.dev/learn/thinking-in-react)
-- 📕 [React Reference](https://react.dev/reference/react)
-
-### Tailwind CSS
-- ✨ [Styling with Utility Classes](https://tailwindcss.com/docs/styling-with-utility-classes)
-- [`hover`, `focus` and other states](https://tailwindcss.com/docs/hover-focus-and-other-states)
-- [Theme Variables](https://tailwindcss.com/docs/theme)
-  - 📕 [Default theme variable reference](https://tailwindcss.com/docs/theme#default-theme-variable-reference)
-- [Colors](https://tailwindcss.com/docs/colors)
-  - 📕 [Default color palette reference](https://tailwindcss.com/docs/colors#default-color-palette-reference)
-
-### shadcn/ui
-- ✨ [Introduction](https://ui.shadcn.com/docs)
-- 📕 [List of Components](https://ui.shadcn.com/docs/components)
-- 📕 [List of Blocks](https://ui.shadcn.com/blocks)
-
----
-
 ## Table of Contents
 
 - [Getting Started](#getting-started)
@@ -44,7 +18,7 @@
 - [Adding Pages](#adding-pages)
 - [Adding Components](#adding-components)
 - [Linting and Formatting](#linting-and-formatting)
-- [Further Resources](#further-resources)
+- [Better Documentation](#better-documentation)
 
 ---
 
@@ -1065,14 +1039,34 @@ The main component library for this project is [shadcn/ui](https://ui.shadcn.com
 - [shadcn/ui documentation](https://ui.shadcn.com/docs/cli)
 - [Component list](https://ui.shadcn.com/docs/components)
 - [Blocks list](https://ui.shadcn.com/blocks)
-
+  
 ---
 
-## Further Resources
+## Better Documentation
 
-- [React documentation](https://react.dev/)
-- [Vite documentation](https://vitejs.dev/guide/)
-- [Tailwind CSS documentation](https://tailwindcss.com/docs/installation)
-- [React Router documentation](https://reactrouter.com/)
+✨ - Good starting point
+
+📕 - Reference work
+
+### React
+- ✨ [Quick Start](https://react.dev/learn)
+- [Thinking in React](https://react.dev/learn/thinking-in-react)
+- 📕 [React Reference](https://react.dev/reference/react)
+
+### Tailwind CSS
+- ✨ [Styling with Utility Classes](https://tailwindcss.com/docs/styling-with-utility-classes)
+- [`hover`, `focus` and other states](https://tailwindcss.com/docs/hover-focus-and-other-states)
+- [Theme Variables](https://tailwindcss.com/docs/theme)
+  - 📕 [Default theme variable reference](https://tailwindcss.com/docs/theme#default-theme-variable-reference)
+- [Colors](https://tailwindcss.com/docs/colors)
+  - 📕 [Default color palette reference](https://tailwindcss.com/docs/colors#default-color-palette-reference)
+
+### shadcn/ui
+- ✨ [Introduction](https://ui.shadcn.com/docs)
+- 📕 [List of Components](https://ui.shadcn.com/docs/components)
+- 📕 [List of Blocks](https://ui.shadcn.com/blocks)
+
+### Web Development in General
+- ✨📕 [MDN - Learn Web Development](https://developer.mozilla.org/en-US/docs/Learn_web_development)
 
 ---
