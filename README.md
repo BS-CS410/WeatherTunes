@@ -1,4 +1,4 @@
-# WeatherTunes
+# WeatherTunes 🌪️🎸😎👍
 
 **WeatherTunes** is a web application that connects to your Spotify account and plays music according to the current weather in your location. This project is a modern web application built with [React](https://react.dev/), [TypeScript](https://www.typescriptlang.org/) and [Vite](https://vitejs.dev/). It uses [Tailwind CSS](https://tailwindcss.com/) for styling and is structured to be beginner-friendly for new web developers.
 
