@@ -27,20 +27,21 @@ function NavBar() {
             <Link to="/login">Login</Link>
           </NavigationMenuLink>
         </NavigationMenuItem>
+
+        {/* MUSIC */}
+        <NavigationMenuItem>
+          <NavigationMenuLink asChild>
+            <Link to="/music">Music</Link>
+          </NavigationMenuLink>
+        </NavigationMenuItem>
+        {/* FAVORITES */}
+        <NavigationMenuItem>
+          <NavigationMenuLink asChild>
+            <Link to="/favorites">Favorites</Link>
+          </NavigationMenuLink>
+        </NavigationMenuItem>
+        {/* 終 NavBar Items List */}
       </NavigationMenuList>
-      {/* MUSIC */}
-      <NavigationMenuItem>
-        <NavigationMenuLink asChild>
-          <Link to="/music">Music</Link>
-        </NavigationMenuLink>
-      </NavigationMenuItem>{" "}
-      {/* FAVORITES */}
-      <NavigationMenuItem>
-        <NavigationMenuLink asChild>
-          <Link to="/favorites">Favorites</Link>
-        </NavigationMenuLink>
-      </NavigationMenuItem>
-      {/* 終 NavBar Items List */}
     </NavigationMenu>
   );
 }

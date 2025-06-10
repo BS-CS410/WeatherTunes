@@ -1,27 +1,16 @@
-<<<<<<< HEAD
-import { LoginForm } from "../components/login-form";
-
-function Login() {
-  return <LoginForm />;
-}
-=======
-import{ cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription, 
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
->>>>>>> 3d75630a4e7892d5bc172d9cf3b36bee13193bdc
+  // CardDescription,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
-function Login({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+function Login({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -53,7 +42,10 @@ function Login({
                 <Input id="password" type="password" required />
               </div>
               <div className="flex flex-col gap-3">
-                <Button type="submit" className="w-full bg-[#1DB954] hover:bg-[#1ED760]">
+                <Button
+                  type="submit"
+                  className="w-full bg-[#1DB954] hover:bg-[#1ED760]"
+                >
                   Login
                 </Button>
               </div>
@@ -62,6 +54,6 @@ function Login({
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
-    export default Login
+export default Login;
