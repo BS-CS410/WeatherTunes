@@ -5,6 +5,7 @@ import { Cloud, Play, Pause, SkipBack, SkipForward } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 function Home() {
+  // Hooks
   const [weatherData, setWeatherData] = useState({
     location: "",
     temperature: "",
@@ -23,24 +24,17 @@ function Home() {
 
   // Weather API call
   useEffect(() => {
-    const fetchWeather = async () => {
-      try {
-        // Put *your personal* OpenWeatherMap API key in .env
-        const apiKey = import.meta.env.VITE_PUBLIC_OPENWEATHER_API_KEY;
-        const city = "Seattle"; // You can make this dynamic
-        const response = await fetch(
-          `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=imperial&appid=${apiKey}`,
-        );
-        if (!response.ok) throw new Error("Weather API error");
-        const data = await response.json();
-
+    const apiKey = import.meta.env.VITE_PUBLIC_OPENWEATHER_API_KEY;
+    getUserLocationAndFetch(apiKey)
+      .then((data) => {
         setWeatherData({
           location: data.name,
           temperature: Math.round(data.main.temp).toString(),
           condition: data.weather[0].main,
           unit: "°F",
         });
-      } catch (error) {
+      })
+      .catch((error) => {
         console.error("Error fetching weather:", error);
         setWeatherData({
           location: "Error",
@@ -48,10 +42,7 @@ function Home() {
           condition: "Unable to load",
           unit: "°F",
         });
-      }
-    };
-
-    fetchWeather();
+      });
   }, []);
 
   // Music API call (placeholder )
@@ -61,7 +52,7 @@ function Home() {
         // Replace later
         const response = await fetch("https://api.example.com/current-track", {
           headers: {
-            Authorization: `Bearer ${process.env.NEXT_PUBLIC_MUSIC_API_KEY}`,
+            Authorization: `Bearer ${import.meta.env.VITE_PUBLIC_MUSIC_API_KEY}`,
           },
         });
         if (!response.ok) throw new Error("Music API error");
@@ -76,12 +67,13 @@ function Home() {
         });
 
         // Update progress based on currentTime and duration
-        const [currentMins, currentSecs] = data.track?.currentTime
+        const [currentMins, currentSecs] = (data.track?.currentTime ?? "0:0")
           .split(":")
           .map(Number);
-        const [totalMins, totalSecs] = data.track?.duration
+        const [totalMins, totalSecs] = (data.track?.duration || "0:0")
           .split(":")
           .map(Number);
+
         const current = currentMins * 60 + currentSecs;
         const total = totalMins * 60 + totalSecs;
         setProgress((current / total) * 100);
@@ -210,6 +202,53 @@ function Home() {
       </div>
     </div>
   );
+}
+
+// Fetch weather from OpenWeatherMap API using given coordinates
+async function fetchWeatherByCoords(
+  lat: number,
+  lon: number,
+  apiKey: string,
+): Promise<WeatherApiResponse> {
+  const res = await fetch(
+    `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`,
+  );
+  if (!res.ok) throw new Error("Weather API error");
+  return res.json();
+}
+
+// Interface to tell TypeScript what fetchWeatherbyCoords returns
+interface WeatherApiResponse {
+  name: string;
+  main: { temp: number };
+  weather: { main: string }[];
+}
+
+// Request user's location from browser and then send the coordinates to fetchWeatherByCoords above
+function getUserLocationAndFetch(apiKey: string): Promise<WeatherApiResponse> {
+  return new Promise<WeatherApiResponse>((resolve, reject) => {
+    if (!navigator.geolocation) {
+      return reject(new Error("Geolocation not supported"));
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async ({ coords: { latitude, longitude } }) => {
+        try {
+          const data = await fetchWeatherByCoords(latitude, longitude, apiKey);
+          resolve(data);
+        } catch (err) {
+          reject(err);
+        }
+      },
+      () => {
+        // fallback to Seattle
+        fetchWeatherByCoords(47.6062, -122.3321, apiKey)
+          .then(resolve)
+          .catch(reject);
+      },
+      { timeout: 10_000 },
+    );
+  });
 }
 
 export default Home;
