@@ -13,7 +13,7 @@ import { Link } from "react-router-dom";
 function NavBar() {
   return (
     <NavigationMenu className="px-4 py-2">
-      {/* NavBar Items */}
+      {/* 始 NavBar Items List */}
       <NavigationMenuList>
         {/* HOME */}
         <NavigationMenuItem>
@@ -28,6 +28,7 @@ function NavBar() {
           </NavigationMenuLink>
         </NavigationMenuItem>
       </NavigationMenuList>
+      {/* 終 NavBar Items List */}
     </NavigationMenu>
   );
 }

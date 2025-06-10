@@ -18,6 +18,7 @@
 - [Adding Pages](#adding-pages)
 - [Adding Components](#adding-components)
 - [Linting and Formatting](#linting-and-formatting)
+- [Using shadcn/ui for Components and Blocks](#using-shadcnui-for-components-and-blocks)
 - [Better Documentation](#better-documentation)
 
 ---
@@ -31,6 +32,7 @@ This section will guide you through setting up your development environment and 
 Before you begin, you'll need to have the following tools installed on your computer:
 
 1. **Node.js** (version 18 or higher recommended)
+
    - This is the JavaScript runtime that powers your development environment
    - Download from [nodejs.org](https://nodejs.org/)
    - Choose the LTS (Long Term Support) version for stability
@@ -41,6 +43,7 @@ Before you begin, you'll need to have the following tools installed on your comp
    - You don't need to install it separately
 
 To verify your installations, open a terminal and run:
+
 ```bash
 node -v    # Should show v18.x.x or higher
 npm -v     # Should show 8.x.x or higher
@@ -57,6 +60,7 @@ In this README, you'll see both `npm` and `npx` used:
 - Use `npx` to run tools and CLIs directly from the command line.
 
 Example `npx` usage:
+
 ```bash
 npx create-react-app my-app     # Create a new React app
 npx prettier --write .          # Format all files
@@ -66,6 +70,7 @@ npx eslint .                    # Lint all files
 ### Installation Steps
 
 1. **Clone the Repository**
+
    ```bash
    # (Install git first if you haven't already)
    git clone https://github.com/cpond8/weathertunes.git
@@ -75,10 +80,13 @@ npx eslint .                    # Lint all files
    ```
 
 2. **Install Dependencies**
+
    ```bash
    npm install
    ```
+
    This command:
+
    - Reads the `package.json` file
    - Installs all listed dependencies
    - Creates a `node_modules` directory
@@ -95,15 +103,19 @@ npx eslint .                    # Lint all files
 ### Running the Development Server
 
 1. **Start the Development Server**
+
    ```bash
    npm run dev
    ```
+
    This command:
+
    - Starts the Vite development server
    - Enables hot module replacement (HMR)
    - Opens your default browser to `http://localhost:5173`
 
 2. **Understanding the Development Environment**
+
    - The server automatically reloads when you make changes
    - You'll see compilation errors in the terminal
    - The browser console (F12) shows runtime errors
@@ -123,12 +135,14 @@ npx eslint .                    # Lint all files
 Common issues and solutions:
 
 1. **Port Already in Use**
+
    ```bash
    # If port 5173 is already in use, you can specify a different port
    npm run dev -- --port 3000
    ```
 
 2. **Dependency Issues**
+
    ```bash
    # Clear npm cache
    npm cache clean --force
@@ -139,13 +153,14 @@ Common issues and solutions:
    ```
 
 3. **TypeScript Errors**
+
    - Check that you're using the correct types
    - Make sure all required props are provided
    - Verify that imports are correct
 
 4. **Build Errors**
    - Check for syntax errors (watch out for brackets and implicit semicolons!)
-   - *Really* verify all imports are correct
+   - _Really_ verify all imports are correct
    - Make sure all required dependencies are installed
 
 ---
@@ -185,13 +200,16 @@ weathertunes/
 ### Configuration Files
 
 #### `package.json`
+
 This file contains:
+
 - Project metadata (name, version)
 - Dependencies and their versions
 - Scripts for running, building, and testing
 - Other project configuration
 
 Example scripts section:
+
 ```json
 {
   "scripts": {
@@ -205,26 +223,29 @@ Example scripts section:
 ```
 
 #### `vite.config.ts`
+
 This file configures the Vite build tool:
+
 - Development server settings
 - Build options
 - Path aliases
 - Plugin configuration
 
 Example configuration:
+
 ```ts
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import path from 'path'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import path from "path";
 
 export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src')
-    }
-  }
-})
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
+});
 ```
 
 ### Miscellaneous Files
@@ -248,35 +269,39 @@ Tailwind CSS is a utility-first CSS framework that lets you style elements direc
 ### Basic Concepts
 
 #### 1. Utility Classes
+
 Utility classes are the building blocks of Tailwind CSS. Each class represents a specific style property.
 
 ```tsx
 // Basic utility classes
-<div className="p-4 bg-blue-500 text-white rounded-lg">
-  Hello World
-</div>
+<div className="p-4 bg-blue-500 text-white rounded-lg">Hello World</div>
 ```
 
 This creates a div with:
+
 - `p-4`: padding of 1rem (16px) on all sides
 - `bg-blue-500`: blue background color
 - `text-white`: white text color
 - `rounded-lg`: large border radius
 
 #### 2. Responsive Design
+
 Tailwind uses screen size prefixes to create responsive designs:
 
 ```tsx
-<div className="
+<div
+  className="
   w-full           // Full width on mobile
   md:w-1/2         // Half width on medium screens (768px+)
   lg:w-1/3         // One-third width on large screens (1024px+)
-">
+"
+>
   Responsive Content
 </div>
 ```
 
 Common screen sizes:
+
 - `sm`: 640px
 - `md`: 768px
 - `lg`: 1024px
@@ -284,21 +309,25 @@ Common screen sizes:
 - `2xl`: 1536px
 
 #### 3. State Variants
+
 Tailwind provides state variants for interactive elements:
 
 ```tsx
-<button className="
+<button
+  className="
   bg-blue-500           // Default state
   hover:bg-blue-600     // Hover state
   focus:ring-2          // Focus state
   active:bg-blue-700    // Active state
   disabled:opacity-50   // Disabled state
-">
+"
+>
   Click Me
 </button>
 ```
 
 Common state variants:
+
 - `hover:`: Mouse hover
 - `focus:`: Keyboard focus
 - `active:`: Mouse down
@@ -308,6 +337,7 @@ Common state variants:
 ### Common Properties Reference
 
 #### Spacing
+
 Tailwind uses a consistent spacing scale:
 
 ```tsx
@@ -324,6 +354,7 @@ Tailwind uses a consistent spacing scale:
 ```
 
 Spacing scale:
+
 - `0`: 0px
 - `1`: 0.25rem (4px)
 - `2`: 0.5rem (8px)
@@ -332,6 +363,7 @@ Spacing scale:
 - `16`: 4rem (64px)
 
 #### Colors
+
 Tailwind provides a comprehensive color palette:
 
 ```tsx
@@ -348,6 +380,7 @@ Tailwind provides a comprehensive color palette:
 ```
 
 Color scale:
+
 - `50`: Lightest
 - `100`: Very light
 - `200`: Light
@@ -360,6 +393,7 @@ Color scale:
 - `900`: Darkest
 
 #### Layout
+
 Tailwind provides utilities for common layout patterns:
 
 ```tsx
@@ -383,6 +417,7 @@ Tailwind provides utilities for common layout patterns:
 ```
 
 Common layout utilities:
+
 - `flex`: Flexbox container
 - `grid`: Grid container
 - `container`: Responsive container
@@ -391,6 +426,7 @@ Common layout utilities:
 - `hidden`: Hide element
 
 #### Typography
+
 Tailwind includes comprehensive typography utilities:
 
 ```tsx
@@ -412,6 +448,7 @@ Tailwind includes comprehensive typography utilities:
 ```
 
 Typography scale:
+
 - `text-xs`: 0.75rem (12px)
 - `text-sm`: 0.875rem (14px)
 - `text-base`: 1rem (16px)
@@ -426,26 +463,32 @@ Typography scale:
 shadcn/ui components are built with Tailwind CSS and can be customized using the same utility classes.
 
 #### 1. Buttons
+
 ```tsx
-<Button className="
+<Button
+  className="
   bg-blue-500           // Custom background
   hover:bg-blue-600     // Custom hover state
   text-white            // Custom text color
   px-6 py-2             // Custom padding
   rounded-full          // Custom border radius
-">
+"
+>
   Custom Button
 </Button>
 ```
 
 #### 2. Cards
+
 ```tsx
-<Card className="
+<Card
+  className="
   p-6                // Custom padding
   bg-gray-50         // Custom background
   shadow-lg          // Custom shadow
   hover:shadow-xl    // Custom hover effect
-">
+"
+>
   <CardHeader className="space-y-1">
     <CardTitle className="text-2xl">Card Title</CardTitle>
   </CardHeader>
@@ -453,21 +496,26 @@ shadcn/ui components are built with Tailwind CSS and can be customized using the
 ```
 
 #### 3. Inputs
+
 ```tsx
-<Input className="
+<Input
+  className="
   border-2              // Custom border width
   border-gray-300       // Custom border color
   focus:border-blue-500 // Custom focus state
   rounded-lg            // Custom border radius
   px-4 py-2             // Custom padding
-" />
+"
+/>
 ```
 
 ### Common Patterns
 
 #### 1. Card with Hover Effect
+
 ```tsx
-<div className="
+<div
+  className="
   p-4                // Padding
   bg-white           // Background
   rounded-lg         // Rounded corners
@@ -475,14 +523,17 @@ shadcn/ui components are built with Tailwind CSS and can be customized using the
   hover:shadow-lg    // Larger shadow on hover
   transition-shadow  // Smooth transition
   duration-200       // Transition duration
-">
+"
+>
   Card Content
 </div>
 ```
 
 #### 2. Responsive Navigation
+
 ```tsx
-<nav className="
+<nav
+  className="
   flex               // Flex container
   flex-col           // Stack on mobile
   md:flex-row        // Row on medium screens
@@ -490,29 +541,36 @@ shadcn/ui components are built with Tailwind CSS and can be customized using the
   space-y-4          // Vertical spacing on mobile
   md:space-y-0       // No vertical spacing on medium
   md:space-x-4       // Horizontal spacing on medium
-">
-  <a href="#" className="text-gray-600 hover:text-blue-500">Link 1</a>
-  <a href="#" className="text-gray-600 hover:text-blue-500">Link 2</a>
+"
+>
+  <a href="#" className="text-gray-600 hover:text-blue-500">
+    Link 1
+  </a>
+  <a href="#" className="text-gray-600 hover:text-blue-500">
+    Link 2
+  </a>
 </nav>
 ```
 
 #### 3. Centered Content
+
 ```tsx
-<div className="
+<div
+  className="
   flex               // Flex container
   items-center       // Center vertically
   justify-center     // Center horizontally
   min-h-screen       // Full viewport height
-">
-  <div className="text-center">
-    Centered content
-  </div>
+"
+>
+  <div className="text-center">Centered content</div>
 </div>
 ```
 
 ### Advanced Techniques
 
 #### 1. Custom Classes
+
 Create custom classes in your CSS file:
 
 ```css
@@ -524,24 +582,26 @@ Create custom classes in your CSS file:
 ```
 
 #### 2. Dynamic Classes
+
 Use template literals for dynamic classes:
 
 ```tsx
-function Button({ variant = 'primary' }) {
+function Button({ variant = "primary" }) {
   return (
     <button
       className={`
         px-4 py-2 rounded
-        ${variant === 'primary' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'}
+        ${variant === "primary" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-800"}
       `}
     >
       Click Me
     </button>
-  )
+  );
 }
 ```
 
 #### 3. Group Hover
+
 Style child elements based on parent hover:
 
 ```tsx
@@ -563,23 +623,27 @@ Pages are React components that represent different routes in your application. 
 ### Understanding Pages
 
 #### What are Pages?
+
 Pages are special components that:
+
 - Represent a unique URL in your application
 - Contain the main content for that route
 - Can include multiple components
 - Handle their own data fetching and state management
 
 #### Page Structure
+
 A typical page component follows this structure:
+
 ```tsx
 // src/pages/About.tsx
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 function About() {
   // State management
-  const [isExpanded, setIsExpanded] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(false);
 
   return (
     // Layout
@@ -594,49 +658,47 @@ function About() {
       <main>
         <Card className="p-6">
           <p className="text-gray-700">
-            Welcome to our application! This is the about page where you can learn more about us.
+            Welcome to our application! This is the about page where you can
+            learn more about us.
           </p>
-          <Button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="mt-4"
-          >
-            {isExpanded ? 'Show Less' : 'Show More'}
+          <Button onClick={() => setIsExpanded(!isExpanded)} className="mt-4">
+            {isExpanded ? "Show Less" : "Show More"}
           </Button>
         </Card>
       </main>
     </div>
-  )
+  );
 }
 
-export default About
+export default About;
 ```
 
 ### Creating a New Page
 
 1. **Create the Page Component**
+
    ```tsx
    // src/pages/Contact.tsx
    function Contact() {
      return (
        <div className="max-w-4xl mx-auto p-6">
          <h1 className="text-3xl font-bold mb-4">Contact Us</h1>
-         <p className="text-gray-600">
-           Get in touch with our team.
-         </p>
+         <p className="text-gray-600">Get in touch with our team.</p>
        </div>
-     )
+     );
    }
 
-   export default Contact
+   export default Contact;
    ```
 
 2. **Add the Route**
+
    ```tsx
    // src/App.tsx
-   import { Routes, Route } from 'react-router-dom'
-   import Home from '@/pages/Home'
-   import About from '@/pages/About'
-   import Contact from '@/pages/Contact'
+   import { Routes, Route } from "react-router-dom";
+   import Home from "@/pages/Home";
+   import About from "@/pages/About";
+   import Contact from "@/pages/Contact";
 
    function App() {
      return (
@@ -650,14 +712,15 @@ export default About
            </Routes>
          </main>
        </div>
-     )
+     );
    }
    ```
 
 3. **Add Navigation**
+
    ```tsx
    // src/components/NavBar.tsx
-   import { Link } from 'react-router-dom'
+   import { Link } from "react-router-dom";
 
    function NavBar() {
      return (
@@ -671,14 +734,17 @@ export default About
                <Link to="/about" className="text-gray-900 hover:text-blue-500">
                  About
                </Link>
-               <Link to="/contact" className="text-gray-900 hover:text-blue-500">
+               <Link
+                 to="/contact"
+                 className="text-gray-900 hover:text-blue-500"
+               >
                  Contact
                </Link>
              </div>
            </div>
          </div>
        </nav>
-     )
+     );
    }
    ```
 
@@ -689,119 +755,116 @@ Components are reusable pieces of UI that can be used across your application. T
 ### Understanding Components
 
 #### What are Components?
+
 Components are:
+
 - Reusable pieces of UI
 - Self-contained and independent
 - Can accept props for customization
 - Can maintain their own state
 
 #### Basic Component Example
+
 ```tsx
 // src/components/Button.tsx
 interface ButtonProps {
-  children: React.ReactNode
-  variant?: 'primary' | 'secondary'
-  onClick?: () => void
+  children: React.ReactNode;
+  variant?: "primary" | "secondary";
+  onClick?: () => void;
 }
 
-function Button({
-  children,
-  variant = 'primary',
-  onClick
-}: ButtonProps) {
+function Button({ children, variant = "primary", onClick }: ButtonProps) {
   return (
     <button
       onClick={onClick}
       className={`
         rounded px-4 py-2
-        ${variant === 'primary' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'}
+        ${variant === "primary" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-800"}
         hover:opacity-90
         transition-opacity
       `}
     >
       {children}
     </button>
-  )
+  );
 }
 
-export default Button
+export default Button;
 ```
 
 #### Using Components
+
 ```tsx
 // src/pages/Home.tsx
-import Button from '@/components/Button'
+import Button from "@/components/Button";
 
 function Home() {
   return (
     <div className="p-4">
-      <Button variant="primary" onClick={() => alert('Clicked!')}>
+      <Button variant="primary" onClick={() => alert("Clicked!")}>
         Click Me
       </Button>
     </div>
-  )
+  );
 }
 ```
 
 ### Common Component Patterns
 
 1. **Layout Components**
+
    ```tsx
    // src/components/Layout.tsx
    interface LayoutProps {
-     children: React.ReactNode
-     sidebar?: React.ReactNode
+     children: React.ReactNode;
+     sidebar?: React.ReactNode;
    }
 
    function Layout({ children, sidebar }: LayoutProps) {
      return (
        <div className="flex min-h-screen">
-         {sidebar && (
-           <aside className="w-64 bg-gray-100 p-4">
-             {sidebar}
-           </aside>
-         )}
-         <main className="flex-1 p-6">
-           {children}
-         </main>
+         {sidebar && <aside className="w-64 bg-gray-100 p-4">{sidebar}</aside>}
+         <main className="flex-1 p-6">{children}</main>
        </div>
-     )
+     );
    }
    ```
 
 2. **Form Components**
+
    ```tsx
    // src/components/Form.tsx
    interface FormProps {
-     onSubmit: (data: FormData) => void
-     children: React.ReactNode
+     onSubmit: (data: FormData) => void;
+     children: React.ReactNode;
    }
 
    function Form({ onSubmit, children }: FormProps) {
      const handleSubmit = (e: React.FormEvent) => {
-       e.preventDefault()
-       const formData = new FormData(e.target as HTMLFormElement)
-       onSubmit(formData)
-     }
+       e.preventDefault();
+       const formData = new FormData(e.target as HTMLFormElement);
+       onSubmit(formData);
+     };
 
      return (
        <form onSubmit={handleSubmit} className="space-y-4">
          {children}
        </form>
-     )
+     );
    }
    ```
 
 3. **List Components**
+
    ```tsx
    // src/components/List.tsx
    interface ListProps<T> {
-     items: T[]
-     renderItem: (item: T) => React.ReactNode
-     className?: string
+     items: T[];
+     renderItem: (item: T) => React.ReactNode;
+     className?: string;
    }
 
-   function List<T>({ items, renderItem, className = '' }: ListProps<T>) {
+   function List<T>({ items, renderItem, className = "" }: ListProps<T>) {
      return (
        <ul className={`divide-y divide-gray-200 ${className}`}>
          {items.map((item, index) => (
@@ -810,31 +873,32 @@ function Home() {
            </li>
          ))}
        </ul>
-     )
+     );
    }
    ```
 
 ### Component Composition
 
 1. **Compound Components**
+
    ```tsx
    // src/components/Accordion.tsx
    interface AccordionProps {
-     children: React.ReactNode
+     children: React.ReactNode;
    }
 
    function Accordion({ children }: AccordionProps) {
-     return <div className="space-y-2">{children}</div>
+     return <div className="space-y-2">{children}</div>;
    }
 
    Accordion.Item = function AccordionItem({
      title,
-     children
+     children,
    }: {
-     title: string
-     children: React.ReactNode
+     title: string;
+     children: React.ReactNode;
    }) {
-     const [isOpen, setIsOpen] = useState(false)
+     const [isOpen, setIsOpen] = useState(false);
 
      return (
        <div className="border rounded">
@@ -846,43 +910,49 @@ function Home() {
          </button>
          {isOpen && <div className="p-4">{children}</div>}
        </div>
-     )
-   }
+     );
+   };
    ```
 
 2. **Render Props**
+
    ```tsx
    // src/components/DataFetcher.tsx
    interface DataFetcherProps<T> {
-     url: string
-     children: (data: T | null, loading: boolean, error: Error | null) => React.ReactNode
+     url: string;
+     children: (
+       data: T | null,
+       loading: boolean,
+       error: Error | null,
+     ) => React.ReactNode;
    }
 
    function DataFetcher<T>({ url, children }: DataFetcherProps<T>) {
-     const [data, setData] = useState<T | null>(null)
-     const [loading, setLoading] = useState(true)
-     const [error, setError] = useState<Error | null>(null)
+     const [data, setData] = useState<T | null>(null);
+     const [loading, setLoading] = useState(true);
+     const [error, setError] = useState<Error | null>(null);
 
      useEffect(() => {
        fetch(url)
-         .then(res => res.json())
-         .then(data => {
-           setData(data)
-           setLoading(false)
+         .then((res) => res.json())
+         .then((data) => {
+           setData(data);
+           setLoading(false);
          })
-         .catch(error => {
-           setError(error)
-           setLoading(false)
-         })
-     }, [url])
+         .catch((error) => {
+           setError(error);
+           setLoading(false);
+         });
+     }, [url]);
 
-     return <>{children(data, loading, error)}</>
+     return <>{children(data, loading, error)}</>;
    }
    ```
 
 ### Component Documentation
 
 1. **JSDoc Comments**
+
    ```tsx
    /**
     * A button component that supports different variants and sizes.
@@ -891,7 +961,7 @@ function Home() {
     * @param {'primary' | 'secondary'} [props.variant='primary'] - Button style variant
     * @param {() => void} [props.onClick] - Click handler
     */
-   function Button({ children, variant = 'primary', onClick }: ButtonProps) {
+   function Button({ children, variant = "primary", onClick }: ButtonProps) {
      // Component implementation
    }
    ```
@@ -899,10 +969,11 @@ function Home() {
 2. **Usage Examples**
    ```tsx
    // Example usage in a README or documentation
-   <Button variant="primary" onClick={() => alert('Clicked!')}>
+   <Button variant="primary" onClick={() => alert("Clicked!")}>
      Click Me
    </Button>
    ```
+
 ---
 
 ## Linting and Formatting
@@ -1039,7 +1110,7 @@ The main component library for this project is [shadcn/ui](https://ui.shadcn.com
 - [shadcn/ui documentation](https://ui.shadcn.com/docs/cli)
 - [Component list](https://ui.shadcn.com/docs/components)
 - [Blocks list](https://ui.shadcn.com/blocks)
-  
+
 ---
 
 ## Better Documentation
@@ -1049,11 +1120,13 @@ The main component library for this project is [shadcn/ui](https://ui.shadcn.com
 📕 - Reference work
 
 ### React
+
 - ✨ [Quick Start](https://react.dev/learn)
 - [Thinking in React](https://react.dev/learn/thinking-in-react)
 - 📕 [React Reference](https://react.dev/reference/react)
 
 ### Tailwind CSS
+
 - ✨ [Styling with Utility Classes](https://tailwindcss.com/docs/styling-with-utility-classes)
 - [`hover`, `focus` and other states](https://tailwindcss.com/docs/hover-focus-and-other-states)
 - [Theme Variables](https://tailwindcss.com/docs/theme)
@@ -1062,11 +1135,13 @@ The main component library for this project is [shadcn/ui](https://ui.shadcn.com
   - 📕 [Default color palette reference](https://tailwindcss.com/docs/colors#default-color-palette-reference)
 
 ### shadcn/ui
+
 - ✨ [Introduction](https://ui.shadcn.com/docs)
 - 📕 [List of Components](https://ui.shadcn.com/docs/components)
 - 📕 [List of Blocks](https://ui.shadcn.com/blocks)
 
 ### Web Development in General
+
 - ✨📕 [MDN - Learn Web Development](https://developer.mozilla.org/en-US/docs/Learn_web_development)
 
 ---
