@@ -23,7 +23,7 @@ export function MusicPlayer({
   progress,
 }: MusicPlayerProps) {
   return (
-    <div className="fixed inset-x-4 bottom-4 mx-auto w-full max-w-4xl sm:inset-x-6 md:inset-x-8">
+    <div className="fixed inset-x-4 bottom-4 mx-auto w-full max-w-2xl">
       <div className="rounded-2xl bg-white/90 p-4 shadow-lg backdrop-blur-sm sm:p-6 md:p-8">
         <div className="mb-4 flex items-center justify-between">
           {/* Album Cover and Track Info */}

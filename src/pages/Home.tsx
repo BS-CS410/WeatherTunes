@@ -98,8 +98,8 @@ function Home() {
   }, []);
 
   return (
-    <div className="flex min-h-screen flex-col overflow-auto bg-gradient-to-br from-sky-200 to-sky-600">
-      <Cloud className="h-10 w-10 text-white sm:h-12 sm:w-12" />
+    <div className="flex min-h-dvh flex-col overflow-auto bg-gradient-to-br from-sky-200 to-sky-600">
+      <Cloud className="h-10 w-10 text-white" />
 
       {/* Location, Temperature, Current Conditions */}
       <WeatherDisplay weatherData={weatherData} />

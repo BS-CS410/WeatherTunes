@@ -8,12 +8,12 @@ import NavBar from "./components/NavBar";
 
 function App() {
   return (
-    <div className="relative mx-auto flex min-h-screen w-full max-w-3xl flex-1 flex-col px-4">
+    <div className="min-height-full relative mx-auto flex w-full max-w-3xl flex-1 flex-col px-4">
       {/* Shared NavBar */}
       <NavBar />
       {/* TODO: Move MusicPlayer to here; pass props to it */}
       {/* Page Content */}
-      <main className="p-4">
+      <main>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/" element={<Home />} />
