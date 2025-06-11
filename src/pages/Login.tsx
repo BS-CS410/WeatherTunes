@@ -5,15 +5,14 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  // CardDescription,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 function Login({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
+    <div className={cn("flex items-center justify-center min-h-screen", className)} {...props}>
+      <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Login to your Spotify Account</CardTitle>
         </CardHeader>
@@ -47,6 +46,12 @@ function Login({ className, ...props }: React.ComponentProps<"div">) {
                   className="w-full bg-[#1DB954] hover:bg-[#1ED760]"
                 >
                   Login
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full bg-white hover:bg-gray-50"
+                >
+                  Forgot password
                 </Button>
               </div>
             </div>
