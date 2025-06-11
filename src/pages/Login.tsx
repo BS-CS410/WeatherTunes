@@ -12,7 +12,13 @@ import { Label } from "@/components/ui/label";
 
 function Login({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div
+      className={cn(
+        "relative mx-auto flex w-full max-w-3xl flex-1 flex-col",
+        className,
+      )}
+      {...props}
+    >
       <Card>
         <CardHeader>
           <CardTitle>Login to your Spotify Account</CardTitle>

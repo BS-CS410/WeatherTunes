@@ -12,7 +12,7 @@ import { Link } from "react-router-dom";
 
 function NavBar() {
   return (
-    <NavigationMenu className="px-4 py-2">
+    <NavigationMenu>
       {/* 始 NavBar Items List */}
       <NavigationMenuList>
         {/* HOME */}

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"; //for API
 import { Cloud } from "lucide-react";
 import { WeatherDisplay } from "@/components/WeatherDisplay";
 import { MusicPlayer } from "@/components/MusicPlayer";
+import BigSun from "@/components/BigSun";
 
 function Home() {
   // Hooks
@@ -97,22 +98,14 @@ function Home() {
   }, []);
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-sky-200 to-sky-300">
-      {/* Navigation */}
-      <nav className="relative z-10 flex items-center px-4 py-4 sm:px-6 md:px-8 md:py-6">
-        <Cloud className="h-10 w-10 text-white sm:h-12 sm:w-12" />
-      </nav>
+    <div className="flex min-h-screen flex-col overflow-auto bg-gradient-to-br from-sky-200 to-sky-600">
+      <Cloud className="h-10 w-10 text-white sm:h-12 sm:w-12" />
 
       {/* Location, Temperature, Current Conditions */}
       <WeatherDisplay weatherData={weatherData} />
 
       {/* Sun Illustration */}
-      <div className="absolute top-1/4 right-4 -translate-y-1/2 transform md:top-1/2 md:right-8 lg:right-16">
-        <div className="relative h-48 w-48 rounded-full bg-[radial-gradient(circle_at_30%_30%,_theme(colors.yellow.200)_0%,_theme(colors.yellow.500)_70%,_theme(colors.yellow.700)_100%)] shadow-xl md:h-72 md:w-72 lg:h-96 lg:w-96">
-          {/* subtle inner glow */}
-          <div className="absolute top-4 left-4 h-12 w-12 rounded-full bg-white/20 blur-lg md:top-6 md:left-6 md:h-16 md:w-16" />
-        </div>
-      </div>
+      <BigSun />
 
       {/* Trackname, Pause, Play, etc. */}
       <MusicPlayer
