@@ -2,12 +2,11 @@
 
 import { useState, useEffect } from "react"; //for API
 import {} from "module";
-// import { Cloud } from "lucide-react";
 import { WeatherDisplay } from "@/components/WeatherDisplay";
 import { MusicPlayer } from "@/components/MusicPlayer";
 import { BigSun } from "@/components/BigSun";
 
-function Home() {
+function MainPage() {
   // Hooks
   const [weatherData, setWeatherData] = useState({
     location: "",
@@ -48,7 +47,7 @@ function Home() {
       });
   }, []);
 
-  // Music API call (placeholder )
+  // Music API call (placeholder)
   useEffect(() => {
     const fetchMusicData = async () => {
       try {
@@ -100,8 +99,8 @@ function Home() {
 
   return (
     <>
-      <div className="flex min-h-dvh flex-col overflow-auto bg-gradient-to-br from-sky-200 to-sky-600">
-        {/* <Cloud className="h-10 w-10 text-white" /> */}
+      <div className="flex min-h-dvh flex-col overflow-auto">
+        {/* <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-sky-200 to-sky-600 opacity-80" /> */}
 
         {/* Location, Temperature, Current Conditions */}
         <WeatherDisplay weatherData={weatherData} />
@@ -168,4 +167,4 @@ function getUserLocationAndFetch(apiKey: string): Promise<WeatherApiResponse> {
   });
 }
 
-export default Home;
+export default MainPage;

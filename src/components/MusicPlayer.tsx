@@ -24,7 +24,7 @@ export function MusicPlayer({
 }: MusicPlayerProps) {
   return (
     <div className="fixed inset-x-4 bottom-4 mx-auto w-full max-w-2xl">
-      <div className="rounded-2xl bg-white/90 p-4 shadow-lg backdrop-blur-sm sm:p-6 md:p-8">
+      <div className="rounded-2xl bg-white/90 p-4 shadow-lg backdrop-blur-sm">
         <div className="mb-4 flex items-center justify-between">
           {/* Album Cover and Track Info */}
           <div className="flex items-center space-x-3 sm:space-x-4">
