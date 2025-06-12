@@ -5,6 +5,7 @@ import {} from "module";
 import { WeatherDisplay } from "@/components/WeatherDisplay";
 import { MusicPlayer } from "@/components/MusicPlayer";
 import { BigSun } from "@/components/BigSun";
+import { Card } from "@/components/ui/card";
 
 function MainPage() {
   // Hooks
@@ -100,7 +101,9 @@ function MainPage() {
   return (
     <div className="flex min-h-dvh flex-col overflow-auto">
       {/* Location, Temperature, Current Conditions */}
-      <WeatherDisplay weatherData={weatherData} />
+      <Card className="bg-slate-100/75">
+        <WeatherDisplay weatherData={weatherData} />
+      </Card>
 
       {/* Sun Illustration */}
       <BigSun />
