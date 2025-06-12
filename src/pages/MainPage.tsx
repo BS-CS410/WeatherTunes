@@ -98,25 +98,21 @@ function MainPage() {
   }, []);
 
   return (
-    <>
-      <div className="flex min-h-dvh flex-col overflow-auto">
-        {/* <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-sky-200 to-sky-600 opacity-80" /> */}
+    <div className="flex min-h-dvh flex-col overflow-auto">
+      {/* Location, Temperature, Current Conditions */}
+      <WeatherDisplay weatherData={weatherData} />
 
-        {/* Location, Temperature, Current Conditions */}
-        <WeatherDisplay weatherData={weatherData} />
+      {/* Sun Illustration */}
+      <BigSun />
 
-        {/* Sun Illustration */}
-        <BigSun />
-
-        {/* Trackname, Pause, Play, etc. */}
-        <MusicPlayer
-          musicData={musicData}
-          isPlaying={isPlaying}
-          setIsPlaying={setIsPlaying}
-          progress={progress}
-        />
-      </div>
-    </>
+      {/* Trackname, Pause, Play, etc. */}
+      <MusicPlayer
+        musicData={musicData}
+        isPlaying={isPlaying}
+        setIsPlaying={setIsPlaying}
+        progress={progress}
+      />
+    </div>
   );
 }
 

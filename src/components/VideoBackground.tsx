@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 
-import laNight from "../assets/LosAngelesNight.mov";
-import oregonSunset from "../assets/OregonSunset.mov";
-import hawaiiValley from "../assets/HawaiiValley.mov";
-import laSunset from "../assets/LosAngelesSunset.mov";
+import laNight from "../assets/LosAngelesNight.mp4";
+import oregonSunset from "../assets/OregonSunset.mp4";
+import hawaiiValley from "../assets/HawaiiValley.mp4";
+import laSunset from "../assets/LosAngelesSunset.mp4";
 
 const isNight = (hour: number) => hour >= 21 || hour < 5;
 const isMorning = (hour: number) => hour >= 5 && hour < 11;
