@@ -1,0 +1,12 @@
+@font-face {
+  font-family: "Canola";
+  src: url("../src/assets/fonts/Canola-Black.otf") format("opentype");
+  font-weight: 900;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Canola";
+  src: url("../src/assets/fonts/Canola-BlackItalic.otf") format("opentype");
+  font-weight: 900;
+  font-style: italic;
+}

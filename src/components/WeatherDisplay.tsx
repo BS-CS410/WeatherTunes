@@ -12,17 +12,19 @@ interface WeatherDisplayProps {
 export function WeatherDisplay({ weatherData }: WeatherDisplayProps) {
   return (
     <div className="relative z-10 container mx-auto px-8 pt-8">
-      <h1 className="mb-4 text-3xl font-bold text-slate-800">
-        {weatherData.location || "Loading..."}
-      </h1>
-      <div className="fluid-title mb-2 text-9xl font-bold text-slate-800">
-        {weatherData.temperature
-          ? `${weatherData.temperature}${weatherData.unit}`
-          : "--°"}
+      <div className="flex flex-col items-start">
+        <div className="font-canola fluid-title text-[120pt] leading-none font-black text-slate-800">
+          {weatherData.temperature
+            ? `${weatherData.temperature}${weatherData.unit}`
+            : "--°"}
+        </div>
+        <span className="-mt-4 text-6xl leading-none text-slate-800 lowercase">
+          {weatherData.condition || "loading..."}
+        </span>
+        <h1 className="mt-1 text-4xl leading-tight text-slate-800 lowercase italic">
+          {weatherData.location || "loading..."}
+        </h1>
       </div>
-      <p className="text-lg text-slate-800 md:text-2xl">
-        {weatherData.condition || "Loading..."}
-      </p>
     </div>
   );
 }
