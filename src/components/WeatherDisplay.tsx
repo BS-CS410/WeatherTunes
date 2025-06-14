@@ -11,19 +11,22 @@ interface WeatherDisplayProps {
 
 export function WeatherDisplay({ weatherData }: WeatherDisplayProps) {
   return (
-    <div className="font-inter-tight relative z-10 container mx-auto px-8 pt-8">
-      <div className="flex flex-col items-start">
-        <div className="fluid-title text-[120pt] leading-none font-black text-slate-800">
+    <div className="flex h-full w-full flex-col items-start">
+      <div className="flex w-full flex-col items-start">
+        {/* Location */}
+        <h1 className="font-inter-tight mt-1 -mb-1.5 w-full pl-[4%] text-left text-[clamp(1rem,4vw,2rem)] font-semibold tracking-wide text-slate-200 uppercase transition-all duration-300">
+          {weatherData.location || "Loading..."}
+        </h1>
+        {/* Temperature */}
+        <div className="font-inter-tight w-full text-left text-[clamp(2.5rem,12vw,8rem)] leading-none font-black text-cyan-50 drop-shadow-lg transition-all duration-300">
           {weatherData.temperature
             ? `${weatherData.temperature}${weatherData.unit}`
             : "--°"}
         </div>
-        <span className="-mt-4 text-6xl leading-none text-slate-800 lowercase">
-          {weatherData.condition || "loading..."}
+        {/* Weather Condition */}
+        <span className="font-inter-tight -mt-1.5 w-full pl-[2%] text-left text-[clamp(1.5rem,6vw,4rem)] leading-none font-extralight text-cyan-100 lowercase transition-all duration-300">
+          {weatherData.condition || "Loading..."}
         </span>
-        <h1 className="mt-1 text-4xl leading-tight text-slate-800 lowercase italic">
-          {weatherData.location || "loading..."}
-        </h1>
       </div>
     </div>
   );

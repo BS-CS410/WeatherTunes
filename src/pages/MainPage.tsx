@@ -5,7 +5,7 @@ import {} from "module";
 import { WeatherDisplay } from "@/components/WeatherDisplay";
 import { MusicPlayer } from "@/components/MusicPlayer";
 import { BigSun } from "@/components/BigSun";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 
 function MainPage() {
   // Hooks
@@ -101,12 +101,20 @@ function MainPage() {
   return (
     <div className="flex min-h-dvh flex-col overflow-auto">
       {/* Location, Temperature, Current Conditions */}
-      <Card className="bg-slate-100/75">
-        <WeatherDisplay weatherData={weatherData} />
+      <Card className="mx-auto aspect-[2/1] w-full max-w-2xl bg-slate-900/75">
+        <CardContent className="h-full w-full p-0">
+          <div className="flex h-full w-full flex-row items-center justify-center gap-x-[6%]">
+            {/* Weather Display */}
+            <div className="h-auto w-[44%] flex-shrink-0">
+              <WeatherDisplay weatherData={weatherData} />
+            </div>
+            {/* Sun Illustration */}
+            <div className="h-auto w-[44%] flex-shrink-0">
+              <BigSun />
+            </div>
+          </div>
+        </CardContent>
       </Card>
-
-      {/* Sun Illustration */}
-      <BigSun />
 
       {/* Trackname, Pause, Play, etc. */}
       <MusicPlayer
