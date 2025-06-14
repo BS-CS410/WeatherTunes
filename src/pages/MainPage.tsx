@@ -69,6 +69,12 @@ function MainPage() {
           <UpNext />
         </CardContent>
       </Card>
+
+      {/* Bottom Padding */}
+      <div className="h-16" />
+      <footer className="w-full pb-4 text-center text-xs text-slate-500">
+        © {new Date().getFullYear()} Team Meow Ltd. All rights reserved.
+      </footer>
     </div>
   );
 }
