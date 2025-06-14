@@ -139,6 +139,7 @@ export function UpNext() {
                       {song.name}
                     </div>
                     <div
+
                       className={`w-28 truncate text-xs transition-all duration-300 ${isNextUpOrHovered ? "text-gray-700 drop-shadow-[0_1px_2px_rgba(0,0,0,0.08)] dark:text-slate-300 dark:drop-shadow-[0_1px_2px_rgba(255,255,255,0.10)]" : "text-gray-500 dark:text-slate-400"}`}
                     >
                       {song.artist}
