@@ -128,14 +128,19 @@ function getWeatherType(
   if (!weatherConditions?.weather?.[0]) return "clear";
 
   const weatherMain = weatherConditions.weather[0].main.toLowerCase();
-  const cloudiness = weatherConditions.clouds?.all || 0;
+
+  // Debug logging to see what we're getting
+  console.log("Weather Debug:", {
+    weatherMain,
+    fullWeather: weatherConditions.weather[0],
+  });
 
   if (["thunderstorm", "rain", "drizzle"].includes(weatherMain)) return "rain";
   if (weatherMain === "snow") return "snow";
   if (["mist", "fog"].includes(weatherMain)) return "fog";
-  if (weatherMain === "clouds" && cloudiness > 70) return "cloudy";
+  if (weatherMain === "clouds") return "cloudy";
 
-  return "clear"; // Default for clear skies and light clouds
+  return "clear"; // Default for clear skies
 }
 
 // Main function to get video for current weather and time
@@ -144,6 +149,13 @@ const getVideoForWeatherAndTime = (
 ): string => {
   const period = getTimePeriod(weatherConditions);
   const weatherType = getWeatherType(weatherConditions);
+
+  console.log("Video Selection:", {
+    period,
+    weatherType,
+    selectedVideo: videoMap[weatherType][period],
+    hasWeatherData: !!weatherConditions,
+  });
 
   return videoMap[weatherType][period];
 };
@@ -156,9 +168,22 @@ export function VideoBackground({ weatherConditions }: VideoBackgroundProps) {
 
   const [currentSrc, setCurrentSrc] = useState(video);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [mountComplete, setMountComplete] = useState(false);
 
-  // Handle video transitions with preloading
+  // Mark mount as complete after first render
   useEffect(() => {
+    setMountComplete(true);
+  }, []);
+
+  // Handle video changes
+  useEffect(() => {
+    // Update current source to match video on initial mount without transition
+    if (!mountComplete) {
+      setCurrentSrc(video);
+      return;
+    }
+
+    // Skip if video hasn't changed
     if (video === currentSrc) return;
 
     setIsTransitioning(true);
@@ -169,23 +194,21 @@ export function VideoBackground({ weatherConditions }: VideoBackgroundProps) {
     preloadVideo.preload = "auto";
 
     const handleCanPlay = () => {
-      // Small delay to ensure smooth transition
+      // Switch to new video after preload
       setTimeout(() => {
         setCurrentSrc(video);
         setTimeout(() => setIsTransitioning(false), 400);
       }, 50);
-
-      preloadVideo.removeEventListener("canplaythrough", handleCanPlay);
     };
 
     preloadVideo.addEventListener("canplaythrough", handleCanPlay);
 
-    // Cleanup function
+    // Cleanup
     return () => {
       preloadVideo.removeEventListener("canplaythrough", handleCanPlay);
       preloadVideo.src = "";
     };
-  }, [video, currentSrc]);
+  }, [video, currentSrc, mountComplete]);
 
   return (
     <>
