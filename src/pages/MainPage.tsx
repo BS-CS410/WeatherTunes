@@ -1,5 +1,4 @@
-import { WeatherDisplay } from "@/components/WeatherDisplay";
-import { BigSun } from "@/components/BigSun";
+import UnifiedDisplay from "@/components/UnifiedDisplay"; // Import the new unified component
 import { Card, CardContent } from "@/components/ui/card";
 import { UpNext } from "@/components/UpNext";
 import { VideoBackground } from "@/components/VideoBackground";
@@ -12,6 +11,14 @@ import {
 function MainPage() {
   const weatherData = useWeatherData();
   const displayData = getWeatherDisplayData(weatherData);
+
+  // PLACEHOLDER DATA FOR CURRENTLY PLAYING //
+  const songData = {
+    songTitle: "Angel's Fake",
+    artistName: "DAZBEE",
+    albumArtUrl:
+      "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/f9/3c/d1/f93cd16d-2329-561c-a851-672eea4e48c3/23UMGIM87924.rgb.jpg/800x800cc.jpg",
+  };
 
   useThemeFromWeather(weatherData);
 
@@ -31,19 +38,15 @@ function MainPage() {
             </span>
           </h1>
         </header>
-        {/* Location, Temperature, Current Conditions */}
-        <Card className="aspect-[2/1] w-full bg-white/80 dark:bg-slate-900/75">
+        {/* Unified Weather and Currently Playing Display */}
+        <Card className="aspect-video w-full bg-white/80 md:aspect-[2/1] dark:bg-slate-900/75">
           <CardContent className="h-full w-full p-0">
-            <div className="flex h-full w-full flex-row items-center justify-center gap-x-[2%]">
-              {/* Weather Display */}
-              <div className="h-auto w-[44%] flex-shrink-0">
-                <WeatherDisplay weatherData={displayData} />
-              </div>
-              {/* Sun Illustration */}
-              <div className="h-auto w-[44%] flex-shrink-0">
-                <BigSun />
-              </div>
-            </div>
+            <UnifiedDisplay
+              weatherData={displayData}
+              songTitle={songData.songTitle}
+              artistName={songData.artistName}
+              albumArtUrl={songData.albumArtUrl}
+            />
           </CardContent>
         </Card>
 

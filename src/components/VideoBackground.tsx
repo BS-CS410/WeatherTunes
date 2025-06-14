@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef, useCallback } from "react";
 import { getTimePeriod } from "@/lib/utils";
 
 // Video imports organized by weather type and time period
@@ -145,47 +145,46 @@ export function VideoBackground({ weatherConditions }: VideoBackgroundProps) {
 
   const [currentSrc, setCurrentSrc] = useState(video);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [mountComplete, setMountComplete] = useState(false);
+  const [fade, setFade] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
-  // Mark mount as complete after first render
+  // Handle video changes with transition
   useEffect(() => {
-    setMountComplete(true);
-  }, []);
-
-  // Handle video changes
-  useEffect(() => {
-    // Update current source to match video on initial mount without transition
-    if (!mountComplete) {
-      setCurrentSrc(video);
-      return;
-    }
-
-    // Skip if video hasn't changed
     if (video === currentSrc) return;
-
     setIsTransitioning(true);
-
-    // Preload new video
     const preloadVideo = document.createElement("video");
     preloadVideo.src = video;
     preloadVideo.preload = "auto";
-
     const handleCanPlay = () => {
-      // Switch to new video after preload
       setTimeout(() => {
         setCurrentSrc(video);
         setTimeout(() => setIsTransitioning(false), 400);
       }, 50);
     };
-
     preloadVideo.addEventListener("canplaythrough", handleCanPlay);
-
-    // Cleanup
     return () => {
       preloadVideo.removeEventListener("canplaythrough", handleCanPlay);
       preloadVideo.src = "";
     };
-  }, [video, currentSrc, mountComplete]);
+  }, [video, currentSrc]);
+
+  // Fade out/in at loop point for subtle looping
+  const handleTimeUpdate = useCallback(() => {
+    const videoEl = videoRef.current;
+    if (!videoEl || !videoEl.duration) return;
+    if (videoEl.currentTime > videoEl.duration - 0.25) {
+      setFade(true);
+    } else if (fade && videoEl.currentTime < 0.25) {
+      setFade(false);
+    }
+  }, [fade]);
+
+  useEffect(() => {
+    const videoEl = videoRef.current;
+    if (!videoEl) return;
+    videoEl.addEventListener("timeupdate", handleTimeUpdate);
+    return () => videoEl.removeEventListener("timeupdate", handleTimeUpdate);
+  }, [currentSrc, handleTimeUpdate]);
 
   return (
     <>
@@ -194,8 +193,9 @@ export function VideoBackground({ weatherConditions }: VideoBackgroundProps) {
 
       {/* Main video */}
       <video
-        className={`fixed inset-0 -z-10 h-full w-full object-cover transition-opacity duration-500 ${
-          isTransitioning ? "opacity-0" : "opacity-100"
+        ref={videoRef}
+        className={`fixed inset-0 -z-10 h-full w-full object-cover transition-opacity duration-700 ${
+          isTransitioning || fade ? "opacity-0" : "opacity-100"
         }`}
         src={currentSrc}
         autoPlay
