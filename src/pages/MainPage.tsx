@@ -1,76 +1,25 @@
-"use client";
-
-import { useState, useEffect } from "react"; //for API calls and state management
 import { WeatherDisplay } from "@/components/WeatherDisplay";
 import { BigSun } from "@/components/BigSun";
 import { Card, CardContent } from "@/components/ui/card";
 import { UpNext } from "@/components/UpNext";
 import { VideoBackground } from "@/components/VideoBackground";
-import { getTimePeriod } from "@/lib/utils";
+import {
+  useWeatherData,
+  useThemeFromWeather,
+  getWeatherDisplayData,
+} from "@/hooks/useWeather";
 
 function MainPage() {
-  // Hooks
-  const [detailedWeatherData, setDetailedWeatherData] =
-    useState<WeatherApiResponse | null>(null);
+  const weatherData = useWeatherData();
+  const displayData = getWeatherDisplayData(weatherData);
 
-  // Derive display data from detailed weather data
-  const weatherData = detailedWeatherData
-    ? {
-        location: detailedWeatherData.name,
-        temperature:
-          detailedWeatherData.name === "Error"
-            ? "--"
-            : Math.round(detailedWeatherData.main.temp).toString(),
-        condition: detailedWeatherData.weather[0].main,
-        unit: "°F",
-      }
-    : {
-        location: "",
-        temperature: "",
-        condition: "",
-        unit: "°F",
-      };
-
-  // Weather API call
-  useEffect(() => {
-    const apiKey = import.meta.env.VITE_PUBLIC_OPENWEATHER_API_KEY;
-    getUserLocationAndFetch(apiKey)
-      .then((data) => {
-        setDetailedWeatherData(data);
-      })
-      .catch((error) => {
-        console.error("Error fetching weather:", error);
-        // Set error state in detailed data
-        setDetailedWeatherData({
-          name: "Error",
-          main: { temp: 0, humidity: 0, pressure: 0 },
-          weather: [{ main: "Unable to load", description: "Error", id: 0 }],
-          sys: { sunrise: 0, sunset: 0 },
-        });
-      });
-  }, []);
-
-  // Theme switching based on time
-  useEffect(() => {
-    if (detailedWeatherData && detailedWeatherData.sys) {
-      const now = new Date();
-      const { sunrise, sunset } = detailedWeatherData.sys;
-      const period = getTimePeriod(now, sunrise, sunset);
-      const root = window.document.documentElement;
-
-      if (period === "evening" || period === "night") {
-        root.classList.add("dark");
-      } else {
-        root.classList.remove("dark");
-      }
-    }
-  }, [detailedWeatherData]); // Rerun when weather data (and thus sunrise/sunset) is available or changes
+  useThemeFromWeather(weatherData);
 
   // MainPage Component //
   return (
     <div className="flex min-h-dvh flex-col overflow-auto">
       {/* Video Background */}
-      <VideoBackground weatherConditions={detailedWeatherData} />
+      <VideoBackground weatherConditions={weatherData} />
 
       {/* Main Content Area (centered column) */}
       <div className="mx-auto flex w-full max-w-2xl flex-col items-stretch gap-4 px-4">
@@ -88,7 +37,7 @@ function MainPage() {
             <div className="flex h-full w-full flex-row items-center justify-center gap-x-[2%]">
               {/* Weather Display */}
               <div className="h-auto w-[44%] flex-shrink-0">
-                <WeatherDisplay weatherData={weatherData} />
+                <WeatherDisplay weatherData={displayData} />
               </div>
               {/* Sun Illustration */}
               <div className="h-auto w-[44%] flex-shrink-0">
@@ -118,72 +67,6 @@ function MainPage() {
       </div>
     </div>
   );
-}
-
-// Fetch weather from OpenWeatherMap API using given coordinates
-async function fetchWeatherByCoords(
-  lat: number,
-  lon: number,
-  apiKey: string,
-): Promise<WeatherApiResponse> {
-  const res = await fetch(
-    `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`,
-  );
-  if (!res.ok) throw new Error("Weather API error");
-  return res.json();
-}
-
-// Interface to tell TypeScript what fetchWeatherbyCoords returns
-interface WeatherApiResponse {
-  name: string;
-  main: {
-    temp: number;
-    humidity: number;
-    pressure: number;
-  };
-  weather: {
-    main: string;
-    description: string;
-    id: number;
-  }[];
-  wind?: {
-    speed: number;
-  };
-  clouds?: {
-    all: number;
-  };
-  visibility?: number;
-  sys: {
-    sunrise: number;
-    sunset: number;
-  };
-}
-
-// Request user's location from browser and then send the coordinates to fetchWeatherByCoords above
-function getUserLocationAndFetch(apiKey: string): Promise<WeatherApiResponse> {
-  return new Promise<WeatherApiResponse>((resolve, reject) => {
-    if (!navigator.geolocation) {
-      return reject(new Error("Geolocation not supported"));
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      async ({ coords: { latitude, longitude } }) => {
-        try {
-          const data = await fetchWeatherByCoords(latitude, longitude, apiKey);
-          resolve(data);
-        } catch (err) {
-          reject(err);
-        }
-      },
-      () => {
-        // fallback to Bellevue and hope no one notices
-        fetchWeatherByCoords(47.58531518716315, -122.14778448861998, apiKey)
-          .then(resolve)
-          .catch(reject);
-      },
-      { timeout: 10_000 },
-    );
-  });
 }
 
 export default MainPage;

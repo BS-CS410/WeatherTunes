@@ -16,7 +16,7 @@ export type TimePeriod = "night" | "morning" | "day" | "evening";
 export function getTimePeriod(
   now: Date,
   sunrise?: number,
-  sunset?: number
+  sunset?: number,
 ): TimePeriod {
   const nowUtcSec = Math.floor(now.getTime() / 1000);
   if (sunrise && sunset) {
