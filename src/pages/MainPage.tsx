@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react"; //for API
-import {} from "module";
+import { useState, useEffect } from "react"; //for API calls and state management
 import { WeatherDisplay } from "@/components/WeatherDisplay";
 import { BigSun } from "@/components/BigSun";
 import { Card, CardContent } from "@/components/ui/card";
 import { UpNext } from "@/components/UpNext";
 import { VideoBackground } from "@/components/VideoBackground";
+import { getTimePeriod } from "@/lib/utils";
 
 function MainPage() {
   // Hooks
@@ -118,40 +118,6 @@ function MainPage() {
       </div>
     </div>
   );
-}
-
-// Dynamic period calculation based on sunrise/sunset
-// Duplicated from VideoBackground.tsx - consider moving to a shared util if more shared functions arise
-function getTimePeriod(now: Date, sunrise: number, sunset: number) {
-  // sunrise/sunset are in seconds since epoch (UTC)
-  const nowUtcSec = Math.floor(now.getTime() / 1000);
-  if (!sunrise || !sunset) {
-    // Fallback or default period if sunrise/sunset is not available
-    const hour = now.getHours();
-    if (hour >= 21 || hour < 5) return "night"; // 9p-5a is night
-    if (hour >= 5 && hour < 11) return "morning"; // 5a-11a is morning
-    if (hour >= 11 && hour < 18) return "midday"; // 11a-6p is midday
-    if (hour >= 18 && hour < 21) return "evening"; // 6p-9p is evening
-    return "midday"; // Default fallback
-  }
-  const dayLength = sunset - sunrise;
-  const morningEnd = sunrise + dayLength / 3;
-  const middayEnd = sunrise + (2 * dayLength) / 3;
-
-  let period = "night"; // Default to night
-  if (nowUtcSec < sunrise)
-    period = "night"; // Before sunrise
-  else if (nowUtcSec < morningEnd)
-    period = "morning"; // First third of daylight
-  else if (nowUtcSec < middayEnd)
-    period = "midday"; // Second third of daylight
-  else if (nowUtcSec < sunset)
-    period = "evening"; // Last third of daylight
-  else period = "night"; // After sunset
-
-  // Debug: console.log for debugging the time period calculation
-  // console.log("Theme period:", { period, now: now.toISOString(), sunriseISO: new Date(sunrise * 1000).toISOString(), sunsetISO: new Date(sunset * 1000).toISOString() });
-  return period;
 }
 
 // Fetch weather from OpenWeatherMap API using given coordinates

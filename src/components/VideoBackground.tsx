@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
+import { getTimePeriod } from "@/lib/utils";
 
 // Video imports organized by weather type and time period
 import clearNight from "../assets/videos/clear_night.mp4";
@@ -93,34 +94,6 @@ const videoMap: Record<WeatherType, Record<TimePeriod, string>> = {
   },
 };
 
-// Unified time period calculation
-function getTimePeriod(
-  weatherConditions?: WeatherConditions | null,
-): TimePeriod {
-  const now = new Date();
-
-  // If we have weather data with sunrise/sunset, use dynamic calculation
-  if (weatherConditions?.sys?.sunrise && weatherConditions?.sys?.sunset) {
-    const nowUtcSec = Math.floor(now.getTime() / 1000);
-    const { sunrise, sunset } = weatherConditions.sys;
-    const dayLength = sunset - sunrise;
-    const morningEnd = sunrise + dayLength / 3;
-    const dayEnd = sunrise + (2 * dayLength) / 3;
-
-    if (nowUtcSec < sunrise || nowUtcSec >= sunset) return "night";
-    if (nowUtcSec < morningEnd) return "morning";
-    if (nowUtcSec < dayEnd) return "day";
-    return "evening";
-  }
-
-  // Fallback to local hour-based calculation
-  const hour = now.getHours();
-  if (hour >= 21 || hour < 5) return "night";
-  if (hour >= 5 && hour < 11) return "morning";
-  if (hour >= 11 && hour < 18) return "day";
-  return "evening";
-}
-
 // Determine weather type from conditions
 function getWeatherType(
   weatherConditions?: WeatherConditions | null,
@@ -147,7 +120,11 @@ function getWeatherType(
 const getVideoForWeatherAndTime = (
   weatherConditions?: WeatherConditions | null,
 ): string => {
-  const period = getTimePeriod(weatherConditions);
+  const now = new Date();
+  const sunrise = weatherConditions?.sys?.sunrise;
+  const sunset = weatherConditions?.sys?.sunset;
+  // Use shared util, now only returns 'day' for the middle period
+  const period = getTimePeriod(now, sunrise, sunset);
   const weatherType = getWeatherType(weatherConditions);
 
   console.log("Video Selection:", {
