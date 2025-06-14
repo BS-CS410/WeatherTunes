@@ -92,7 +92,7 @@ export function UpNext() {
     <div className="relative w-full">
       {/* Up Next header inside the scroll area card, not inside the scroll area */}
       <div className="px-4 pb-4 pl-6">
-        <h2 className="text-6xl font-extralight tracking-wider text-slate-200 lowercase">
+        <h2 className="text-6xl font-extralight tracking-wider text-gray-800 lowercase dark:text-slate-200">
           Up Next:
         </h2>
       </div>
@@ -114,8 +114,8 @@ export function UpNext() {
                 >
                   <div className="relative">
                     <div
-                      className={`pointer-events-none absolute bottom-0 left-1/2 z-0 h-8 w-20 -translate-x-1/2 rounded-full bg-white opacity-0 blur-lg transition-all duration-300 ${
-                        isNextUpOrHovered ? "opacity-70" : ""
+                      className={`pointer-events-none absolute bottom-0 left-1/2 z-0 h-8 w-20 -translate-x-1/2 rounded-full bg-black/20 opacity-0 blur-lg transition-all duration-300 dark:bg-white ${
+                        isNextUpOrHovered ? "opacity-70 dark:opacity-70" : ""
                       }`}
                     />
                     <img
@@ -123,23 +123,23 @@ export function UpNext() {
                       alt={song.name}
                       className={`relative z-10 h-28 w-28 cursor-pointer rounded-lg object-cover shadow-md transition-transform duration-300 ${
                         isHovered || isNextUp
-                          ? "-translate-y-2 scale-110 hover:shadow-xl hover:brightness-110"
+                          ? "-translate-y-2 scale-110 hover:shadow-xl hover:brightness-105 dark:hover:brightness-110"
                           : ""
                       } ${
                         isNextUpOrHovered
-                          ? "shadow-[0_0_48px_12px_rgba(255,255,255,0.45)] brightness-110"
+                          ? "shadow-[0_0_32px_8px_rgba(0,0,0,0.25)] brightness-105 dark:shadow-[0_0_48px_12px_rgba(255,255,255,0.45)] dark:brightness-110"
                           : ""
                       }`}
                     />
                   </div>
                   <div className="mt-2 text-center">
                     <div
-                      className={`w-28 truncate text-sm font-semibold transition-all duration-300 ${isNextUpOrHovered ? "text-slate-100 drop-shadow-[0_1px_6px_rgba(255,255,255,0.13)]" : "text-slate-200"}`}
+                      className={`w-28 truncate text-sm font-semibold transition-all duration-300 ${isNextUpOrHovered ? "text-gray-900 drop-shadow-[0_1px_4px_rgba(0,0,0,0.1)] dark:text-slate-100 dark:drop-shadow-[0_1px_6px_rgba(255,255,255,0.13)]" : "text-gray-800 dark:text-slate-200"}`}
                     >
                       {song.name}
                     </div>
                     <div
-                      className={`w-28 truncate text-xs transition-all duration-300 ${isNextUpOrHovered ? "text-slate-300 drop-shadow-[0_1px_2px_rgba(255,255,255,0.10)]" : "text-slate-400"}`}
+                      className={`w-28 truncate text-xs transition-all duration-300 ${isNextUpOrHovered ? "text-gray-700 drop-shadow-[0_1px_2px_rgba(0,0,0,0.08)] dark:text-slate-300 dark:drop-shadow-[0_1px_2px_rgba(255,255,255,0.10)]" : "text-gray-500 dark:text-slate-400"}`}
                     >
                       {song.artist}
                     </div>

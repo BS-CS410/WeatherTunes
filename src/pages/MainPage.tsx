@@ -39,20 +39,33 @@ function MainPage() {
       });
   }, []);
 
+  // MainPage component
+  // Theme switching based on time
+  useEffect(() => {
+    const hour = new Date().getHours();
+    const isNight = hour < 7 || hour >= 19; // 7pm-7am is night
+    const root = window.document.documentElement;
+    if (isNight) {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+  }, []);
+
   return (
     <div className="flex min-h-dvh flex-col overflow-auto">
       {/* Main Content Area (centered column) */}
       <div className="mx-auto flex w-full max-w-2xl flex-col items-stretch gap-4 px-4">
         {/* App Header (left-aligned within centered column) */}
         <header className="-mb-5 w-full py-6 text-left">
-          <h1 className="text-5xl font-bold tracking-tight text-slate-100 drop-shadow-lg transition-transform duration-200 will-change-transform select-none">
-            <span className="inline-block transition-transform duration-200 hover:scale-[1.03] hover:drop-shadow-2xl">
+          <h1 className="text-5xl font-bold tracking-tight text-gray-900 drop-shadow-lg transition-transform duration-200 will-change-transform select-none dark:text-slate-100">
+            <span className="inline-block transition-transform duration-200 hover:scale-[1.03] hover:drop-shadow-xl dark:hover:drop-shadow-2xl">
               weathertunes
             </span>
           </h1>
         </header>
         {/* Location, Temperature, Current Conditions */}
-        <Card className="aspect-[2/1] w-full bg-slate-900/75">
+        <Card className="aspect-[2/1] w-full bg-white/80 dark:bg-slate-900/75">
           <CardContent className="h-full w-full p-0">
             <div className="flex h-full w-full flex-row items-center justify-center gap-x-[2%]">
               {/* Weather Display */}
@@ -67,21 +80,21 @@ function MainPage() {
           </CardContent>
         </Card>
 
-        <Card className="w-full bg-slate-900/75">
-          <CardContent className="flex h-32 items-center justify-center text-4xl text-slate-300">
+        <Card className="w-full bg-white/80 dark:bg-slate-900/75">
+          <CardContent className="flex h-32 items-center justify-center text-4xl text-gray-700 dark:text-slate-300">
             [TODO: put spotify player here]
           </CardContent>
         </Card>
 
         {/* Next Up Scroll Area */}
-        <Card className="w-full bg-slate-900/75">
+        <Card className="w-full bg-white/80 dark:bg-slate-900/75">
           <CardContent className="h-full w-full p-0">
             <UpNext />
           </CardContent>
         </Card>
         {/* Bottom Padding */}
         <div className="h-16" />
-        <footer className="w-full pb-4 text-center text-xs text-slate-500">
+        <footer className="w-full pb-4 text-center text-xs text-gray-900 dark:text-slate-400">
           © {new Date().getFullYear()} Team Meow Ltd. All rights reserved.
         </footer>
       </div>
