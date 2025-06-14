@@ -5,7 +5,7 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        canola: ["Canola", "serif"],
+        intertight: ["Inter Tight", "sans-serif"],
       },
     },
   },
