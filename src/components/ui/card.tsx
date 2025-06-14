@@ -8,7 +8,7 @@ function Card({ className, ...props }: React.ComponentProps<"div">) {
       data-slot="card"
       className={cn(
         // Glassmorphism: no border, add a subtle drop shadow and a soft inner shadow for depth
-        "relative flex flex-col gap-4 overflow-hidden rounded-xl bg-white/10 py-6 shadow-2xl shadow-black/40 backdrop-blur-sm",
+        "relative flex flex-col gap-4 overflow-hidden rounded-xl bg-white/10 py-6 shadow-2xl shadow-black/40 backdrop-blur-sm transition-all duration-200 hover:scale-[1.015] hover:bg-gray-900/70 hover:shadow-[0_8px_32px_0_rgba(0,0,0,0.18)]",
         className,
       )}
       {...props}

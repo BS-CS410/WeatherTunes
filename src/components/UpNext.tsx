@@ -77,7 +77,7 @@ export function UpNext() {
       </div>
       <ScrollArea.Root className="relative z-0 w-full overflow-x-auto">
         <ScrollArea.Viewport className="w-full">
-          <div className="flex min-w-max flex-row gap-6 px-2 py-4">
+          <div className="flex min-w-max flex-row gap-2 px-2 py-4">
             {placeholderSongs.map((song) => (
               <div
                 key={song.id}
@@ -103,9 +103,6 @@ export function UpNext() {
         <ScrollArea.Scrollbar orientation="horizontal" className="h-2">
           <ScrollArea.Thumb className="rounded-full bg-slate-600" />
         </ScrollArea.Scrollbar>
-        {/* Fading edges - use a wider, more gradual fade and fade only if content overflows */}
-        <div className="pointer-events-none absolute top-0 bottom-0 left-0 z-20 w-16 bg-gradient-to-r from-slate-900/80 via-slate-900/40 to-transparent" />
-        <div className="pointer-events-none absolute top-0 right-0 bottom-0 z-20 w-16 bg-gradient-to-l from-slate-900/80 via-slate-900/40 to-transparent" />
       </ScrollArea.Root>
     </div>
   );
