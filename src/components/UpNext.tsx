@@ -1,4 +1,5 @@
 import * as ScrollArea from "@radix-ui/react-scroll-area";
+import { useState } from "react";
 
 interface Song {
   id: string;
@@ -67,37 +68,53 @@ const placeholderSongs: Song[] = [
 ];
 
 export function UpNext() {
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+
   return (
     <div className="relative w-full">
       {/* Up Next header inside the scroll area card, not inside the scroll area */}
-      <div className="px-4 pb-3 pl-6">
+      <div className="px-4 pb-4 pl-6">
         <h2 className="text-6xl font-extralight tracking-wider text-slate-200 lowercase">
           Up Next:
         </h2>
       </div>
-      <ScrollArea.Root className="relative z-0 w-full overflow-x-auto">
+      <ScrollArea.Root className="relative z-0 w-full overflow-x-auto px-6">
         <ScrollArea.Viewport className="w-full">
           <div className="flex min-w-max flex-row gap-2 px-2 py-4">
-            {placeholderSongs.map((song) => (
-              <div
-                key={song.id}
-                className="group flex min-w-[120px] flex-col items-center transition-all duration-300"
-              >
-                <img
-                  src={song.albumCover}
-                  alt={song.name}
-                  className="h-28 w-28 rounded-lg object-cover shadow-md transition-transform duration-300 group-hover:-translate-y-2 group-hover:scale-110"
-                />
-                <div className="mt-2 text-center">
-                  <div className="w-28 truncate text-sm font-semibold text-slate-200">
-                    {song.name}
+            {placeholderSongs.map((song, idx) => {
+              const isHovered = hoveredId === song.id;
+              const isNextUp = hoveredId === null && idx === 0;
+              const isNextUpOrHovered =
+                (hoveredId === null && idx === 0) ||
+                (hoveredId === song.id && idx === 0);
+              return (
+                <div
+                  key={song.id}
+                  className="group flex min-w-[120px] flex-col items-center transition-all duration-300"
+                  onMouseEnter={() => setHoveredId(song.id)}
+                  onMouseLeave={() => setHoveredId(null)}
+                >
+                  <div className="relative">
+                    <div
+                      className={`pointer-events-none absolute bottom-0 left-1/2 z-0 h-8 w-20 -translate-x-1/2 rounded-full bg-white opacity-0 blur-lg transition-all duration-300 ${isNextUpOrHovered ? "opacity-70" : ""}`}
+                    />
+                    <img
+                      src={song.albumCover}
+                      alt={song.name}
+                      className={`relative z-10 h-28 w-28 rounded-lg object-cover shadow-md transition-transform duration-300 ${isHovered || isNextUp ? "-translate-y-2 scale-110 hover:brightness-110" : ""} ${isNextUpOrHovered ? "shadow-[0_0_48px_12px_rgba(255,255,255,0.45)] brightness-110" : ""}`}
+                    />
                   </div>
-                  <div className="w-28 truncate text-xs text-slate-400">
-                    {song.artist}
+                  <div className="mt-2 text-center">
+                    <div className="w-28 truncate text-sm font-semibold text-slate-200">
+                      {song.name}
+                    </div>
+                    <div className="w-28 truncate text-xs text-slate-400">
+                      {song.artist}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </ScrollArea.Viewport>
         <ScrollArea.Scrollbar orientation="horizontal" className="h-2">
