@@ -45,8 +45,10 @@ function MainPage() {
       <div className="mx-auto flex w-full max-w-2xl flex-col items-stretch gap-4 px-4">
         {/* App Header (left-aligned within centered column) */}
         <header className="-mb-5 w-full py-6 text-left">
-          <h1 className="text-5xl font-bold tracking-tight text-slate-100 drop-shadow-lg">
-            weathertunes
+          <h1 className="text-5xl font-bold tracking-tight text-slate-100 drop-shadow-lg transition-transform duration-200 will-change-transform select-none">
+            <span className="inline-block transition-transform duration-200 hover:scale-[1.03] hover:drop-shadow-2xl">
+              weathertunes
+            </span>
           </h1>
         </header>
         {/* Location, Temperature, Current Conditions */}
