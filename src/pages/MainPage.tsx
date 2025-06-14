@@ -103,7 +103,7 @@ function MainPage() {
       {/* Location, Temperature, Current Conditions */}
       <Card className="mx-auto aspect-[2/1] w-full max-w-2xl bg-slate-900/75">
         <CardContent className="h-full w-full p-0">
-          <div className="flex h-full w-full flex-row items-center justify-center gap-x-[6%]">
+          <div className="flex h-full w-full flex-row items-center justify-center gap-x-[2%]">
             {/* Weather Display */}
             <div className="h-auto w-[44%] flex-shrink-0">
               <WeatherDisplay weatherData={weatherData} />
