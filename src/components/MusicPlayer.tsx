@@ -24,7 +24,7 @@ export function MusicPlayer({
 }: MusicPlayerProps) {
   return (
     <div className="fixed inset-x-4 bottom-4 mx-auto w-full max-w-2xl">
-      <div className="rounded-2xl bg-white/90 p-4 shadow-lg backdrop-blur-sm">
+      <div className="rounded-2xl bg-white/90 p-4 shadow-lg backdrop-blur-sm dark:bg-slate-900/90">
         <div className="mb-4 flex items-center justify-between">
           {/* Album Cover and Track Info */}
           <div className="flex items-center space-x-3 sm:space-x-4">
@@ -37,23 +37,25 @@ export function MusicPlayer({
                   className="h-full w-full object-cover"
                 />
               ) : (
-                <span className="text-xs text-[#494a4b]">Cover</span>
+                <span className="text-xs text-gray-500 dark:text-[#494a4b]">
+                  Cover
+                </span>
               )}
             </div>
 
             {/* Track Info */}
             <div className="flex flex-col">
-              <span className="text-sm font-medium text-gray-800 sm:text-base">
+              <span className="text-sm font-medium text-gray-900 sm:text-base dark:text-gray-100">
                 {musicData.songName}
               </span>
-              <span className="text-xs text-gray-600 sm:text-sm">
+              <span className="text-xs text-gray-700 sm:text-sm dark:text-gray-400">
                 {musicData.artistName}
               </span>
             </div>
           </div>
 
           {/* Time */}
-          <div className="font-mono text-sm text-gray-600 sm:text-base">
+          <div className="font-mono text-sm text-gray-700 sm:text-base dark:text-gray-400">
             {musicData.currentTime} / {musicData.duration}
           </div>
         </div>
@@ -62,7 +64,7 @@ export function MusicPlayer({
           <Button
             variant="ghost"
             size="icon"
-            className="h-10 w-10 text-gray-800 transition hover:bg-gray-300/50 sm:h-12 sm:w-12"
+            className="h-10 w-10 text-gray-900 transition hover:bg-gray-300/50 sm:h-12 sm:w-12 dark:text-gray-100 dark:hover:bg-gray-300/10"
           >
             <SkipBack className="h-5 w-5 sm:h-6 sm:w-6" />
           </Button>
@@ -70,7 +72,7 @@ export function MusicPlayer({
           <Button
             variant="ghost"
             size="icon"
-            className="h-14 w-14 text-gray-800 transition hover:bg-gray-300/50 sm:h-16 sm:w-16"
+            className="h-14 w-14 text-gray-900 transition hover:bg-gray-300/50 sm:h-16 sm:w-16 dark:text-gray-100 dark:hover:bg-gray-300/10"
             onClick={() => setIsPlaying(!isPlaying)}
           >
             {isPlaying ? (
@@ -83,7 +85,7 @@ export function MusicPlayer({
           <Button
             variant="ghost"
             size="icon"
-            className="h-10 w-10 text-gray-800 transition hover:bg-gray-300/50 sm:h-12 sm:w-12"
+            className="h-10 w-10 text-gray-900 transition hover:bg-gray-300/50 sm:h-12 sm:w-12 dark:text-gray-100 dark:hover:bg-gray-300/10"
           >
             <SkipForward className="h-5 w-5 sm:h-6 sm:w-6" />
           </Button>
@@ -91,9 +93,9 @@ export function MusicPlayer({
 
         {/* Progress Bar */}
         <div className="w-full">
-          <div className="h-2 w-full rounded-full bg-gray-300">
+          <div className="h-2 w-full rounded-full bg-gray-300 dark:bg-gray-700">
             <div
-              className="h-2 rounded-full bg-gray-800 transition-all duration-300"
+              className="h-2 rounded-full bg-gray-900 transition-all duration-300 dark:bg-gray-100"
               style={{ width: `${progress}%` }}
             />
           </div>
