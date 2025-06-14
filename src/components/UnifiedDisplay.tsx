@@ -23,11 +23,11 @@ const UnifiedDisplay: React.FC<UnifiedDisplayProps> = ({
   albumArtUrl,
 }) => {
   return (
-    <div className="flex h-auto w-full flex-col items-center justify-center gap-4 p-4 md:flex-row">
-      <div className="flex w-full items-center justify-center md:w-1/2">
+    <div className="flex h-auto w-full flex-row items-center justify-center gap-6 p-4">
+      <div className="flex items-center">
         <WeatherDisplay weatherData={weatherData} />
       </div>
-      <div className="flex w-full items-center justify-center md:w-1/2">
+      <div className="flex items-center">
         <CurrentlyPlaying
           songTitle={songTitle}
           artistName={artistName}

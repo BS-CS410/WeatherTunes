@@ -54,7 +54,7 @@ function MainPage() {
         {/* App Header (left-aligned within centered column) */}
         <header className="-mb-5 w-full py-6 text-left">
           <h1 className="text-5xl font-bold tracking-tight text-gray-900 transition-transform duration-200 will-change-transform select-none dark:text-slate-100">
-            <span className="inline-block drop-shadow-[0_0_24px_rgba(240,240,240,0.9)] transition-transform duration-200 hover:scale-[1.03] hover:drop-shadow-[0_0_32px_rgba(240,240,240,0.95)] dark:drop-shadow-[0_0_24px_rgba(255,255,255,0.9)] dark:hover:drop-shadow-[0_0_32px_rgba(255,255,255,0.95)]">
+            <span className="inline-block drop-shadow-[0_0_24px_rgba(240,240,240,0.9)] transition-transform duration-200 hover:scale-[1.03] hover:drop-shadow-[0_0_32px_rgba(240,240,240,0.95)] dark:drop-shadow-[0_0_24px_rgba(30,41,59,0.95)] dark:hover:drop-shadow-[0_0_32px_rgba(30,41,59,1)]">
               weathertunes
             </span>
           </h1>
