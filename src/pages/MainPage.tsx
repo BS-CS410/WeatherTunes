@@ -6,6 +6,7 @@ import { WeatherDisplay } from "@/components/WeatherDisplay";
 import { MusicPlayer } from "@/components/MusicPlayer";
 import { BigSun } from "@/components/BigSun";
 import { Card, CardContent } from "@/components/ui/card";
+import { UpNext } from "@/components/UpNext";
 
 function MainPage() {
   // Hooks
@@ -116,13 +117,20 @@ function MainPage() {
         </CardContent>
       </Card>
 
+      {/* Next Up Scroll Area */}
+      <Card className="mx-auto mt-6 w-full max-w-2xl bg-slate-900/75">
+        <CardContent className="h-full w-full p-0">
+          <UpNext />
+        </CardContent>
+      </Card>
+
       {/* Trackname, Pause, Play, etc. */}
-      <MusicPlayer
+      {/* <MusicPlayer
         musicData={musicData}
         isPlaying={isPlaying}
         setIsPlaying={setIsPlaying}
         progress={progress}
-      />
+      /> */}
     </div>
   );
 }
