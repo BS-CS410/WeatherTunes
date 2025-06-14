@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect, useRef, useCallback } from "react";
-import { getTimePeriod } from "@/lib/utils";
+import { getTimePeriod, type TimePeriod } from "@/lib/utils"; // Ensure TimePeriod is imported
 
 // Video imports organized by weather type and time period
 import clearNight from "../assets/videos/clear_night.mp4";
@@ -27,37 +27,14 @@ import cloudyMorning from "../assets/videos/cloudy_morning.mp4";
 import cloudyDay from "../assets/videos/cloudy_day.mp4";
 import cloudyEvening from "../assets/videos/cloudy_evening.mp4";
 
-// Weather condition types from OpenWeatherMap API
-interface WeatherConditions {
-  name: string;
-  main: {
-    temp: number;
-    humidity: number;
-    pressure: number;
-  };
-  weather: {
-    main: string;
-    description: string;
-    id: number;
-  }[];
-  wind?: {
-    speed: number;
-  };
-  clouds?: {
-    all: number;
-  };
-  visibility?: number;
-  sys: {
-    sunrise: number;
-    sunset: number;
-  };
-}
+// WeatherConditions interface is no longer needed here
 
 interface VideoBackgroundProps {
-  weatherConditions?: WeatherConditions | null;
+  condition?: string; // e.g., "Clear", "Rain", "Clouds"
+  timePeriod?: TimePeriod | null;
 }
 
-type TimePeriod = "night" | "morning" | "day" | "evening";
+// type TimePeriod = "night" | "morning" | "day" | "evening"; // Already imported
 type WeatherType = "clear" | "rain" | "snow" | "fog" | "cloudy";
 
 // Video mapping for easy lookup
@@ -94,53 +71,60 @@ const videoMap: Record<WeatherType, Record<TimePeriod, string>> = {
   },
 };
 
-// Determine weather type from conditions
-function getWeatherType(
-  weatherConditions?: WeatherConditions | null,
-): WeatherType {
-  if (!weatherConditions?.weather?.[0]) return "clear";
+// Determine weather type from condition string
+function getWeatherType(condition?: string): WeatherType {
+  if (!condition) return "clear"; // Default if no condition
 
-  const weatherMain = weatherConditions.weather[0].main.toLowerCase();
+  const lowerCaseCondition = condition.toLowerCase();
 
   // Debug logging to see what we're getting
-  console.log("Weather Debug:", {
-    weatherMain,
-    fullWeather: weatherConditions.weather[0],
+  console.log("Weather Type Debug:", {
+    lowerCaseCondition,
   });
 
-  if (["thunderstorm", "rain", "drizzle"].includes(weatherMain)) return "rain";
-  if (weatherMain === "snow") return "snow";
-  if (["mist", "fog"].includes(weatherMain)) return "fog";
-  if (weatherMain === "clouds") return "cloudy";
+  if (
+    ["thunderstorm", "rain", "drizzle"].some((c) =>
+      lowerCaseCondition.includes(c),
+    )
+  )
+    return "rain";
+  if (lowerCaseCondition.includes("snow")) return "snow";
+  if (["mist", "fog"].some((c) => lowerCaseCondition.includes(c))) return "fog";
+  if (lowerCaseCondition.includes("clouds")) return "cloudy";
+  // We can add other conditions as needed, e.g., "smoke", "haze", "dust", "sand", "ash", "tornado"
+  // For now, we default to "clear" for "clear" or any unhandled conditions
+  if (lowerCaseCondition.includes("clear")) return "clear";
 
-  return "clear"; // Default for clear skies
+  return "clear"; // Default for any other unhandled conditions
 }
 
 // Main function to get video for current weather and time
 const getVideoForWeatherAndTime = (
-  weatherConditions?: WeatherConditions | null,
+  condition?: string,
+  period?: TimePeriod | null,
 ): string => {
-  const now = new Date();
-  const sunrise = weatherConditions?.sys?.sunrise;
-  const sunset = weatherConditions?.sys?.sunset;
-  // Use shared util, now only returns 'day' for the middle period
-  const period = getTimePeriod(now, sunrise, sunset);
-  const weatherType = getWeatherType(weatherConditions);
+  // If period is not provided, calculate a fallback
+  // However, the goal is for MainPage to provide a resolved period
+  const currentPeriod = period || getTimePeriod(new Date()); // Fallback if period is null/undefined
+  const weatherType = getWeatherType(condition);
 
   console.log("Video Selection:", {
-    period,
+    period: currentPeriod,
     weatherType,
-    selectedVideo: videoMap[weatherType][period],
-    hasWeatherData: !!weatherConditions,
+    selectedVideo: videoMap[weatherType]?.[currentPeriod],
+    hasCondition: !!condition,
   });
 
-  return videoMap[weatherType][period];
+  return videoMap[weatherType]?.[currentPeriod] || videoMap.clear.day; // Fallback to clear day video
 };
 
-export function VideoBackground({ weatherConditions }: VideoBackgroundProps) {
+export function VideoBackground({
+  condition,
+  timePeriod,
+}: VideoBackgroundProps) {
   const video = useMemo(
-    () => getVideoForWeatherAndTime(weatherConditions),
-    [weatherConditions],
+    () => getVideoForWeatherAndTime(condition, timePeriod),
+    [condition, timePeriod], // Dependencies are now condition and timePeriod
   );
 
   const [currentSrc, setCurrentSrc] = useState(video);

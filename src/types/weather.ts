@@ -1,3 +1,5 @@
+import type { TimePeriod } from "@/lib/utils"; // Added import for TimePeriod
+
 export interface WeatherApiResponse {
   name: string;
   main: {
@@ -28,4 +30,13 @@ export interface WeatherDisplayData {
   temperature: string;
   condition: string;
   unit: string;
+  isError?: boolean; // Added this line
+}
+
+export interface EnhancedWeatherState {
+  displayData: WeatherDisplayData;
+  timePeriod: TimePeriod | null;
+  isLoading: boolean;
+  error: Error | null;
+  rawResponse: WeatherApiResponse | null;
 }

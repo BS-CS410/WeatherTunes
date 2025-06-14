@@ -1,8 +1,5 @@
 import { Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
-import Home from "./pages/Home";
-import Favorites from "./pages/Favorites";
-import Music from "./pages/Music";
 import NavBar from "./components/NavBar";
 import MainPage from "./pages/MainPage";
 
@@ -17,9 +14,6 @@ function App() {
           <Routes>
             <Route path="/" element={<MainPage />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/home" element={<Home />} />
-            <Route path="/music" element={<Music />} />
-            <Route path="/favorites" element={<Favorites />} />
             {/* TODO: make fallback Route to send unknown routes to login page */}
           </Routes>
         </main>
