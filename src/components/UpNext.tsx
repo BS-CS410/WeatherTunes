@@ -1,5 +1,5 @@
 import * as ScrollArea from "@radix-ui/react-scroll-area";
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 interface Song {
   id: string;
@@ -69,6 +69,24 @@ const placeholderSongs: Song[] = [
 
 export function UpNext() {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const hoverTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  const handleMouseEnter = (id: string) => {
+    if (hoverTimeout.current) {
+      clearTimeout(hoverTimeout.current);
+      hoverTimeout.current = null;
+    }
+    setHoveredId(id);
+  };
+
+  const handleMouseLeave = () => {
+    if (hoverTimeout.current) {
+      clearTimeout(hoverTimeout.current);
+    }
+    hoverTimeout.current = setTimeout(() => {
+      setHoveredId(null);
+    }, 80); // 80ms delay for smoothness
+  };
 
   return (
     <div className="relative w-full">
@@ -91,24 +109,38 @@ export function UpNext() {
                 <div
                   key={song.id}
                   className="group flex min-w-[120px] flex-col items-center transition-all duration-300"
-                  onMouseEnter={() => setHoveredId(song.id)}
-                  onMouseLeave={() => setHoveredId(null)}
+                  onMouseEnter={() => handleMouseEnter(song.id)}
+                  onMouseLeave={handleMouseLeave}
                 >
                   <div className="relative">
                     <div
-                      className={`pointer-events-none absolute bottom-0 left-1/2 z-0 h-8 w-20 -translate-x-1/2 rounded-full bg-white opacity-0 blur-lg transition-all duration-300 ${isNextUpOrHovered ? "opacity-70" : ""}`}
+                      className={`pointer-events-none absolute bottom-0 left-1/2 z-0 h-8 w-20 -translate-x-1/2 rounded-full bg-white opacity-0 blur-lg transition-all duration-300 ${
+                        isNextUpOrHovered ? "opacity-70" : ""
+                      }`}
                     />
                     <img
                       src={song.albumCover}
                       alt={song.name}
-                      className={`relative z-10 h-28 w-28 rounded-lg object-cover shadow-md transition-transform duration-300 ${isHovered || isNextUp ? "-translate-y-2 scale-110 hover:brightness-110" : ""} ${isNextUpOrHovered ? "shadow-[0_0_48px_12px_rgba(255,255,255,0.45)] brightness-110" : ""}`}
+                      className={`relative z-10 h-28 w-28 cursor-pointer rounded-lg object-cover shadow-md transition-transform duration-300 ${
+                        isHovered || isNextUp
+                          ? "-translate-y-2 scale-110 hover:shadow-xl hover:brightness-110"
+                          : ""
+                      } ${
+                        isNextUpOrHovered
+                          ? "shadow-[0_0_48px_12px_rgba(255,255,255,0.45)] brightness-110"
+                          : ""
+                      }`}
                     />
                   </div>
                   <div className="mt-2 text-center">
-                    <div className="w-28 truncate text-sm font-semibold text-slate-200">
+                    <div
+                      className={`w-28 truncate text-sm font-semibold transition-all duration-300 ${isNextUpOrHovered ? "text-slate-100 drop-shadow-[0_1px_6px_rgba(255,255,255,0.13)]" : "text-slate-200"}`}
+                    >
                       {song.name}
                     </div>
-                    <div className="w-28 truncate text-xs text-slate-400">
+                    <div
+                      className={`w-28 truncate text-xs transition-all duration-300 ${isNextUpOrHovered ? "text-slate-300 drop-shadow-[0_1px_2px_rgba(255,255,255,0.10)]" : "text-slate-400"}`}
+                    >
                       {song.artist}
                     </div>
                   </div>
