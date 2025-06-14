@@ -40,11 +40,11 @@ function NavBar() {
         </NavigationMenuItem>
         {/* LEGACY PAGES */}
         {/* HOME */}
-        <NavigationMenuItem>
+        {/* <NavigationMenuItem>
           <NavigationMenuLink asChild>
             <NavLinkButton to="/home">Home</NavLinkButton>
           </NavigationMenuLink>
-        </NavigationMenuItem>
+        </NavigationMenuItem> */}
         {/* LOGIN */}
         <NavigationMenuItem>
           <NavigationMenuLink asChild>

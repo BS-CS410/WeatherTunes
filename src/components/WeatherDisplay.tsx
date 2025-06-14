@@ -24,7 +24,7 @@ export function WeatherDisplay({ weatherData }: WeatherDisplayProps) {
             : "--°"}
         </div>
         {/* Weather Condition */}
-        <span className="font-inter-tight -mt-1.5 w-full pl-[2%] text-left text-[clamp(1.5rem,6vw,4rem)] leading-none font-extralight text-cyan-100 lowercase transition-all duration-500 ease-in-out">
+        <span className="font-inter-tight -mt-2.5 w-full pl-[2%] text-left text-[clamp(2.5rem,8vw,5rem)] leading-none font-extralight tracking-tighter text-cyan-100 lowercase transition-all duration-500 ease-in-out">
           {weatherData.condition || "Loading..."}
         </span>
       </div>
