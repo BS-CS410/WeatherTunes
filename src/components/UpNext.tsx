@@ -44,7 +44,7 @@ export function UpNext() {
   return (
     <div className="relative w-full">
       {/* Up Next header inside the scroll area card, not inside the scroll area */}
-      <div className="px-4 pb-3 pl-10">
+      <div className="px-4 pb-3 pl-5">
         <h2 className="text-6xl font-extralight tracking-wider text-slate-200 lowercase">
           Up Next:
         </h2>
