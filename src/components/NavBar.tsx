@@ -32,15 +32,15 @@ function NavBar() {
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   return (
     <>
-      <NavigationMenu className="py-6">
+      <NavigationMenu className="-mb-6 py-6 pl-10">
         {/* 始 NavBar Items List */}
         <NavigationMenuList>
           {/* MAIN PAGE (everything should go here) */}
-          <NavigationMenuItem>
+          {/* <NavigationMenuItem>
             <NavigationMenuLink asChild>
               <NavLinkButton to="/">Main Page</NavLinkButton>
             </NavigationMenuLink>
-          </NavigationMenuItem>
+          </NavigationMenuItem> */}
           {/* LEGACY PAGES */}
           {/* HOME */}
           {/* <NavigationMenuItem>
@@ -56,22 +56,22 @@ function NavBar() {
                 onClick={() => setShowLoginPopup(true)}
                 type="button"
               >
-                Login
+                DEBUG: Show Login Popup
               </button>
             </NavigationMenuLink>
           </NavigationMenuItem>
           {/* MUSIC */}
-          <NavigationMenuItem>
+          {/* <NavigationMenuItem>
             <NavigationMenuLink asChild>
               <NavLinkButton to="/music">Music</NavLinkButton>
             </NavigationMenuLink>
-          </NavigationMenuItem>
+          </NavigationMenuItem> */}
           {/* FAVORITES */}
-          <NavigationMenuItem>
+          {/* <NavigationMenuItem>
             <NavigationMenuLink asChild>
               <NavLinkButton to="/favorites">Favorites</NavLinkButton>
             </NavigationMenuLink>
-          </NavigationMenuItem>
+          </NavigationMenuItem> */}
           {/* 終 NavBar Items List */}
         </NavigationMenuList>
       </NavigationMenu>
