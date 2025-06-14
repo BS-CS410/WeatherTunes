@@ -1,29 +1,48 @@
 # WeatherTunes 🌪️🎸😎👍
 
-**WeatherTunes** is a web application that connects to your Spotify account and plays music according to the current weather in your location. This project is a modern web application built with [React](https://react.dev/), [TypeScript](https://www.typescriptlang.org/) and [Vite](https://vitejs.dev/). It uses [Tailwind CSS](https://tailwindcss.com/) for styling and is structured to be beginner-friendly for new web developers.
+**WeatherTunes** is a web application that connects to your Spotify account and plays music according to the current weather in your location. This document focuses on the backend development aspects required to bring the full functionality to life, referencing specific integration points in the existing frontend. The frontend is built with [React](https://react.dev/), [TypeScript](https://www.typescriptlang.org/) and [Vite](https://vitejs.dev/), using [Tailwind CSS](https://tailwindcss.com/) for styling.
 
 ---
 
 ## Table of Contents
 
-- [Getting Started](#getting-started)
+- [Project Overview](#project-overview)
+- [Getting Started (Frontend Setup)](#getting-started-frontend-setup)
   - [Prerequisites](#prerequisites)
   - [Installation Steps](#installation-steps)
   - [Running the Development Server](#running-the-development-server)
-- [Project Structure](#project-structure)
-- [Using Tailwind CSS](#using-tailwind-css)
-  - [Basic Concepts](#basic-concepts)
-  - [Common Properties Reference](#common-properties-reference)
-  - [Common Patterns](#common-patterns)
-- [Adding Pages](#adding-pages)
-- [Adding Components](#adding-components)
+- [Backend Development Guide: Addressing Frontend Needs](#backend-development-guide-addressing-frontend-needs)
+  - [Core Responsibilities](#core-responsibilities)
+  - [Spotify Integration: Frontend Placeholders](#spotify-integration-frontend-placeholders)
+  - [Weather Data Handling: Moving Client-Side Logic](#weather-data-handling-moving-client-side-logic)
+  - [Music & Player Features: API Requirements](#music--player-features-api-requirements)
+  - [API Design Considerations (Updated)](#api-design-considerations-updated)
+- [Codebase Overview for Backend Developers: Integration Points](#codebase-overview-for-backend-developers-integration-points)
+  - [Key Frontend Components & TODOs](#key-frontend-components--todos)
 - [Linting and Formatting](#linting-and-formatting)
-- [Using shadcn/ui for Components and Blocks](#using-shadcnui-for-components-and-blocks)
-- [Better Documentation](#better-documentation)
 
 ---
 
-## Getting Started
+## Project Overview
+
+The primary goal of WeatherTunes is to provide users with a seamless experience where music from their Spotify account automatically adapts to the real-time weather conditions of their specified location.
+
+The current frontend includes:
+
+- UI for weather display.
+- UI elements for music playback (currently with placeholder data).
+- User interaction for location input (though weather data fetching is client-side).
+
+The backend's role is to:
+
+1.  Securely handle Spotify authentication (OAuth 2.0), integrating with frontend placeholders.
+2.  Take over weather data fetching from a reliable API (currently client-side).
+3.  Query the Spotify API for music selection and control, replacing frontend placeholders.
+4.  Provide robust APIs for all frontend interactions.
+
+---
+
+## Getting Started (Frontend Setup)
 
 This section will guide you through setting up your development environment and getting the project running on your local machine. We'll cover everything from installing prerequisites to running the development server.
 
@@ -98,1050 +117,135 @@ npx eslint .                    # Lint all files
    After installation, you should see:
    - A `node_modules` directory containing all dependencies
    - A `package-lock.json` file
-   - No error messages in the terminal
 
 ### Running the Development Server
 
-1. **Start the Development Server**
+Once the installation is complete, you can start the development server:
 
-   ```bash
-   npm run dev
-   ```
+```bash
+npm run dev
+```
 
-   This command:
+This command will:
 
-   - Starts the Vite development server
-   - Enables hot module replacement (HMR)
-   - Opens your default browser to `http://localhost:5173`
-
-2. **Understanding the Development Environment**
-
-   - The server automatically reloads when you make changes
-   - You'll see compilation errors in the terminal
-   - The browser console (F12) shows runtime errors
-   - HMR updates components without full page refresh
-
-3. **Available Scripts**
-   ```bash
-   npm run dev      # Start development server
-   npm run build    # Build for production
-   npm run preview  # Preview production build
-   npm run lint     # Run ESLint
-   npm run format   # Format code with Prettier
-   ```
-
-### Troubleshooting
-
-Common issues and solutions:
-
-1. **Port Already in Use**
-
-   ```bash
-   # If port 5173 is already in use, you can specify a different port
-   npm run dev -- --port 3000
-   ```
-
-2. **Dependency Issues**
-
-   ```bash
-   # Clear npm cache
-   npm cache clean --force
-
-   # Remove node_modules and reinstall
-   rm -rf node_modules
-   npm install
-   ```
-
-3. **TypeScript Errors**
-
-   - Check that you're using the correct types
-   - Make sure all required props are provided
-   - Verify that imports are correct
-
-4. **Build Errors**
-   - Check for syntax errors (watch out for brackets and implicit semicolons!)
-   - _Really_ verify all imports are correct
-   - Make sure all required dependencies are installed
+- Start the Vite development server (usually on `http://localhost:5173`)
+- Enable Hot Module Replacement (HMR) for fast updates
 
 ---
 
-## Project Structure
+## Backend Development Guide: Addressing Frontend Needs
 
-```
-weathertunes/
-├── src/              # Source code directory
-│   ├── assets/           # Images and static files
-│   ├── components/       # Reusable UI components
-│   │   ├── ui/               # shadcn/ui components
-│   │   └── ...               # Custom components
-│   ├── lib/              # Utility functions and shared logic
-│   ├── pages/            # Page components (each route/page in the app)
-│   ├── App.tsx           # Main React component, sets up the app structure
-│   ├── main.tsx          # Entry point
-│   ├── index.css         # Global styles (Tailwind CSS)
-│   └── App.css           # App-specific styles
-├── public/           # Static files served as-is (like favicon)
-├── package.json      # Project dependencies and scripts
-└── vite.config.ts    # Vite configuration
-```
+This section details backend tasks, focusing on integrating with existing frontend structures and replacing placeholder logic.
 
-### Understanding Each Directory
+### Core Responsibilities
 
-- `src/assets/`: Store images and static files used in the application.
-- `src/components/`: Place for reusable UI pieces (like buttons, headers, etc.).
-- `src/lib/`: Utility/helper functions that can be used throughout the application.
-- `src/pages/`: Each file here represents a different page (or route) in the application.
-- `src/App.tsx`: The main component that brings everything together.
-- `src/main.tsx`: The entry point; this is where React starts the application and sets up routing.
-- `src/index.css` and `src/App.css`: Where global and app-specific styles are defined.
+- **User Authentication:** Implement Spotify OAuth 2.0.
+- **Weather Data Service:** Server-side fetching and processing of weather data.
+- **Music Logic Service:** Link weather to music, interact with Spotify API.
+- **API for Frontend:** Provide endpoints for all frontend data and action needs.
 
----
+### Spotify Integration: Frontend Placeholders
 
-### Configuration Files
+- **Authentication Trigger:** The frontend has a placeholder for Spotify login in `src/components/NavBar.tsx` (line 36: `[TODO: put spotify login here]`). The backend authentication flow (`POST /auth/spotify` and `GET /auth/spotify/callback`) should be triggered from here.
+- **Scopes:** Ensure you request necessary Spotify scopes: `user-read-playback-state`, `user-modify-playback-state`, `user-read-currently-playing`, `playlist-read-private`, `user-library-read`, etc.
+- **Fallback Route:** `src/App.tsx` has a `TODO` (line 17) to make a fallback route for unknown paths, potentially redirecting to login. Backend should provide auth status to help frontend routing.
 
-#### `package.json`
+### Weather Data Handling: Moving Client-Side Logic
 
-This file contains:
+- **Current Implementation:** Weather data is fetched client-side in `src/hooks/useWeather.ts` and `src/lib/weather.ts`, using the OpenWeatherMap API with an API key (`VITE_PUBLIC_OPENWEATHER_API_KEY`) stored in a `.env` file.
+- **Backend Responsibility:** This entire logic must move to the backend.
+  - The backend will call the weather API (e.g., OpenWeatherMap).
+  - The frontend will call a new backend endpoint (e.g., `GET /api/weather-music`) to get weather data. This replaces the direct client-side API call.
+- **Data Structure:** Refer to `src/types/weather.ts` for the frontend's expected weather data structure. `src/components/WeatherDisplay.tsx` consumes this data.
 
-- Project metadata (name, version)
-- Dependencies and their versions
-- Scripts for running, building, and testing
-- Other project configuration
+### Music & Player Features: API Requirements
 
-Example scripts section:
+- **Spotify Player UI:** `src/pages/MainPage.tsx` has a placeholder `[TODO: put spotify player here]` (line 78). This area will need to display current track information and playback controls.
+  - **API Needs:** Endpoints to get currently playing track (title, artist, album art), and to control playback (play, pause, next, previous, volume).
+  - **Placeholder Data:** `MainPage.tsx` (line 10) uses `PLACEHOLDER DATA FOR CURRENTLY PLAYING`. `src/components/CurrentlyPlaying.tsx` (line 12) uses a placeholder album art URL. These must be replaced by data from the backend via API calls.
+- **"Up Next" Queue:** `src/components/UpNext.tsx` currently uses static `placeholderSongs` (lines 11, 102).
+  - **API Needs:** An endpoint to fetch the user's upcoming track queue from Spotify.
+- **"Favorites List":** `src/pages/MainPage.tsx` has a placeholder `[TODO: put favorites list here]` (line 92).
+  - **API Needs:** Endpoints to get, add, and remove favorite tracks/playlists. This implies backend database storage for user-specific favorites.
 
-```json
-{
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "lint": "eslint src --ext ts,tsx",
-    "format": "prettier --write \"src/**/*.{ts,tsx}\""
-  }
-}
-```
+### API Design Considerations (Updated)
 
-#### `vite.config.ts`
-
-This file configures the Vite build tool:
-
-- Development server settings
-- Build options
-- Path aliases
-- Plugin configuration
-
-Example configuration:
-
-```ts
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import path from "path";
-
-export default defineConfig({
-  plugins: [react()],
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
-  },
-});
-```
-
-### Miscellaneous Files
-
-The project includes several configuration files that typically won't need modification unless making specific changes:
-
-- `tsconfig.json` and `tsconfig.app.json`: TypeScript configuration files that control type checking and compilation settings
-- `tsconfig.node.json`: TypeScript configuration specifically for Vite's build process
-- `eslint.config.js`: Configuration for ESLint, which helps catch code errors and enforce style rules
-- `.prettierrc` and `.prettierignore`: Settings for Prettier, which automatically formats code
-- `components.json`: Configuration for shadcn/ui components
-- `.gitignore`: Specifies which files Git should ignore
-- `index.html`: The HTML entry point for the Vite application
+- **Authentication:**
+  - `POST /auth/spotify`: Initiate Spotify login.
+  - `GET /auth/spotify/callback`: Spotify callback URL.
+  - `GET /auth/status`: Check user's current authentication status.
+  - `POST /auth/logout`: Log out user.
+- **Core Functionality:**
+  - `GET /api/weather-music?location=<location_string_or_lat_lon>`: Get current weather (processed server-side) and suggested/currently-playing music. This replaces the client-side `useWeather` hook's direct API call.
+- **Player Control (interfacing with Spotify API via backend):**
+  - `GET /api/player/current`: Get current playing track details.
+  - `POST /api/player/play`: Start/resume playback.
+  - `POST /api/player/pause`: Pause playback.
+  - `POST /api/player/next`: Skip to next track.
+  - `POST /api/player/previous`: Skip to previous track.
+  - `PUT /api/player/volume`: Set volume (e.g., `?level=50`).
+- **Queue/Up Next:**
+  - `GET /api/player/queue`: Get the user's upcoming tracks.
+- **User Favorites (requires database interaction):**
+  - `GET /api/favorites`: Get user's favorite tracks/playlists.
+  - `POST /api/favorites`: Add a track/playlist to favorites.
+  - `DELETE /api/favorites/:id`: Remove a track/playlist from favorites.
+- **General:**
+  - Use JSON for requests/responses.
+  - Implement robust error handling.
+  - Secure API keys and ensure HTTPS.
 
 ---
 
-## Using Tailwind CSS
+## Codebase Overview for Backend Developers: Integration Points
 
-Tailwind CSS is a utility-first CSS framework that lets you style elements directly in your HTML/TSX code using predefined classes. Instead of writing custom CSS, you compose styles using these utility classes. This section will help you get started with styling in WeatherTunes.
+Focus on these areas where frontend meets backend:
 
-### Basic Concepts
+### Key Frontend Components & TODOs
 
-#### 1. Utility Classes
+- **`src/components/NavBar.tsx`**:
 
-Utility classes are the building blocks of Tailwind CSS. Each class represents a specific style property.
+  - Line 36: `[TODO: put spotify login here]`. This is the primary entry point for user authentication with Spotify. The backend needs to provide the mechanism that this UI element will trigger.
 
-```tsx
-// Basic utility classes
-<div className="p-4 bg-blue-500 text-white rounded-lg">Hello World</div>
-```
+- **`src/pages/MainPage.tsx`**: This is the central UI.
 
-This creates a div with:
+  - Line 10: `PLACEHOLDER DATA FOR CURRENTLY PLAYING`. This static data (songTitle, artistName, albumArtUrl) needs to be replaced with live data fetched from the backend (`/api/player/current`).
+  - Line 78: `[TODO: put spotify player here]`. This section is intended for the main Spotify player interface (displaying current song, controls). Backend APIs will drive its functionality.
+  - Line 92: `[TODO: put favorites list here]`. This requires backend APIs (`/api/favorites`) to manage a user's list of saved songs/playlists.
 
-- `p-4`: padding of 1rem (16px) on all sides
-- `bg-blue-500`: blue background color
-- `text-white`: white text color
-- `rounded-lg`: large border radius
+- **`src/components/CurrentlyPlaying.tsx`**:
 
-#### 2. Responsive Design
+  - Line 12: `albumArtUrl = "https://via.placeholder.com/150"`. This placeholder image URL must be replaced by the actual album art URL from the Spotify track data, supplied by the backend.
 
-Tailwind uses screen size prefixes to create responsive designs:
+- **`src/components/UpNext.tsx`**:
 
-```tsx
-<div
-  className="
-  w-full           // Full width on mobile
-  md:w-1/2         // Half width on medium screens (768px+)
-  lg:w-1/3         // One-third width on large screens (1024px+)
-"
->
-  Responsive Content
-</div>
-```
+  - Lines 11 & 102: Uses `placeholderSongs`. This static array needs to be replaced by a dynamic list of upcoming songs fetched from the backend (`/api/player/queue`).
 
-Common screen sizes:
+- **`src/hooks/useWeather.ts` & `src/lib/weather.ts`**:
 
-- `sm`: 640px
-- `md`: 768px
-- `lg`: 1024px
-- `xl`: 1280px
-- `2xl`: 1536px
+  - These files currently manage **client-side** calls to the OpenWeatherMap API using `VITE_PUBLIC_OPENWEATHER_API_KEY`.
+  - **Action for Backend:** This entire weather fetching logic (including API key management) must be moved to the backend. The frontend (`MainPage.tsx` via `useWeatherData`) will then call a backend endpoint (e.g., `/api/weather-music`) to get this information.
 
-#### 3. State Variants
+- **`src/types/weather.ts`**:
 
-Tailwind provides state variants for interactive elements:
+  - Contains TypeScript type definitions for weather data (e.g., `WeatherApiResponse`, `EnhancedWeatherState`). This is a useful reference for structuring the backend API response for weather information to ensure frontend compatibility.
 
-```tsx
-<button
-  className="
-  bg-blue-500           // Default state
-  hover:bg-blue-600     // Hover state
-  focus:ring-2          // Focus state
-  active:bg-blue-700    // Active state
-  disabled:opacity-50   // Disabled state
-"
->
-  Click Me
-</button>
-```
-
-Common state variants:
-
-- `hover:`: Mouse hover
-- `focus:`: Keyboard focus
-- `active:`: Mouse down
-- `disabled:`: Disabled state
-- `group-hover:`: Parent hover
-
-### Common Properties Reference
-
-#### Spacing
-
-Tailwind uses a consistent spacing scale:
-
-```tsx
-// Padding
-<div className="p-4">           // Padding all sides
-<div className="px-4 py-2">     // Padding x and y
-<div className="pt-4 pb-2">     // Padding top and bottom
-<div className="pl-4 pr-2">     // Padding left and right
-
-// Margin
-<div className="m-4">           // Margin all sides
-<div className="mx-auto">       // Auto margins for centering
-<div className="mt-4 mb-2">     // Margin top and bottom
-```
-
-Spacing scale:
-
-- `0`: 0px
-- `1`: 0.25rem (4px)
-- `2`: 0.5rem (8px)
-- `4`: 1rem (16px)
-- `8`: 2rem (32px)
-- `16`: 4rem (64px)
-
-#### Colors
-
-Tailwind provides a comprehensive color palette:
-
-```tsx
-// Text colors
-<p className="text-blue-500">Blue text</p>
-<p className="text-gray-700">Dark gray text</p>
-
-// Background colors
-<div className="bg-green-100">Light green background</div>
-<div className="bg-red-500">Red background</div>
-
-// Border colors
-<div className="border border-blue-500">Blue border</div>
-```
-
-Color scale:
-
-- `50`: Lightest
-- `100`: Very light
-- `200`: Light
-- `300`: Medium light
-- `400`: Medium
-- `500`: Base
-- `600`: Medium dark
-- `700`: Dark
-- `800`: Very dark
-- `900`: Darkest
-
-#### Layout
-
-Tailwind provides utilities for common layout patterns:
-
-```tsx
-// Flexbox
-<div className="flex items-center justify-between">
-  <div>Left</div>
-  <div>Right</div>
-</div>
-
-// Grid
-<div className="grid grid-cols-3 gap-4">
-  <div>Item 1</div>
-  <div>Item 2</div>
-  <div>Item 3</div>
-</div>
-
-// Container
-<div className="container mx-auto px-4">
-  Centered content with padding
-</div>
-```
-
-Common layout utilities:
-
-- `flex`: Flexbox container
-- `grid`: Grid container
-- `container`: Responsive container
-- `block`: Block display
-- `inline-block`: Inline block display
-- `hidden`: Hide element
-
-#### Typography
-
-Tailwind includes comprehensive typography utilities:
-
-```tsx
-// Font sizes
-<p className="text-sm">Small text</p>
-<p className="text-base">Base text</p>
-<p className="text-lg">Large text</p>
-<p className="text-2xl">Extra large text</p>
-
-// Font weights
-<p className="font-normal">Normal weight</p>
-<p className="font-medium">Medium weight</p>
-<p className="font-bold">Bold weight</p>
-
-// Text alignment
-<p className="text-left">Left aligned</p>
-<p className="text-center">Center aligned</p>
-<p className="text-right">Right aligned</p>
-```
-
-Typography scale:
-
-- `text-xs`: 0.75rem (12px)
-- `text-sm`: 0.875rem (14px)
-- `text-base`: 1rem (16px)
-- `text-lg`: 1.125rem (18px)
-- `text-xl`: 1.25rem (20px)
-- `text-2xl`: 1.5rem (24px)
-- `text-3xl`: 1.875rem (30px)
-- `text-4xl`: 2.25rem (36px)
-
-### Styling shadcn/ui Components
-
-shadcn/ui components are built with Tailwind CSS and can be customized using the same utility classes.
-
-#### 1. Buttons
-
-```tsx
-<Button
-  className="
-  bg-blue-500           // Custom background
-  hover:bg-blue-600     // Custom hover state
-  text-white            // Custom text color
-  px-6 py-2             // Custom padding
-  rounded-full          // Custom border radius
-"
->
-  Custom Button
-</Button>
-```
-
-#### 2. Cards
-
-```tsx
-<Card
-  className="
-  p-6                // Custom padding
-  bg-gray-50         // Custom background
-  shadow-lg          // Custom shadow
-  hover:shadow-xl    // Custom hover effect
-"
->
-  <CardHeader className="space-y-1">
-    <CardTitle className="text-2xl">Card Title</CardTitle>
-  </CardHeader>
-</Card>
-```
-
-#### 3. Inputs
-
-```tsx
-<Input
-  className="
-  border-2              // Custom border width
-  border-gray-300       // Custom border color
-  focus:border-blue-500 // Custom focus state
-  rounded-lg            // Custom border radius
-  px-4 py-2             // Custom padding
-"
-/>
-```
-
-### Common Patterns
-
-#### 1. Card with Hover Effect
-
-```tsx
-<div
-  className="
-  p-4                // Padding
-  bg-white           // Background
-  rounded-lg         // Rounded corners
-  shadow-md          // Default shadow
-  hover:shadow-lg    // Larger shadow on hover
-  transition-shadow  // Smooth transition
-  duration-200       // Transition duration
-"
->
-  Card Content
-</div>
-```
-
-#### 2. Responsive Navigation
-
-```tsx
-<nav
-  className="
-  flex               // Flex container
-  flex-col           // Stack on mobile
-  md:flex-row        // Row on medium screens
-  items-center       // Center items
-  space-y-4          // Vertical spacing on mobile
-  md:space-y-0       // No vertical spacing on medium
-  md:space-x-4       // Horizontal spacing on medium
-"
->
-  <a href="#" className="text-gray-600 hover:text-blue-500">
-    Link 1
-  </a>
-  <a href="#" className="text-gray-600 hover:text-blue-500">
-    Link 2
-  </a>
-</nav>
-```
-
-#### 3. Centered Content
-
-```tsx
-<div
-  className="
-  flex               // Flex container
-  items-center       // Center vertically
-  justify-center     // Center horizontally
-  min-h-screen       // Full viewport height
-"
->
-  <div className="text-center">Centered content</div>
-</div>
-```
-
-### Advanced Techniques
-
-#### 1. Custom Classes
-
-Create custom classes in your CSS file:
-
-```css
-@layer components {
-  .btn-primary {
-    @apply px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600;
-  }
-}
-```
-
-#### 2. Dynamic Classes
-
-Use template literals for dynamic classes:
-
-```tsx
-function Button({ variant = "primary" }) {
-  return (
-    <button
-      className={`
-        px-4 py-2 rounded
-        ${variant === "primary" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-800"}
-      `}
-    >
-      Click Me
-    </button>
-  );
-}
-```
-
-#### 3. Group Hover
-
-Style child elements based on parent hover:
-
-```tsx
-<div className="group">
-  <div className="text-gray-600 group-hover:text-blue-500">
-    Hover me to change color
-  </div>
-</div>
-```
-
-For more detailed information, visit the [Tailwind CSS documentation](https://tailwindcss.com/docs) and [shadcn/ui documentation](https://ui.shadcn.com/docs).
-
----
-
-## Adding Pages
-
-Pages are React components that represent different routes in your application. They are stored in the `src/pages/` directory and are used to create the different screens of your application.
-
-### Understanding Pages
-
-#### What are Pages?
-
-Pages are special components that:
-
-- Represent a unique URL in your application
-- Contain the main content for that route
-- Can include multiple components
-- Handle their own data fetching and state management
-
-#### Page Structure
-
-A typical page component follows this structure:
-
-```tsx
-// src/pages/About.tsx
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-
-function About() {
-  // State management
-  const [isExpanded, setIsExpanded] = useState(false);
-
-  return (
-    // Layout
-    <div className="max-w-4xl mx-auto p-6">
-      {/* Header */}
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold">About Us</h1>
-        <p className="text-gray-600 mt-2">Learn more about our mission</p>
-      </header>
-
-      {/* Main Content */}
-      <main>
-        <Card className="p-6">
-          <p className="text-gray-700">
-            Welcome to our application! This is the about page where you can
-            learn more about us.
-          </p>
-          <Button onClick={() => setIsExpanded(!isExpanded)} className="mt-4">
-            {isExpanded ? "Show Less" : "Show More"}
-          </Button>
-        </Card>
-      </main>
-    </div>
-  );
-}
-
-export default About;
-```
-
-### Creating a New Page
-
-1. **Create the Page Component**
-
-   ```tsx
-   // src/pages/Contact.tsx
-   function Contact() {
-     return (
-       <div className="max-w-4xl mx-auto p-6">
-         <h1 className="text-3xl font-bold mb-4">Contact Us</h1>
-         <p className="text-gray-600">Get in touch with our team.</p>
-       </div>
-     );
-   }
-
-   export default Contact;
-   ```
-
-2. **Add the Route**
-
-   ```tsx
-   // src/App.tsx
-   import { Routes, Route } from "react-router-dom";
-   import Home from "@/pages/Home";
-   import About from "@/pages/About";
-   import Contact from "@/pages/Contact";
-
-   function App() {
-     return (
-       <div className="min-h-screen bg-gray-50">
-         <NavBar />
-         <main className="container mx-auto px-4 py-8">
-           <Routes>
-             <Route path="/" element={<Home />} />
-             <Route path="/about" element={<About />} />
-             <Route path="/contact" element={<Contact />} />
-           </Routes>
-         </main>
-       </div>
-     );
-   }
-   ```
-
-3. **Add Navigation**
-
-   ```tsx
-   // src/components/NavBar.tsx
-   import { Link } from "react-router-dom";
-
-   function NavBar() {
-     return (
-       <nav className="bg-white shadow">
-         <div className="max-w-7xl mx-auto px-4">
-           <div className="flex justify-between h-16">
-             <div className="flex space-x-8">
-               <Link to="/" className="text-gray-900 hover:text-blue-500">
-                 Home
-               </Link>
-               <Link to="/about" className="text-gray-900 hover:text-blue-500">
-                 About
-               </Link>
-               <Link
-                 to="/contact"
-                 className="text-gray-900 hover:text-blue-500"
-               >
-                 Contact
-               </Link>
-             </div>
-           </div>
-         </div>
-       </nav>
-     );
-   }
-   ```
-
-## Adding Components
-
-Components are reusable pieces of UI that can be used across your application. They help you maintain consistency and reduce code duplication.
-
-### Understanding Components
-
-#### What are Components?
-
-Components are:
-
-- Reusable pieces of UI
-- Self-contained and independent
-- Can accept props for customization
-- Can maintain their own state
-
-#### Basic Component Example
-
-```tsx
-// src/components/Button.tsx
-interface ButtonProps {
-  children: React.ReactNode;
-  variant?: "primary" | "secondary";
-  onClick?: () => void;
-}
-
-function Button({ children, variant = "primary", onClick }: ButtonProps) {
-  return (
-    <button
-      onClick={onClick}
-      className={`
-        rounded px-4 py-2
-        ${variant === "primary" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-800"}
-        hover:opacity-90
-        transition-opacity
-      `}
-    >
-      {children}
-    </button>
-  );
-}
-
-export default Button;
-```
-
-#### Using Components
-
-```tsx
-// src/pages/Home.tsx
-import Button from "@/components/Button";
-
-function Home() {
-  return (
-    <div className="p-4">
-      <Button variant="primary" onClick={() => alert("Clicked!")}>
-        Click Me
-      </Button>
-    </div>
-  );
-}
-```
-
-### Common Component Patterns
-
-1. **Layout Components**
-
-   ```tsx
-   // src/components/Layout.tsx
-   interface LayoutProps {
-     children: React.ReactNode;
-     sidebar?: React.ReactNode;
-   }
-
-   function Layout({ children, sidebar }: LayoutProps) {
-     return (
-       <div className="flex min-h-screen">
-         {sidebar && <aside className="w-64 bg-gray-100 p-4">{sidebar}</aside>}
-         <main className="flex-1 p-6">{children}</main>
-       </div>
-     );
-   }
-   ```
-
-2. **Form Components**
-
-   ```tsx
-   // src/components/Form.tsx
-   interface FormProps {
-     onSubmit: (data: FormData) => void;
-     children: React.ReactNode;
-   }
-
-   function Form({ onSubmit, children }: FormProps) {
-     const handleSubmit = (e: React.FormEvent) => {
-       e.preventDefault();
-       const formData = new FormData(e.target as HTMLFormElement);
-       onSubmit(formData);
-     };
-
-     return (
-       <form onSubmit={handleSubmit} className="space-y-4">
-         {children}
-       </form>
-     );
-   }
-   ```
-
-3. **List Components**
-
-   ```tsx
-   // src/components/List.tsx
-   interface ListProps<T> {
-     items: T[];
-     renderItem: (item: T) => React.ReactNode;
-     className?: string;
-   }
-
-   function List<T>({ items, renderItem, className = "" }: ListProps<T>) {
-     return (
-       <ul className={`divide-y divide-gray-200 ${className}`}>
-         {items.map((item, index) => (
-           <li key={index} className="py-4">
-             {renderItem(item)}
-           </li>
-         ))}
-       </ul>
-     );
-   }
-   ```
-
-### Component Composition
-
-1. **Compound Components**
-
-   ```tsx
-   // src/components/Accordion.tsx
-   interface AccordionProps {
-     children: React.ReactNode;
-   }
-
-   function Accordion({ children }: AccordionProps) {
-     return <div className="space-y-2">{children}</div>;
-   }
-
-   Accordion.Item = function AccordionItem({
-     title,
-     children,
-   }: {
-     title: string;
-     children: React.ReactNode;
-   }) {
-     const [isOpen, setIsOpen] = useState(false);
-
-     return (
-       <div className="border rounded">
-         <button
-           onClick={() => setIsOpen(!isOpen)}
-           className="w-full p-4 text-left"
-         >
-           {title}
-         </button>
-         {isOpen && <div className="p-4">{children}</div>}
-       </div>
-     );
-   };
-   ```
-
-2. **Render Props**
-
-   ```tsx
-   // src/components/DataFetcher.tsx
-   interface DataFetcherProps<T> {
-     url: string;
-     children: (
-       data: T | null,
-       loading: boolean,
-       error: Error | null,
-     ) => React.ReactNode;
-   }
-
-   function DataFetcher<T>({ url, children }: DataFetcherProps<T>) {
-     const [data, setData] = useState<T | null>(null);
-     const [loading, setLoading] = useState(true);
-     const [error, setError] = useState<Error | null>(null);
-
-     useEffect(() => {
-       fetch(url)
-         .then((res) => res.json())
-         .then((data) => {
-           setData(data);
-           setLoading(false);
-         })
-         .catch((error) => {
-           setError(error);
-           setLoading(false);
-         });
-     }, [url]);
-
-     return <>{children(data, loading, error)}</>;
-   }
-   ```
-
-### Component Documentation
-
-1. **JSDoc Comments**
-
-   ```tsx
-   /**
-    * A button component that supports different variants and sizes.
-    * @param {Object} props - Component props
-    * @param {React.ReactNode} props.children - Button content
-    * @param {'primary' | 'secondary'} [props.variant='primary'] - Button style variant
-    * @param {() => void} [props.onClick] - Click handler
-    */
-   function Button({ children, variant = "primary", onClick }: ButtonProps) {
-     // Component implementation
-   }
-   ```
-
-2. **Usage Examples**
-   ```tsx
-   // Example usage in a README or documentation
-   <Button variant="primary" onClick={() => alert("Clicked!")}>
-     Click Me
-   </Button>
-   ```
+- **`src/App.tsx`**:
+  - Line 17: ` {/* TODO: make fallback Route to send unknown routes to login page */}`. The backend should provide an endpoint like `/auth/status` so the frontend can make intelligent routing decisions based on authentication state.
 
 ---
 
 ## Linting and Formatting
 
-### Using Prettier
+This project uses ESLint for linting and Prettier for code formatting.
 
-Prettier automatically formats your code to keep everything neat and consistent. You can use it to automatically format your code files.
+- **ESLint**: Helps find and fix problems in your JavaScript/TypeScript code.
+  - Configuration: `eslint.config.js`
+  - To run: `npm run lint`
+- **Prettier**: An opinionated code formatter that ensures consistent code style.
+  - Configuration: Can be added via `.prettierrc.json` or `prettier` key in `package.json`.
+  - To run: `npm run format` (you might need to add this script to `package.json` if it doesn't exist, e.g., `"format": "prettier --write ."`).
 
-- **Format all files in the project:**
-
-  ```bash
-  npx prettier --write .
-  ```
-
-  This will format all supported files in your project.
-
-- **Format a specific file:**
-
-  ```bash
-  npx prettier --write src/components/Button.jsx
-  ```
-
-- **Format on save (recommended):**
-  Most code editors (like VS Code) can be set up to run Prettier every time you save a file. Look for a Prettier extension or plugin for your editor and enable "Format on Save" in your settings.
-
-- **Configuration:**
-  - The `.prettierrc` file in the project root contains Prettier settings (currently using defaults).
-  - The `.prettierignore` file lists files and folders to ignore when formatting.
-
-### Using ESLint
-
-ESLint is a tool that checks your code for errors and enforces consistent code style. It helps catch bugs and keeps your codebase clean.
-
-- **Check your code for lint errors:**
-
-  ```bash
-  npm run lint
-  ```
-
-  This will scan your project and list any issues or warnings.
-
-- **Fix issues automatically:**
-  Many issues can be fixed automatically. Run:
-
-  ```bash
-  npx eslint . --fix
-  ```
-
-  This will try to fix as many problems as possible in your code files.
-
-- **Lint on save (recommended):**
-  Most editors (like VS Code) have ESLint extensions that can show errors and warnings as you type, and even fix issues when you save a file. Look for an ESLint extension/plugin for your editor and enable "Fix on Save" in your settings.
-
-- **Configuration:**
-  - The `eslint.config.js` file in the project root contains the ESLint rules and settings for this project.
-
----
-
-## Using shadcn/ui for Components and Blocks
-
-The main component library for this project is [shadcn/ui](https://ui.shadcn.com/). This library provides a huge set of accessible, customizable React components built with Tailwind CSS. The reason we use Tailwind is to make it easy to style and customize these components.
-
-### Why shadcn/ui?
-
-- **Copy-paste or CLI install:** You can add only the components you need, keeping your project lightweight.
-- **Fully customizable:** All components use Tailwind CSS, so you can easily change their look and feel.
-- **Accessible and modern:** Components are built with accessibility and best practices in mind.
-
-### How to Add a shadcn/ui Component or Block
-
-#### 1. Find the Component or Block
-
-- Visit the [shadcn/ui components page](https://ui.shadcn.com/docs/components) or [blocks page](https://ui.shadcn.com/blocks).
-- Browse and pick the component or block you want to add (e.g., Button, Card, Dialog, etc.).
-
-#### 2. Add the Component Using the CLI
-
-- Open your terminal in the project root.
-- Run the following command, replacing `component-name` with the name of the component you want (e.g., `button`, `card`, `dialog`):
-
-  ```bash
-  npx shadcn@latest add component-name
-  ```
-
-  Example:
-
-  ```bash
-  npx shadcn@latest add button card
-  ```
-
-  This will add the Button and Card components to your project under `src/components/ui/`.
-
-- If you are using React 19, the CLI may prompt you with:
-
-  ```text
-  It looks like you are using React 19. Some packages may fail to install due to peer dependency issues in npm (see https://ui.shadcn.com/react-19).
-  How would you like to proceed?
-  ```
-
-  **Select the `legacy-peer-deps` option** when prompted. This will allow the installation to complete successfully.
-
-- If you want to add a block (a group of components for a specific UI section), you can:
-  - Copy the code from the [blocks page](https://ui.shadcn.com/blocks) and paste it into a new file in your `src/components/` directory, **or**
-  - If a block is available via the CLI, use its name in the command above.
-
-#### 3. Import and Use the Component
-
-- Import the new component in your page or component file:
-  ```jsx
-  import { Button } from "@/components/ui/button";
-  import { Card } from "@/components/ui/card";
-  ```
-- Use it in your JSX:
-  ```jsx
-  <Button>Click me</Button>
-  <Card>...</Card>
-  ```
-
-#### 4. Customizing Components
-
-- All shadcn/ui components use Tailwind classes, so you can add or change classes to customize their appearance.
-- You can also edit the component files directly in `src/components/ui/` to change their structure or behavior.
-
-#### 5. Keeping Components Up to Date
-
-- To check for updates to a component, run:
-  ```bash
-  npx shadcn@latest diff component-name
-  ```
-- To update, follow the CLI prompts or re-add the component.
-
-#### 6. More Resources
-
-- [shadcn/ui documentation](https://ui.shadcn.com/docs/cli)
-- [Component list](https://ui.shadcn.com/docs/components)
-- [Blocks list](https://ui.shadcn.com/blocks)
-
----
-
-## Better Documentation
-
-✨ - Good starting point
-
-📕 - Reference work
-
-### React
-
-- ✨ [Quick Start](https://react.dev/learn)
-- [Thinking in React](https://react.dev/learn/thinking-in-react)
-- 📕 [React Reference](https://react.dev/reference/react)
-
-### Tailwind CSS
-
-- ✨ [Styling with Utility Classes](https://tailwindcss.com/docs/styling-with-utility-classes)
-- [`hover`, `focus` and other states](https://tailwindcss.com/docs/hover-focus-and-other-states)
-- [Theme Variables](https://tailwindcss.com/docs/theme)
-  - 📕 [Default theme variable reference](https://tailwindcss.com/docs/theme#default-theme-variable-reference)
-- [Colors](https://tailwindcss.com/docs/colors)
-  - 📕 [Default color palette reference](https://tailwindcss.com/docs/colors#default-color-palette-reference)
-
-### shadcn/ui
-
-- ✨ [Introduction](https://ui.shadcn.com/docs)
-- 📕 [List of Components](https://ui.shadcn.com/docs/components)
-- 📕 [List of Blocks](https://ui.shadcn.com/blocks)
-
-### Web Development in General
-
-- ✨📕 [MDN - Learn Web Development](https://developer.mozilla.org/en-US/docs/Learn_web_development)
+It's recommended to integrate these tools with your code editor for an optimal development experience.
 
 ---

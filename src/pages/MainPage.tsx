@@ -59,6 +59,7 @@ function MainPage() {
             </span>
           </h1>
         </header>
+
         {/* Unified Weather and Currently Playing Display */}
         <Card className="aspect-video w-full bg-white/40 backdrop-blur-md dark:bg-slate-900/75">
           <CardContent className="h-full w-full p-0">
@@ -71,6 +72,7 @@ function MainPage() {
           </CardContent>
         </Card>
 
+        {/* Currently Playing Section */}
         <Card className="w-full bg-white/40 backdrop-blur-md dark:bg-slate-900/75">
           <CardContent className="flex h-32 items-center justify-center text-4xl text-gray-700 dark:text-slate-300">
             [TODO: put spotify player here]
@@ -83,8 +85,21 @@ function MainPage() {
             <UpNext />
           </CardContent>
         </Card>
+
+        {/* Favorites List */}
+        <Card className="w-full bg-white/40 backdrop-blur-md dark:bg-slate-900/75">
+          <CardContent className="flex h-32 items-center justify-center text-4xl text-gray-700 dark:text-slate-300">
+            [TODO: put favorites list here]
+          </CardContent>
+        </Card>
+
         {/* Bottom Padding */}
         <div className="h-16" />
+        <div className="w-full pb-2 text-center">
+          <span className="-mb-6 block text-lg font-semibold tracking-wide text-gray-900 drop-shadow-[0_0_16px_rgba(240,240,240,0.9)] dark:text-slate-400 dark:drop-shadow-[0_0_16px_rgba(255,255,255,0.9)]">
+            Blaze your glory<sup className="text-xs">™</sup>
+          </span>
+        </div>
         <footer className="w-full pb-4 text-center text-xs text-gray-900 drop-shadow-[0_0_16px_rgba(240,240,240,0.9)] dark:text-slate-400 dark:drop-shadow-[0_0_16px_rgba(255,255,255,0.9)]">
           © {new Date().getFullYear()} Team Meow Ltd. All rights reserved.
         </footer>
