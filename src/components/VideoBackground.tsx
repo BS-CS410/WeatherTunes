@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 
-import laNight from "../assets/LosAngelesNight.webm";
-import oregonSunset from "../assets/OregonSunset.webm";
-import hawaiiValley from "../assets/HawaiiValley.webm";
-import laSunset from "../assets/LosAngelesSunset.webm";
+import night from "../assets/videos/PM_1.mp4";
+import morning from "../assets/videos/Sunny_AM3.mp4";
+import midday from "../assets/videos/Sunny_AM2.mp4";
+import evening from "../assets/videos/PM_3.mp4";
 
 const isNight = (hour: number) => hour >= 21 || hour < 5;
 const isMorning = (hour: number) => hour >= 5 && hour < 11;
@@ -12,10 +12,10 @@ const isEvening = (hour: number) => hour >= 18 && hour < 21;
 
 const getVideoForTime = () => {
   const hour: number = new Date().getHours();
-  if (isNight(hour)) return laNight;
-  else if (isMorning(hour)) return oregonSunset;
-  else if (isMidday(hour)) return hawaiiValley;
-  else if (isEvening(hour)) return laSunset;
+  if (isNight(hour)) return night;
+  else if (isMorning(hour)) return morning;
+  else if (isMidday(hour)) return midday;
+  else if (isEvening(hour)) return evening;
 };
 
 export function VideoBackground() {
