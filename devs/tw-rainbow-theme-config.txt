@@ -1,0 +1,271 @@
+===================================
+ Insert this in your settings.json
+ (ctrl-shift-p
+    -> "Preferences: Open User Settings (JSON)")
+===================================
+
+// Tailwind Rainbow theme selection
+"tailwindRainbow.theme": "everforest",
+
+// Tailwind Rainbow theme definitions
+"tailwindRainbow.themes": {
+    "everforest": {
+        // 8-color Everforest palette optimized for Tailwind utility groupings
+        // Groups utilities likely to appear together based on tokenizer patterns
+
+        // Special tokens
+        "important": { "color": "#f85552", "fontWeight": "bold" }, // Red for emphasis
+        "arbitrary": { "color": "#d3c6aa", "fontStyle": "italic" }, // Gray for arbitrary values
+
+        "prefix": {
+        // #f57d26 (Orange): Interactive states - appear together in responsive/interactive contexts
+        "hover": { "color": "#f57d26" },
+        "focus": { "color": "#f57d26" },
+        "active": { "color": "#f57d26" },
+        "visited": { "color": "#f57d26" },
+        "target": { "color": "#f57d26" },
+        "checked": { "color": "#f57d26" },
+        "enabled": { "color": "#f57d26" },
+        "disabled": { "color": "#f57d26" },
+        "required": { "color": "#f57d26" },
+        "valid": { "color": "#f57d26" },
+        "invalid": { "color": "#f57d26" },
+        "group-hover": { "color": "#f57d26" },
+        "group-focus": { "color": "#f57d26" },
+        "peer-hover": { "color": "#f57d26" },
+        "peer-focus": { "color": "#f57d26" },
+        "peer-checked": { "color": "#f57d26" },
+
+        // #3a94c5 (Blue): Responsive breakpoints - grouped together in responsive design
+        "sm": { "color": "#3a94c5" },
+        "md": { "color": "#3a94c5" },
+        "lg": { "color": "#3a94c5" },
+        "xl": { "color": "#3a94c5" },
+        "2xl": { "color": "#3a94c5" },
+        "3xl": { "color": "#3a94c5" },
+        "4xl": { "color": "#3a94c5" },
+        "5xl": { "color": "#3a94c5" },
+        "6xl": { "color": "#3a94c5" },
+        "7xl": { "color": "#3a94c5" },
+        "max-sm": { "color": "#3a94c5" },
+        "max-md": { "color": "#3a94c5" },
+        "max-lg": { "color": "#3a94c5" },
+        "max-xl": { "color": "#3a94c5" },
+        "max-2xl": { "color": "#3a94c5" },
+
+        // #f85552 (Red): Theme/mode modifiers - distinctive for dark mode
+        "dark": { "color": "#f85552", "fontWeight": "bold" },
+        "light": { "color": "#f85552", "fontWeight": "bold" },
+
+        // #df69ba (Purple): Pseudo-elements and structural selectors
+        "before": { "color": "#df69ba" },
+        "after": { "color": "#df69ba" },
+        "first-letter": { "color": "#df69ba" },
+        "first-line": { "color": "#df69ba" },
+        "marker": { "color": "#df69ba" },
+        "selection": { "color": "#df69ba" },
+        "file": { "color": "#df69ba" },
+        "backdrop": { "color": "#df69ba" },
+        "placeholder": { "color": "#df69ba" },
+        "first": { "color": "#df69ba" },
+        "last": { "color": "#df69ba" },
+        "odd": { "color": "#df69ba" },
+        "even": { "color": "#df69ba" },
+        "first-of-type": { "color": "#df69ba" },
+        "last-of-type": { "color": "#df69ba" },
+        "only-child": { "color": "#df69ba" },
+        "only-of-type": { "color": "#df69ba" },
+        "empty": { "color": "#df69ba" },
+
+        // #d3c6aa (Gray): Special context modifiers
+        "ltr": { "color": "#d3c6aa" },
+        "rtl": { "color": "#d3c6aa" },
+        "portrait": { "color": "#d3c6aa" },
+        "landscape": { "color": "#d3c6aa" },
+        "motion-safe": { "color": "#d3c6aa" },
+        "motion-reduce": { "color": "#d3c6aa" },
+        "print": { "color": "#d3c6aa" },
+
+        // Fallback for unmatched prefixes
+        "*": { "color": "#d3c6aa", "fontStyle": "italic" }
+        },
+        "base": {
+        // #f85552 (Red): Layout fundamentals - core positioning and display properties
+        "static": { "color": "#f85552" },
+        "fixed": { "color": "#f85552" },
+        "absolute": { "color": "#f85552" },
+        "relative": { "color": "#f85552" },
+        "sticky": { "color": "#f85552" },
+        "block": { "color": "#f85552" },
+        "inline-block": { "color": "#f85552" },
+        "inline": { "color": "#f85552" },
+        "flex": { "color": "#f85552" },
+        "inline-flex": { "color": "#f85552" },
+        "grid": { "color": "#f85552" },
+        "inline-grid": { "color": "#f85552" },
+        "table": { "color": "#f85552" },
+        "table-cell": { "color": "#f85552" },
+        "table-row": { "color": "#f85552" },
+        "hidden": { "color": "#f85552" },
+        "contents": { "color": "#f85552" },
+        "list-item": { "color": "#f85552" }, // Display type
+        "float-*": { "color": "#f85552" },
+        "clear-*": { "color": "#f85552" },
+        "inset-*": { "color": "#f85552" },
+        "top-*": { "color": "#f85552" },
+        "right-*": { "color": "#f85552" },
+        "bottom-*": { "color": "#f85552" },
+        "left-*": { "color": "#f85552" },
+        "z-*": { "color": "#f85552" },
+        "columns-*": { "color": "#f85552" },
+        "break-after-*": { "color": "#f85552" },
+        "break-before-*": { "color": "#f85552" },
+        "break-inside-*": { "color": "#f85552" },
+        "box-border": { "color": "#f85552" },
+        "box-content": { "color": "#f85552" },
+        "contain-*": { "color": "#f85552" },
+
+        // #8da101 (Green): Spacing utilities - margin and padding often used together
+        "p-*": { "color": "#8da101" },
+        "px-*": { "color": "#8da101" },
+        "py-*": { "color": "#8da101" },
+        "pt-*": { "color": "#8da101" },
+        "pb-*": { "color": "#8da101" },
+        "pl-*": { "color": "#8da101" },
+        "pr-*": { "color": "#8da101" },
+        "m-*": { "color": "#8da101" },
+        "mx-*": { "color": "#8da101" },
+        "my-*": { "color": "#8da101" },
+        "mt-*": { "color": "#8da101" },
+        "mb-*": { "color": "#8da101" },
+        "ml-*": { "color": "#8da101" },
+        "mr-*": { "color": "#8da101" },
+        "space-*": { "color": "#8da101" },
+
+        // #dfa000 (Yellow): Typography - text properties often grouped together
+        "text-*": { "color": "#dfa000" },
+        "font-*": { "color": "#dfa000" },
+        "leading-*": { "color": "#dfa000" },
+        "tracking-*": { "color": "#dfa000" },
+        "line-clamp-*": { "color": "#dfa000" },
+        "whitespace-*": { "color": "#dfa000" },
+        "break-*": { "color": "#dfa000" }, // Word break utilities
+        "hyphens-*": { "color": "#dfa000" },
+        "text-ellipsis": { "color": "#dfa000" },
+        "text-clip": { "color": "#dfa000" },
+        "underline": { "color": "#dfa000" },
+        "overline": { "color": "#dfa000" },
+        "line-through": { "color": "#dfa000" },
+        "no-underline": { "color": "#dfa000" },
+        "decoration-*": { "color": "#dfa000" },
+        "list-*": { "color": "#dfa000" },
+
+        // #3a94c5 (Blue): Sizing and dimensions - width/height often used together
+        "w-*": { "color": "#3a94c5" },
+        "min-w-*": { "color": "#3a94c5" },
+        "max-w-*": { "color": "#3a94c5" },
+        "h-*": { "color": "#3a94c5" },
+        "min-h-*": { "color": "#3a94c5" },
+        "max-h-*": { "color": "#3a94c5" },
+        "size-*": { "color": "#3a94c5" },
+        "aspect-*": { "color": "#3a94c5" },
+        "object-*": { "color": "#3a94c5" },
+        "overflow-*": { "color": "#3a94c5" },
+        "overscroll-*": { "color": "#3a94c5" },
+
+        // #df69ba (Purple): Colors and backgrounds - visual styling often grouped
+        "bg-*": { "color": "#df69ba" },
+        "from-*": { "color": "#df69ba" },
+        "via-*": { "color": "#df69ba" },
+        "to-*": { "color": "#df69ba" },
+        "border": { "color": "#df69ba" },
+        "border-*": { "color": "#df69ba" },
+        "divide-*": { "color": "#df69ba" },
+        "outline-*": { "color": "#df69ba" },
+        "ring-*": { "color": "#df69ba" },
+        "shadow-*": { "color": "#df69ba" },
+        "opacity-*": { "color": "#df69ba" },
+        "mix-blend-*": { "color": "#df69ba" },
+        "bg-blend-*": { "color": "#df69ba" },
+        "accent-*": { "color": "#df69ba" },
+        "caret-*": { "color": "#df69ba" },
+        "fill-*": { "color": "#df69ba" },
+        "stroke-*": { "color": "#df69ba" },
+
+        // #35a77c (Aqua): Layout properties - flex/grid systems used together
+        "flex-*": { "color": "#35a77c" },
+        "basis-*": { "color": "#35a77c" },
+        "grow": { "color": "#35a77c" },
+        "grow-0": { "color": "#35a77c" },
+        "shrink": { "color": "#35a77c" },
+        "shrink-0": { "color": "#35a77c" },
+        "order-*": { "color": "#35a77c" },
+        "grid-cols-*": { "color": "#35a77c" },
+        "grid-rows-*": { "color": "#35a77c" },
+        "col-*": { "color": "#35a77c" },
+        "row-*": { "color": "#35a77c" },
+        "gap-*": { "color": "#35a77c" },
+        "gap-x-*": { "color": "#35a77c" },
+        "gap-y-*": { "color": "#35a77c" },
+        "justify-*": { "color": "#35a77c" },
+        "justify-items-*": { "color": "#35a77c" },
+        "justify-self-*": { "color": "#35a77c" },
+        "items-*": { "color": "#35a77c" },
+        "content-*": { "color": "#35a77c" },
+        "content-none": { "color": "#35a77c" },
+        "self-*": { "color": "#35a77c" },
+        "place-*": { "color": "#35a77c" },
+
+        // #f57d26 (Orange): Interactive and animation - user interaction utilities
+        "cursor-*": { "color": "#f57d26" },
+        "pointer-events-*": { "color": "#f57d26" },
+        "select-*": { "color": "#f57d26" },
+        "resize": { "color": "#f57d26" },
+        "resize-*": { "color": "#f57d26" },
+        "appearance-*": { "color": "#f57d26" },
+        "scroll-*": { "color": "#f57d26" },
+        "snap-*": { "color": "#f57d26" },
+        "touch-*": { "color": "#f57d26" },
+        "animate-*": { "color": "#f57d26" },
+        "transition": { "color": "#f57d26" },
+        "transition-*": { "color": "#f57d26" },
+        "duration-*": { "color": "#f57d26" },
+        "ease-*": { "color": "#f57d26" },
+        "delay-*": { "color": "#f57d26" },
+        "will-change-*": { "color": "#f57d26" },
+
+        // #d3c6aa (Gray): Effects, Transforms, Accessibility, and Misc/Fallback
+        "filter": { "color": "#d3c6aa" },
+        "filter-none": { "color": "#d3c6aa" },
+        "blur-*": { "color": "#d3c6aa" },
+        "brightness-*": { "color": "#d3c6aa" },
+        "contrast-*": { "color": "#d3c6aa" },
+        "drop-shadow-*": { "color": "#d3c6aa" },
+        "grayscale": { "color": "#d3c6aa" },
+        "grayscale-0": { "color": "#d3c6aa" },
+        "hue-rotate-*": { "color": "#d3c6aa" },
+        "invert": { "color": "#d3c6aa" },
+        "invert-0": { "color": "#d3c6aa" },
+        "saturate-*": { "color": "#d3c6aa" },
+        "sepia": { "color": "#d3c6aa" },
+        "sepia-0": { "color": "#d3c6aa" },
+        "backdrop-*": { "color": "#d3c6aa" }, // Backdrop filters
+        "transform": { "color": "#d3c6aa" },
+        "transform-none": { "color": "#d3c6aa" },
+        "scale-*": { "color": "#d3c6aa" },
+        "rotate-*": { "color": "#d3c6aa" },
+        "translate-*": { "color": "#d3c6aa" },
+        "skew-*": { "color": "#d3c6aa" },
+        "origin-*": { "color": "#d3c6aa" },
+        "isolate": { "color": "#d3c6aa" },
+        "isolation-auto": { "color": "#d3c6aa" },
+        "sr-only": { "color": "#d3c6aa", "fontStyle": "italic" },
+        "not-sr-only": { "color": "#d3c6aa" },
+        "container": { "color": "#d3c6aa", "fontWeight": "bold" },
+        "box-decoration-*": { "color": "#d3c6aa" },
+
+        // Fallback for unmatched utilities
+        "*": { "color": "#d3c6aa", "fontStyle": "italic" }
+        }
+    }
+}

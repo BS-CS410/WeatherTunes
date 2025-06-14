@@ -78,7 +78,7 @@ function NavBar() {
       {/* Login Popup */}
       {showLoginPopup && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/80 backdrop-blur-sm">
-          <div className="flex w-80 flex-col items-center rounded-2xl border border-slate-700 bg-slate-800 p-8 shadow-2xl shadow-neutral-950/90">
+          <div className="flex w-80 flex-col items-center rounded-2xl bg-white/90 p-8 shadow-2xl backdrop-blur-sm dark:bg-slate-900/90">
             <div className="mb-6 text-center text-lg text-gray-900 dark:text-slate-200">
               [TODO: put spotify login here]
             </div>
