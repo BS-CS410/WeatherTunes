@@ -54,12 +54,11 @@ These components have complete user interfaces but display placeholder data:
 - **Queue display**: UpNext component shows mock upcoming tracks
 - **User authentication**: Login page and navigation bar login button
 
-### Requires Backend Implementation
+### Components Using Placeholder Data
 
-- **Spotify OAuth 2.0**: User authentication and authorization
-- **Real music data**: Replace placeholder data with Spotify Web API responses
-- **Cross-device sync**: User settings and preferences persistence
-- **Weather-based music**: Algorithm to select music based on weather conditions
+- **Music player controls**: CurrentlyPlaying component displays static music data
+- **Queue display**: UpNext component shows hardcoded track list
+- **Authentication flow**: Login page exists but connects to no backend service
 
 ## Technology Stack
 

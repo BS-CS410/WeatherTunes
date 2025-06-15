@@ -25,3 +25,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Documentation backup files
+*-old.md
+*-new.md
+docs/**/*-old.md
+docs/**/*-new.md
