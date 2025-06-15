@@ -2,52 +2,93 @@
 
 WeatherTunes is a modern web application that connects your Spotify account with real-time weather data to create a personalized music experience. The application automatically selects and plays music that matches your local weather conditions, creating an immersive atmosphere that responds to the world around you.
 
-## Table of Contents
+## 📚 Documentation
 
-- [Project Overview](#project-overview)
-- [Technology Stack](#technology-stack)
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-  - [Running the Application](#running-the-application)
-- [Features](#features)
-- [Project Structure](#project-structure)
-- [Development](#development)
-  - [Available Scripts](#available-scripts)
-  - [Code Quality](#code-quality)
-- [Current Implementation Status](#current-implementation-status)
+This project has comprehensive documentation organized in a wiki format. **[Visit the Documentation Wiki →](docs/README.md)**
 
-## Project Overview
+### Quick Links
 
-WeatherTunes combines weather data with music streaming to provide an intelligent listening experience. The application features a responsive interface with dynamic backgrounds that change based on weather conditions and time of day, comprehensive weather information, and a complete settings system for user preferences.
+- **[Getting Started](docs/development/getting-started.md)** - Installation and first run
+- **[System Overview](docs/architecture/overview.md)** - Architecture and tech stack
+- **[Weather System](docs/features/weather.md)** - Weather integration details
+- **[API Requirements](docs/backend/api-requirements.md)** - Backend integration specs
 
-### Core Concept
+## 🚀 Quick Start
 
-The application automatically:
+### Prerequisites
+- Node.js 18+
+- OpenWeatherMap API key
 
-- Detects your location and fetches current weather data
-- Selects appropriate music from your Spotify library based on weather conditions
-- Displays dynamic video backgrounds that match the current weather and time
-- Provides detailed weather forecasts and music queue information
-- Adapts the interface theme based on time of day
+### Installation
+```bash
+git clone https://github.com/cpond8/weathertunes.git
+cd weathertunes
+npm install
+```
 
-## Technology Stack
+### Configuration
+Create `.env` file:
+```bash
+VITE_PUBLIC_OPENWEATHER_API_KEY=your_api_key_here
+```
 
-### Frontend Framework
+### Run Development Server
+```bash
+npm run dev
+```
 
-- **React 19** - Modern React with latest features
-- **TypeScript** - Type safety and enhanced developer experience
-- **React Router DOM 7.6.2** - Client-side routing
+Visit `http://localhost:5173` to see the application.
 
-### Build Tools
+## ✨ Features
 
-- **Vite 6.3.5** - Fast development server and optimized builds
-- **Node.js 18+** - JavaScript runtime environment
-- **npm** - Package management
+### ✅ Currently Available
+- **Complete Weather System** - Real-time weather with 5-day forecast
+- **Smart Settings** - Location-based unit defaults with persistence  
+- **Dynamic Backgrounds** - 24 weather/time-specific video backgrounds
+- **Modern UI** - Responsive glassmorphism design with dark/light themes
+- **Accessibility** - WCAG 2.1 compliant with Radix UI components
 
-### Styling and UI
+### 🔄 UI Ready (Awaiting Backend)
+- **Spotify Integration** - Music player components with placeholder data
+- **User Authentication** - Login flow structure in place
+- **Music Controls** - Play/pause/skip interface ready
 
-- **Tailwind CSS 4.1.8** - Utility-first CSS framework
+### 📋 Planned Features
+- **Weather-Based Music Selection** - AI-powered song recommendations
+- **Cross-Device Sync** - Settings and preferences across devices
+- **Social Features** - Share weather-music combinations
+
+## 🛠️ Technology Stack
+
+- **React 19** + **TypeScript** + **Vite** for modern development
+- **Tailwind CSS** + **Radix UI** for styling and accessibility
+- **OpenWeatherMap API** for weather data
+- **Spotify Web API** for music integration (planned)
+
+## 📖 Documentation Structure
+
+The documentation is organized into focused sections:
+
+- **[Architecture](docs/architecture/)** - System design and component structure
+- **[Features](docs/features/)** - Detailed feature documentation  
+- **[Development](docs/development/)** - Setup and workflow guides
+- **[Backend](docs/backend/)** - API requirements and integration specs
+
+## 🎯 Current Status
+
+**Frontend**: Production-ready weather system with complete UI for music features  
+**Backend**: Required for Spotify integration and user data management  
+**Design**: Modern, responsive interface with comprehensive accessibility support
+
+For detailed implementation status and technical specifications, see the [Documentation Wiki](docs/README.md).
+
+## 🤝 Contributing
+
+This project follows modern development practices with TypeScript, ESLint, and Prettier. See the [Development Setup](docs/development/setup.md) guide for detailed contribution guidelines.
+
+## 📄 License
+
+[Add your license information here]
 - **Radix UI** - Accessible component primitives
 - **Lucide React** - Beautiful icons
 - **Class Variance Authority** - Component variant management

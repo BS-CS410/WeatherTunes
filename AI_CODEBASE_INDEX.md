@@ -31,10 +31,43 @@ DEV_DEPS: {
 ## File System Architecture
 
 ```
-PROJECT_ROOT: /Users/sirel/Desktop/weathertunes/
+weathertunes/
+├── DOCUMENTATION: README.md, docs/ (comprehensive wiki structure)
+│   ├── docs/README.md [WIKI_INDEX]
+│   ├── docs/architecture/ [SYSTEM_DESIGN]
+│   ├── docs/features/ [FEATURE_SPECS]
+│   ├── docs/development/ [DEV_GUIDES]
+│   └── docs/backend/ [API_REQUIREMENTS]
 ├── CRITICAL_CONFIG: components.json, tailwind.config.ts, vite.config.ts, tsconfig.json
 ├── ENTRY_POINTS: index.html, src/main.tsx, src/App.tsx
-├── DOCUMENTATION: README.md, PROJECT_DOCUMENTATION.md, LOCATION_UNITS_IMPLEMENTATION.md
+├── src/
+│   ├── components/ [28 COMPONENTS - FULLY IMPLEMENTED UI]
+│   │   ├── WEATHER_DOMAIN: VideoBackground.tsx, WeatherDisplay.tsx, ForecastCard.tsx
+│   │   ├── MUSIC_DOMAIN: CurrentlyPlaying.tsx*, UpNext.tsx* (*=PLACEHOLDER_DATA)
+│   │   ├── LAYOUT_DOMAIN: NavBar.tsx*, SettingsButton.tsx, SettingsMenu.tsx, UnifiedDisplay.tsx
+│   │   ├── icons/: SettingsIcon.tsx, SunriseIcon.tsx, SunsetIcon.tsx + index.ts
+│   │   └── ui/: button.tsx, card.tsx, input.tsx, label.tsx, navigation-menu.tsx
+│   ├── contexts/: SettingsContext.tsx [COMPLETE_GLOBAL_STATE]
+│   ├── hooks/ [11 HOOKS - WEATHER=COMPLETE, MUSIC=STUB]
+│   │   ├── WEATHER_HOOKS: useWeather.ts, useForecast.ts [OPENWEATHER_API_INTEGRATED]
+│   │   ├── SETTINGS_HOOKS: useSettings.ts, useLocalStorage.ts, useLocationBasedDefaults.ts
+│   │   ├── UI_HOOKS: useCardOrder.ts, useThemeManager.ts
+│   │   └── index.ts [EXPORT_BARREL]
+│   ├── lib/ [UTILITY_LIBRARIES]
+│   │   ├── weather.ts [OPENWEATHER_API_CLIENT], temperature.ts, units.ts
+│   │   ├── utils.ts [TIME_UTILS], styles.ts [CSS_UTILS]
+│   │   └── index.ts [EXPORT_BARREL]
+│   ├── pages/: MainPage.tsx [PRIMARY_INTERFACE], Login.tsx [PLACEHOLDER]
+│   ├── types/: weather.ts [COMPLETE_TYPE_DEFINITIONS]
+│   └── assets/videos/ [24_WEATHER_VIDEOS: {clear,cloudy,fog,rain,snow}_{day,evening,morning,night}.mp4]
+├── DOCUMENTATION: README.md, docs/ (comprehensive wiki structure)
+│   ├── docs/README.md [WIKI_INDEX]
+│   ├── docs/architecture/ [SYSTEM_DESIGN]
+│   ├── docs/features/ [FEATURE_SPECS]
+│   ├── docs/development/ [DEV_GUIDES]
+│   └── docs/backend/ [API_REQUIREMENTS]
+├── CRITICAL_CONFIG: components.json, tailwind.config.ts, vite.config.ts, tsconfig.json
+├── ENTRY_POINTS: index.html, src/main.tsx, src/App.tsx
 ├── src/
 │   ├── components/ [28 COMPONENTS - FULLY IMPLEMENTED UI]
 │   │   ├── WEATHER_DOMAIN: VideoBackground.tsx, WeatherDisplay.tsx, ForecastCard.tsx
@@ -66,6 +99,7 @@ PROJECT_ROOT: /Users/sirel/Desktop/weathertunes/
 - **UI_SYSTEM**: Responsive design, glassmorphism styling, automatic dark/light themes, accessibility (Radix UI)
 - **VIDEO_BACKGROUNDS**: 24 weather/time-specific videos with automatic selection logic
 - **TYPESCRIPT_COVERAGE**: 100% typed, strict mode enabled
+- **DOCUMENTATION_WIKI**: Comprehensive organized documentation at docs/ with architecture, features, development guides
 
 ### 🔄 PARTIAL_IMPLEMENTATION (UI_READY_BACKEND_PENDING)
 
@@ -143,9 +177,11 @@ export function ComponentName({ prop }: ComponentProps) {
   }, [dependencies]);
 
   return (
-    <div className="glassmorphism-pattern">
-      {/* UI with Tailwind utilities */}
-    </div>
+    <Card>
+      <CardContent>
+        {/* UI with Tailwind utilities */}
+      </CardContent>
+    </Card>
   );
 }
 ```
@@ -154,10 +190,16 @@ export function ComponentName({ prop }: ComponentProps) {
 
 ```css
 /* Glassmorphism pattern used extensively */
-.glass-card: "bg-white/40 backdrop-blur-md dark:bg-slate-900/75"
-.hover-effect: "brightness-110 hover:brightness-125"
+.glass-card: "bg-white/40 backdrop-blur-lg dark:bg-slate-900/75"
+.hover-effect: "transition-all duration-300 hover:scale-105 hover:brightness-110"
 .responsive-text: "text-sm md:text-base lg:text-lg"
 ```
+
+### RECENT_REFACTORING_PATTERNS
+
+- **CARD_COMPONENTS**: Unified glassmorphism styling in ui/card.tsx, used by ForecastCard and other components
+- **DRY_PRINCIPLE**: Eliminated code duplication (e.g., ForecastCard state handling, Card styling)
+- **COMPONENT_COMPOSITION**: Prefer reusable UI primitives over custom implementations
 
 ### TYPE_DEFINITIONS_PATTERN
 
@@ -256,6 +298,37 @@ npm run preview      # Preview production build
 - **TYPES**: Extend interfaces in src/types/weather.ts for new data structures
 - **HOOKS**: Add new hooks to src/hooks/ with index.ts exports
 - **STYLES**: Tailwind utilities preferred, custom CSS in src/index.css
+- **DOCUMENTATION**: Update relevant docs/ files when adding features or changing architecture
+
+## Documentation Architecture
+
+### WIKI_STRUCTURE
+
+```
+docs/
+├── README.md [MAIN_WIKI_INDEX]
+├── architecture/
+│   ├── overview.md [SYSTEM_OVERVIEW_TECH_STACK]
+│   ├── components.md [COMPONENT_STRUCTURE_PATTERNS]
+│   └── state-management.md [DATA_FLOW_HOOKS_CONTEXT]
+├── features/
+│   ├── weather.md [OPENWEATHER_INTEGRATION_COMPLETE]
+│   ├── settings.md [USER_PREFERENCES_LOCATION_DEFAULTS]
+│   ├── video-backgrounds.md [DYNAMIC_BACKGROUNDS_24_VIDEOS]
+│   └── music.md [SPOTIFY_INTEGRATION_UI_READY]
+├── development/
+│   ├── getting-started.md [SETUP_INSTALLATION_FIRST_RUN]
+│   └── setup.md [DEV_ENVIRONMENT_WORKFLOWS]
+└── backend/
+    └── api-requirements.md [BACKEND_INTEGRATION_SPECS]
+```
+
+### DOCUMENTATION_COVERAGE
+
+- **COMPLETE**: All current features documented with technical depth
+- **INTEGRATION_READY**: Backend API requirements fully specified
+- **DEVELOPER_FRIENDLY**: Quick start guides and troubleshooting
+- **MAINTAINABLE**: Modular structure for easy updates
 
 ## Architecture Philosophy
 
