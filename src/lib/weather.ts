@@ -1,4 +1,4 @@
-import type { WeatherApiResponse } from "@/types/weather";
+import type { WeatherApiResponse, ForecastApiResponse } from "@/types/weather";
 
 // Fallback to Bellevue, WA and hope no one notices
 const FALLBACK_COORDS = {
@@ -58,4 +58,46 @@ export function createErrorWeatherData(): WeatherApiResponse {
     weather: [{ main: "Unable to load", description: "Error", id: 0 }],
     sys: { sunrise: 0, sunset: 0, country: undefined },
   };
+}
+
+// Fetch 5-day weather forecast from OpenWeatherMap API
+export async function fetchForecastByCoords(
+  lat: number,
+  lon: number,
+  apiKey: string,
+): Promise<ForecastApiResponse> {
+  const res = await fetch(
+    `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`,
+  );
+  if (!res.ok) throw new Error("Forecast API error");
+  return res.json();
+}
+
+// Request user's location and fetch forecast data
+export function getUserLocationAndFetchForecast(
+  apiKey: string,
+): Promise<ForecastApiResponse> {
+  return new Promise<ForecastApiResponse>((resolve, reject) => {
+    if (!navigator.geolocation) {
+      return reject(new Error("Geolocation not supported"));
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async ({ coords: { latitude, longitude } }) => {
+        try {
+          const data = await fetchForecastByCoords(latitude, longitude, apiKey);
+          resolve(data);
+        } catch (err) {
+          reject(err);
+        }
+      },
+      () => {
+        // fallback to Bellevue coordinates
+        fetchForecastByCoords(FALLBACK_COORDS.lat, FALLBACK_COORDS.lon, apiKey)
+          .then(resolve)
+          .catch(reject);
+      },
+      { timeout: GEOLOCATION_TIMEOUT },
+    );
+  });
 }

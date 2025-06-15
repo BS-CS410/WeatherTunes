@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { UpNext } from "@/components/UpNext";
 import { VideoBackground } from "@/components/VideoBackground";
 import { SettingsButton } from "@/components/SettingsButton";
+import { ForecastCard } from "@/components/ForecastCard";
 import { useWeatherData } from "@/hooks/useWeather";
 import { useThemeManager } from "@/hooks/useThemeManager";
 
@@ -91,6 +92,9 @@ function MainPage() {
           </CardContent>
         </Card>
 
+        {/* 5-Day Weather Forecast */}
+        <ForecastCard />
+
         {/* Favorites List */}
         <Card className="w-full bg-white/40 backdrop-blur-md dark:bg-slate-900/75">
           <CardContent className="flex h-32 items-center justify-center text-4xl text-gray-700 dark:text-slate-300">
@@ -101,11 +105,11 @@ function MainPage() {
         {/* Bottom Padding */}
         <div className="h-16" />
         <div className="w-full pb-2 text-center">
-          <span className="-mb-6 block text-lg font-semibold tracking-wide text-gray-900 drop-shadow-[0_0_16px_rgba(240,240,240,0.9)] dark:text-slate-400 dark:drop-shadow-[0_0_16px_rgba(255,255,255,0.9)]">
+          <span className="-mb-6 block text-lg font-semibold tracking-wide text-gray-900 drop-shadow-[0_0_24px_rgba(240,240,240,1)] dark:text-slate-400 dark:drop-shadow-[0_0_24px_rgba(0,0,0,1)]">
             Blaze your glory<sup className="text-xs">™</sup>
           </span>
         </div>
-        <footer className="w-full pb-4 text-center text-xs text-gray-900 drop-shadow-[0_0_16px_rgba(240,240,240,0.9)] dark:text-slate-400 dark:drop-shadow-[0_0_16px_rgba(255,255,255,0.9)]">
+        <footer className="w-full pb-4 text-center text-xs text-gray-900 drop-shadow-[0_0_24px_rgba(240,240,240,1)] dark:text-slate-400 dark:drop-shadow-[0_0_24px_rgba(0,0,0,1)]">
           © {new Date().getFullYear()} Team Meow Ltd. All rights reserved.
         </footer>
       </div>
