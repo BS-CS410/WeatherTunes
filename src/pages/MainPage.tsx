@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { UpNext } from "@/components/UpNext";
 import { VideoBackground } from "@/components/VideoBackground";
 import { SettingsButton } from "@/components/SettingsButton";
+import { ForecastCard } from "@/components/ForecastCard";
 import { useWeatherData } from "@/hooks/useWeather";
 import { useThemeManager } from "@/hooks/useThemeManager";
 
@@ -90,6 +91,9 @@ function MainPage() {
             <UpNext />
           </CardContent>
         </Card>
+
+        {/* 5-Day Weather Forecast */}
+        <ForecastCard />
 
         {/* Favorites List */}
         <Card className="w-full bg-white/40 backdrop-blur-md dark:bg-slate-900/75">

@@ -45,3 +45,47 @@ export interface EnhancedWeatherState {
 }
 
 export type WeatherType = "clear" | "rain" | "snow" | "fog" | "cloudy";
+
+// Forecast API types
+export interface ForecastItem {
+  dt: number; // Unix timestamp
+  main: {
+    temp: number;
+    temp_min: number;
+    temp_max: number;
+    humidity: number;
+    pressure: number;
+  };
+  weather: {
+    main: string;
+    description: string;
+    id: number;
+    icon: string;
+  }[];
+  dt_txt: string; // Date time text "YYYY-MM-DD HH:mm:ss"
+}
+
+export interface ForecastApiResponse {
+  list: ForecastItem[];
+  city: {
+    name: string;
+    country: string;
+    sunrise: number;
+    sunset: number;
+  };
+}
+
+export interface DailyForecast {
+  date: string; // Formatted date string
+  dayName: string; // e.g., "Monday", "Tuesday"
+  condition: string;
+  tempHigh: string;
+  tempLow: string;
+  icon: string;
+}
+
+export interface ForecastState {
+  forecast: DailyForecast[];
+  isLoading: boolean;
+  error: Error | null;
+}

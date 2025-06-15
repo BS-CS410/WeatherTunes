@@ -18,9 +18,7 @@ function Card({ className, ...props }: React.ComponentProps<"div">) {
     >
       {/* Soft inner shadow for extra depth */}
       <div className="pointer-events-none absolute inset-0 rounded-xl shadow-[inset_0_1px_8px_0_rgba(0,0,0,0.04)] dark:shadow-[inset_0_1px_8px_0_rgba(0,0,0,0.08)]" />
-      <div className="transition-transform duration-200 group-hover:scale-[1.015]">
-        {props.children}
-      </div>
+      <div className="transition-transform duration-200">{props.children}</div>
     </div>
   );
 }

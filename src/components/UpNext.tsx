@@ -92,7 +92,7 @@ export function UpNext() {
     <div className="relative">
       {/* Up Next header inside the scroll area card, not inside the scroll area */}
       <div className="px-4 pb-4 pl-6">
-        <h2 className="text-6xl font-extralight tracking-wider text-gray-900 lowercase dark:text-slate-200">
+        <h2 className="text-5xl font-extralight tracking-wider text-gray-900 lowercase dark:text-slate-200">
           Up Next:
         </h2>
       </div>
