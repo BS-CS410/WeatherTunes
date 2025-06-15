@@ -1,283 +1,286 @@
 # WeatherTunes 🌪️🎸😎👍
 
-**WeatherTunes** is a web application that connects to your Spotify account and plays music according to the current weather in your location. This document focuses on the backend development aspects required to bring the full functionality to life, referencing specific integration points in the existing frontend. The frontend is built with [React 19](https://react.dev/), [TypeScript](https://www.typescriptlang.org/) and [Vite 6](https://vitejs.dev/), using [Tailwind CSS 4](https://tailwindcss.com/) for styling.
-
----
+WeatherTunes is a modern web application that connects your Spotify account with real-time weather data to create a personalized music experience. The application automatically selects and plays music that matches your local weather conditions, creating an immersive atmosphere that responds to the world around you.
 
 ## Table of Contents
 
 - [Project Overview](#project-overview)
-- [Getting Started (Frontend Setup)](#getting-started-frontend-setup)
+- [Technology Stack](#technology-stack)
+- [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
-  - [Installation Steps](#installation-steps)
-  - [Running the Development Server](#running-the-development-server)
-- [Backend Development Guide: Addressing Frontend Needs](#backend-development-guide-addressing-frontend-needs)
-  - [Core Responsibilities](#core-responsibilities)
-  - [Spotify Integration: Frontend Placeholders](#spotify-integration-frontend-placeholders)
-  - [Weather Data Handling: Moving Client-Side Logic](#weather-data-handling-moving-client-side-logic)
-  - [Music & Player Features: API Requirements](#music--player-features-api-requirements)
-  - [API Design Considerations (Updated)](#api-design-considerations-updated)
-- [Codebase Overview for Backend Developers: Integration Points](#codebase-overview-for-backend-developers-integration-points)
-  - [Key Frontend Components & TODOs](#key-frontend-components--todos)
-- [Linting and Formatting](#linting-and-formatting)
-
----
+  - [Installation](#installation)
+  - [Running the Application](#running-the-application)
+- [Features](#features)
+- [Project Structure](#project-structure)
+- [Development](#development)
+  - [Available Scripts](#available-scripts)
+  - [Code Quality](#code-quality)
+- [Current Implementation Status](#current-implementation-status)
 
 ## Project Overview
 
-The primary goal of WeatherTunes is to provide users with a seamless experience where music from their Spotify account automatically adapts to the real-time weather conditions of their specified location.
+WeatherTunes combines weather data with music streaming to provide an intelligent listening experience. The application features a responsive interface with dynamic backgrounds that change based on weather conditions and time of day, comprehensive weather information, and a complete settings system for user preferences.
 
-The current frontend includes:
+### Core Concept
 
-- **Responsive UI** with dynamic video backgrounds based on weather conditions and time of day
-- **Settings system** with user preferences for temperature units, time format, speed units, and theme mode
-- **Location-based defaults** that automatically configure units based on user's geographic location
-- **Weather display** with comprehensive weather information including sunrise/sunset times
-- **Theme management** with automatic light/dark mode switching based on time of day
-- **Music player UI elements** with placeholder data for Spotify integration
-- **Settings menu** with toggle controls for user preferences
+The application automatically:
 
-The backend's role is to:
+- Detects your location and fetches current weather data
+- Selects appropriate music from your Spotify library based on weather conditions
+- Displays dynamic video backgrounds that match the current weather and time
+- Provides detailed weather forecasts and music queue information
+- Adapts the interface theme based on time of day
 
-1.  Securely handle Spotify authentication (OAuth 2.0), integrating with frontend placeholders.
-2.  Take over weather data fetching from a reliable API (currently client-side).
-3.  Query the Spotify API for music selection and control, replacing frontend placeholders.
-4.  Provide robust APIs for all frontend interactions.
+## Technology Stack
 
----
+### Frontend Framework
 
-## Getting Started (Frontend Setup)
+- **React 19** - Modern React with latest features
+- **TypeScript** - Type safety and enhanced developer experience
+- **React Router DOM 7.6.2** - Client-side routing
 
-This section will guide you through setting up your development environment and getting the project running on your local machine. We'll cover everything from installing prerequisites to running the development server.
+### Build Tools
+
+- **Vite 6.3.5** - Fast development server and optimized builds
+- **Node.js 18+** - JavaScript runtime environment
+- **npm** - Package management
+
+### Styling and UI
+
+- **Tailwind CSS 4.1.8** - Utility-first CSS framework
+- **Radix UI** - Accessible component primitives
+- **Lucide React** - Beautiful icons
+- **Class Variance Authority** - Component variant management
+
+### Code Quality
+
+- **ESLint 9.25.0** - Code linting
+- **Prettier 3.5.3** - Code formatting
+- **TypeScript ESLint** - TypeScript-specific linting
+
+## Getting Started
 
 ### Prerequisites
 
-Before you begin, you'll need to have the following tools installed on your computer:
+Before you begin, ensure you have the following installed:
 
-1. **Node.js** (version 18 or higher recommended)
+1. **Node.js** (version 18 or higher)
 
-   - This is the JavaScript runtime that powers your development environment
    - Download from [nodejs.org](https://nodejs.org/)
    - Choose the LTS (Long Term Support) version for stability
 
 2. **npm** (Node Package Manager)
-   - Comes bundled with Node.js
+   - Included with Node.js installation
    - Used to install and manage project dependencies
-   - You don't need to install it separately
 
-To verify your installations, open a terminal and run:
+You can verify your installations by running:
 
 ```bash
 node -v    # Should show v18.x.x or higher
 npm -v     # Should show 8.x.x or higher
 ```
 
-### What are `npm` and `npx`?
+### Installation
 
-- **`npm`** is the Node.js package manager. You use it to install packages (libraries, tools, etc.) into your project or globally on your system. For example, `npm install react` adds React to your project.
-- **`npx`** is a tool that comes with npm (version 5.2+). It lets you run commands from packages that you haven't installed globally. For example, `npx prettier --write .` will run Prettier even if you haven't installed it in your project, always using the latest version available.
-
-In this README, you'll see both `npm` and `npx` used:
-
-- Use `npm` to install dependencies.
-- Use `npx` to run tools and CLIs directly from the command line.
-
-Example `npx` usage:
-
-```bash
-npx create-react-app my-app     # Create a new React app
-npx prettier --write .          # Format all files
-npx eslint .                    # Lint all files
-```
-
-### Installation Steps
-
-1. **Clone the Repository**
+1. **Clone the repository**
 
    ```bash
-   # (Install git first if you haven't already)
    git clone https://github.com/cpond8/weathertunes.git
-
-   # Then navigate into the project directory
    cd weathertunes
    ```
 
-2. **Install Dependencies**
+2. **Install dependencies**
 
    ```bash
    npm install
    ```
 
-   This command:
+   This command will:
 
-   - Reads the `package.json` file
-   - Installs all listed dependencies
-   - Creates a `node_modules` directory
-   - Generates a `package-lock.json` file for dependency versioning
+   - Read the `package.json` file
+   - Install all required dependencies
+   - Create a `node_modules` directory
+   - Generate a `package-lock.json` file for version control
 
-   > **Note**: The installation process might take a few minutes depending on your internet connection and computer speed.
+3. **Set up environment variables**
 
-3. **Verify Installation**
-   After installation, you should see:
-   - A `node_modules` directory containing all dependencies
-   - A `package-lock.json` file
+   Create a `.env` file in the project root and add your API keys:
 
-### Running the Development Server
+   ```bash
+   VITE_PUBLIC_OPENWEATHER_API_KEY=your_openweather_api_key_here
+   ```
 
-Once the installation is complete, you can start the development server:
+   You can obtain a free API key from [OpenWeatherMap](https://openweathermap.org/api).
+
+### Running the Application
+
+Start the development server:
 
 ```bash
 npm run dev
 ```
 
-This command will:
+This will:
 
-- Start the Vite development server (usually on `http://localhost:5173`)
-- Enable Hot Module Replacement (HMR) for fast updates
+- Start the Vite development server (typically on `http://localhost:5173`)
+- Enable Hot Module Replacement for instant updates during development
+- Open your default browser to the application
 
----
+## Features
 
-## Backend Development Guide: Addressing Frontend Needs
+### Current Features
 
-This section details backend tasks, focusing on integrating with existing frontend structures and replacing placeholder logic.
+**Complete Settings System**
 
-### Core Responsibilities
+- Temperature units (Fahrenheit/Celsius)
+- Time format (12-hour/24-hour)
+- Speed units (mph/km/h/m/s)
+- Theme mode (automatic/light/dark)
+- Location-based default unit selection
+- Persistent settings storage
 
-- **User Authentication:** Implement Spotify OAuth 2.0.
-- **Weather Data Service:** Server-side fetching and processing of weather data.
-- **Music Logic Service:** Link weather to music, interact with Spotify API.
-- **API for Frontend:** Provide endpoints for all frontend data and action needs.
+**Weather Integration**
 
-### Spotify Integration: Frontend Placeholders
+- Real-time weather data display
+- 5-day weather forecast
+- Sunrise and sunset times
+- Detailed weather metrics (humidity, pressure, wind speed)
+- Weather-responsive video backgrounds
 
-- **Authentication Trigger:** The frontend has a placeholder for Spotify login in `src/components/NavBar.tsx` (line 36: `[TODO: put spotify login here]`). The backend authentication flow (`POST /auth/spotify` and `GET /auth/spotify/callback`) should be triggered from here.
-- **Scopes:** Ensure you request necessary Spotify scopes: `user-read-playback-state`, `user-modify-playback-state`, `user-read-currently-playing`, `playlist-read-private`, `user-library-read`, etc.
-- **Settings Integration:** The frontend has a complete settings system (`SettingsContext`, `SettingsMenu`) that manages user preferences. Backend should respect these settings when providing data.
-- **Fallback Route:** `src/App.tsx` has a `TODO` (line 17) to make a fallback route for unknown paths, potentially redirecting to login. Backend should provide auth status to help frontend routing.
+**User Interface**
 
-### Weather Data Handling: Moving Client-Side Logic
+- Responsive design for all device sizes
+- Automatic theme switching based on time of day
+- Dynamic video backgrounds based on weather conditions
+- Interactive elements with brightness hover effects
+- Glassmorphism design with backdrop blur effects
 
-- **Current Implementation:** Weather data is fetched client-side in `src/hooks/useWeather.ts` and `src/lib/weather.ts`, using the OpenWeatherMap API with an API key (`VITE_PUBLIC_OPENWEATHER_API_KEY`) stored in a `.env` file.
-- **Settings Integration:** The weather system integrates with the settings context to display data in user-preferred units (°F/°C, mph/km/h).
-- **Enhanced Features:** The current implementation includes sunrise/sunset times, humidity, pressure, wind speed, and location-based unit defaults.
-- **Backend Responsibility:** This entire logic must move to the backend.
-  - The backend will call the weather API (e.g., OpenWeatherMap).
-  - The frontend will call a new backend endpoint (e.g., `GET /api/weather-music`) to get weather data. This replaces the direct client-side API call.
-  - Backend should respect user settings for units and formatting.
-- **Data Structure:** Refer to `src/types/weather.ts` for the frontend's expected weather data structure. `src/components/WeatherDisplay.tsx` and `src/components/UnifiedDisplay.tsx` consume this data.
+**Architecture**
 
-### Music & Player Features: API Requirements
+- Modular component structure
+- Custom React hooks for state management
+- TypeScript for type safety
+- Accessible UI components
 
-- **Spotify Player UI:** `src/pages/MainPage.tsx` has a placeholder `[TODO: put spotify player here]` (line 78). This area will need to display current track information and playback controls.
-  - **API Needs:** Endpoints to get currently playing track (title, artist, album art), and to control playback (play, pause, next, previous, volume).
-  - **Placeholder Data:** `MainPage.tsx` (line 10) uses `PLACEHOLDER DATA FOR CURRENTLY PLAYING`. `src/components/CurrentlyPlaying.tsx` (line 12) uses a placeholder album art URL. These must be replaced by data from the backend via API calls.
-- **"Up Next" Queue:** `src/components/UpNext.tsx` currently uses static `placeholderSongs` (lines 11, 102).
-  - **API Needs:** An endpoint to fetch the user's upcoming track queue from Spotify.
-- **"Favorites List":** `src/pages/MainPage.tsx` has a placeholder `[TODO: put favorites list here]` (line 92).
-  - **API Needs:** Endpoints to get, add, and remove favorite tracks/playlists. This implies backend database storage for user-specific favorites.
-- **Settings Synchronization:** The frontend has a complete settings system that needs to be synchronized with the backend for consistent user experience across sessions.
+### Planned Features (Backend Required)
 
-### API Design Considerations (Updated)
+**Spotify Integration**
 
-- **Authentication:**
-  - `POST /auth/spotify`: Initiate Spotify login.
-  - `GET /auth/spotify/callback`: Spotify callback URL.
-  - `GET /auth/status`: Check user's current authentication status.
-  - `POST /auth/logout`: Log out user.
-- **Core Functionality:**
-  - `GET /api/weather-music?location=<location_string_or_lat_lon>`: Get current weather (processed server-side) and suggested/currently-playing music. This replaces the client-side `useWeather` hook's direct API call.
-- **Player Control (interfacing with Spotify API via backend):**
-  - `GET /api/player/current`: Get current playing track details.
-  - `POST /api/player/play`: Start/resume playback.
-  - `POST /api/player/pause`: Pause playback.
-  - `POST /api/player/next`: Skip to next track.
-  - `POST /api/player/previous`: Skip to previous track.
-  - `PUT /api/player/volume`: Set volume (e.g., `?level=50`).
-- **Queue/Up Next:**
-  - `GET /api/player/queue`: Get the user's upcoming tracks.
-- **User Favorites (requires database interaction):**
-  - `GET /api/favorites`: Get user's favorite tracks/playlists.
-  - `POST /api/favorites`: Add a track/playlist to favorites.
-  - `DELETE /api/favorites/:id`: Remove a track/playlist from favorites.
-- **User Settings:**
-  - `GET /api/settings`: Get user's preferences (temperature unit, time format, etc.).
-  - `PUT /api/settings`: Update user's preferences.
-- **General:**
-  - Use JSON for requests/responses.
-  - Implement robust error handling.
-  - Secure API keys and ensure HTTPS.
+- OAuth 2.0 authentication
+- Music player controls
+- Weather-based music selection
+- Playlist management
+- User library access
 
----
+**User Features**
 
-## Codebase Overview for Backend Developers: Integration Points
+- Personal favorites system
+- Cross-device settings synchronization
+- Music listening history
+- Personalized recommendations
 
-Focus on these areas where frontend meets backend:
+## Project Structure
 
-### Key Frontend Components & TODOs
+```
+weathertunes/
+├── src/
+│   ├── components/         # Reusable UI components
+│   │   ├── ui/            # Base UI primitives
+│   │   ├── icons/         # Custom icon components
+│   │   └── ...            # Feature-specific components
+│   ├── contexts/          # React context providers
+│   ├── hooks/             # Custom React hooks
+│   ├── lib/               # Utility functions and libraries
+│   ├── pages/             # Top-level route components
+│   ├── types/             # TypeScript type definitions
+│   └── assets/            # Static assets and videos
+├── public/                # Static public assets
+├── package.json           # Project configuration and dependencies
+├── tailwind.config.ts     # Tailwind CSS configuration
+├── vite.config.ts         # Vite build configuration
+└── tsconfig.json          # TypeScript configuration
+```
 
-- **`src/components/NavBar.tsx`**:
+### Key Components
 
-  - Line 36: `[TODO: put spotify login here]`. This is the primary entry point for user authentication with Spotify. The backend needs to provide the mechanism that this UI element will trigger.
+**Main Application**
 
-- **`src/components/SettingsMenu.tsx`** and **`src/contexts/SettingsContext.tsx`**:
+- `App.tsx` - Root component with routing
+- `MainPage.tsx` - Primary application interface
+- `Login.tsx` - Authentication page (placeholder)
 
-  - Complete settings system managing user preferences for temperature units (°F/°C), time format (12h/24h), speed units (mph/km/h/m/s), and theme mode (auto/light/dark).
-  - Uses `useLocalStorage` hook for persistence and `useLocationBasedDefaults` for automatic unit selection.
-  - Backend should provide endpoints to sync these settings across devices/sessions.
+**Weather System**
 
-- **`src/pages/MainPage.tsx`**: This is the central UI.
+- `WeatherDisplay.tsx` - Current weather information
+- `ForecastCard.tsx` - 5-day weather forecast
+- `VideoBackground.tsx` - Dynamic weather-based backgrounds
 
-  - Line 10: `PLACEHOLDER DATA FOR CURRENTLY PLAYING`. This static data (songTitle, artistName, albumArtUrl) needs to be replaced with live data fetched from the backend (`/api/player/current`).
-  - Line 78: `[TODO: put spotify player here]`. This section is intended for the main Spotify player interface (displaying current song, controls). Backend APIs will drive its functionality.
-  - Line 92: `[TODO: put favorites list here]`. This requires backend APIs (`/api/favorites`) to manage a user's list of saved songs/playlists.
+**Settings and Preferences**
 
-- **`src/components/CurrentlyPlaying.tsx`**:
+- `SettingsMenu.tsx` - User preferences interface
+- `SettingsContext.tsx` - Global settings management
+- `useSettings.ts` - Settings hook
 
-  - Line 12: `albumArtUrl = "https://via.placeholder.com/150"`. This placeholder image URL must be replaced by the actual album art URL from the Spotify track data, supplied by the backend.
+**Music Integration (Placeholders)**
 
-- **`src/components/VideoBackground.tsx`**:
+- `CurrentlyPlaying.tsx` - Current track display
+- `UpNext.tsx` - Music queue
+- `NavBar.tsx` - Navigation with Spotify login placeholder
 
-  - Manages dynamic video backgrounds based on weather conditions and time of day.
-  - Selects appropriate videos from `src/assets/videos/` based on weather type and time period.
-  - Backend weather data should include the necessary information for proper video selection.
+## Development
 
-- **`src/components/UpNext.tsx`**:
+### Available Scripts
 
-  - Lines 11 & 102: Uses `placeholderSongs`. This static array needs to be replaced by a dynamic list of upcoming songs fetched from the backend (`/api/player/queue`).
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run lint` - Run ESLint
+- `npm run preview` - Preview production build
 
-- **`src/hooks/useWeather.ts` & `src/lib/weather.ts`**:
+### Code Quality
 
-  - These files currently manage **client-side** calls to the OpenWeatherMap API using `VITE_PUBLIC_OPENWEATHER_API_KEY`.
-  - Includes `useThemeManager` integration for automatic light/dark theme switching based on time of day.
-  - **Action for Backend:** This entire weather fetching logic (including API key management) must be moved to the backend. The frontend (`MainPage.tsx` via `useWeatherData`) will then call a backend endpoint (e.g., `/api/weather-music`) to get this information.
+The project maintains high code quality through:
 
-- **`src/hooks/useSettings.ts` & `src/contexts/SettingsContext.tsx`**:
+**Linting and Formatting**
 
-  - Complete settings management system with React Context.
-  - Manages temperature units, time format, speed units, and theme preferences.
-  - Uses local storage for persistence and location-based defaults.
-  - Backend should provide endpoints to synchronize these settings.
+- ESLint configuration for JavaScript/TypeScript
+- Prettier for consistent code formatting
+- Automatic Tailwind class sorting
 
-- **`src/types/weather.ts`**:
+**Type Safety**
 
-  - Contains TypeScript type definitions for weather data (e.g., `WeatherApiResponse`, `EnhancedWeatherState`). This is a useful reference for structuring the backend API response for weather information to ensure frontend compatibility.
+- TypeScript throughout the codebase
+- Strict type checking enabled
+- Custom type definitions for weather data
 
-- **`src/App.tsx`**:
-  - Line 17: ` {/* TODO: make fallback Route to send unknown routes to login page */}`. The backend should provide an endpoint like `/auth/status` so the frontend can make intelligent routing decisions based on authentication state.
+**Best Practices**
 
----
+- Component composition over inheritance
+- Custom hooks for reusable logic
+- Context for global state management
+- Utility-first CSS with Tailwind
 
-## Linting and Formatting
+## Current Implementation Status
 
-This project uses ESLint for linting and Prettier for code formatting.
+### ✅ Completed
 
-- **ESLint**: Helps find and fix problems in your JavaScript/TypeScript code.
-  - Configuration: `eslint.config.js`
-  - To run: `npm run lint`
-- **Prettier**: An opinionated code formatter that ensures consistent code style.
-  - Configuration: Can be added via `.prettierrc.json` or `prettier` key in `package.json`.
-  - To run: `npm run format` (you might need to add this script to `package.json` if it doesn't exist, e.g., `"format": "prettier --write ."`).
+- Complete settings system with persistence
+- Weather data fetching and display
+- Responsive UI with dynamic themes
+- Location-based unit defaults
+- 5-day weather forecast
+- Interactive UI elements with hover effects
 
-It's recommended to integrate these tools with your code editor for an optimal development experience.
+### 🔄 In Progress
 
----
+- Spotify integration (UI components ready)
+- Music player interface (placeholder data)
+- User authentication flow (structure in place)
+
+### ❌ Pending Backend Development
+
+- Spotify OAuth 2.0 authentication
+- Music playback controls
+- Weather-based music selection algorithm
+- User data persistence
+- Cross-device settings synchronization
+- Favorites system
