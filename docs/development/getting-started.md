@@ -9,6 +9,7 @@ Before you begin, ensure you have the following installed:
 ### Required Software
 
 1. **Node.js** (version 18 or higher)
+
    - Download from [nodejs.org](https://nodejs.org/)
    - Choose the LTS (Long Term Support) version
    - Includes npm (Node Package Manager)
@@ -42,6 +43,7 @@ npm install
 ```
 
 This will:
+
 - Read `package.json` to identify required packages
 - Download and install all dependencies to `node_modules/`
 - Create `package-lock.json` for dependency version locking
@@ -72,6 +74,7 @@ npm run dev
 ```
 
 This will:
+
 - Start the Vite development server (typically on `http://localhost:5173`)
 - Enable Hot Module Replacement for instant updates
 - Provide detailed error reporting and debugging
@@ -98,15 +101,18 @@ Once the application is running:
 ### Common Issues
 
 **Weather data not loading:**
+
 - Verify your API key is correct in `.env`
 - Check browser console for error messages
 - Ensure location permissions are granted
 
 **Port already in use:**
+
 - Vite will automatically try alternative ports (5174, 5175, etc.)
 - Or specify a different port: `npm run dev -- --port 3000`
 
 **Dependencies not installing:**
+
 - Clear npm cache: `npm cache clean --force`
 - Delete `node_modules` and `package-lock.json`, then run `npm install` again
 

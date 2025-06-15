@@ -34,12 +34,14 @@ src/components/
 ### Layout Components
 
 **`NavBar.tsx`**
+
 - Main application navigation
 - Spotify login placeholder (awaiting backend)
 - Responsive design with glassmorphism styling
 - Contains settings access and app branding
 
 **`UnifiedDisplay.tsx`**
+
 - Central display combining weather and music information
 - Responsive layout that adapts to screen size
 - Orchestrates major content areas
@@ -47,18 +49,21 @@ src/components/
 ### Weather Components
 
 **`WeatherDisplay.tsx`**
+
 - Current weather conditions display
 - Temperature, humidity, pressure, wind speed
 - Sunrise/sunset times with custom icons
 - Real-time data from OpenWeatherMap API
 
 **`ForecastCard.tsx`**
+
 - 5-day weather forecast with interactive cards
 - Weather icons and temperature ranges
 - Hover effects and animations
 - Loading and error state handling
 
 **`VideoBackground.tsx`**
+
 - Dynamic background videos based on weather/time
 - 24 different weather/time combinations
 - Automatic video selection and smooth transitions
@@ -67,12 +72,14 @@ src/components/
 ### Music Components (UI Ready)
 
 **`CurrentlyPlaying.tsx`**
+
 - Current track display with album art
 - Song title, artist, and playback progress
 - Placeholder data structure ready for Spotify API
 - Player control interface planned
 
 **`UpNext.tsx`**
+
 - Music queue display with upcoming tracks
 - Track list with artist and title information
 - Placeholder songs for development
@@ -81,11 +88,13 @@ src/components/
 ### Settings Components
 
 **`SettingsButton.tsx`**
+
 - Animated settings gear icon
 - Trigger for settings menu
 - Consistent styling with app theme
 
 **`SettingsMenu.tsx`**
+
 - Complete user preferences interface
 - Temperature, time, speed, and theme settings
 - Location-based defaults and reset functionality
@@ -94,6 +103,7 @@ src/components/
 ### Icon Components
 
 **Custom Icons** (`icons/`)
+
 - `SettingsIcon.tsx` - Animated gear icon
 - `SunriseIcon.tsx` - Sunrise time indicator
 - `SunsetIcon.tsx` - Sunset time indicator
@@ -102,6 +112,7 @@ src/components/
 ### UI Primitives
 
 **Base Components** (`ui/`)
+
 - `button.tsx` - Styled button with variants
 - `card.tsx` - Glassmorphism card container
 - `input.tsx` - Form input with styling
@@ -130,11 +141,13 @@ MainPage.tsx (Layout)
 ### State Management
 
 **Global State (Context):**
+
 - Settings preferences via `SettingsContext`
 - Accessed through `useSettings()` hook
 - Persistent storage and location-based defaults
 
 **Component State:**
+
 - Weather data via `useWeather()` and `useForecast()` hooks
 - Local UI state (modals, loading, animations)
 - Error handling and retry logic
@@ -142,6 +155,7 @@ MainPage.tsx (Layout)
 ### Props and Communication
 
 **Parent-Child Communication:**
+
 ```typescript
 // Settings propagation
 MainPage → SettingsMenu (settings, updateSettings)
@@ -154,6 +168,7 @@ ForecastCard: {isLoading, error, data}
 ```
 
 **Sibling Communication:**
+
 - Through shared hooks (weather data)
 - Via global settings context
 - Event-based interactions (settings changes)
@@ -163,6 +178,7 @@ ForecastCard: {isLoading, error, data}
 ### Composition Pattern
 
 **Card Components:**
+
 ```typescript
 <Card>
   <CardContent>
@@ -172,6 +188,7 @@ ForecastCard: {isLoading, error, data}
 ```
 
 **Icon Usage:**
+
 ```typescript
 <SunriseIcon className="w-4 h-4" />
 <SettingsIcon isAnimating={isOpen} />
@@ -180,14 +197,15 @@ ForecastCard: {isLoading, error, data}
 ### Hook Integration
 
 **Standard Pattern:**
+
 ```typescript
 export function ComponentName() {
   const { settings } = useSettings();
   const { data, isLoading, error } = useWeather();
-  
+
   if (isLoading) return <LoadingState />;
   if (error) return <ErrorState />;
-  
+
   return <ContentDisplay />;
 }
 ```
@@ -195,15 +213,17 @@ export function ComponentName() {
 ### Responsive Design
 
 **Tailwind Breakpoints:**
+
 ```typescript
-className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-className="text-sm md:text-base lg:text-lg"
-className="p-4 md:p-6 lg:p-8"
+className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3";
+className = "text-sm md:text-base lg:text-lg";
+className = "p-4 md:p-6 lg:p-8";
 ```
 
 ### Error Boundaries
 
 **Component-Level Error Handling:**
+
 ```typescript
 try {
   // Component logic
@@ -218,6 +238,7 @@ try {
 ### Glassmorphism Pattern
 
 **Standard Card Styling:**
+
 ```css
 .glass-card {
   @apply bg-white/40 backdrop-blur-lg dark:bg-slate-900/75;
@@ -229,6 +250,7 @@ try {
 ### Interactive Elements
 
 **Hover Effects:**
+
 ```css
 .interactive {
   @apply transition-all duration-300;
@@ -239,6 +261,7 @@ try {
 ### Theme Integration
 
 **Dark Mode Support:**
+
 ```css
 .theme-aware {
   @apply text-gray-900 dark:text-slate-200;
@@ -251,11 +274,13 @@ try {
 ### Component Loading
 
 **Lazy Loading:**
+
 - Large components loaded on demand
 - Video assets loaded progressively
 - Dynamic imports for heavy features
 
 **Memoization:**
+
 ```typescript
 const MemoizedComponent = React.memo(Component);
 const memoizedValue = useMemo(() => computation, [deps]);
@@ -265,11 +290,13 @@ const memoizedCallback = useCallback(fn, [deps]);
 ### Re-render Optimization
 
 **Context Optimization:**
+
 - Split contexts to minimize re-renders
 - Memoize context values
 - Use callback refs for performance
 
 **State Updates:**
+
 - Batch state updates where possible
 - Debounce frequent updates
 - Use functional updates for state
@@ -279,12 +306,14 @@ const memoizedCallback = useCallback(fn, [deps]);
 ### Component Testing
 
 **Unit Tests:**
+
 - Individual component rendering
 - Props handling and validation
 - Event handling and callbacks
 - Error boundary testing
 
 **Integration Tests:**
+
 - Component interaction patterns
 - Hook integration testing
 - State management verification
@@ -293,6 +322,7 @@ const memoizedCallback = useCallback(fn, [deps]);
 ### Manual Testing
 
 **Responsive Testing:**
+
 - Mobile, tablet, desktop layouts
 - Browser compatibility testing
 - Touch interaction verification
@@ -303,16 +333,19 @@ const memoizedCallback = useCallback(fn, [deps]);
 ### Planned Components
 
 **Music Enhancement:**
+
 - `PlaylistManager.tsx` - Playlist creation/management
 - `MusicPlayer.tsx` - Full player controls
 - `VolumeControl.tsx` - Audio level management
 
 **User Features:**
+
 - `UserProfile.tsx` - Account management
 - `FavoritesManager.tsx` - Saved content
 - `NotificationCenter.tsx` - User alerts
 
 **Advanced Features:**
+
 - `WeatherAlerts.tsx` - Weather warnings
 - `LocationPicker.tsx` - Manual location selection
 - `ThemeCustomizer.tsx` - Advanced theming
@@ -320,6 +353,7 @@ const memoizedCallback = useCallback(fn, [deps]);
 ### Component Refactoring
 
 **Planned Improvements:**
+
 - Split large components into smaller pieces
 - Extract common patterns into reusable hooks
 - Improve TypeScript interfaces

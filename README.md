@@ -16,10 +16,12 @@ This project has comprehensive documentation organized in a wiki format. **[Visi
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Node.js 18+
 - OpenWeatherMap API key
 
 ### Installation
+
 ```bash
 git clone https://github.com/cpond8/weathertunes.git
 cd weathertunes
@@ -27,12 +29,15 @@ npm install
 ```
 
 ### Configuration
+
 Create `.env` file:
+
 ```bash
 VITE_PUBLIC_OPENWEATHER_API_KEY=your_api_key_here
 ```
 
 ### Run Development Server
+
 ```bash
 npm run dev
 ```
@@ -42,18 +47,21 @@ Visit `http://localhost:5173` to see the application.
 ## ✨ Features
 
 ### ✅ Currently Available
+
 - **Complete Weather System** - Real-time weather with 5-day forecast
-- **Smart Settings** - Location-based unit defaults with persistence  
+- **Smart Settings** - Location-based unit defaults with persistence
 - **Dynamic Backgrounds** - 24 weather/time-specific video backgrounds
 - **Modern UI** - Responsive glassmorphism design with dark/light themes
 - **Accessibility** - WCAG 2.1 compliant with Radix UI components
 
 ### 🔄 UI Ready (Awaiting Backend)
+
 - **Spotify Integration** - Music player components with placeholder data
 - **User Authentication** - Login flow structure in place
 - **Music Controls** - Play/pause/skip interface ready
 
 ### 📋 Planned Features
+
 - **Weather-Based Music Selection** - AI-powered song recommendations
 - **Cross-Device Sync** - Settings and preferences across devices
 - **Social Features** - Share weather-music combinations
@@ -70,14 +78,14 @@ Visit `http://localhost:5173` to see the application.
 The documentation is organized into focused sections:
 
 - **[Architecture](docs/architecture/)** - System design and component structure
-- **[Features](docs/features/)** - Detailed feature documentation  
+- **[Features](docs/features/)** - Detailed feature documentation
 - **[Development](docs/development/)** - Setup and workflow guides
 - **[Backend](docs/backend/)** - API requirements and integration specs
 
 ## 🎯 Current Status
 
-**Frontend**: Production-ready weather system with complete UI for music features  
-**Backend**: Required for Spotify integration and user data management  
+**Frontend**: Production-ready weather system with complete UI for music features
+**Backend**: Required for Spotify integration and user data management
 **Design**: Modern, responsive interface with comprehensive accessibility support
 
 For detailed implementation status and technical specifications, see the [Documentation Wiki](docs/README.md).
@@ -89,6 +97,7 @@ This project follows modern development practices with TypeScript, ESLint, and P
 ## 📄 License
 
 [Add your license information here]
+
 - **Radix UI** - Accessible component primitives
 - **Lucide React** - Beautiful icons
 - **Class Variance Authority** - Component variant management

@@ -5,6 +5,7 @@ This document outlines the backend API requirements for WeatherTunes, including 
 ## Overview
 
 The backend API needs to support:
+
 - Spotify OAuth 2.0 authentication
 - Weather data service (migrated from client-side)
 - Music player control and data
@@ -16,26 +17,33 @@ The backend API needs to support:
 ### Spotify OAuth Integration
 
 **Initiate Authentication**
+
 ```http
 POST /auth/spotify
 ```
+
 - Redirects user to Spotify OAuth consent screen
 - Handles PKCE flow for security
 - Returns authorization URL
 
 **Handle OAuth Callback**
+
 ```http
 GET /auth/spotify/callback?code={auth_code}&state={state}
 ```
+
 - Processes Spotify OAuth callback
 - Exchanges code for access/refresh tokens
 - Creates or updates user session
 
 **Check Authentication Status**
+
 ```http
 GET /auth/status
 ```
+
 Response:
+
 ```json
 {
   "isAuthenticated": boolean,
@@ -51,9 +59,11 @@ Response:
 ```
 
 **Logout**
+
 ```http
 POST /auth/logout
 ```
+
 - Invalidates user session
 - Clears authentication tokens
 - Returns success confirmation
@@ -63,10 +73,13 @@ POST /auth/logout
 ### Current Weather Data
 
 **Get Current Weather**
+
 ```http
 GET /api/weather?lat={latitude}&lon={longitude}
 ```
+
 Response:
+
 ```json
 {
   "location": string,
@@ -84,10 +97,13 @@ Response:
 ```
 
 **Get 5-Day Forecast**
+
 ```http
 GET /api/forecast?lat={latitude}&lon={longitude}
 ```
+
 Response:
+
 ```json
 {
   "forecast": [
@@ -108,10 +124,13 @@ Response:
 ### Player State
 
 **Get Currently Playing**
+
 ```http
 GET /api/player/current
 ```
+
 Response:
+
 ```json
 {
   "isPlaying": boolean,
@@ -148,10 +167,13 @@ Response:
 ```
 
 **Get Player Queue**
+
 ```http
 GET /api/player/queue
 ```
+
 Response:
+
 ```json
 {
   "queue": [
@@ -171,6 +193,7 @@ Response:
 ### Playback Control
 
 **Play/Resume**
+
 ```http
 POST /api/player/play
 Content-Type: application/json
@@ -186,26 +209,31 @@ Content-Type: application/json
 ```
 
 **Pause Playback**
+
 ```http
 POST /api/player/pause
 ```
 
 **Skip to Next Track**
+
 ```http
 POST /api/player/next
 ```
 
 **Skip to Previous Track**
+
 ```http
 POST /api/player/previous
 ```
 
 **Set Volume**
+
 ```http
 PUT /api/player/volume?level={0-100}
 ```
 
 **Seek to Position**
+
 ```http
 PUT /api/player/seek?position_ms={milliseconds}
 ```
@@ -215,10 +243,13 @@ PUT /api/player/seek?position_ms={milliseconds}
 ### Settings Management
 
 **Get User Settings**
+
 ```http
 GET /api/settings
 ```
+
 Response:
+
 ```json
 {
   "temperatureUnit": "fahrenheit" | "celsius",
@@ -234,6 +265,7 @@ Response:
 ```
 
 **Update User Settings**
+
 ```http
 PUT /api/settings
 Content-Type: application/json
@@ -249,10 +281,13 @@ Content-Type: application/json
 ### Favorites Management
 
 **Get User Favorites**
+
 ```http
 GET /api/favorites
 ```
+
 Response:
+
 ```json
 {
   "tracks": [
@@ -277,6 +312,7 @@ Response:
 ```
 
 **Add to Favorites**
+
 ```http
 POST /api/favorites
 Content-Type: application/json
@@ -288,6 +324,7 @@ Content-Type: application/json
 ```
 
 **Remove from Favorites**
+
 ```http
 DELETE /api/favorites/{type}/{id}
 ```
@@ -297,10 +334,13 @@ DELETE /api/favorites/{type}/{id}
 ### Weather-Based Recommendations
 
 **Get Weather-Appropriate Music**
+
 ```http
 GET /api/music/weather-recommendations?lat={lat}&lon={lon}
 ```
+
 Response:
+
 ```json
 {
   "weather": {
@@ -335,6 +375,7 @@ Response:
 ### Standard Error Response
 
 All endpoints return consistent error format:
+
 ```json
 {
   "error": {
@@ -348,16 +389,19 @@ All endpoints return consistent error format:
 ### Common Error Codes
 
 **Authentication Errors:**
+
 - `AUTH_REQUIRED` (401) - User not authenticated
 - `TOKEN_EXPIRED` (401) - Access token expired
 - `SPOTIFY_AUTH_ERROR` (403) - Spotify authentication failed
 
 **API Errors:**
+
 - `RATE_LIMITED` (429) - Too many requests
 - `EXTERNAL_API_ERROR` (502) - Third-party API failure
 - `INVALID_REQUEST` (400) - Malformed request data
 
 **Server Errors:**
+
 - `INTERNAL_ERROR` (500) - Server-side error
 - `SERVICE_UNAVAILABLE` (503) - Service temporarily down
 
@@ -366,12 +410,14 @@ All endpoints return consistent error format:
 ### Request Limits
 
 **Per User:**
+
 - Authentication endpoints: 10 requests/minute
 - Weather endpoints: 60 requests/hour
 - Music control: 100 requests/minute
 - Settings: 30 requests/minute
 
 **Global Limits:**
+
 - Spotify API: Managed by backend with queuing
 - OpenWeatherMap: 1000 requests/minute
 
@@ -388,11 +434,13 @@ X-RateLimit-Reset: 1640995200
 ### Authentication Security
 
 **OAuth 2.0 PKCE:**
+
 - Code challenge and verifier for security
 - State parameter for CSRF protection
 - Secure token storage on backend
 
 **Session Management:**
+
 - JWT tokens with appropriate expiration
 - Refresh token rotation
 - Secure cookie handling
@@ -400,12 +448,14 @@ X-RateLimit-Reset: 1640995200
 ### API Security
 
 **Request Security:**
+
 - HTTPS enforcement for all endpoints
 - Input validation and sanitization
 - SQL injection prevention
 - XSS protection headers
 
 **Data Protection:**
+
 - User data encryption at rest
 - Audit logging for sensitive operations
 - Privacy compliance (GDPR considerations)
@@ -415,16 +465,19 @@ X-RateLimit-Reset: 1640995200
 ### Backend Caching
 
 **Weather Data:**
+
 - Cache current weather for 10 minutes per location
 - Cache forecast data for 30 minutes per location
 - Use Redis or similar for distributed caching
 
 **Spotify Data:**
+
 - Cache user playlists for 1 hour
 - Cache track metadata for 24 hours
 - Invalidate on user changes
 
 **User Settings:**
+
 - Cache in memory for session duration
 - Invalidate on settings updates
 - Sync across multiple backend instances
@@ -432,6 +485,7 @@ X-RateLimit-Reset: 1640995200
 ### CDN Usage
 
 **Static Assets:**
+
 - Cache weather icons and images
 - Cache album artwork with appropriate headers
 - Use appropriate cache control headers
@@ -441,11 +495,13 @@ X-RateLimit-Reset: 1640995200
 ### Required Metrics
 
 **API Performance:**
+
 - Response times for all endpoints
 - Error rates by endpoint
 - Third-party API response times
 
 **User Behavior:**
+
 - Authentication success/failure rates
 - Feature usage patterns
 - Geographic distribution
@@ -453,6 +509,7 @@ X-RateLimit-Reset: 1640995200
 ### Logging Requirements
 
 **Structured Logging:**
+
 - Request/response logging
 - Error tracking with stack traces
 - User action audit trails
@@ -463,32 +520,36 @@ X-RateLimit-Reset: 1640995200
 ### Component Updates Required
 
 **NavBar.tsx (Line 36):**
+
 ```typescript
 // Replace placeholder with real authentication
 const initiateSpotifyAuth = () => {
-  window.location.href = '/auth/spotify';
+  window.location.href = "/auth/spotify";
 };
 ```
 
 **CurrentlyPlaying.tsx:**
+
 ```typescript
 // Replace placeholder data with API call
-const { data: currentTrack } = useQuery('/api/player/current');
+const { data: currentTrack } = useQuery("/api/player/current");
 ```
 
 **UpNext.tsx:**
+
 ```typescript
 // Replace placeholder songs with real queue
-const { data: queue } = useQuery('/api/player/queue');
+const { data: queue } = useQuery("/api/player/queue");
 ```
 
 **Settings Synchronization:**
+
 ```typescript
 // Sync settings with backend
 const updateSettings = async (newSettings) => {
-  await fetch('/api/settings', {
-    method: 'PUT',
-    body: JSON.stringify(newSettings)
+  await fetch("/api/settings", {
+    method: "PUT",
+    body: JSON.stringify(newSettings),
   });
 };
 ```

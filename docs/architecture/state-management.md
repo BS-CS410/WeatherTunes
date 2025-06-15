@@ -7,17 +7,20 @@ WeatherTunes uses a combination of React Context, custom hooks, and local compon
 ### State Management Strategy
 
 **Global State (React Context)**
+
 - User settings and preferences
 - Theme and UI configuration
 - Persistent data across components
 
 **Feature-Specific Hooks**
+
 - Weather data management
 - Music integration (planned)
 - API call coordination
 - Loading and error states
 
 **Local Component State**
+
 - UI interactions and animations
 - Form inputs and temporary data
 - Component-specific loading states
@@ -31,12 +34,13 @@ WeatherTunes uses a combination of React Context, custom hooks, and local compon
 **Purpose:** Manages user preferences with persistence and location-based defaults.
 
 **State Interface:**
+
 ```typescript
 interface Settings {
-  temperatureUnit: 'fahrenheit' | 'celsius';
-  timeFormat: '12h' | '24h';
-  speedUnit: 'mph' | 'kmh' | 'ms';
-  themeMode: 'auto' | 'light' | 'dark';
+  temperatureUnit: "fahrenheit" | "celsius";
+  timeFormat: "12h" | "24h";
+  speedUnit: "mph" | "kmh" | "ms";
+  themeMode: "auto" | "light" | "dark";
 }
 
 interface SettingsContextType {
@@ -48,20 +52,22 @@ interface SettingsContextType {
 ```
 
 **Key Features:**
+
 - Automatic localStorage persistence
 - Location-based default detection
 - Type-safe settings updates
 - Loading state management during initialization
 
 **Usage Pattern:**
+
 ```typescript
 const { settings, updateSettings } = useSettings();
 
 // Update specific setting
-updateSettings({ temperatureUnit: 'celsius' });
+updateSettings({ temperatureUnit: "celsius" });
 
 // Access current settings
-const isFahrenheit = settings.temperatureUnit === 'fahrenheit';
+const isFahrenheit = settings.temperatureUnit === "fahrenheit";
 ```
 
 ### Context Provider Setup
@@ -69,6 +75,7 @@ const isFahrenheit = settings.temperatureUnit === 'fahrenheit';
 **Location:** `src/main.tsx`
 
 **Provider Hierarchy:**
+
 ```typescript
 <BrowserRouter>
   <SettingsProvider>
@@ -78,6 +85,7 @@ const isFahrenheit = settings.temperatureUnit === 'fahrenheit';
 ```
 
 **Benefits:**
+
 - Settings available throughout app
 - Single source of truth for preferences
 - Automatic persistence and synchronization
@@ -87,6 +95,7 @@ const isFahrenheit = settings.temperatureUnit === 'fahrenheit';
 ### Weather Data Hooks
 
 **`useWeather.ts`**
+
 - Fetches current weather data
 - Handles geolocation and API calls
 - Manages loading, error, and success states
@@ -104,6 +113,7 @@ const { data, isLoading, error } = useWeather();
 ```
 
 **`useForecast.ts`**
+
 - Fetches 5-day weather forecast
 - Processes and formats forecast data
 - Handles API errors gracefully
@@ -122,6 +132,7 @@ const { forecast, isLoading, error } = useForecastData();
 ### Utility Hooks
 
 **`useLocalStorage.ts`**
+
 - Generic localStorage operations
 - JSON serialization/deserialization
 - Type-safe storage access
@@ -129,12 +140,13 @@ const { forecast, isLoading, error } = useForecastData();
 
 ```typescript
 const [storedValue, setStoredValue] = useLocalStorage<Settings>(
-  'weathertunes-settings',
-  defaultSettings
+  "weathertunes-settings",
+  defaultSettings,
 );
 ```
 
 **`useLocationBasedDefaults.ts`**
+
 - Geographic location detection
 - Country-based unit determination
 - Fallback handling for detection failures
@@ -145,6 +157,7 @@ const { defaults, isLoading } = useLocationBasedDefaults();
 ```
 
 **`useThemeManager.ts`**
+
 - Automatic theme switching based on time
 - Manual theme override support
 - CSS class application
@@ -157,6 +170,7 @@ const { currentTheme, setTheme } = useThemeManager();
 ### Feature-Specific Hooks
 
 **`useCardOrder.ts`**
+
 - Manages display order of UI cards
 - Responsive layout calculations
 - User preference storage
@@ -215,15 +229,16 @@ const { cardOrder, updateOrder } = useCardOrder();
 ### Local Storage Strategy
 
 **Settings Persistence:**
+
 ```typescript
 // Automatic save on settings change
 useEffect(() => {
-  localStorage.setItem('weathertunes-settings', JSON.stringify(settings));
+  localStorage.setItem("weathertunes-settings", JSON.stringify(settings));
 }, [settings]);
 
 // Load on app initialization
 useEffect(() => {
-  const stored = localStorage.getItem('weathertunes-settings');
+  const stored = localStorage.getItem("weathertunes-settings");
   if (stored) {
     setSettings(JSON.parse(stored));
   }
@@ -231,17 +246,18 @@ useEffect(() => {
 ```
 
 **Data Validation:**
+
 ```typescript
 const validateStoredSettings = (data: any): Settings | null => {
-  if (!data || typeof data !== 'object') return null;
-  
+  if (!data || typeof data !== "object") return null;
+
   // Validate each setting property
-  const isValid = 
-    ['fahrenheit', 'celsius'].includes(data.temperatureUnit) &&
-    ['12h', '24h'].includes(data.timeFormat) &&
-    ['mph', 'kmh', 'ms'].includes(data.speedUnit) &&
-    ['auto', 'light', 'dark'].includes(data.themeMode);
-  
+  const isValid =
+    ["fahrenheit", "celsius"].includes(data.temperatureUnit) &&
+    ["12h", "24h"].includes(data.timeFormat) &&
+    ["mph", "kmh", "ms"].includes(data.speedUnit) &&
+    ["auto", "light", "dark"].includes(data.themeMode);
+
   return isValid ? data : null;
 };
 ```
@@ -249,29 +265,34 @@ const validateStoredSettings = (data: any): Settings | null => {
 ### Cache Management
 
 **Weather Data Caching:**
+
 ```typescript
 const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
 
 const cachedData = {
   weather: { data: null, timestamp: 0 },
-  forecast: { data: null, timestamp: 0 }
+  forecast: { data: null, timestamp: 0 },
 };
 
-const isCacheValid = (timestamp: number) => 
+const isCacheValid = (timestamp: number) =>
   Date.now() - timestamp < CACHE_DURATION;
 ```
 
 **Location Caching:**
+
 ```typescript
 const LOCATION_CACHE_DURATION = 60 * 60 * 1000; // 1 hour
 
 // Cache coordinates to avoid repeated geolocation requests
 const cacheLocation = (coords: GeolocationCoordinates) => {
-  localStorage.setItem('cached-location', JSON.stringify({
-    latitude: coords.latitude,
-    longitude: coords.longitude,
-    timestamp: Date.now()
-  }));
+  localStorage.setItem(
+    "cached-location",
+    JSON.stringify({
+      latitude: coords.latitude,
+      longitude: coords.longitude,
+      timestamp: Date.now(),
+    }),
+  );
 };
 ```
 
@@ -280,33 +301,43 @@ const cacheLocation = (coords: GeolocationCoordinates) => {
 ### Re-render Prevention
 
 **Context Value Memoization:**
+
 ```typescript
-const contextValue = useMemo(() => ({
-  settings,
-  updateSettings,
-  resetToDefaults,
-  isLoading
-}), [settings, isLoading]);
+const contextValue = useMemo(
+  () => ({
+    settings,
+    updateSettings,
+    resetToDefaults,
+    isLoading,
+  }),
+  [settings, isLoading],
+);
 ```
 
 **Callback Memoization:**
+
 ```typescript
 const updateSettings = useCallback((newSettings: Partial<Settings>) => {
-  setSettings(prev => ({ ...prev, ...newSettings }));
+  setSettings((prev) => ({ ...prev, ...newSettings }));
 }, []);
 ```
 
 ### Selective Updates
 
 **Granular State Updates:**
+
 ```typescript
 // Only update specific settings to minimize re-renders
-const updateTemperatureUnit = useCallback((unit: TemperatureUnit) => {
-  updateSettings({ temperatureUnit: unit });
-}, [updateSettings]);
+const updateTemperatureUnit = useCallback(
+  (unit: TemperatureUnit) => {
+    updateSettings({ temperatureUnit: unit });
+  },
+  [updateSettings],
+);
 ```
 
 **Conditional Effect Dependencies:**
+
 ```typescript
 // Only fetch weather when location changes
 useEffect(() => {
@@ -321,16 +352,17 @@ useEffect(() => {
 ### Global Error Boundaries
 
 **Error Recovery:**
+
 ```typescript
 const ErrorBoundary: React.FC = ({ children }) => {
   const [hasError, setHasError] = useState(false);
-  
+
   const resetError = () => setHasError(false);
-  
+
   if (hasError) {
     return <ErrorFallback onReset={resetError} />;
   }
-  
+
   return children;
 };
 ```
@@ -338,21 +370,22 @@ const ErrorBoundary: React.FC = ({ children }) => {
 ### Hook-Level Error Handling
 
 **API Error Management:**
+
 ```typescript
 const useWeather = () => {
   const [error, setError] = useState<string | null>(null);
-  
+
   const fetchData = async () => {
     try {
       setError(null);
       const data = await weatherApi.getCurrentWeather(coords);
       setWeatherData(data);
     } catch (err) {
-      setError('Failed to fetch weather data');
-      console.error('Weather API error:', err);
+      setError("Failed to fetch weather data");
+      console.error("Weather API error:", err);
     }
   };
-  
+
   return { data, error, refetch: fetchData };
 };
 ```
@@ -360,11 +393,12 @@ const useWeather = () => {
 ### Graceful Degradation
 
 **Fallback Data:**
+
 ```typescript
 const defaultWeatherData = {
-  location: 'Bellevue, WA',
+  location: "Bellevue, WA",
   temperature: 20,
-  condition: 'clear sky',
+  condition: "clear sky",
   // ... other default values
 };
 
@@ -377,22 +411,24 @@ const weatherData = apiData || defaultWeatherData;
 ### Hook Testing
 
 **Custom Hook Testing:**
-```typescript
-import { renderHook, act } from '@testing-library/react';
-import { useSettings } from '../hooks/useSettings';
 
-test('should update settings correctly', () => {
+```typescript
+import { renderHook, act } from "@testing-library/react";
+import { useSettings } from "../hooks/useSettings";
+
+test("should update settings correctly", () => {
   const { result } = renderHook(() => useSettings());
-  
+
   act(() => {
-    result.current.updateSettings({ temperatureUnit: 'celsius' });
+    result.current.updateSettings({ temperatureUnit: "celsius" });
   });
-  
-  expect(result.current.settings.temperatureUnit).toBe('celsius');
+
+  expect(result.current.settings.temperatureUnit).toBe("celsius");
 });
 ```
 
 **Context Testing:**
+
 ```typescript
 const renderWithContext = (component: React.ReactElement) => {
   return render(
@@ -406,16 +442,17 @@ const renderWithContext = (component: React.ReactElement) => {
 ### Integration Testing
 
 **Data Flow Testing:**
+
 ```typescript
 test('weather data updates video background', async () => {
   const { getByTestId } = render(<App />);
-  
+
   // Mock weather data
   mockWeatherApi.mockResolvedValue({
     condition: 'rain',
     timeOfDay: 'evening'
   });
-  
+
   // Wait for data to load and video to update
   await waitFor(() => {
     const video = getByTestId('background-video');
@@ -429,18 +466,21 @@ test('weather data updates video background', async () => {
 ### Planned State Improvements
 
 **Redux Toolkit Integration (if needed):**
+
 - For complex music player state
 - Advanced undo/redo functionality
 - Time-travel debugging
 - Complex async action handling
 
 **Server State Management:**
+
 - React Query for API data
 - Optimistic updates
 - Background synchronization
 - Offline support
 
 **Enhanced Persistence:**
+
 - IndexedDB for large data
 - Cross-tab synchronization
 - Cloud settings backup
@@ -449,6 +489,7 @@ test('weather data updates video background', async () => {
 ### Performance Monitoring
 
 **State Performance Metrics:**
+
 - Re-render tracking
 - Memory usage monitoring
 - API call optimization

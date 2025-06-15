@@ -5,6 +5,7 @@ The settings system provides comprehensive user preference management with autom
 ## Overview
 
 The settings system manages:
+
 - Temperature units (Fahrenheit/Celsius)
 - Time format (12-hour/24-hour)
 - Speed units (mph/km/h/m/s)
@@ -17,18 +18,21 @@ The settings system manages:
 ### Core Components
 
 **`SettingsContext.tsx`**
+
 - Global state management with React Context
 - Persistent storage integration
 - Location-based default detection
 - Settings validation and type safety
 
 **`SettingsMenu.tsx`**
+
 - User interface for preference management
 - Toggle controls for all settings
 - Reset to defaults functionality
 - Debug information in development mode
 
 **`SettingsButton.tsx`**
+
 - Settings access trigger
 - Animated gear icon
 - Glassmorphism styling consistent with app design
@@ -36,16 +40,19 @@ The settings system manages:
 ### Custom Hooks
 
 **`useSettings.ts`**
+
 - Context consumer hook
 - Type-safe settings access
 - Automatic re-rendering on changes
 
 **`useLocationBasedDefaults.ts`**
+
 - Geographic location detection
 - Country-based unit determination
 - Fallback handling for location failures
 
 **`useLocalStorage.ts`**
+
 - Browser storage utilities
 - JSON serialization/deserialization
 - Storage event handling
@@ -55,21 +62,25 @@ The settings system manages:
 ### User Preferences
 
 **Temperature Units**
+
 - Fahrenheit (°F) - Default for US and territories
 - Celsius (°C) - Default for rest of world
 - Automatic conversion throughout app
 
 **Time Format**
+
 - 12-hour format (12:30 PM) - Default for US
 - 24-hour format (12:30) - Default for most countries
 - Affects sunrise/sunset display and any time stamps
 
 **Speed Units**
+
 - Miles per hour (mph) - Default for imperial countries
 - Kilometers per hour (km/h) - Default for metric countries
 - Meters per second (m/s) - Available as alternative
 
 **Theme Mode**
+
 - Automatic - Switches based on sunrise/sunset data
 - Light - Forces light theme
 - Dark - Forces dark theme
@@ -77,6 +88,7 @@ The settings system manages:
 ### Location-Based Defaults
 
 **Imperial Countries** (Fahrenheit + mph):
+
 - United States (US)
 - Bahamas (BS)
 - Belize (BZ)
@@ -87,17 +99,20 @@ The settings system manages:
 - Marshall Islands (MH)
 
 **All Other Countries** (Celsius + km/h):
+
 - Canada, UK, European Union, Asia, etc.
 - Metric system as global standard
 
 ### Default Detection Process
 
 1. **Geolocation Request**
+
    - Browser geolocation API call
    - User permission handling
    - Coordinate extraction
 
 2. **Country Code Lookup**
+
    - OpenWeatherMap API call with coordinates
    - Country field extraction from response
    - Mapping to unit preferences
@@ -113,16 +128,18 @@ The settings system manages:
 ### State Management
 
 **Settings Interface:**
+
 ```typescript
 interface Settings {
-  temperatureUnit: 'fahrenheit' | 'celsius';
-  timeFormat: '12h' | '24h';
-  speedUnit: 'mph' | 'kmh' | 'ms';
-  themeMode: 'auto' | 'light' | 'dark';
+  temperatureUnit: "fahrenheit" | "celsius";
+  timeFormat: "12h" | "24h";
+  speedUnit: "mph" | "kmh" | "ms";
+  themeMode: "auto" | "light" | "dark";
 }
 ```
 
 **Context Provider:**
+
 ```typescript
 interface SettingsContextType {
   settings: Settings;
@@ -137,6 +154,7 @@ interface SettingsContextType {
 **Local Storage Key:** `weathertunes-settings`
 
 **Storage Format:**
+
 ```json
 {
   "temperatureUnit": "fahrenheit",
@@ -147,6 +165,7 @@ interface SettingsContextType {
 ```
 
 **Storage Events:**
+
 - Automatic save on any setting change
 - Cross-tab synchronization
 - Invalid data validation and reset
@@ -154,16 +173,19 @@ interface SettingsContextType {
 ### Integration Points
 
 **Temperature Display:**
+
 - Weather components respect temperature unit
 - Automatic conversion in `temperature.ts` utilities
 - Display formatting with proper symbols
 
 **Time Display:**
+
 - Sunrise/sunset times formatted per preference
 - Clock displays (if added) follow format
 - Consistent throughout application
 
 **Theme Application:**
+
 - CSS class application based on theme mode
 - Time-based automatic switching
 - Smooth transitions between themes
@@ -173,16 +195,19 @@ interface SettingsContextType {
 ### Settings Menu Design
 
 **Glassmorphism Styling:**
+
 - Semi-transparent background with backdrop blur
 - Consistent with app's visual design
 - Smooth animations and transitions
 
 **Control Types:**
+
 - Toggle switches for binary choices
 - Segmented controls for multiple options
 - Visual feedback for all interactions
 
 **Layout:**
+
 ```
 Settings Menu
 ├── Temperature Unit [°F | °C]
@@ -195,6 +220,7 @@ Settings Menu
 ### Debug Information
 
 **Development Mode Features:**
+
 - Location detection status display
 - Detected default units shown
 - Console logging for troubleshooting
@@ -205,6 +231,7 @@ Settings Menu
 ### Manual Testing
 
 **New User Experience:**
+
 1. Clear browser localStorage
 2. Reload application
 3. Allow location access when prompted
@@ -212,12 +239,14 @@ Settings Menu
 5. Check settings menu reflects defaults
 
 **Existing User Experience:**
+
 1. Set custom preferences
 2. Reload application
 3. Verify settings persistence
 4. Test reset to defaults functionality
 
 **Location Testing:**
+
 1. Test from US location → Fahrenheit/mph
 2. Test from non-US location → Celsius/km/h
 3. Deny location → Metric defaults
@@ -230,21 +259,26 @@ Settings Menu
 testCountryUnits(); // Shows all country mappings
 
 // Simulate specific country
-simulateCountryDefaults('US'); // Test US defaults
-simulateCountryDefaults('CA'); // Test Canadian defaults
+simulateCountryDefaults("US"); // Test US defaults
+simulateCountryDefaults("CA"); // Test Canadian defaults
 
 // Check current settings
-console.log('Current settings:', JSON.parse(localStorage.getItem('weathertunes-settings')));
+console.log(
+  "Current settings:",
+  JSON.parse(localStorage.getItem("weathertunes-settings")),
+);
 ```
 
 ### Settings Validation
 
 **Type Safety:**
+
 - TypeScript interfaces prevent invalid values
 - Runtime validation for localStorage data
 - Graceful handling of corrupted settings
 
 **Data Integrity:**
+
 - Settings reset if invalid data detected
 - Backward compatibility for settings schema changes
 - Migration handling for future updates
@@ -254,12 +288,14 @@ console.log('Current settings:', JSON.parse(localStorage.getItem('weathertunes-s
 ### Location Detection Errors
 
 **Geolocation Failures:**
+
 - Permission denied → Use metric defaults + user notification
 - Timeout → Use cached location or metric defaults
 - Position unavailable → Use metric defaults
 - Not supported → Use metric defaults
 
 **API Failures:**
+
 - Network error → Use metric defaults
 - Invalid response → Use metric defaults
 - Rate limiting → Use cached country or defaults
@@ -267,6 +303,7 @@ console.log('Current settings:', JSON.parse(localStorage.getItem('weathertunes-s
 ### Storage Errors
 
 **localStorage Issues:**
+
 - Storage full → Clear and reset to defaults
 - JSON parse error → Reset corrupted settings
 - Access denied → Use in-memory settings only
@@ -277,12 +314,14 @@ console.log('Current settings:', JSON.parse(localStorage.getItem('weathertunes-s
 ### Optimization Strategies
 
 **Location Detection:**
+
 - Cache coordinates for 1 hour
 - Cache country code for 24 hours
 - Single API call per session when possible
 - Background detection without blocking UI
 
 **Settings Access:**
+
 - Context minimizes re-renders
 - Memoized default calculations
 - Efficient localStorage operations
@@ -291,6 +330,7 @@ console.log('Current settings:', JSON.parse(localStorage.getItem('weathertunes-s
 ### Memory Usage
 
 **Minimal State:**
+
 - Only store essential preferences
 - Computed values derived on demand
 - No unnecessary data persistence
@@ -301,18 +341,21 @@ console.log('Current settings:', JSON.parse(localStorage.getItem('weathertunes-s
 ### Planned Features
 
 **Advanced Preferences:**
+
 - Language/locale selection
 - Date format preferences
 - Distance unit preferences
 - Pressure unit options (hPa, inHg)
 
 **Cloud Synchronization:**
+
 - User account integration
 - Cross-device settings sync
 - Backup and restore functionality
 - Settings history tracking
 
 **Accessibility:**
+
 - High contrast theme option
 - Font size preferences
 - Reduced motion settings
@@ -321,6 +364,7 @@ console.log('Current settings:', JSON.parse(localStorage.getItem('weathertunes-s
 ### Backend Integration
 
 **User Profiles:**
+
 - Server-side settings storage
 - Account-based preferences
 - Settings sharing between devices
