@@ -8,10 +8,10 @@ function Card({ className, ...props }: React.ComponentProps<"div">) {
       data-slot="card"
       className={cn(
         // Glassmorphism: increased blur, reduced opacity, subtle border
-        "relative flex flex-col gap-4 overflow-hidden rounded-xl py-6 shadow-lg backdrop-blur-lg transition-transform duration-200 dark:shadow-2xl dark:shadow-black/40",
+        "relative flex flex-col gap-4 overflow-hidden rounded-xl py-6 shadow-lg backdrop-blur-lg transition-all duration-300 dark:shadow-2xl dark:shadow-black/40",
         "border border-white/20 dark:border-white/10", // Subtle border
         "bg-white/60 dark:bg-slate-900/60", // Adjusted light and dark backgrounds opacity
-        "hover:scale-[1.015] hover:shadow-xl dark:hover:scale-[1.015] dark:hover:bg-slate-800/70 dark:hover:shadow-[0_8px_32px_0_rgba(0,0,0,0.25)]", // Adjusted hover effects
+        "hover:scale-[1.015] hover:border-white/30 hover:bg-white/50 hover:shadow-xl dark:hover:scale-[1.015] dark:hover:border-white/20 dark:hover:bg-slate-900/60", // Adjusted hover effects
         className,
       )}
       {...props}
