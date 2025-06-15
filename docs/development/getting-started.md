@@ -214,12 +214,19 @@ npm install
 
 ## Next Steps
 
-Once the development environment is running:
+Once the development environment is running successfully:
 
-1. **Explore the codebase**: Review [Component Architecture](../architecture/components.md)
-2. **Understand data flow**: Read [State Management](../architecture/state-management.md)
-3. **Review features**: Check [Weather System](../features/weather.md) and [Settings System](../features/settings.md)
-4. **Development workflow**: See [Development Setup](setup.md) for advanced configuration
+### 1. Explore the Codebase
+- **Component Architecture**: Review [Component Architecture](../architecture/components.md) to understand React component organization and patterns
+- **System Overview**: Read [System Overview](../architecture/overview.md) for high-level architecture and technology stack
+
+### 2. Understand Data Flow
+- **State Management**: Read [State Management](../architecture/state-management.md) to learn how data flows through the application
+- **Development Workflow**: See [Development Setup](setup.md) for advanced configuration and tools
+
+### 3. Review Core Features
+- **Weather System**: Check [Weather System](../features/weather.md) to understand OpenWeatherMap API integration
+- **Settings System**: Explore [Settings System](../features/settings.md) for user preferences and localStorage patterns
 
 The application is now ready for development with full weather functionality, responsive design, and modern React patterns.
 
@@ -240,15 +247,6 @@ The application is now ready for development with full weather functionality, re
 
 - Clear npm cache: `npm cache clean --force`
 - Delete `node_modules` and `package-lock.json`, then run `npm install` again
-
-## Next Steps
-
-Once you have the application running:
-
-1. **Explore the Code**: See [Component Structure](../architecture/components.md)
-2. **Understand the Features**: Check [Weather System](../features/weather.md)
-3. **Set Up Development Tools**: Review [Development Setup](setup.md)
-4. **Learn the Architecture**: Read [System Overview](../architecture/overview.md)
 
 ## Available Scripts
 
