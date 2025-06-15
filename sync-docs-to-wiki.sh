@@ -73,6 +73,26 @@ update_links() {
   sed -i '' 's|features/video-backgrounds\.md|Features-Video-Backgrounds|g' "$WIKI_DIR/Home.md"
   sed -i '' 's|features/music\.md|Features-Music|g' "$WIKI_DIR/Home.md"
   sed -i '' 's|backend/api-requirements\.md|Backend-API-Requirements|g' "$WIKI_DIR/Home.md"
+
+  # Update links in all other wiki pages
+  for file in "$WIKI_DIR"/*.md; do
+    if [[ -f "$file" && "$file" != "$WIKI_DIR/Home.md" ]]; then
+      # Fix relative links to other wiki pages
+      sed -i '' 's|\.\./architecture/overview\.md|Architecture-Overview|g' "$file"
+      sed -i '' 's|\.\./architecture/components\.md|Architecture-Components|g' "$file"
+      sed -i '' 's|\.\./architecture/state-management\.md|Architecture-State-Management|g' "$file"
+      sed -i '' 's|\.\./features/weather\.md|Features-Weather|g' "$file"
+      sed -i '' 's|\.\./features/settings\.md|Features-Settings|g' "$file"
+      sed -i '' 's|\.\./features/video-backgrounds\.md|Features-Video-Backgrounds|g' "$file"
+      sed -i '' 's|\.\./features/music\.md|Features-Music|g' "$file"
+      sed -i '' 's|\.\./backend/api-requirements\.md|Backend-API-Requirements|g' "$file"
+      sed -i '' 's|setup\.md|Development-Setup|g' "$file"
+      sed -i '' 's|getting-started\.md|Development-Getting-Started|g' "$file"
+      # Fix links within same directory (development pages linking to each other)
+      sed -i '' 's|\](setup\.md)|](Development-Setup)|g' "$file"
+      sed -i '' 's|\](getting-started\.md)|](Development-Getting-Started)|g' "$file"
+    fi
+  done
 }
 
 # Function to commit and push changes
