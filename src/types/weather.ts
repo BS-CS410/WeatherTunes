@@ -22,6 +22,7 @@ export interface WeatherApiResponse {
   sys: {
     sunrise: number;
     sunset: number;
+    country?: string;
   };
 }
 

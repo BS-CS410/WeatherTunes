@@ -1,6 +1,7 @@
-import { createContext } from "react";
+import { createContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { useLocationBasedDefaults } from "@/hooks/useLocationBasedDefaults";
 
 type TemperatureUnit = "F" | "C";
 type TimeFormat = "12h" | "24h";
@@ -23,6 +24,12 @@ interface SettingsContextType {
   toggleTemperatureUnit: () => void;
   toggleTimeFormat: () => void;
   resetToDefaults: () => void;
+  // Location-based defaults info for debugging
+  locationDefaults: {
+    temperatureUnit: TemperatureUnit;
+    speedUnit: SpeedUnit;
+  } | null;
+  isLocationLoading: boolean;
 }
 
 const defaultSettings: Settings = {
@@ -43,10 +50,17 @@ interface SettingsProviderProps {
 }
 
 export function SettingsProvider({ children }: SettingsProviderProps) {
+  const { locationDefaults, isLoading: locationLoading } =
+    useLocationBasedDefaults();
+  const [defaultsInitialized, setDefaultsInitialized] = useState(false);
+
+  // Determine the actual defaults to use
+  const actualDefaults = locationDefaults || defaultSettings;
+
   const [temperatureUnit, setTemperatureUnit] =
     useLocalStorage<TemperatureUnit>(
       "temperatureUnit",
-      defaultSettings.temperatureUnit,
+      actualDefaults.temperatureUnit,
     );
   const [timeFormat, setTimeFormat] = useLocalStorage<TimeFormat>(
     "timeFormat",
@@ -54,12 +68,43 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
   );
   const [speedUnit, setSpeedUnit] = useLocalStorage<SpeedUnit>(
     "speedUnit",
-    defaultSettings.speedUnit,
+    actualDefaults.speedUnit,
   );
   const [themeMode, setThemeMode] = useLocalStorage<ThemeMode>(
     "themeMode",
     defaultSettings.themeMode,
   );
+
+  // Update defaults when location is determined (only if not already set)
+  useEffect(() => {
+    if (!locationLoading && locationDefaults && !defaultsInitialized) {
+      console.log("Checking if we should apply location-based defaults...");
+
+      // Only update if the user hasn't explicitly set their preferences
+      const hasExistingPrefs =
+        localStorage.getItem("temperatureUnit") ||
+        localStorage.getItem("speedUnit");
+
+      console.log(`Has existing preferences: ${!!hasExistingPrefs}`);
+      console.log(`Location defaults:`, locationDefaults);
+
+      if (!hasExistingPrefs) {
+        console.log("Applying location-based defaults");
+        setTemperatureUnit(locationDefaults.temperatureUnit);
+        setSpeedUnit(locationDefaults.speedUnit);
+      } else {
+        console.log("User has existing preferences, keeping them");
+      }
+
+      setDefaultsInitialized(true);
+    }
+  }, [
+    locationLoading,
+    locationDefaults,
+    defaultsInitialized,
+    setTemperatureUnit,
+    setSpeedUnit,
+  ]);
 
   const settings: Settings = {
     temperatureUnit,
@@ -77,9 +122,10 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
   };
 
   const resetToDefaults = () => {
-    setTemperatureUnit(defaultSettings.temperatureUnit);
+    const defaultsToUse = locationDefaults || defaultSettings;
+    setTemperatureUnit(defaultsToUse.temperatureUnit);
     setTimeFormat(defaultSettings.timeFormat);
-    setSpeedUnit(defaultSettings.speedUnit);
+    setSpeedUnit(defaultsToUse.speedUnit);
     setThemeMode(defaultSettings.themeMode);
   };
 
@@ -94,6 +140,8 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
         toggleTemperatureUnit,
         toggleTimeFormat,
         resetToDefaults,
+        locationDefaults,
+        isLocationLoading: locationLoading,
       }}
     >
       {children}

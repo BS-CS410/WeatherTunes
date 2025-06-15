@@ -9,6 +9,21 @@ import {
 import { formatTemperature } from "@/lib/temperature";
 import { useSettings } from "@/hooks/useSettings";
 
+// Helper function to format weather condition for display
+function formatWeatherCondition(
+  condition: string,
+  description?: string,
+): string {
+  // Use the more descriptive description if available, otherwise use main condition
+  const displayCondition = description || condition;
+
+  // Capitalize first letter and make it more user-friendly
+  return (
+    displayCondition.charAt(0).toUpperCase() +
+    displayCondition.slice(1).toLowerCase()
+  );
+}
+
 export function useWeatherData() {
   const { settings } = useSettings();
   const [weatherState, setWeatherState] = useState<EnhancedWeatherState>({
@@ -48,6 +63,16 @@ export function useWeatherData() {
       const now = new Date();
       const period = getTimePeriod(now, data.sys?.sunrise, data.sys?.sunset);
 
+      // Debug logging for weather condition
+      console.log("Weather API Debug:", {
+        apiCondition: data.weather[0].main,
+        apiDescription: data.weather[0].description,
+        weatherId: data.weather[0].id,
+        fullWeatherArray: data.weather,
+        location: data.name,
+        temp: data.main.temp,
+      });
+
       setWeatherState({
         displayData: {
           location: data.name,
@@ -56,7 +81,10 @@ export function useWeatherData() {
             "F",
             settings.temperatureUnit,
           ),
-          condition: data.weather[0].main,
+          condition: formatWeatherCondition(
+            data.weather[0].main,
+            data.weather[0].description,
+          ),
           unit: `°${settings.temperatureUnit}`,
           isError: false,
           sunrise: formatUnixTimeToLocalString(

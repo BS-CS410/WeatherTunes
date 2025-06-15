@@ -56,6 +56,6 @@ export function createErrorWeatherData(): WeatherApiResponse {
     name: "Error",
     main: { temp: 0, humidity: 0, pressure: 0 },
     weather: [{ main: "Unable to load", description: "Error", id: 0 }],
-    sys: { sunrise: 0, sunset: 0 },
+    sys: { sunrise: 0, sunset: 0, country: undefined },
   };
 }

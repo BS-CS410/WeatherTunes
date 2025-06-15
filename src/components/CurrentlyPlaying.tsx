@@ -39,11 +39,11 @@ const CurrentlyPlaying: React.FC<CurrentlyPlayingProps> = ({
       </div>
       <div className="text-center transition-transform duration-300 ease-in-out hover:-translate-y-2 hover:scale-105 hover:drop-shadow-md">
         <div className="flex items-center justify-center">
-          <h2 className="truncate text-[clamp(1rem,4vw,2rem)] font-semibold text-gray-800 dark:text-slate-200">
+          <h2 className="truncate text-[clamp(1rem,4vw,2rem)] font-semibold text-gray-900 dark:text-slate-200">
             {songTitle}
           </h2>
         </div>
-        <p className="truncate text-[clamp(0.8rem,2.5vw,1.2rem)] text-gray-600 dark:text-slate-400">
+        <p className="truncate text-[clamp(0.8rem,2.5vw,1.2rem)] text-gray-700 dark:text-slate-400">
           {artistName}
         </p>
       </div>
