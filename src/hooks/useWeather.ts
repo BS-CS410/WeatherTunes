@@ -6,14 +6,17 @@ import {
   type TimePeriod,
   formatUnixTimeToLocalString,
 } from "@/lib/utils";
+import { formatTemperature } from "@/lib/temperature";
+import { useSettings } from "@/hooks/useSettings";
 
 export function useWeatherData() {
+  const { settings } = useSettings();
   const [weatherState, setWeatherState] = useState<EnhancedWeatherState>({
     displayData: {
       location: "Loading...",
       temperature: "--",
       condition: "Loading...",
-      unit: "°F",
+      unit: `°${settings.temperatureUnit}`,
       isError: false,
     },
     timePeriod: null,
@@ -31,7 +34,7 @@ export function useWeatherData() {
             location: errorData.name, // "Error"
             temperature: "--",
             condition: errorData.weather[0].main, // "Unable to load"
-            unit: "°F",
+            unit: `°${settings.temperatureUnit}`,
             isError: true,
           },
           timePeriod: getTimePeriod(new Date()), // Fallback time period
@@ -48,12 +51,22 @@ export function useWeatherData() {
       setWeatherState({
         displayData: {
           location: data.name,
-          temperature: Math.round(data.main.temp).toString(),
+          temperature: formatTemperature(
+            data.main.temp,
+            "F",
+            settings.temperatureUnit,
+          ),
           condition: data.weather[0].main,
-          unit: "°F",
+          unit: `°${settings.temperatureUnit}`,
           isError: false,
-          sunrise: formatUnixTimeToLocalString(data.sys?.sunrise),
-          sunset: formatUnixTimeToLocalString(data.sys?.sunset),
+          sunrise: formatUnixTimeToLocalString(
+            data.sys?.sunrise,
+            settings.timeFormat,
+          ),
+          sunset: formatUnixTimeToLocalString(
+            data.sys?.sunset,
+            settings.timeFormat,
+          ),
         },
         timePeriod: period,
         isLoading: false,
@@ -61,8 +74,8 @@ export function useWeatherData() {
         rawResponse: data,
       });
     },
-    [],
-  ); // Empty dependency array as getTimePeriod is pure and createErrorWeatherData is stable
+    [settings.temperatureUnit, settings.timeFormat],
+  );
 
   useEffect(() => {
     const apiKey = import.meta.env.VITE_PUBLIC_OPENWEATHER_API_KEY;

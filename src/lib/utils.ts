@@ -62,14 +62,30 @@ export function getTimePeriod(
 }
 
 /**
- * Converts a UTC unix timestamp (seconds) to a local time string (e.g., 6:12 am)
+ * Converts a UTC unix timestamp (seconds) to a local time string
+ * @param unixTime - Unix timestamp in seconds
+ * @param format - Time format preference ('12h' or '24h')
  */
-export function formatUnixTimeToLocalString(unixTime: number): string {
+export function formatUnixTimeToLocalString(
+  unixTime: number,
+  format: "12h" | "24h" = "12h",
+): string {
   if (!unixTime) return "--";
   const date = new Date(unixTime * 1000);
+
+  if (format === "24h") {
+    return date.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+  }
+
+  // 12h format
   const timeString = date.toLocaleTimeString([], {
     hour: "numeric",
     minute: "2-digit",
+    hour12: true,
   });
   return timeString.toLowerCase();
 }

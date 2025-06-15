@@ -2,7 +2,9 @@ import UnifiedDisplay from "@/components/UnifiedDisplay"; // Import the new unif
 import { Card, CardContent } from "@/components/ui/card";
 import { UpNext } from "@/components/UpNext";
 import { VideoBackground } from "@/components/VideoBackground";
-import { useWeatherData, useThemeFromWeather } from "@/hooks/useWeather";
+import { SettingsButton } from "@/components/SettingsButton";
+import { useWeatherData } from "@/hooks/useWeather";
+import { useThemeManager } from "@/hooks/useThemeManager";
 
 function MainPage() {
   const { displayData, timePeriod, isLoading, error } = useWeatherData();
@@ -15,7 +17,7 @@ function MainPage() {
       "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/f9/3c/d1/f93cd16d-2329-561c-a851-672eea4e48c3/23UMGIM87924.rgb.jpg/800x800cc.jpg",
   };
 
-  useThemeFromWeather(timePeriod);
+  useThemeManager(timePeriod);
 
   // Loading State
   if (isLoading) {
@@ -43,6 +45,9 @@ function MainPage() {
   // MainPage Component //
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center overflow-auto">
+      {/* Settings Button */}
+      <SettingsButton />
+
       {/* Video Background */}
       <VideoBackground
         condition={displayData.condition}
