@@ -20,7 +20,7 @@ function ForecastDay({
   const iconUrl = `https://openweathermap.org/img/wn/${icon}@2x.png`;
 
   return (
-    <div className="group grid grid-rows-[auto_auto_3rem_2rem_auto] items-center justify-items-center gap-1 rounded-lg border border-white/20 bg-white/10 p-3 text-center backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:border-white/30 hover:bg-white/20 hover:shadow-lg dark:border-slate-600/30 dark:bg-slate-800/20 dark:hover:border-slate-500/40 dark:hover:bg-slate-700/30">
+    <div className="group grid grid-rows-[auto_auto_3rem_2rem_auto] items-center justify-items-center gap-1 rounded-lg border border-white/20 bg-white/10 p-3 text-center backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:border-white/30 hover:bg-white/20 hover:brightness-110 dark:border-slate-600/30 dark:bg-slate-800/20 dark:hover:border-slate-500/40 dark:hover:bg-slate-700/30 dark:hover:brightness-125">
       <div className="text-sm font-medium text-gray-900 transition-colors group-hover:text-gray-800 dark:text-slate-200 dark:group-hover:text-slate-100">
         {dayName}
       </div>
@@ -55,7 +55,7 @@ export function ForecastCard() {
 
   if (isLoading) {
     return (
-      <div className="relative flex flex-col gap-4 overflow-hidden rounded-xl border border-white/20 bg-white/40 py-6 shadow-lg backdrop-blur-lg transition-all duration-300 hover:scale-[1.015] hover:border-white/30 hover:bg-white/50 hover:shadow-xl dark:border-white/10 dark:bg-slate-900/75 dark:hover:border-white/20 dark:hover:bg-slate-900/60">
+      <div className="relative flex flex-col gap-4 overflow-hidden rounded-xl border border-white/20 bg-white/40 py-6 shadow-lg backdrop-blur-lg transition-all duration-300 hover:scale-[1.015] hover:border-white/30 hover:bg-white/50 hover:brightness-110 dark:border-white/10 dark:bg-slate-900/75 dark:hover:border-white/20 dark:hover:bg-slate-900/60 dark:hover:brightness-125">
         {/* Soft inner shadow for extra depth */}
         <div className="pointer-events-none absolute inset-0 rounded-xl shadow-[inset_0_1px_8px_0_rgba(0,0,0,0.04)] dark:shadow-[inset_0_1px_8px_0_rgba(0,0,0,0.08)]" />
         <div className="px-6">
@@ -74,7 +74,7 @@ export function ForecastCard() {
 
   if (error || forecast.length === 0) {
     return (
-      <div className="relative flex flex-col gap-4 overflow-hidden rounded-xl border border-white/20 bg-white/40 py-6 shadow-lg backdrop-blur-lg transition-all duration-300 hover:scale-[1.015] hover:border-white/30 hover:bg-white/50 hover:shadow-xl dark:border-white/10 dark:bg-slate-900/75 dark:hover:border-white/20 dark:hover:bg-slate-900/60">
+      <div className="relative flex flex-col gap-4 overflow-hidden rounded-xl border border-white/20 bg-white/40 py-6 shadow-lg backdrop-blur-lg transition-all duration-300 hover:scale-[1.015] hover:border-white/30 hover:bg-white/50 hover:brightness-110 dark:border-white/10 dark:bg-slate-900/75 dark:hover:border-white/20 dark:hover:bg-slate-900/60 dark:hover:brightness-125">
         {/* Soft inner shadow for extra depth */}
         <div className="pointer-events-none absolute inset-0 rounded-xl shadow-[inset_0_1px_8px_0_rgba(0,0,0,0.04)] dark:shadow-[inset_0_1px_8px_0_rgba(0,0,0,0.08)]" />
         <div className="px-6">
@@ -92,7 +92,7 @@ export function ForecastCard() {
   }
 
   return (
-    <div className="relative flex flex-col gap-4 overflow-hidden rounded-xl border border-white/20 bg-white/40 py-6 shadow-lg backdrop-blur-lg transition-all duration-300 hover:scale-[1.015] hover:border-white/30 hover:bg-white/50 hover:shadow-xl dark:border-white/10 dark:bg-slate-900/75 dark:hover:border-white/20 dark:hover:bg-slate-900/60">
+    <div className="relative flex flex-col gap-4 overflow-hidden rounded-xl border border-white/20 bg-white/40 py-6 shadow-lg backdrop-blur-lg transition-all duration-300 hover:scale-[1.015] hover:border-white/30 hover:bg-white/50 hover:brightness-110 dark:border-white/10 dark:bg-slate-900/75 dark:hover:border-white/20 dark:hover:bg-slate-900/60 dark:hover:brightness-125">
       {/* Soft inner shadow for extra depth */}
       <div className="pointer-events-none absolute inset-0 rounded-xl shadow-[inset_0_1px_8px_0_rgba(0,0,0,0.04)] dark:shadow-[inset_0_1px_8px_0_rgba(0,0,0,0.08)]" />
       <div className="px-6">
