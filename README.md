@@ -1,6 +1,6 @@
 # WeatherTunes 🌪️🎸😎👍
 
-**WeatherTunes** is a web application that connects to your Spotify account and plays music according to the current weather in your location. This document focuses on the backend development aspects required to bring the full functionality to life, referencing specific integration points in the existing frontend. The frontend is built with [React](https://react.dev/), [TypeScript](https://www.typescriptlang.org/) and [Vite](https://vitejs.dev/), using [Tailwind CSS](https://tailwindcss.com/) for styling.
+**WeatherTunes** is a web application that connects to your Spotify account and plays music according to the current weather in your location. This document focuses on the backend development aspects required to bring the full functionality to life, referencing specific integration points in the existing frontend. The frontend is built with [React 19](https://react.dev/), [TypeScript](https://www.typescriptlang.org/) and [Vite 6](https://vitejs.dev/), using [Tailwind CSS 4](https://tailwindcss.com/) for styling.
 
 ---
 
@@ -29,9 +29,13 @@ The primary goal of WeatherTunes is to provide users with a seamless experience 
 
 The current frontend includes:
 
-- UI for weather display.
-- UI elements for music playback (currently with placeholder data).
-- User interaction for location input (though weather data fetching is client-side).
+- **Responsive UI** with dynamic video backgrounds based on weather conditions and time of day
+- **Settings system** with user preferences for temperature units, time format, speed units, and theme mode
+- **Location-based defaults** that automatically configure units based on user's geographic location
+- **Weather display** with comprehensive weather information including sunrise/sunset times
+- **Theme management** with automatic light/dark mode switching based on time of day
+- **Music player UI elements** with placeholder data for Spotify integration
+- **Settings menu** with toggle controls for user preferences
 
 The backend's role is to:
 
@@ -148,15 +152,19 @@ This section details backend tasks, focusing on integrating with existing fronte
 
 - **Authentication Trigger:** The frontend has a placeholder for Spotify login in `src/components/NavBar.tsx` (line 36: `[TODO: put spotify login here]`). The backend authentication flow (`POST /auth/spotify` and `GET /auth/spotify/callback`) should be triggered from here.
 - **Scopes:** Ensure you request necessary Spotify scopes: `user-read-playback-state`, `user-modify-playback-state`, `user-read-currently-playing`, `playlist-read-private`, `user-library-read`, etc.
+- **Settings Integration:** The frontend has a complete settings system (`SettingsContext`, `SettingsMenu`) that manages user preferences. Backend should respect these settings when providing data.
 - **Fallback Route:** `src/App.tsx` has a `TODO` (line 17) to make a fallback route for unknown paths, potentially redirecting to login. Backend should provide auth status to help frontend routing.
 
 ### Weather Data Handling: Moving Client-Side Logic
 
 - **Current Implementation:** Weather data is fetched client-side in `src/hooks/useWeather.ts` and `src/lib/weather.ts`, using the OpenWeatherMap API with an API key (`VITE_PUBLIC_OPENWEATHER_API_KEY`) stored in a `.env` file.
+- **Settings Integration:** The weather system integrates with the settings context to display data in user-preferred units (°F/°C, mph/km/h).
+- **Enhanced Features:** The current implementation includes sunrise/sunset times, humidity, pressure, wind speed, and location-based unit defaults.
 - **Backend Responsibility:** This entire logic must move to the backend.
   - The backend will call the weather API (e.g., OpenWeatherMap).
   - The frontend will call a new backend endpoint (e.g., `GET /api/weather-music`) to get weather data. This replaces the direct client-side API call.
-- **Data Structure:** Refer to `src/types/weather.ts` for the frontend's expected weather data structure. `src/components/WeatherDisplay.tsx` consumes this data.
+  - Backend should respect user settings for units and formatting.
+- **Data Structure:** Refer to `src/types/weather.ts` for the frontend's expected weather data structure. `src/components/WeatherDisplay.tsx` and `src/components/UnifiedDisplay.tsx` consume this data.
 
 ### Music & Player Features: API Requirements
 
@@ -167,6 +175,7 @@ This section details backend tasks, focusing on integrating with existing fronte
   - **API Needs:** An endpoint to fetch the user's upcoming track queue from Spotify.
 - **"Favorites List":** `src/pages/MainPage.tsx` has a placeholder `[TODO: put favorites list here]` (line 92).
   - **API Needs:** Endpoints to get, add, and remove favorite tracks/playlists. This implies backend database storage for user-specific favorites.
+- **Settings Synchronization:** The frontend has a complete settings system that needs to be synchronized with the backend for consistent user experience across sessions.
 
 ### API Design Considerations (Updated)
 
@@ -190,6 +199,9 @@ This section details backend tasks, focusing on integrating with existing fronte
   - `GET /api/favorites`: Get user's favorite tracks/playlists.
   - `POST /api/favorites`: Add a track/playlist to favorites.
   - `DELETE /api/favorites/:id`: Remove a track/playlist from favorites.
+- **User Settings:**
+  - `GET /api/settings`: Get user's preferences (temperature unit, time format, etc.).
+  - `PUT /api/settings`: Update user's preferences.
 - **General:**
   - Use JSON for requests/responses.
   - Implement robust error handling.
@@ -207,6 +219,12 @@ Focus on these areas where frontend meets backend:
 
   - Line 36: `[TODO: put spotify login here]`. This is the primary entry point for user authentication with Spotify. The backend needs to provide the mechanism that this UI element will trigger.
 
+- **`src/components/SettingsMenu.tsx`** and **`src/contexts/SettingsContext.tsx`**:
+
+  - Complete settings system managing user preferences for temperature units (°F/°C), time format (12h/24h), speed units (mph/km/h/m/s), and theme mode (auto/light/dark).
+  - Uses `useLocalStorage` hook for persistence and `useLocationBasedDefaults` for automatic unit selection.
+  - Backend should provide endpoints to sync these settings across devices/sessions.
+
 - **`src/pages/MainPage.tsx`**: This is the central UI.
 
   - Line 10: `PLACEHOLDER DATA FOR CURRENTLY PLAYING`. This static data (songTitle, artistName, albumArtUrl) needs to be replaced with live data fetched from the backend (`/api/player/current`).
@@ -217,6 +235,12 @@ Focus on these areas where frontend meets backend:
 
   - Line 12: `albumArtUrl = "https://via.placeholder.com/150"`. This placeholder image URL must be replaced by the actual album art URL from the Spotify track data, supplied by the backend.
 
+- **`src/components/VideoBackground.tsx`**:
+
+  - Manages dynamic video backgrounds based on weather conditions and time of day.
+  - Selects appropriate videos from `src/assets/videos/` based on weather type and time period.
+  - Backend weather data should include the necessary information for proper video selection.
+
 - **`src/components/UpNext.tsx`**:
 
   - Lines 11 & 102: Uses `placeholderSongs`. This static array needs to be replaced by a dynamic list of upcoming songs fetched from the backend (`/api/player/queue`).
@@ -224,7 +248,15 @@ Focus on these areas where frontend meets backend:
 - **`src/hooks/useWeather.ts` & `src/lib/weather.ts`**:
 
   - These files currently manage **client-side** calls to the OpenWeatherMap API using `VITE_PUBLIC_OPENWEATHER_API_KEY`.
+  - Includes `useThemeManager` integration for automatic light/dark theme switching based on time of day.
   - **Action for Backend:** This entire weather fetching logic (including API key management) must be moved to the backend. The frontend (`MainPage.tsx` via `useWeatherData`) will then call a backend endpoint (e.g., `/api/weather-music`) to get this information.
+
+- **`src/hooks/useSettings.ts` & `src/contexts/SettingsContext.tsx`**:
+
+  - Complete settings management system with React Context.
+  - Manages temperature units, time format, speed units, and theme preferences.
+  - Uses local storage for persistence and location-based defaults.
+  - Backend should provide endpoints to synchronize these settings.
 
 - **`src/types/weather.ts`**:
 

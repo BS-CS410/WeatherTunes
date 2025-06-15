@@ -1,15 +1,42 @@
 import { useState, useEffect, useCallback } from "react";
 import type { WeatherApiResponse, EnhancedWeatherState } from "@/types/weather";
 import { getUserLocationAndFetch, createErrorWeatherData } from "@/lib/weather";
-import { getTimePeriod, type TimePeriod } from "@/lib/utils";
+import {
+  getTimePeriod,
+  type TimePeriod,
+  formatUnixTimeToLocalString,
+} from "@/lib/utils";
+import { formatTemperature } from "@/lib/temperature";
+import { useSettings } from "@/hooks/useSettings";
+
+// Helper function to format weather condition for display
+function formatWeatherCondition(
+  condition: string,
+  description?: string,
+): string {
+  // Use the more descriptive description if available, otherwise use main condition
+  const displayCondition = description || condition;
+
+  // Safety check for empty/undefined values
+  if (!displayCondition || displayCondition.trim() === "") {
+    return "Unknown";
+  }
+
+  // Capitalize first letter and make it more user-friendly
+  return (
+    displayCondition.charAt(0).toUpperCase() +
+    displayCondition.slice(1).toLowerCase()
+  );
+}
 
 export function useWeatherData() {
+  const { settings } = useSettings();
   const [weatherState, setWeatherState] = useState<EnhancedWeatherState>({
     displayData: {
       location: "Loading...",
       temperature: "--",
       condition: "Loading...",
-      unit: "°F",
+      unit: `°${settings.temperatureUnit}`,
       isError: false,
     },
     timePeriod: null,
@@ -27,7 +54,7 @@ export function useWeatherData() {
             location: errorData.name, // "Error"
             temperature: "--",
             condition: errorData.weather[0].main, // "Unable to load"
-            unit: "°F",
+            unit: `°${settings.temperatureUnit}`,
             isError: true,
           },
           timePeriod: getTimePeriod(new Date()), // Fallback time period
@@ -38,16 +65,68 @@ export function useWeatherData() {
         return;
       }
 
+      // Validate essential data fields
+      if (
+        !data.weather ||
+        !Array.isArray(data.weather) ||
+        data.weather.length === 0
+      ) {
+        console.error("Invalid weather data: missing weather array", data);
+        const errorData = createErrorWeatherData();
+        setWeatherState({
+          displayData: {
+            location: data.name || "Unknown",
+            temperature: "--",
+            condition: "Weather data unavailable",
+            unit: `°${settings.temperatureUnit}`,
+            isError: true,
+          },
+          timePeriod: getTimePeriod(new Date()),
+          isLoading: false,
+          error: new Error("Invalid weather data format"),
+          rawResponse: errorData,
+        });
+        return;
+      }
+
       const now = new Date();
       const period = getTimePeriod(now, data.sys?.sunrise, data.sys?.sunset);
 
+      // Debug logging for weather condition
+      console.log("Weather API Debug:", {
+        apiCondition: data.weather[0].main,
+        apiDescription: data.weather[0].description,
+        weatherId: data.weather[0].id,
+        fullWeatherArray: data.weather,
+        location: data.name,
+        temp: data.main.temp,
+        sunrise: data.sys?.sunrise,
+        sunset: data.sys?.sunset,
+        calculatedPeriod: period,
+      });
+
       setWeatherState({
         displayData: {
-          location: data.name,
-          temperature: Math.round(data.main.temp).toString(),
-          condition: data.weather[0].main,
-          unit: "°F",
+          location: data.name || "Unknown Location",
+          temperature: formatTemperature(
+            data.main.temp,
+            "F",
+            settings.temperatureUnit,
+          ),
+          condition: formatWeatherCondition(
+            data.weather[0].main,
+            data.weather[0].description,
+          ),
+          unit: `°${settings.temperatureUnit}`,
           isError: false,
+          sunrise: formatUnixTimeToLocalString(
+            data.sys?.sunrise,
+            settings.timeFormat,
+          ),
+          sunset: formatUnixTimeToLocalString(
+            data.sys?.sunset,
+            settings.timeFormat,
+          ),
         },
         timePeriod: period,
         isLoading: false,
@@ -55,8 +134,8 @@ export function useWeatherData() {
         rawResponse: data,
       });
     },
-    [],
-  ); // Empty dependency array as getTimePeriod is pure and createErrorWeatherData is stable
+    [settings.temperatureUnit, settings.timeFormat],
+  );
 
   useEffect(() => {
     const apiKey = import.meta.env.VITE_PUBLIC_OPENWEATHER_API_KEY;

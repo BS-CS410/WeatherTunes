@@ -1,6 +1,6 @@
 import type { WeatherApiResponse } from "@/types/weather";
 
-// Fallback coordinates for Bellevue, WA
+// Fallback to Bellevue, WA and hope no one notices
 const FALLBACK_COORDS = {
   lat: 47.58531518716315,
   lon: -122.14778448861998,
@@ -56,6 +56,6 @@ export function createErrorWeatherData(): WeatherApiResponse {
     name: "Error",
     main: { temp: 0, humidity: 0, pressure: 0 },
     weather: [{ main: "Unable to load", description: "Error", id: 0 }],
-    sys: { sunrise: 0, sunset: 0 },
+    sys: { sunrise: 0, sunset: 0, country: undefined },
   };
 }

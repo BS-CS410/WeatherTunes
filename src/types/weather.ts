@@ -22,6 +22,7 @@ export interface WeatherApiResponse {
   sys: {
     sunrise: number;
     sunset: number;
+    country?: string;
   };
 }
 
@@ -31,6 +32,8 @@ export interface WeatherDisplayData {
   condition: string;
   unit: string;
   isError?: boolean; // Added this line
+  sunrise?: string; // formatted time string
+  sunset?: string; // formatted time string
 }
 
 export interface EnhancedWeatherState {
@@ -40,3 +43,5 @@ export interface EnhancedWeatherState {
   error: Error | null;
   rawResponse: WeatherApiResponse | null;
 }
+
+export type WeatherType = "clear" | "rain" | "snow" | "fog" | "cloudy";
