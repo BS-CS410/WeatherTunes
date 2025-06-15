@@ -40,3 +40,5 @@ export interface EnhancedWeatherState {
   error: Error | null;
   rawResponse: WeatherApiResponse | null;
 }
+
+export type WeatherType = "clear" | "rain" | "snow" | "fog" | "cloudy";

@@ -16,7 +16,20 @@ const CurrentlyPlaying: React.FC<CurrentlyPlayingProps> = ({
       {/* Container for album art and its glow, handles sizing and margin */}
       <div className="group relative mb-4 h-[clamp(6rem,24vw,12rem)] w-[clamp(6rem,24vw,12rem)]">
         {/* Pulsing glow effect - behind the image */}
-        <div className="absolute inset-0 z-0 h-full w-full animate-pulse rounded-md bg-gray-100/70 blur-2xl dark:bg-white/30" />
+        <style>
+          {`
+            @keyframes custom-pulse-brightness {
+              0%, 100% { filter: brightness(1.1); }
+              50% { filter: brightness(0.7); }
+            }
+          `}
+        </style>
+        <div
+          className="absolute inset-0 z-0 h-full w-full rounded-md bg-gray-100/70 shadow-[0_0_32px_8px_rgba(0,0,0,0.25)] blur-2xl dark:bg-white/30 dark:shadow-[0_0_48px_12px_rgba(255,255,255,0.45)] dark:brightness-105"
+          style={{
+            animation: "custom-pulse-brightness 4s ease-in-out infinite",
+          }}
+        />
         {/* Album art - on top */}
         <img
           src={albumArtUrl}

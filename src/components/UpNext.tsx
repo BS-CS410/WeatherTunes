@@ -113,21 +113,13 @@ export function UpNext() {
                   onMouseLeave={handleMouseLeave}
                 >
                   <div className="relative">
-                    <div
-                      className={`pointer-events-none absolute bottom-0 left-1/2 z-0 h-8 w-20 -translate-x-1/2 rounded-full bg-black/20 opacity-0 blur-lg transition-all duration-300 dark:bg-white ${
-                        isNextUpOrHovered ? "opacity-70 dark:opacity-70" : ""
-                      }`}
-                    />
+                    {/* Subtle shadow for Up Next or hovered song */}
                     <img
                       src={song.albumCover}
                       alt={song.name}
-                      className={`relative z-10 h-28 w-28 cursor-pointer rounded-lg object-cover shadow-md transition-transform duration-300 ${
+                      className={`relative z-10 h-28 w-28 cursor-pointer rounded-lg object-cover transition-transform duration-300 ${
                         isHovered || isNextUp
-                          ? "-translate-y-2 scale-110 hover:shadow-xl hover:brightness-105 dark:hover:brightness-110"
-                          : ""
-                      } ${
-                        isNextUpOrHovered
-                          ? "shadow-[0_0_32px_8px_rgba(0,0,0,0.25)] brightness-105 dark:shadow-[0_0_48px_12px_rgba(255,255,255,0.45)] dark:brightness-110"
+                          ? "-translate-y-2 scale-110 shadow-2xl hover:brightness-105 dark:hover:brightness-110"
                           : ""
                       }`}
                     />

@@ -1,5 +1,6 @@
 import { useMemo, useState, useEffect, useRef, useCallback } from "react";
-import { getTimePeriod, type TimePeriod } from "@/lib/utils"; // Ensure TimePeriod is imported
+import { getTimePeriod, type TimePeriod } from "@/lib/utils";
+import type { WeatherType } from "@/types/weather";
 
 // Video imports organized by weather type and time period
 import clearNight from "../assets/videos/clear_night.mp4";
@@ -27,15 +28,10 @@ import cloudyMorning from "../assets/videos/cloudy_morning.mp4";
 import cloudyDay from "../assets/videos/cloudy_day.mp4";
 import cloudyEvening from "../assets/videos/cloudy_evening.mp4";
 
-// WeatherConditions interface is no longer needed here
-
 interface VideoBackgroundProps {
   condition?: string; // e.g., "Clear", "Rain", "Clouds"
   timePeriod?: TimePeriod | null;
 }
-
-// type TimePeriod = "night" | "morning" | "day" | "evening"; // Already imported
-type WeatherType = "clear" | "rain" | "snow" | "fog" | "cloudy";
 
 // Video mapping for easy lookup
 const videoMap: Record<WeatherType, Record<TimePeriod, string>> = {
