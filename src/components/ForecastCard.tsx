@@ -53,40 +53,36 @@ function ForecastDay({
 export function ForecastCard() {
   const { forecast, isLoading, error } = useForecastData();
 
+  // Content based on state
+  let content;
   if (isLoading) {
-    return (
-      <div className="relative flex flex-col gap-4 overflow-hidden rounded-xl border border-white/20 bg-white/40 py-6 shadow-lg backdrop-blur-lg transition-all duration-300 hover:scale-[1.015] hover:border-white/30 hover:bg-white/50 hover:shadow-xl dark:border-white/10 dark:bg-slate-900/75 dark:hover:border-white/20 dark:hover:bg-slate-900/60">
-        {/* Soft inner shadow for extra depth */}
-        <div className="pointer-events-none absolute inset-0 rounded-xl shadow-[inset_0_1px_8px_0_rgba(0,0,0,0.04)] dark:shadow-[inset_0_1px_8px_0_rgba(0,0,0,0.08)]" />
-        <div className="px-6">
-          <h3 className="mb-6 ml-2.5 text-5xl font-extralight tracking-wider text-gray-900 lowercase dark:text-slate-200">
-            Your Forecast:
-          </h3>
-          <div className="flex h-20 items-center justify-center">
-            <p className="text-gray-600 dark:text-slate-400">
-              Loading forecast...
-            </p>
-          </div>
-        </div>
+    content = (
+      <div className="flex h-20 items-center justify-center">
+        <p className="text-gray-600 dark:text-slate-400">Loading forecast...</p>
       </div>
     );
-  }
-
-  if (error || forecast.length === 0) {
-    return (
-      <div className="relative flex flex-col gap-4 overflow-hidden rounded-xl border border-white/20 bg-white/40 py-6 shadow-lg backdrop-blur-lg transition-all duration-300 hover:scale-[1.015] hover:border-white/30 hover:bg-white/50 hover:shadow-xl dark:border-white/10 dark:bg-slate-900/75 dark:hover:border-white/20 dark:hover:bg-slate-900/60">
-        {/* Soft inner shadow for extra depth */}
-        <div className="pointer-events-none absolute inset-0 rounded-xl shadow-[inset_0_1px_8px_0_rgba(0,0,0,0.04)] dark:shadow-[inset_0_1px_8px_0_rgba(0,0,0,0.08)]" />
-        <div className="px-6">
-          <h3 className="mb-6 ml-2.5 text-5xl font-extralight tracking-wider text-gray-900 lowercase dark:text-slate-200">
-            Your Forecast:
-          </h3>
-          <div className="flex h-20 items-center justify-center">
-            <p className="text-sm text-red-500">
-              {error ? "Unable to load forecast" : "No forecast data available"}
-            </p>
-          </div>
-        </div>
+  } else if (error || forecast.length === 0) {
+    content = (
+      <div className="flex h-20 items-center justify-center">
+        <p className="text-sm text-red-500">
+          {error ? "Unable to load forecast" : "No forecast data available"}
+        </p>
+      </div>
+    );
+  } else {
+    content = (
+      <div className="grid grid-cols-5 gap-3">
+        {forecast.map((day, index) => (
+          <ForecastDay
+            key={`${day.date}-${index}`}
+            dayName={day.dayName}
+            date={day.date}
+            condition={day.condition}
+            tempHigh={day.tempHigh}
+            tempLow={day.tempLow}
+            icon={day.icon}
+          />
+        ))}
       </div>
     );
   }
@@ -99,19 +95,7 @@ export function ForecastCard() {
         <h3 className="mb-6 ml-2.5 text-5xl font-extralight tracking-wider text-gray-900 lowercase dark:text-slate-200">
           Your Forecast:
         </h3>
-        <div className="grid grid-cols-5 gap-3">
-          {forecast.map((day, index) => (
-            <ForecastDay
-              key={`${day.date}-${index}`}
-              dayName={day.dayName}
-              date={day.date}
-              condition={day.condition}
-              tempHigh={day.tempHigh}
-              tempLow={day.tempLow}
-              icon={day.icon}
-            />
-          ))}
-        </div>
+        {content}
       </div>
     </div>
   );

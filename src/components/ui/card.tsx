@@ -2,20 +2,22 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
+const baseCardStyles = [
+  // Base layout and structure
+  "relative flex flex-col gap-4 overflow-hidden rounded-xl py-6",
+  // Glassmorphism effects
+  "backdrop-blur-lg shadow-lg dark:shadow-2xl dark:shadow-black/40",
+  "border border-white/20 dark:border-white/10",
+  "bg-white/60 dark:bg-slate-900/60",
+  // Transitions and hover effects
+  "transition-all duration-300",
+  "hover:scale-[1.015] hover:border-white/30 hover:bg-white/50 hover:shadow-xl",
+  "dark:hover:border-white/20 dark:hover:bg-slate-900/60",
+];
+
 function Card({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <div
-      data-slot="card"
-      className={cn(
-        // Glassmorphism: increased blur, reduced opacity, subtle border
-        "relative flex flex-col gap-4 overflow-hidden rounded-xl py-6 shadow-lg backdrop-blur-lg transition-all duration-300 dark:shadow-2xl dark:shadow-black/40",
-        "border border-white/20 dark:border-white/10", // Subtle border
-        "bg-white/60 dark:bg-slate-900/60", // Adjusted light and dark backgrounds opacity
-        "hover:scale-[1.015] hover:border-white/30 hover:bg-white/50 hover:shadow-xl dark:hover:scale-[1.015] dark:hover:border-white/20 dark:hover:bg-slate-900/60", // Adjusted hover effects
-        className,
-      )}
-      {...props}
-    >
+    <div data-slot="card" className={cn(baseCardStyles, className)} {...props}>
       {/* Soft inner shadow for extra depth */}
       <div className="pointer-events-none absolute inset-0 rounded-xl shadow-[inset_0_1px_8px_0_rgba(0,0,0,0.04)] dark:shadow-[inset_0_1px_8px_0_rgba(0,0,0,0.08)]" />
       <div className="transition-transform duration-200">{props.children}</div>
@@ -28,7 +30,8 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card-header"
       className={cn(
-        "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6",
+        "grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6",
+        "has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6",
         className,
       )}
       {...props}
