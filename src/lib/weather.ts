@@ -1,6 +1,6 @@
 import type { WeatherApiResponse } from "@/types/weather";
 
-// Fallback coordinates for Bellevue, WA
+// Fallback to Bellevue, WA and hope no one notices
 const FALLBACK_COORDS = {
   lat: 47.58531518716315,
   lon: -122.14778448861998,

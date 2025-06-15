@@ -19,7 +19,16 @@ export function getTimePeriod(
   sunset?: number,
 ): TimePeriod {
   const nowUtcSec = Math.floor(now.getTime() / 1000);
-  if (sunrise && sunset) {
+
+  if (sunrise && sunset && sunrise > 0 && sunset > 0) {
+    // Validate that sunrise is before sunset
+    if (sunrise >= sunset) {
+      console.warn(
+        "Invalid sunrise/sunset data: sunrise >= sunset, falling back to hour-based calculation",
+      );
+      return getTimePeriodFromHour(now.getHours());
+    }
+
     // Convert sunset to local time to determine evening logic
     const sunsetLocal = new Date(sunset * 1000);
     const sunsetHour = sunsetLocal.getHours();
@@ -45,7 +54,7 @@ export function getTimePeriod(
     }
 
     const dayLength = sunset - sunrise;
-    const morningEnd = sunrise + dayLength / 3;
+    const morningEnd = sunrise + Math.max(dayLength / 3, 3600); // At least 1 hour for morning
 
     if (nowUtcSec < sunrise) return "night";
     if (nowUtcSec < morningEnd) return "morning";
@@ -53,8 +62,15 @@ export function getTimePeriod(
     if (nowUtcSec < eveningEnd) return "evening";
     return "night";
   }
+
   // Fallback to local hour-based calculation
-  const hour = now.getHours();
+  return getTimePeriodFromHour(now.getHours());
+}
+
+/**
+ * Helper function for hour-based time period calculation
+ */
+function getTimePeriodFromHour(hour: number): TimePeriod {
   if (hour >= 21 || hour < 5) return "night";
   if (hour >= 5 && hour < 11) return "morning";
   if (hour >= 11 && hour < 18) return "day";

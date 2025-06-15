@@ -1,18 +1,10 @@
 import React from "react";
 import { WeatherDisplay } from "@/components/WeatherDisplay";
 import CurrentlyPlaying from "@/components/CurrentlyPlaying"; // Assuming this is the new component
-
-interface WeatherData {
-  location: string;
-  temperature: string;
-  condition: string;
-  unit: string;
-  sunrise?: string;
-  sunset?: string;
-}
+import type { WeatherDisplayData } from "@/types/weather";
 
 interface UnifiedDisplayProps {
-  weatherData: WeatherData;
+  weatherData: WeatherDisplayData;
   songTitle?: string;
   artistName?: string;
   albumArtUrl?: string;

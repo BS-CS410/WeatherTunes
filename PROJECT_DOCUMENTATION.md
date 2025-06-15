@@ -7,9 +7,14 @@ _Last Updated: June 14, 2025_
 1.  [Project Purpose and Vision](#project-purpose-and-vision)
 2.  [Tech Stack](#tech-stack)
     - [Frontend](#frontend)
-    - [Build Tools & Environment](#build-tools--environment)
-    - [Styling](#styling)
-    - [Linting & Formatting](#linting--formatting)
+    - [Build Tools & Environment](#build-tools--env- \*\*Location-based default unit selection (automatically configures appropriate units based on user's location)
+
+- See `LOCATION_UNITS_IMPLEMENTATION.md` for detailed implementation information
+- Uses browser geolocation and OpenWeatherMap API to determine country
+- Automatically sets Fahrenheit/mph for US users, Celsius/km/h for othersronment)
+  - [Styling](#styling)
+  - [Linting & Formatting](#linting--formatting)
+
 3.  [Getting Started](#getting-started)
     - [Prerequisites](#prerequisites)
     - [Installation Steps](#installation-steps)
@@ -23,9 +28,10 @@ _Last Updated: June 14, 2025_
     - [Environment Variables](#environment-variables)
     - [Asset Management](#asset-management)
 5.  [Backend Development Guide](#backend-development-guide)
-6.  [Building for Production](#building-for-production)
-7.  [Future Enhancements (Roadmap)](#future-enhancements-roadmap)
-8.  [Contributing](#contributing)
+6.  [Current Features & Implementation Status](#current-features--implementation-status)
+7.  [Building for Production](#building-for-production)
+8.  [Future Enhancements (Roadmap)](#future-enhancements-roadmap)
+9.  [Contributing](#contributing)
 
 ---
 
@@ -49,7 +55,7 @@ _Last Updated: June 14, 2025_
 - **React 19:** A JavaScript library for building user interfaces.
 - **TypeScript:** A superset of JavaScript that adds static typing, improving code quality and maintainability.
 - **React Router DOM 7.6.2:** For declarative routing in the React application.
-- **Lucide React:** For beautiful and consistent icons.
+- **Lucide React 0.513.0:** For beautiful and consistent icons.
 
 ### Build Tools & Environment
 
@@ -66,9 +72,11 @@ _Last Updated: June 14, 2025_
   - Config: `tailwind.config.ts`
   - Integrated with Vite via `@tailwindcss/vite`.
   - Uses `clsx` and `tailwind-merge` for conditional and merged class names.
-- **Dark Mode:** Implemented using Tailwind's class-based strategy (`darkMode: "class"` in `tailwind.config.ts`). Theme switching is handled in `src/hooks/useWeather.ts` (`useThemeFromWeather`).
+- **Radix UI Components:** Uses `@radix-ui/react-*` components for accessible UI primitives including labels, navigation menus, scroll areas, and slots.
+- **Class Variance Authority (CVA):** For creating component variants with `class-variance-authority`.
+- **Dark Mode:** Implemented using Tailwind's class-based strategy (`darkMode: "class"` in `tailwind.config.ts`). Theme switching is handled through the settings context and theme manager hooks.
 - **Custom Fonts:** `Inter Tight` (see `tailwind.config.ts`).
-- **Animations:** Custom animations defined in `tailwind.config.ts` (e.g., `pulse-eq`, `float`, `pulse-updown`).
+- **Animations:** Custom animations defined in `tailwind.config.ts` with `tw-animate-css` support.
 
 ### Linting & Formatting
 
@@ -130,24 +138,29 @@ weathertunes/
 ├── public/                  # Static assets (e.g., vite.svg)
 ├── src/
 │   ├── assets/              # Project-specific assets
-│   │   └── videos/          # Background videos
+│   │   └── videos/          # Background videos for different weather conditions
 │   ├── components/          # Reusable UI components
-│   │   ├── ui/              # Generic UI primitives (e.g., button, card)
-│   │   └── ...              # Specific components (e.g., WeatherDisplay, NavBar)
-│   ├── contexts/            # React context providers (currently empty)
-│   ├── hooks/               # Custom React hooks (e.g., useWeather.ts)
-│   ├── lib/                 # Utility functions and libraries (e.g., utils.ts, weather.ts)
-│   ├── pages/               # Top-level route components (e.g., MainPage.tsx, Login.tsx)
-│   ├── types/               # TypeScript type definitions (e.g., weather.ts)
+│   │   ├── icons/           # Custom icon components (Settings, Sunrise, Sunset)
+│   │   ├── ui/              # Generic UI primitives (button, card, input, label, navigation-menu)
+│   │   └── ...              # Specific components (WeatherDisplay, NavBar, SettingsMenu, etc.)
+│   ├── contexts/            # React context providers (SettingsContext)
+│   ├── hooks/               # Custom React hooks (useWeather, useSettings, useThemeManager, etc.)
+│   ├── lib/                 # Utility functions and libraries (utils, weather, temperature, units)
+│   ├── pages/               # Top-level route components (MainPage, Login)
+│   ├── types/               # TypeScript type definitions (weather.ts)
 │   ├── App.tsx              # Main application component, sets up routing
-│   ├── main.tsx             # Entry point of the React application
+│   ├── main.tsx             # Entry point with providers (BrowserRouter, SettingsProvider)
 │   ├── index.css            # Global styles and Tailwind imports
 │   └── vite-env.d.ts        # Vite environment types
+├── devs/                    # Development resources
+│   └── tw-rainbow-theme-config.txt  # Theme configuration reference
+├── components.json          # Component library configuration
 ├── eslint.config.js         # ESLint configuration
 ├── index.html               # Main HTML entry point for Vite
 ├── package.json             # Project metadata and dependencies
 ├── README.md                # Primary README (backend-focused)
-├── PROJECT_DOCUMENTATION.md # This file
+├── PROJECT_DOCUMENTATION.md # This file (comprehensive project documentation)
+├── LOCATION_UNITS_IMPLEMENTATION.md # Location-based units implementation details
 ├── tailwind.config.ts       # Tailwind CSS configuration
 ├── tsconfig.json            # Main TypeScript configuration
 ├── tsconfig.app.json        # App-specific TypeScript configuration
@@ -176,12 +189,17 @@ weathertunes/
 
 - **Functional Components (`src/components/`)**:
 
-  - **`NavBar.tsx`**: Navigation bar, includes a TODO for Spotify login.
+  - **`NavBar.tsx`**: Navigation bar with settings button and placeholder for Spotify login.
+  - **`SettingsButton.tsx`** and **`SettingsMenu.tsx`**: Complete settings interface for user preferences (temperature units, time format, speed units, theme mode).
   - **`VideoBackground.tsx`**: Manages the dynamic video background based on weather conditions and time of day. Selects videos from `src/assets/videos/`.
-  - **`WeatherDisplay.tsx`**: Responsible for showing the current weather information (location, temperature, condition).
+  - **`WeatherDisplay.tsx`**: Shows current weather information with sunrise/sunset times and comprehensive weather data.
+  - **`UnifiedDisplay.tsx`**: Combines weather and currently playing information into a single visual component.
   - **`CurrentlyPlaying.tsx`**: Displays details of the song currently being played (currently uses placeholder data).
-  - **`UnifiedDisplay.tsx`**: A component that likely combines weather and currently playing information into a single visual unit.
   - **`UpNext.tsx`**: Shows a list of upcoming songs (currently uses placeholder data).
+
+- **Icon Components (`src/components/icons/`)**:
+
+  - Custom icon components including `SettingsIcon`, `SunriseIcon`, and `SunsetIcon`.
 
 - **UI Primitives (`src/components/ui/`)**:
   - These are generic, often styled components based on `shadcn/ui` principles (e.g., `button.tsx`, `card.tsx`, `input.tsx`, `label.tsx`, `navigation-menu.tsx`). They provide consistent building blocks for the UI.
@@ -196,11 +214,17 @@ weathertunes/
 
 ### State Management
 
-- Primarily uses React's built-in state management (`useState`, `useEffect`).
-- **`src/hooks/useWeather.ts`**:
-  - `useWeatherData`: A custom hook responsible for fetching and processing weather data. Currently, it fetches directly from the OpenWeatherMap API (this is planned to move to the backend). It manages loading, error, and display states for weather information. It also determines the `timePeriod` (morning, day, evening, night).
-  - `useThemeFromWeather`: A custom hook that applies a dark or light theme to the application based on the `timePeriod` derived from weather data.
-- The `src/contexts/` directory is present, suggesting that React Context API might be used for more global state management in the future (e.g., authentication status, user preferences).
+- **React Context API**: Used for global state management through `SettingsContext`.
+- **Settings Management (`src/contexts/SettingsContext.tsx`)**:
+  - Manages user preferences: temperature units (°F/°C), time format (12h/24h), speed units (mph/km/h/m/s), theme mode (auto/light/dark).
+  - Integrates with local storage for persistence and location-based defaults.
+  - Provides context for settings access throughout the application.
+- **Custom Hooks**:
+  - **`useSettings`**: Provides access to settings context and related functions.
+  - **`useWeather`**: Manages weather data fetching and processing (currently client-side).
+  - **`useThemeManager`**: Handles automatic theme switching based on weather and time.
+  - **`useLocalStorage`**: Provides persistent local storage functionality.
+  - **`useLocationBasedDefaults`**: Automatically determines appropriate units based on user location.
 
 ### Styling Details
 
@@ -210,7 +234,8 @@ weathertunes/
   - `theme.extend`: Customizes and extends Tailwind's default theme (e.g., `fontFamily`, `animation`, `keyframes`).
 - **Global Styles:** `src/index.css` imports Tailwind's base, components, and utilities layers. Any additional global styles can be added here.
 - **Component-Level Styling:** Achieved by applying Tailwind utility classes directly in JSX elements.
-- **`clsx` and `tailwind-merge`:** These utilities are likely used for conditionally applying Tailwind classes and resolving conflicting classes, respectively, though not explicitly shown in `package.json`'s direct dependencies (might be via `shadcn/ui` or similar).
+- **Utility Libraries:** Uses `clsx` and `tailwind-merge` for conditionally applying and merging Tailwind classes.
+- **Radix UI Integration:** Styled Radix UI components provide accessible, unstyled primitives that are then styled with Tailwind CSS.
 
 ### Environment Variables
 
@@ -224,7 +249,8 @@ weathertunes/
 
 - **Static Assets:** Files in the `public/` directory are served as-is from the root path.
 - **Project Assets:** Files in `src/assets/` are processed by Vite during the build.
-  - **`src/assets/videos/`**: Contains MP4 files used for the dynamic video background. These are selected by the `VideoBackground.tsx` component based on weather and time. The `README.md` in this folder might contain more specific information about video naming conventions or sources.
+  - **`src/assets/videos/`**: Contains MP4 files used for the dynamic video background. These are selected by the `VideoBackground.tsx` component based on weather conditions and time of day. Video files are named according to weather type and time period (e.g., `clear_day.mp4`, `rain_evening.mp4`, `snow_night.mp4`).
+- **Component Library Configuration:** `components.json` contains configuration for the component library setup, likely related to shadcn/ui or similar component systems.
 
 ---
 
@@ -243,7 +269,73 @@ Key areas for backend development:
 
 ---
 
-## 6. Building for Production
+## 6. Current Features & Implementation Status
+
+### Implemented Features
+
+- **Complete Settings System:**
+
+  - User preferences for temperature units (°F/°C), time format (12h/24h), speed units (mph/km/h/m/s)
+  - Theme mode selection (auto/light/dark) with automatic switching based on time of day
+  - Location-based default unit selection (automatically configures appropriate units based on user's location)
+  - Persistent storage using local storage with React Context integration
+
+- **Weather Display:**
+
+  - Comprehensive weather information including temperature, conditions, humidity, pressure, wind speed
+  - Sunrise and sunset times with formatted display
+  - Real-time weather data fetching (currently client-side, pending backend migration)
+  - Weather-based time period determination (morning, day, evening, night)
+
+- **Dynamic UI Elements:**
+
+  - Weather-responsive video backgrounds that change based on conditions and time of day
+  - Automatic theme switching (light/dark mode) based on time period
+  - Responsive design optimized for various screen sizes
+  - Smooth animations and transitions
+
+- **Component Architecture:**
+  - Modular component structure with reusable UI primitives
+  - Custom hooks for state management and data fetching
+  - TypeScript integration for type safety
+  - Accessible UI components using Radix UI primitives
+
+### In Progress / Placeholder Features
+
+- **Spotify Integration:**
+
+  - UI placeholders for Spotify login in navigation
+  - Music player interface with placeholder data
+  - "Currently Playing" component structure ready for real data
+  - "Up Next" queue component with static placeholder content
+
+- **User Features:**
+  - Favorites system structure (placeholder in main page)
+  - User authentication flow (login page exists but needs backend integration)
+
+### ❌ Not Yet Implemented (Backend Required)
+
+- **Authentication & Authorization:**
+
+  - Spotify OAuth 2.0 implementation
+  - User session management
+  - Protected routes and auth state management
+
+- **Music Functionality:**
+
+  - Real Spotify player controls (play, pause, skip, volume)
+  - Dynamic music selection based on weather conditions
+  - User's Spotify library integration
+  - Playlist generation and management
+
+- **Data Persistence:**
+  - User settings synchronization across devices
+  - Favorites storage and management
+  - User preferences and history tracking
+
+---
+
+## 7. Building for Production
 
 To create an optimized production build of the frontend:
 
@@ -260,37 +352,61 @@ The contents of the `dist/` directory can then be deployed to any static hosting
 
 ---
 
-## 7. Future Enhancements (Roadmap)
+---
+
+## 8. Future Enhancements (Roadmap)
 
 - **Full Spotify Integration:**
+
+  - Complete backend implementation for Spotify OAuth 2.0 authentication.
   - Implement robust Spotify player controls (play, pause, skip, volume, seek).
   - User library access (playlists, saved tracks).
   - Dynamic playlist generation based on weather and user taste.
+
+- **Backend Development:**
+
+  - Move weather API calls from client-side to server-side.
+  - Implement user authentication and session management.
+  - Create APIs for music control, weather data, and user preferences.
+  - Database integration for storing user data, preferences, and favorites.
+  - Settings synchronization across devices/sessions.
+
 - **Advanced Weather-to-Music Mapping:**
-  - More granular weather conditions.
+
+  - More granular weather conditions and music matching algorithms.
   - User-configurable preferences for music mapping.
-  - Machine learning for personalized suggestions.
-- **User Accounts & Preferences:**
-  - Saving default locations.
-  - Storing music preferences and history.
+  - Machine learning for personalized suggestions based on listening history.
+
+- **Enhanced User Experience:**
+
+  - Complete favorites system implementation.
+  - Music queue management and playlist creation.
+  - Location search functionality (complement browser geolocation).
+  - Offline mode support with cached preferences.
+
 - **Improved UI/UX:**
-  - More sophisticated animations and transitions.
-  - Accessibility improvements.
-  - Mobile responsiveness enhancements.
-- **Backend Enhancements:**
-  - Database for storing user data, preferences, and cached weather/music mappings.
-  - More robust error handling and logging.
-  - Scalability improvements.
-- **Testing:**
-  - Unit tests for critical components and utility functions.
-  - Integration tests for API interactions.
-  - End-to-end tests for user flows.
-- **Additional Music Services:** Potential integration with other music platforms.
-- **Location Search:** Allow users to search for locations instead of relying solely on browser geolocation.
+
+  - Enhanced animations and transitions.
+  - Accessibility improvements (ARIA labels, keyboard navigation).
+  - Mobile responsiveness optimizations.
+  - Additional theme options and customization.
+
+- **Technical Improvements:**
+
+  - Comprehensive testing suite (unit, integration, end-to-end).
+  - Performance optimizations and bundle size reduction.
+  - Error handling and logging improvements.
+  - Progressive Web App (PWA) capabilities.
+
+- **Additional Features:**
+  - Integration with other music streaming services (Apple Music, YouTube Music).
+  - Social features (sharing weather-music combinations).
+  - Historical weather and music data visualization.
+  - Mood-based music selection beyond weather conditions.
 
 ---
 
-## 8. Contributing
+## 9. Contributing
 
 Currently, contribution guidelines are not formally defined. If you are interested in contributing, please consider:
 

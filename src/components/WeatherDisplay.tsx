@@ -1,17 +1,9 @@
 import { SunriseIcon, SunsetIcon } from "@/components/icons";
 import { useEffect, useRef, useState } from "react";
-
-interface WeatherData {
-  location: string;
-  temperature: string;
-  condition: string;
-  unit: string;
-  sunrise?: string; // ISO or formatted time string
-  sunset?: string; // ISO or formatted time string
-}
+import type { WeatherDisplayData } from "@/types/weather";
 
 interface WeatherDisplayProps {
-  weatherData: WeatherData;
+  weatherData: WeatherDisplayData;
 }
 
 export function WeatherDisplay({ weatherData }: WeatherDisplayProps) {
@@ -79,12 +71,12 @@ export function WeatherDisplay({ weatherData }: WeatherDisplayProps) {
       </div>
       <span
         ref={conditionRef}
-        className={`font-inter-tight -mt-2.5 w-full pl-[2%] text-left leading-tight font-extralight tracking-tighter text-gray-800 lowercase transition-transform duration-200 ease-in-out hover:-translate-y-2 hover:scale-105 hover:drop-shadow-md dark:text-cyan-100 ${conditionClass || getConditionTextSize(condition)}`}
+        className={`font-inter-tight -mt-1.5 w-full pl-[2%] text-left leading-none font-extralight tracking-tighter text-gray-800 lowercase transition-transform duration-200 ease-in-out hover:-translate-y-2 hover:scale-105 hover:drop-shadow-md dark:text-cyan-100 ${conditionClass || getConditionTextSize(condition)}`}
       >
         {condition}
       </span>
       {/* Sunrise and Sunset Times */}
-      <div className="font-inter-tight mt-2 w-full pl-[3%] text-left text-[clamp(0.8rem,2vw,1.2rem)] leading-none font-light tracking-wider">
+      <div className="font-inter-tight mt-4 w-full pl-[3%] text-left text-[clamp(0.7rem,1.8vw,1.1rem)] leading-none font-light tracking-wider whitespace-nowrap">
         <span className="inline-block text-gray-700 transition-transform duration-200 ease-in-out hover:-translate-y-1 hover:scale-[1.02] hover:drop-shadow-sm dark:text-cyan-200">
           <SunriseIcon className="mr-2 inline-block h-5 w-5" />
           {sunrise}

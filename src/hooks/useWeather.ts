@@ -17,6 +17,11 @@ function formatWeatherCondition(
   // Use the more descriptive description if available, otherwise use main condition
   const displayCondition = description || condition;
 
+  // Safety check for empty/undefined values
+  if (!displayCondition || displayCondition.trim() === "") {
+    return "Unknown";
+  }
+
   // Capitalize first letter and make it more user-friendly
   return (
     displayCondition.charAt(0).toUpperCase() +
@@ -60,6 +65,30 @@ export function useWeatherData() {
         return;
       }
 
+      // Validate essential data fields
+      if (
+        !data.weather ||
+        !Array.isArray(data.weather) ||
+        data.weather.length === 0
+      ) {
+        console.error("Invalid weather data: missing weather array", data);
+        const errorData = createErrorWeatherData();
+        setWeatherState({
+          displayData: {
+            location: data.name || "Unknown",
+            temperature: "--",
+            condition: "Weather data unavailable",
+            unit: `°${settings.temperatureUnit}`,
+            isError: true,
+          },
+          timePeriod: getTimePeriod(new Date()),
+          isLoading: false,
+          error: new Error("Invalid weather data format"),
+          rawResponse: errorData,
+        });
+        return;
+      }
+
       const now = new Date();
       const period = getTimePeriod(now, data.sys?.sunrise, data.sys?.sunset);
 
@@ -71,11 +100,14 @@ export function useWeatherData() {
         fullWeatherArray: data.weather,
         location: data.name,
         temp: data.main.temp,
+        sunrise: data.sys?.sunrise,
+        sunset: data.sys?.sunset,
+        calculatedPeriod: period,
       });
 
       setWeatherState({
         displayData: {
-          location: data.name,
+          location: data.name || "Unknown Location",
           temperature: formatTemperature(
             data.main.temp,
             "F",
