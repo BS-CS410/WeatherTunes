@@ -89,15 +89,15 @@ export function UpNext() {
   };
 
   return (
-    <div className="relative w-full">
+    <div className="relative">
       {/* Up Next header inside the scroll area card, not inside the scroll area */}
       <div className="px-4 pb-4 pl-6">
         <h2 className="text-6xl font-extralight tracking-wider text-gray-800 lowercase dark:text-slate-200">
           Up Next:
         </h2>
       </div>
-      <ScrollArea.Root className="relative z-0 w-full overflow-x-auto px-6">
-        <ScrollArea.Viewport className="w-full">
+      <ScrollArea.Root className="relative z-0 overflow-x-auto px-6">
+        <ScrollArea.Viewport className="">
           <div className="flex min-w-max flex-row gap-2 px-2 py-4">
             {placeholderSongs.map((song, idx) => {
               const isHovered = hoveredId === song.id;
@@ -139,7 +139,6 @@ export function UpNext() {
                       {song.name}
                     </div>
                     <div
-
                       className={`w-28 truncate text-xs transition-all duration-300 ${isNextUpOrHovered ? "text-gray-700 drop-shadow-[0_1px_2px_rgba(0,0,0,0.08)] dark:text-slate-300 dark:drop-shadow-[0_1px_2px_rgba(255,255,255,0.10)]" : "text-gray-500 dark:text-slate-400"}`}
                     >
                       {song.artist}
