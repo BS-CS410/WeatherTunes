@@ -5,7 +5,7 @@ export { useWeatherData, useThemeFromWeather } from "@/hooks/useWeather";
 export { useForecastData } from "@/hooks/useForecast";
 
 // UI and interaction hooks
-export { useCardOrder } from "@/hooks/useCardOrder";
+// (No UI hooks currently in use)
 
 // Settings and storage hooks
 export { useSettings } from "@/hooks/useSettings";
