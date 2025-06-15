@@ -7,6 +7,8 @@ interface WeatherData {
   temperature: string;
   condition: string;
   unit: string;
+  sunrise?: string;
+  sunset?: string;
 }
 
 interface UnifiedDisplayProps {

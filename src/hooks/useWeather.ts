@@ -1,7 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
 import type { WeatherApiResponse, EnhancedWeatherState } from "@/types/weather";
 import { getUserLocationAndFetch, createErrorWeatherData } from "@/lib/weather";
-import { getTimePeriod, type TimePeriod } from "@/lib/utils";
+import {
+  getTimePeriod,
+  type TimePeriod,
+  formatUnixTimeToLocalString,
+} from "@/lib/utils";
 
 export function useWeatherData() {
   const [weatherState, setWeatherState] = useState<EnhancedWeatherState>({
@@ -48,6 +52,8 @@ export function useWeatherData() {
           condition: data.weather[0].main,
           unit: "°F",
           isError: false,
+          sunrise: formatUnixTimeToLocalString(data.sys?.sunrise),
+          sunset: formatUnixTimeToLocalString(data.sys?.sunset),
         },
         timePeriod: period,
         isLoading: false,

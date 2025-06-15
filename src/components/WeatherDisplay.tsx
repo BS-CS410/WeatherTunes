@@ -1,8 +1,12 @@
+import { SunriseIcon, SunsetIcon } from "@/components/icons";
+
 interface WeatherData {
   location: string;
   temperature: string;
   condition: string;
   unit: string;
+  sunrise?: string; // ISO or formatted time string
+  sunset?: string; // ISO or formatted time string
 }
 
 interface WeatherDisplayProps {
@@ -15,19 +19,33 @@ export function WeatherDisplay({ weatherData }: WeatherDisplayProps) {
     temperature = "--",
     condition = "Loading...",
     unit = "°",
+    sunrise = "--",
+    sunset = "--",
   } = weatherData || {};
 
   return (
     <section className="flex w-full flex-col items-start">
-      <h1 className="font-inter-tight mt-1 -mb-1.5 w-full pl-[4%] text-left text-[clamp(1rem,4vw,2rem)] font-semibold tracking-wider text-gray-800 uppercase transition-transform duration-300 ease-in-out hover:-translate-y-2 hover:scale-105 hover:drop-shadow-md dark:text-slate-200">
+      <h1 className="font-inter-tight mt-1 -mb-1.5 w-full pl-[4%] text-left text-[clamp(1rem,4vw,2rem)] font-semibold tracking-wider text-gray-800 uppercase transition-transform duration-200 ease-in-out hover:-translate-y-2 hover:scale-105 hover:drop-shadow-md dark:text-slate-200">
         {location}
       </h1>
-      <div className="font-inter-tight w-full text-left text-[clamp(5rem,12vw,8rem)] leading-none font-bold text-gray-900 drop-shadow-lg transition-transform duration-300 ease-in-out hover:-translate-y-2 hover:scale-105 hover:drop-shadow-md dark:text-cyan-50">
+      <div className="font-inter-tight w-full text-left text-[clamp(5rem,12vw,8rem)] leading-none font-bold text-gray-900 drop-shadow-lg transition-transform duration-200 ease-in-out hover:-translate-y-2 hover:scale-105 hover:drop-shadow-md dark:text-cyan-50">
         {`${temperature}${unit}`}
       </div>
-      <span className="font-inter-tight -mt-2.5 w-full pl-[2%] text-left text-[clamp(2.5rem,8vw,5rem)] leading-none font-extralight tracking-tighter text-gray-600 lowercase transition-transform duration-300 ease-in-out hover:-translate-y-2 hover:scale-105 hover:drop-shadow-md dark:text-cyan-100">
+      <span className="font-inter-tight -mt-2.5 w-full pl-[2%] text-left text-[clamp(2.5rem,8vw,5rem)] leading-none font-extralight tracking-tighter text-gray-600 lowercase transition-transform duration-200 ease-in-out hover:-translate-y-2 hover:scale-105 hover:drop-shadow-md dark:text-cyan-100">
         {condition}
       </span>
+      {/* Sunrise and Sunset Times */}
+      <div className="font-inter-tight mt-2 w-full pl-[3%] text-left text-[clamp(0.8rem,2vw,1.2rem)] leading-none font-light tracking-tight">
+        <span className="inline-block text-gray-500 transition-transform duration-200 ease-in-out hover:-translate-y-1 hover:scale-[1.02] hover:drop-shadow-sm dark:text-cyan-200">
+          <SunriseIcon className="mr-2 inline-block h-5 w-5" />
+          {sunrise}
+        </span>
+        &nbsp;|&nbsp;
+        <span className="inline-block text-gray-600 transition-transform duration-200 ease-in-out hover:-translate-y-1 hover:scale-[1.02] hover:drop-shadow-sm dark:text-cyan-300">
+          <SunsetIcon className="mx-2 inline-block h-5 w-5" />
+          {sunset}
+        </span>
+      </div>
     </section>
   );
 }

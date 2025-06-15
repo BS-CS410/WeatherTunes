@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect, useRef, useCallback } from "react";
-import { getTimePeriod, type TimePeriod } from "@/lib/utils";
+import type { TimePeriod } from "@/lib/utils";
 import type { WeatherType } from "@/types/weather";
 
 // Video imports organized by weather type and time period
@@ -99,9 +99,9 @@ const getVideoForWeatherAndTime = (
   condition?: string,
   period?: TimePeriod | null,
 ): string => {
-  // If period is not provided, calculate a fallback
-  // However, the goal is for MainPage to provide a resolved period
-  const currentPeriod = period || getTimePeriod(new Date()); // Fallback if period is null/undefined
+  // If period is not provided, default to "day" to ensure consistency
+  // MainPage should always provide the calculated period
+  const currentPeriod = period || "day"; // Simple fallback - MainPage should provide period
   const weatherType = getWeatherType(condition);
 
   console.log("Video Selection:", {

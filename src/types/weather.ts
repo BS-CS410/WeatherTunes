@@ -31,6 +31,8 @@ export interface WeatherDisplayData {
   condition: string;
   unit: string;
   isError?: boolean; // Added this line
+  sunrise?: string; // formatted time string
+  sunset?: string; // formatted time string
 }
 
 export interface EnhancedWeatherState {
