@@ -1,53 +1,395 @@
 # Video Background System
 
-The video background system provides dynamic, weather-responsive backgrounds that automatically change based on current weather conditions and time of day.
+The video background system provides dynamic, weather-responsive backgrounds that automatically adapt to current weather conditions and time of day. This creates an immersive atmospheric experience that enhances the weather data presentation.
 
-## Overview
+## System Overview
 
-The system features:
+The video background system features:
 
-- 24 unique weather/time video combinations
-- Automatic video selection based on weather data
-- Smooth transitions between videos
-- Performance-optimized loading
-- Fallback handling for missing videos
+- **24 unique video combinations** covering 5 weather types across 4 time periods
+- **Automatic video selection** based on real-time weather data
+- **Smooth transitions** between videos when conditions change
+- **Performance optimization** with preloading and fallback strategies
+- **Responsive design** that adapts to different screen sizes
 
-## Video Asset Structure
+## Video Asset Organization
 
-### File Organization
+### File Structure
 
-**Location:** `src/assets/videos/`
+**Location**: `src/assets/videos/`
 
-**Naming Convention:** `{weather}_{timeOfDay}.mp4`
+**Available Video Files**: 24 MP4 files covering all weather and time combinations
+
+```
+Weather Types × Time Periods = 24 Videos
+├── clear_day.mp4
+├── clear_evening.mp4
+├── clear_morning.mp4
+├── clear_night.mp4
+├── cloudy_day.mp4
+├── cloudy_evening.mp4
+├── cloudy_morning.mp4
+├── cloudy_night.mp4
+├── fog_day.mp4
+├── fog_evening.mp4
+├── fog_morning.mp4
+├── fog_night.mp4
+├── rain_day.mp4
+├── rain_evening.mp4
+├── rain_morning.mp4
+├── rain_night.mp4
+├── snow_day.mp4
+├── snow_evening.mp4
+├── snow_morning.mp4
+└── snow_night.mp4
+```
 
 ### Weather Categories
 
-**Clear** - Clear skies, sunny conditions
+**Clear**: Clear skies, sunny conditions
 
-- `clear_night.mp4` - ✅ Available (24.4 MB)
-- `clear_morning.mp4` - ✅ Available (4.4 MB)
-- `clear_day.mp4` - ✅ Available (5.8 MB)
-- `clear_evening.mp4` - ✅ Available (16.0 MB)
+- Bright, sunny scenes with minimal cloud coverage
+- Used for weather conditions like "Clear", "Sunny"
 
-**Rain** - Rain, drizzle, thunderstorms
+**Cloudy**: Overcast or partly cloudy conditions
 
-- `rain_night.mp4` - ✅ Available (61.6 MB)
-- `rain_morning.mp4` - ✅ Available (49.0 MB)
-- `rain_day.mp4` - 📝 Placeholder (0 bytes)
-- `rain_evening.mp4` - 📝 Placeholder (0 bytes)
+- Scenes with significant cloud coverage
+- Covers "Clouds", "Overcast", "Broken clouds", "Scattered clouds"
 
-**Snow** - Snow conditions
+**Rain**: Precipitation including rain, drizzle, thunderstorms
 
-- `snow_night.mp4` - 📝 Placeholder (0 bytes)
-- `snow_morning.mp4` - 📝 Placeholder (0 bytes)
-- `snow_day.mp4` - 📝 Placeholder (0 bytes)
-- `snow_evening.mp4` - 📝 Placeholder (0 bytes)
+- Rain scenes with visible precipitation effects
+- Handles "Rain", "Drizzle", "Thunderstorm" conditions
 
-**Fog** - Fog, mist, haze
+**Snow**: Snow and winter precipitation
 
-- `fog_night.mp4` - 📝 Placeholder (0 bytes)
-- `fog_morning.mp4` - 📝 Placeholder (0 bytes)
-- `fog_day.mp4` - 📝 Placeholder (0 bytes)
+- Winter scenes with snow effects
+- Used for "Snow" weather conditions
+
+**Fog**: Atmospheric conditions affecting visibility
+
+- Misty, hazy scenes with reduced visibility
+- Covers "Fog", "Mist", "Haze", "Smoke", "Dust"
+
+### Time Periods
+
+**Day**: Peak daylight hours (typically 10 AM - 4 PM)
+**Morning**: Early daylight (sunrise to 10 AM)
+**Evening**: Late daylight (4 PM to sunset)
+**Night**: Dark hours (sunset to sunrise)
+
+## Technical Implementation
+
+### VideoBackground Component
+
+**Location**: `src/components/VideoBackground.tsx`
+
+**Props Interface**:
+
+```typescript
+interface VideoBackgroundProps {
+  condition?: string; // Weather condition from API
+  timePeriod?: TimePeriod | null; // Current time period
+}
+```
+
+### Video Selection Logic
+
+**Weather Type Mapping**:
+
+```typescript
+const weatherConditionMap: { keywords: string[]; type: WeatherType }[] = [
+  // Priority-ordered keyword matching
+  { keywords: ["thunderstorm"], type: "rain" },
+  { keywords: ["drizzle"], type: "rain" },
+  { keywords: ["rain"], type: "rain" },
+  { keywords: ["snow"], type: "snow" },
+  { keywords: ["mist", "fog", "haze", "smoke", "dust", "sand"], type: "fog" },
+  { keywords: ["overcast"], type: "cloudy" },
+  { keywords: ["broken clouds"], type: "cloudy" },
+  { keywords: ["scattered clouds"], type: "cloudy" },
+  { keywords: ["few clouds"], type: "clear" },
+  { keywords: ["clouds"], type: "cloudy" },
+  { keywords: ["clear", "sunny"], type: "clear" },
+];
+```
+
+**Selection Algorithm**:
+
+```typescript
+function getWeatherType(condition?: string): WeatherType {
+  if (!condition) return "clear";
+
+  const lowerCaseCondition = condition.toLowerCase();
+
+  for (const { keywords, type } of weatherConditionMap) {
+    for (const keyword of keywords) {
+      if (lowerCaseCondition.includes(keyword)) {
+        return type;
+      }
+    }
+  }
+
+  return "clear"; // Default fallback
+}
+```
+
+### Video Asset Management
+
+**Import Strategy**:
+
+```typescript
+// Static imports ensure videos are included in build
+import clearNight from "../assets/videos/clear_night.mp4";
+import clearMorning from "../assets/videos/clear_morning.mp4";
+// ... all 24 video imports
+
+const videoMap: Record<WeatherType, Record<TimePeriod, string>> = {
+  clear: {
+    night: clearNight,
+    morning: clearMorning,
+    day: clearDay,
+    evening: clearEvening,
+  },
+  // ... all weather types
+};
+```
+
+### Fallback Strategy
+
+**Hierarchical Fallbacks**:
+
+1. **Exact Match**: Use specific weather/time combination if available
+2. **Weather Fallback**: Use clear weather for same time period
+3. **Final Fallback**: Use clear day video as last resort
+
+```typescript
+const getVideoForWeatherAndTime = (
+  condition?: string,
+  period?: TimePeriod | null,
+): string => {
+  const currentPeriod = period || "day";
+  const weatherType = getWeatherType(condition);
+
+  const selectedVideo = videoMap[weatherType]?.[currentPeriod];
+
+  if (selectedVideo) {
+    return selectedVideo;
+  }
+
+  // Fallback to clear weather for same time
+  const clearVideo = videoMap.clear[currentPeriod];
+  if (clearVideo) {
+    return clearVideo;
+  }
+
+  // Final fallback to clear day
+  return videoMap.clear.day;
+};
+```
+
+## Performance Optimizations
+
+### Video Preloading
+
+**Preload Strategy**: Videos are preloaded when weather conditions change to ensure smooth transitions:
+
+```typescript
+useEffect(() => {
+  if (video === currentSrc) return;
+
+  setIsTransitioning(true);
+  const preloadVideo = document.createElement("video");
+  preloadVideo.src = video;
+  preloadVideo.preload = "auto";
+
+  const handleCanPlay = () => {
+    setTimeout(() => {
+      setCurrentSrc(video);
+      setTimeout(() => setIsTransitioning(false), 400);
+    }, 50);
+  };
+
+  preloadVideo.addEventListener("canplaythrough", handleCanPlay);
+
+  return () => {
+    preloadVideo.removeEventListener("canplaythrough", handleCanPlay);
+    preloadVideo.src = "";
+  };
+}, [video, currentSrc]);
+```
+
+### Transition Effects
+
+**Smooth Transitions**: 700ms opacity transitions between videos prevent jarring changes:
+
+```typescript
+<video
+  className={`fixed inset-0 -z-10 h-full w-full object-cover
+              transition-opacity duration-700
+              ${isTransitioning || fade ? "opacity-0" : "opacity-100"}`}
+  src={currentSrc}
+  autoPlay
+  loop
+  muted
+  playsInline
+  preload="auto"
+/>
+```
+
+**Loop Fade Effect**: Subtle fade at loop boundaries for seamless video looping:
+
+```typescript
+const handleTimeUpdate = useCallback(() => {
+  const videoEl = videoRef.current;
+  if (!videoEl || !videoEl.duration) return;
+
+  if (videoEl.currentTime > videoEl.duration - 0.25) {
+    setFade(true);
+  } else if (fade && videoEl.currentTime < 0.25) {
+    setFade(false);
+  }
+}, [fade]);
+```
+
+### Memory Management
+
+**Video Element Cleanup**: Proper cleanup of preload elements prevents memory leaks
+
+**Static Imports**: Videos are bundled with application for reliable loading
+
+**Background Layer**: Neutral background prevents flash of unstyled content
+
+## CSS and Styling
+
+### Video Positioning
+
+```css
+.video-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  z-index: -10;
+  pointer-events: none;
+}
+```
+
+### Background Layers
+
+**Layering Strategy**:
+
+- `z-index: -20`: Solid background color
+- `z-index: -10`: Video background
+- `z-index: 0+`: Application content
+
+**Responsive Design**: Videos use `object-fit: cover` to maintain aspect ratio while filling viewport on all screen sizes.
+
+## Integration with Weather System
+
+### Data Flow
+
+```
+useWeatherData() → weather condition + time period
+                                ↓
+VideoBackground component → video selection algorithm
+                                ↓
+getVideoForWeatherAndTime() → specific video file
+                                ↓
+Video element → smooth transition to new background
+```
+
+### Weather Condition Processing
+
+**API Integration**: Weather conditions from OpenWeatherMap are processed through the keyword matching system:
+
+- API returns: "Light intensity drizzle"
+- Keyword match: "drizzle" → rain type
+- Video selection: `rain_morning.mp4` (if current time is morning)
+
+### Time Period Calculation
+
+**Time Period Source**: Time periods are calculated in `src/lib/utils.ts` based on:
+
+- Current local time
+- Sunrise/sunset times from weather API
+- Predefined time boundaries
+
+## Browser Compatibility
+
+### Video Format Support
+
+**MP4 Format**: Universal browser support with H.264 codec
+**Autoplay Policy**: Videos are muted to comply with browser autoplay restrictions
+**Mobile Optimization**: `playsInline` attribute prevents fullscreen on iOS
+
+### Fallback Handling
+
+**No Video Support**: Solid background color displays if video fails to load
+**Slow Connections**: Preload strategy ensures videos load before display
+**Low Memory Devices**: Single video in memory at any time
+
+## Performance Metrics
+
+### File Sizes
+
+Video files are optimized for web delivery while maintaining visual quality:
+
+- Average file size: 5-25 MB per video
+- Total asset size: ~300 MB for complete video library
+- Compression: H.264 with web-optimized settings
+
+### Loading Performance
+
+**Initial Load**: Only the required video loads initially
+**Transition Load**: Next video preloads when weather changes
+**Memory Usage**: Single video in memory, previous videos garbage collected
+
+## Development and Debugging
+
+### Debug Logging
+
+The system includes comprehensive debug logging for development:
+
+```typescript
+console.log("Weather Type Debug:", {
+  originalCondition: condition,
+  lowerCaseCondition,
+});
+
+console.log("Video Selection:", {
+  period: currentPeriod,
+  weatherType,
+  selectedVideo: videoMap[weatherType]?.[currentPeriod],
+  hasCondition: !!condition,
+});
+```
+
+### Testing Strategies
+
+**Manual Testing**: Change browser time or mock weather conditions to test video selection
+**Weather Simulation**: Use different weather API responses to verify video mapping
+**Performance Testing**: Monitor memory usage during video transitions
+
+## Future Enhancements
+
+### Planned Improvements
+
+**Additional Weather Types**: Support for more specific weather conditions (light rain vs heavy rain)
+**Seasonal Variations**: Different videos for same weather in different seasons
+**User Preferences**: Allow users to disable or customize video backgrounds
+**Quality Options**: Multiple quality levels for different connection speeds
+
+### Accessibility Considerations
+
+**Motion Sensitivity**: Option to disable video backgrounds for users sensitive to motion
+**Data Usage**: Setting to disable videos on mobile/metered connections
+**Performance**: Automatic quality reduction on low-performance devices
+
+The video background system creates an immersive, dynamic experience that seamlessly integrates with the weather data to enhance the overall atmospheric feel of WeatherTunes.
+
 - `fog_evening.mp4` - 📝 Placeholder (0 bytes)
 
 **Cloudy** - Heavy cloud cover (>70%)

@@ -1,102 +1,227 @@
 # Getting Started
 
-This guide will help you set up WeatherTunes for development in just a few steps.
+This guide walks through setting up WeatherTunes for local development. WeatherTunes is a React application that requires Node.js and a weather API key to function properly.
 
 ## Prerequisites
 
-Before you begin, ensure you have the following installed:
+WeatherTunes requires specific software and accounts for development:
 
 ### Required Software
 
-1. **Node.js** (version 18 or higher)
+**Node.js 18+**: JavaScript runtime that enables running the development server and build tools
 
-   - Download from [nodejs.org](https://nodejs.org/)
-   - Choose the LTS (Long Term Support) version
-   - Includes npm (Node Package Manager)
+- Download from [nodejs.org](https://nodejs.org/)
+- Choose the LTS (Long Term Support) version
+- Includes npm (Node Package Manager) automatically
 
-2. **Git** (for repository cloning)
-   - Download from [git-scm.com](https://git-scm.com/)
+**Git**: Version control system for cloning the repository
 
-### Verification
+- Download from [git-scm.com](https://git-scm.com/)
+- Required for cloning the project repository
 
-Check your installations:
+### Verify Installation
+
+Check that required software is properly installed:
 
 ```bash
-node -v    # Should show v18.x.x or higher
-npm -v     # Should show 8.x.x or higher
-git --version    # Should show git version
+node -v    # Should display v18.x.x or higher
+npm -v     # Should display 8.x.x or higher
+git --version    # Should display git version
 ```
 
-## Installation
+### OpenWeatherMap API Account
 
-### 1. Clone the Repository
+WeatherTunes requires an API key for weather data:
+
+1. Visit [OpenWeatherMap API](https://openweathermap.org/api)
+2. Create a free account
+3. Navigate to "My API Keys" section
+4. Generate a new API key (free tier provides 1000 calls/day)
+5. Save the API key for environment configuration
+
+## Installation Process
+
+### Clone Repository
+
+Download the WeatherTunes source code:
 
 ```bash
 git clone https://github.com/cpond8/weathertunes.git
 cd weathertunes
 ```
 
-### 2. Install Dependencies
+### Install Dependencies
+
+Install all required packages using npm:
 
 ```bash
 npm install
 ```
 
-This will:
+This command reads `package.json` and installs:
 
-- Read `package.json` to identify required packages
-- Download and install all dependencies to `node_modules/`
-- Create `package-lock.json` for dependency version locking
-- Set up the development environment
+- React 19.1.0 and related libraries
+- TypeScript compiler and type definitions
+- Vite build tool and plugins
+- Tailwind CSS and utility libraries
+- Development tools (ESLint, Prettier)
 
-### 3. Configure Environment Variables
+The installation creates a `node_modules` directory containing all dependencies.
 
-Create a `.env` file in the project root:
+### Environment Configuration
+
+Create environment variables file for API configuration:
 
 ```bash
+# Create .env file in project root
 VITE_PUBLIC_OPENWEATHER_API_KEY=your_api_key_here
 ```
 
-**Getting an OpenWeatherMap API Key:**
+Replace `your_api_key_here` with your actual OpenWeatherMap API key.
 
-1. Go to [OpenWeatherMap](https://openweathermap.org/api)
-2. Sign up for a free account
-3. Navigate to the API section
-4. Generate a free API key
-5. Replace `your_api_key_here` with your actual key
+**Important**: The `VITE_PUBLIC_` prefix makes the variable available to the browser-side code while maintaining security for server-side variables.
 
-## Running the Application
+## Running the Development Server
 
-Start the development server:
+Start the local development environment:
 
 ```bash
 npm run dev
 ```
 
-This will:
+This command:
 
-- Start the Vite development server (typically on `http://localhost:5173`)
-- Enable Hot Module Replacement for instant updates
-- Provide detailed error reporting and debugging
-- Automatically open your default browser
+- Starts Vite development server (usually http://localhost:5173)
+- Enables Hot Module Replacement (HMR) for instant code updates
+- Provides TypeScript type checking
+- Enables Tailwind CSS compilation
+- Opens the application in your default browser automatically
 
-## Verify Installation
+### Development Server Features
 
-Once the application is running:
+**Hot Module Replacement**: Code changes appear instantly without page refresh
+**TypeScript Checking**: Type errors display in terminal and browser
+**CSS Processing**: Tailwind utilities compile automatically
+**Error Overlay**: Build errors appear as browser overlays for quick debugging
 
-1. **Weather Display**: You should see current weather data for your location
-2. **Settings**: Click the settings gear to access user preferences
-3. **Responsive Design**: Resize your browser to test mobile responsiveness
-4. **Theme Switching**: The app should automatically switch between light/dark themes based on time
+## Verification Steps
 
-## Development Features Available
+Confirm the application is working correctly:
 
-- **Real-time Updates**: Code changes appear instantly without page refresh
-- **TypeScript Checking**: Type errors appear in the terminal
-- **Tailwind CSS**: Styling changes compile automatically
-- **React DevTools**: Browser extension works seamlessly
+### Weather System
+
+- Location should be detected automatically
+- Current weather data displays (temperature, conditions, etc.)
+- 5-day forecast cards should be visible and interactive
+
+### Settings System
+
+- Click the settings gear icon in the navigation
+- Toggle between Fahrenheit and Celsius
+- Change time format between 12-hour and 24-hour
+- Settings should persist after page refresh
+
+### Responsive Design
+
+- Resize browser window to test mobile layout
+- Components should adapt to different screen sizes
+- Touch interactions should work on mobile devices
+
+### Theme System
+
+- Application should automatically detect system theme preference
+- Dark/light mode should switch based on time of day
+- All text should remain readable in both themes
+
+## Common Development Tasks
+
+### Code Editing
+
+- Make changes to files in `src/` directory
+- Save files to see changes immediately in browser
+- TypeScript errors appear in terminal and browser console
+
+### Adding Dependencies
+
+```bash
+npm install package-name
+```
+
+### Running Tests
+
+```bash
+npm run lint    # Check code style and errors
+```
+
+### Building for Production
+
+```bash
+npm run build   # Creates optimized production build
+```
 
 ## Troubleshooting
+
+### API Key Issues
+
+**Error**: "Weather data unavailable" or loading states persist
+
+**Solution**: Check environment variable configuration
+
+```bash
+# Verify .env file exists and contains:
+VITE_PUBLIC_OPENWEATHER_API_KEY=your_actual_key
+
+# Restart development server after adding environment variables
+npm run dev
+```
+
+### Location Permission Issues
+
+**Error**: Weather shows default location (Bellevue, WA) instead of your location
+
+**Solution**: Grant browser location permission when prompted, or manually allow location access in browser settings.
+
+### Port Conflicts
+
+**Error**: Development server fails to start due to port conflicts
+
+**Solution**: Vite will automatically try alternative ports. You can also specify a port:
+
+```bash
+npm run dev -- --port 3000
+```
+
+### Dependency Issues
+
+**Error**: Module not found or version conflicts
+
+**Solution**: Clear node_modules and reinstall:
+
+```bash
+rm -rf node_modules package-lock.json
+npm install
+```
+
+### TypeScript Errors
+
+**Error**: Type checking errors prevent development server from starting
+
+**Solution**: Review TypeScript errors in terminal output. Common issues include:
+
+- Missing type definitions for new dependencies
+- Incorrect prop types in components
+- Import path errors
+
+## Next Steps
+
+Once the development environment is running:
+
+1. **Explore the codebase**: Review [Component Architecture](../architecture/components.md)
+2. **Understand data flow**: Read [State Management](../architecture/state-management.md)
+3. **Review features**: Check [Weather System](../features/weather.md) and [Settings System](../features/settings.md)
+4. **Development workflow**: See [Development Setup](setup.md) for advanced configuration
+
+The application is now ready for development with full weather functionality, responsive design, and modern React patterns.
 
 ### Common Issues
 

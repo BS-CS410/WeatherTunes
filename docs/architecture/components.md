@@ -1,103 +1,427 @@
-# Component Structure
+# Component Architecture
 
-This document outlines the frontend component architecture, showing how components are organized and how they interact with each other.
+WeatherTunes uses a component-based architecture where UI elements are built as reusable React components. This document explains the component organization and interaction patterns for developers new to React applications.
 
-## Directory Structure
+## Component Organization
+
+React components are JavaScript functions that return UI elements. WeatherTunes organizes components into logical groups based on their functionality:
 
 ```
 src/components/
-├── CurrentlyPlaying.tsx      # Music player display component
-├── ForecastCard.tsx          # 5-day weather forecast
-├── NavBar.tsx                # Main navigation bar
-├── SettingsButton.tsx        # Settings trigger component
-├── SettingsMenu.tsx          # User preferences interface
-├── UnifiedDisplay.tsx        # Combined weather/music display
-├── UpNext.tsx                # Music queue component
-├── VideoBackground.tsx       # Dynamic weather backgrounds
-├── WeatherDisplay.tsx        # Current weather information
-├── icons/                    # Custom icon components
-│   ├── SettingsIcon.tsx      # Settings gear icon
-│   ├── SunriseIcon.tsx       # Sunrise time icon
-│   ├── SunsetIcon.tsx        # Sunset time icon
-│   └── index.ts              # Icon exports
-├── ui/                       # Base UI primitives
-│   ├── button.tsx            # Styled button component
-│   ├── card.tsx              # Card container component
-│   ├── input.tsx             # Form input component
-│   ├── label.tsx             # Form label component
-│   └── navigation-menu.tsx   # Navigation menu component
-└── index.ts                  # Component exports
+├── Weather Domain
+│   ├── WeatherDisplay.tsx      # Current weather conditions
+│   ├── ForecastCard.tsx        # 5-day weather forecast
+│   └── VideoBackground.tsx     # Dynamic weather videos
+├── Music Domain
+│   ├── CurrentlyPlaying.tsx    # Track display (placeholder data)
+│   └── UpNext.tsx              # Music queue (placeholder data)
+├── Layout Components
+│   ├── NavBar.tsx              # Navigation and app header
+│   ├── UnifiedDisplay.tsx      # Main content layout
+│   ├── SettingsButton.tsx      # Settings trigger
+│   └── SettingsMenu.tsx        # User preferences interface
+├── UI Primitives (ui/)
+│   ├── button.tsx              # Styled button variants
+│   ├── card.tsx                # Glassmorphism containers
+│   ├── input.tsx               # Form inputs
+│   ├── label.tsx               # Accessible labels
+│   └── navigation-menu.tsx     # Navigation primitives
+├── Icons (icons/)
+│   ├── SettingsIcon.tsx        # Animated settings icon
+│   ├── SunriseIcon.tsx         # Custom sunrise icon
+│   └── SunsetIcon.tsx          # Custom sunset icon
+└── index.ts                    # Component exports
 ```
 
-## Component Categories
+## Core Components
 
-### Layout Components
+### WeatherDisplay Component
 
-**`NavBar.tsx`**
+Displays current weather conditions with intelligent text sizing and responsive design.
 
-- Main application navigation
-- Spotify login placeholder (awaiting backend)
-- Responsive design with glassmorphism styling
-- Contains settings access and app branding
+**Location**: `src/components/WeatherDisplay.tsx`
 
-**`UnifiedDisplay.tsx`**
+**Props Interface**:
 
-- Central display combining weather and music information
-- Responsive layout that adapts to screen size
-- Orchestrates major content areas
+```typescript
+interface WeatherDisplayProps {
+  weatherData: WeatherDisplayData;
+}
 
-### Weather Components
+interface WeatherDisplayData {
+  location: string;
+  temperature: string;
+  condition: string;
+  unit: string;
+  sunrise: string;
+  sunset: string;
+}
+```
 
-**`WeatherDisplay.tsx`**
+**Key Features**:
 
-- Current weather conditions display
-- Temperature, humidity, pressure, wind speed
-- Sunrise/sunset times with custom icons
-- Real-time data from OpenWeatherMap API
+- Dynamic text sizing based on weather condition length
+- Automatic line wrap detection and adjustment
+- Custom sunrise/sunset icons with time display
+- Responsive design with CSS clamp functions
 
-**`ForecastCard.tsx`**
+**Implementation Example**:
 
-- 5-day weather forecast with interactive cards
-- Weather icons and temperature ranges
-- Hover effects and animations
-- Loading and error state handling
+```typescript
+// From src/components/WeatherDisplay.tsx
+const getConditionTextSize = (text: string) => {
+  const length = text.length;
+  if (length <= 8) return "text-[clamp(1.5rem,5vw,3rem)]";
+  if (length <= 15) return "text-[clamp(1.2rem,4vw,2.5rem)]";
+  return "text-[clamp(1rem,3.5vw,2rem)]";
+};
+```
 
-**`VideoBackground.tsx`**
+### ForecastCard Component
 
-- Dynamic background videos based on weather/time
-- 24 different weather/time combinations
-- Automatic video selection and smooth transitions
-- Performance optimized with lazy loading
+Interactive weather forecast display with hover effects and loading states.
 
-### Music Components (UI Ready)
+**Location**: `src/components/ForecastCard.tsx`
 
-**`CurrentlyPlaying.tsx`**
+**Data Source**: `useForecast()` hook provides 5-day weather data from OpenWeatherMap API
 
-- Current track display with album art
-- Song title, artist, and playback progress
-- Placeholder data structure ready for Spotify API
-- Player control interface planned
+**Features**:
 
-**`UpNext.tsx`**
+- Interactive cards with hover animations
+- Weather icons for each forecast day
+- Temperature ranges with unit conversion
+- Loading skeleton and error handling
 
-- Music queue display with upcoming tracks
-- Track list with artist and title information
-- Placeholder songs for development
-- Queue management interface planned
+### VideoBackground Component
 
-### Settings Components
+Manages dynamic background videos based on weather conditions and time of day.
 
-**`SettingsButton.tsx`**
+**Location**: `src/components/VideoBackground.tsx`
 
-- Animated settings gear icon
-- Trigger for settings menu
-- Consistent styling with app theme
+**Video Selection Logic**:
 
-**`SettingsMenu.tsx`**
+- 24 different videos covering weather types (clear, cloudy, fog, rain, snow)
+- Time periods (day, evening, morning, night)
+- Automatic selection based on weather data and local time
 
-- Complete user preferences interface
-- Temperature, time, speed, and theme settings
-- Location-based defaults and reset functionality
+**Performance Features**:
+
+- Lazy loading to prevent blocking page load
+- Smooth transitions between video changes
+- Fallback handling for unsupported formats
+
+### CurrentlyPlaying Component
+
+Music player interface ready for Spotify integration.
+
+**Location**: `src/components/CurrentlyPlaying.tsx`
+
+**Current State**: Uses placeholder data structure ready for backend integration
+
+**Props Interface**:
+
+```typescript
+interface CurrentlyPlayingProps {
+  songTitle?: string;
+  artistName?: string;
+  albumArtUrl?: string;
+}
+```
+
+**Visual Features**:
+
+- Album art with pulsing glow effect using CSS animations
+- Hover effects with scale and translate transforms
+- Responsive sizing using CSS clamp functions
+- Dark/light theme support
+
+**CSS Animation Example**:
+
+```css
+@keyframes custom-pulse-brightness {
+  0%,
+  100% {
+    filter: brightness(1.1);
+  }
+  50% {
+    filter: brightness(0.7);
+  }
+}
+```
+
+### SettingsMenu Component
+
+Complete user preferences interface with persistence.
+
+**Location**: `src/components/SettingsMenu.tsx`
+
+**Connected Hook**: `useSettings()` from SettingsContext
+
+**Settings Options**:
+
+- Temperature units (Fahrenheit/Celsius)
+- Time format (12-hour/24-hour)
+- Speed units (mph/km/h/m/s)
+- Theme mode (automatic/light/dark)
+
+**Features**:
+
+- Location-based default unit selection
+- localStorage persistence across sessions
+- Reset to defaults functionality
+- Real-time preference updates
+
+## Component Interaction Patterns
+
+### Data Flow Architecture
+
+WeatherTunes follows a unidirectional data flow pattern where data flows down from parent components to children through props, and events flow up through callback functions.
+
+```
+App.tsx (React Router)
+├── SettingsContext (Global State)
+└── MainPage.tsx (Layout Root)
+    ├── NavBar.tsx
+    ├── VideoBackground.tsx ← useWeather() hook
+    ├── UnifiedDisplay.tsx
+    │   ├── WeatherDisplay.tsx ← useWeather() hook
+    │   ├── ForecastCard.tsx ← useForecast() hook
+    │   ├── CurrentlyPlaying.tsx (placeholder data)
+    │   └── UpNext.tsx (placeholder data)
+    ├── SettingsButton.tsx
+    └── SettingsMenu.tsx ← useSettings() hook
+```
+
+### State Management Strategy
+
+**Global State**: React Context provides user settings throughout the component tree
+
+```typescript
+// From src/contexts/SettingsContext.tsx
+const { settings } = useSettings();
+// settings.temperatureUnit, settings.timeFormat, etc.
+```
+
+**Local State**: Components manage their own UI state using React hooks
+
+```typescript
+const [isLoading, setIsLoading] = useState(true);
+const [error, setError] = useState(null);
+```
+
+**External Data**: Custom hooks fetch and manage API data
+
+```typescript
+const { weatherData, isLoading, error } = useWeatherData();
+const { forecastData } = useForecast();
+```
+
+### Component Communication
+
+**Parent to Child**: Props pass data and callback functions down
+
+```typescript
+<WeatherDisplay weatherData={weatherData} />
+<SettingsMenu onSettingChange={handleSettingChange} />
+```
+
+**Child to Parent**: Callback functions send events up
+
+```typescript
+// In child component
+onClick={() => onSettingChange('temperatureUnit', 'C')}
+
+// In parent component
+const handleSettingChange = (key, value) => {
+  updateSettings({ [key]: value });
+};
+```
+
+**Sibling Communication**: Shared state through common parent or global context
+
+```typescript
+// Both components access same weather data
+const { weatherData } = useWeatherData();
+```
+
+## Styling Architecture
+
+### Glassmorphism Design System
+
+WeatherTunes uses a consistent glassmorphism design pattern implemented with Tailwind CSS utilities.
+
+**Base Card Pattern**:
+
+```css
+className="bg-white/40 backdrop-blur-lg dark:bg-slate-900/75
+          border border-white/20 dark:border-white/10
+          rounded-xl shadow-lg"
+```
+
+**Interactive Elements**:
+
+```css
+className="transition-all duration-300
+          hover:scale-105 hover:brightness-110"
+```
+
+### Responsive Design
+
+Components use CSS clamp functions for fluid responsive behavior:
+
+```css
+/* Text sizing that scales smoothly */
+className="text-[clamp(1rem,4vw,2rem)]"
+
+/* Spacing that adapts to screen size */
+className="p-[clamp(1rem,3vw,2rem)]"
+
+/* Grid layouts with breakpoints */
+className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+```
+
+### Theme Integration
+
+All components support automatic dark/light theme switching:
+
+```css
+className="text-gray-900 dark:text-slate-200
+          bg-white/60 dark:bg-slate-900/60"
+```
+
+## UI Primitives
+
+### Radix UI Integration
+
+WeatherTunes uses Radix UI for complex, accessible components:
+
+**Button Component** (`src/components/ui/button.tsx`):
+
+- Multiple variants (default, secondary, outline)
+- Built-in accessibility features
+- TypeScript prop interfaces
+
+**Card Component** (`src/components/ui/card.tsx`):
+
+- Glassmorphism styling
+- CardHeader, CardContent, CardFooter composition
+- Consistent spacing and borders
+
+**Navigation Menu** (`src/components/ui/navigation-menu.tsx`):
+
+- Keyboard navigation support
+- Screen reader compatibility
+- Smooth animations
+
+### Custom Icons
+
+Icons are implemented as React components for consistency and performance:
+
+```typescript
+// From src/components/icons/SunriseIcon.tsx
+export function SunriseIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      {/* SVG path data */}
+    </svg>
+  );
+}
+```
+
+## Performance Optimizations
+
+### React Optimization Patterns
+
+**Memoization**: Prevent unnecessary re-renders for expensive components
+
+```typescript
+const MemoizedWeatherDisplay = React.memo(WeatherDisplay);
+const memoizedCalculation = useMemo(() => expensiveCalculation(data), [data]);
+```
+
+**Callback Optimization**: Stable references for event handlers
+
+```typescript
+const handleClick = useCallback(() => {
+  // Event handling logic
+}, [dependencies]);
+```
+
+### Loading Strategies
+
+**Progressive Enhancement**: Core functionality loads first, enhancements follow
+
+**Lazy Loading**: Large assets load on demand
+
+```typescript
+// Video backgrounds load only when needed
+const videoSrc = useMemo(() => getVideoForWeather(weather), [weather]);
+```
+
+## Error Handling
+
+### Component-Level Error Boundaries
+
+Each major component handles its own error states:
+
+```typescript
+if (error) {
+  return (
+    <Card className="bg-red-50 dark:bg-red-900/20">
+      <CardContent>
+        <p>Weather data temporarily unavailable</p>
+      </CardContent>
+    </Card>
+  );
+}
+```
+
+### Graceful Degradation
+
+Components provide fallback experiences when data is unavailable:
+
+- Weather components show "Loading..." states
+- Music components display placeholder information
+- Settings preserve last known good values
+
+## Component Development Guidelines
+
+### TypeScript Interfaces
+
+All components define clear prop interfaces:
+
+```typescript
+interface ComponentProps {
+  requiredProp: string;
+  optionalProp?: number;
+  children?: ReactNode;
+}
+
+export function Component({ requiredProp, optionalProp = 0 }: ComponentProps) {
+  // Component implementation
+}
+```
+
+### Accessibility Standards
+
+Components follow WCAG 2.1 guidelines:
+
+- Semantic HTML elements
+- Proper ARIA labels and roles
+- Keyboard navigation support
+- Screen reader compatibility
+
+### Testing Patterns
+
+Components are designed for testability:
+
+- Pure functions for business logic
+- Predictable prop interfaces
+- Isolated state management
+- Mock-friendly data dependencies
+
+This component architecture emphasizes reusability, accessibility, and maintainability while providing a solid foundation for future feature expansion.
+
 - Debug information in development mode
 
 ### Icon Components

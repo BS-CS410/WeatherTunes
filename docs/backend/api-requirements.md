@@ -1,102 +1,502 @@
-# API Requirements
+# Backend API Requirements
 
-This document outlines the backend API requirements for WeatherTunes, including endpoints, data structures, and integration patterns needed to support the frontend.
+This document specifies the backend API requirements for WeatherTunes, detailing endpoints, data structures, and integration patterns needed to support the frontend application.
 
 ## Overview
 
-The backend API needs to support:
+WeatherTunes frontend currently displays placeholder data for music features and requires backend implementation for:
 
-- Spotify OAuth 2.0 authentication
-- Weather data service (migrated from client-side)
-- Music player control and data
-- User preferences and settings
-- Favorites and user data management
+- **Spotify OAuth 2.0 authentication** for user login and music access
+- **Spotify Web API integration** for music playback control and data
+- **User settings synchronization** across devices and sessions
+- **Weather-based music selection** algorithm implementation
 
-## Authentication Endpoints
+The frontend is production-ready for weather features and UI-complete for music features, requiring only data integration.
 
-### Spotify OAuth Integration
+## Authentication System
 
-**Initiate Authentication**
+### Spotify OAuth 2.0 Integration
+
+WeatherTunes requires Spotify Web API access for music functionality. The backend must implement OAuth 2.0 with PKCE (Proof Key for Code Exchange) for security.
+
+**Required Spotify Scopes**:
+
+- `user-read-playback-state`: Read current playback information
+- `user-modify-playback-state`: Control playback (play, pause, skip)
+- `user-read-currently-playing`: Access currently playing track
+- `user-library-read`: Access user's saved tracks and albums
+- `playlist-read-private`: Read user's private playlists
+- `playlist-read-collaborative`: Read collaborative playlists
+
+### Authentication Endpoints
+
+**Initiate Spotify Login**
 
 ```http
-POST /auth/spotify
+POST /api/auth/spotify/login
 ```
 
-- Redirects user to Spotify OAuth consent screen
-- Handles PKCE flow for security
-- Returns authorization URL
+**Response**:
+
+```json
+{
+  "authUrl": "https://accounts.spotify.com/authorize?...",
+  "state": "random_state_string"
+}
+```
+
+Redirects user to Spotify OAuth consent screen with required scopes.
 
 **Handle OAuth Callback**
 
 ```http
-GET /auth/spotify/callback?code={auth_code}&state={state}
+GET /api/auth/spotify/callback
+Query Parameters:
+  - code: string (authorization code from Spotify)
+  - state: string (state parameter for CSRF protection)
 ```
 
-- Processes Spotify OAuth callback
-- Exchanges code for access/refresh tokens
-- Creates or updates user session
-
-**Check Authentication Status**
-
-```http
-GET /auth/status
-```
-
-Response:
+**Response**:
 
 ```json
 {
-  "isAuthenticated": boolean,
+  "success": true,
   "user": {
-    "id": string,
-    "displayName": string,
-    "email": string,
-    "country": string,
-    "product": string // "free" | "premium"
-  } | null,
-  "expiresAt": string // ISO timestamp
+    "id": "spotify_user_id",
+    "displayName": "User Display Name",
+    "email": "user@example.com",
+    "country": "US",
+    "product": "premium" // "free" | "premium"
+  },
+  "accessToken": "encrypted_token",
+  "expiresIn": 3600
+}
+```
+
+**Get Authentication Status**
+
+```http
+GET /api/auth/status
+Headers:
+  - Authorization: Bearer {jwt_token}
+```
+
+**Response**:
+
+```json
+{
+  "isAuthenticated": true,
+  "user": {
+    "id": "spotify_user_id",
+    "displayName": "User Display Name",
+    "email": "user@example.com",
+    "country": "US",
+    "product": "premium"
+  },
+  "tokenExpiresAt": "2024-01-15T10:30:00Z"
 }
 ```
 
 **Logout**
 
 ```http
-POST /auth/logout
+POST /api/auth/logout
+Headers:
+  - Authorization: Bearer {jwt_token}
 ```
 
-- Invalidates user session
-- Clears authentication tokens
-- Returns success confirmation
-
-## Weather Endpoints
-
-### Current Weather Data
-
-**Get Current Weather**
-
-```http
-GET /api/weather?lat={latitude}&lon={longitude}
-```
-
-Response:
+**Response**:
 
 ```json
 {
-  "location": string,
-  "temperature": number, // in Celsius
-  "condition": string,
-  "humidity": number,
-  "pressure": number,
-  "windSpeed": number, // in m/s
-  "windDirection": number, // degrees
-  "visibility": number, // in meters
-  "sunrise": string, // ISO timestamp
-  "sunset": string, // ISO timestamp
-  "country": string // ISO country code
+  "success": true,
+  "message": "Successfully logged out"
 }
 ```
 
-**Get 5-Day Forecast**
+## Music Integration Endpoints
+
+### Current Playback Information
+
+The frontend `CurrentlyPlaying` component expects this data structure:
+
+**Get Currently Playing Track**
+
+```http
+GET /api/music/currently-playing
+Headers:
+  - Authorization: Bearer {jwt_token}
+```
+
+**Response**:
+
+```json
+{
+  "isPlaying": true,
+  "track": {
+    "id": "spotify_track_id",
+    "name": "Song Title",
+    "artists": [
+      {
+        "id": "spotify_artist_id",
+        "name": "Artist Name"
+      }
+    ],
+    "album": {
+      "id": "spotify_album_id",
+      "name": "Album Name",
+      "images": [
+        {
+          "url": "https://i.scdn.co/image/...",
+          "height": 640,
+          "width": 640
+        }
+      ]
+    },
+    "duration_ms": 240000,
+    "progress_ms": 60000
+  },
+  "device": {
+    "id": "device_id",
+    "name": "Device Name",
+    "type": "Computer",
+    "volume_percent": 80
+  }
+}
+```
+
+**Error Response** (no active playback):
+
+```json
+{
+  "isPlaying": false,
+  "track": null,
+  "device": null
+}
+```
+
+### Playback Queue Management
+
+The frontend `UpNext` component expects queue information:
+
+**Get Playback Queue**
+
+```http
+GET /api/music/queue
+Headers:
+  - Authorization: Bearer {jwt_token}
+```
+
+**Response**:
+
+```json
+{
+  "queue": [
+    {
+      "id": "spotify_track_id",
+      "name": "Next Song Title",
+      "artists": [
+        {
+          "name": "Artist Name"
+        }
+      ],
+      "album": {
+        "name": "Album Name",
+        "images": [
+          {
+            "url": "https://i.scdn.co/image/...",
+            "height": 300,
+            "width": 300
+          }
+        ]
+      },
+      "duration_ms": 180000
+    }
+  ]
+}
+```
+
+### Playback Control
+
+**Play/Pause Toggle**
+
+```http
+POST /api/music/toggle-playback
+Headers:
+  - Authorization: Bearer {jwt_token}
+```
+
+**Response**:
+
+```json
+{
+  "success": true,
+  "isPlaying": false
+}
+```
+
+**Skip to Next Track**
+
+```http
+POST /api/music/next
+Headers:
+  - Authorization: Bearer {jwt_token}
+```
+
+**Skip to Previous Track**
+
+```http
+POST /api/music/previous
+Headers:
+  - Authorization: Bearer {jwt_token}
+```
+
+**Set Volume**
+
+```http
+POST /api/music/volume
+Headers:
+  - Authorization: Bearer {jwt_token}
+Content-Type: application/json
+
+{
+  "volume_percent": 50
+}
+```
+
+## Weather-Based Music Selection
+
+### Core Algorithm Endpoint
+
+The backend should implement an algorithm that selects appropriate music based on weather conditions:
+
+**Get Weather-Based Recommendations**
+
+```http
+POST /api/music/weather-recommendations
+Headers:
+  - Authorization: Bearer {jwt_token}
+Content-Type: application/json
+
+{
+  "weather": {
+    "condition": "rain",
+    "temperature": 18.5,
+    "humidity": 85,
+    "time_period": "evening"
+  },
+  "user_preferences": {
+    "genres": ["indie", "ambient", "electronic"],
+    "energy_level": "medium",
+    "exclude_explicit": false
+  }
+}
+```
+
+**Response**:
+
+```json
+{
+  "recommendations": [
+    {
+      "id": "spotify_track_id",
+      "name": "Rainy Day Song",
+      "artists": [{ "name": "Artist Name" }],
+      "album": {
+        "name": "Album Name",
+        "images": [{ "url": "https://..." }]
+      },
+      "match_score": 0.95,
+      "match_reasons": [
+        "weather_appropriate",
+        "time_suitable",
+        "user_preference"
+      ]
+    }
+  ],
+  "playlist_id": "generated_playlist_id"
+}
+```
+
+### Weather Data Integration
+
+While the frontend currently uses OpenWeatherMap directly, the backend may optionally handle weather data for consistency and caching:
+
+**Weather Data Passthrough** (Optional)
+
+```http
+GET /api/weather/current?lat={latitude}&lon={longitude}
+```
+
+This would allow the backend to cache weather data and potentially use multiple weather services.
+
+## User Settings Synchronization
+
+### Settings Storage
+
+The frontend currently stores settings in localStorage. The backend should support cross-device synchronization:
+
+**Save User Settings**
+
+```http
+POST /api/user/settings
+Headers:
+  - Authorization: Bearer {jwt_token}
+Content-Type: application/json
+
+{
+  "temperatureUnit": "F",
+  "timeFormat": "12h",
+  "speedUnit": "mph",
+  "themeMode": "auto",
+  "musicPreferences": {
+    "preferredGenres": ["indie", "electronic"],
+    "energyLevel": "medium",
+    "explicitContent": false
+  }
+}
+```
+
+**Get User Settings**
+
+```http
+GET /api/user/settings
+Headers:
+  - Authorization: Bearer {jwt_token}
+```
+
+**Response**:
+
+```json
+{
+  "temperatureUnit": "F",
+  "timeFormat": "12h",
+  "speedUnit": "mph",
+  "themeMode": "auto",
+  "musicPreferences": {
+    "preferredGenres": ["indie", "electronic"],
+    "energyLevel": "medium",
+    "explicitContent": false
+  },
+  "lastUpdated": "2024-01-15T10:30:00Z"
+}
+```
+
+## Error Handling Standards
+
+### HTTP Status Codes
+
+- `200`: Success
+- `201`: Created (for new resources)
+- `400`: Bad Request (invalid parameters)
+- `401`: Unauthorized (invalid or expired token)
+- `403`: Forbidden (insufficient permissions)
+- `404`: Not Found
+- `429`: Rate Limit Exceeded
+- `500`: Internal Server Error
+- `503`: Service Unavailable (Spotify API down)
+
+### Error Response Format
+
+```json
+{
+  "error": {
+    "code": "SPOTIFY_API_ERROR",
+    "message": "Unable to connect to Spotify services",
+    "details": "The Spotify API is currently unavailable",
+    "timestamp": "2024-01-15T10:30:00Z"
+  }
+}
+```
+
+## Rate Limiting and Caching
+
+### Spotify API Rate Limits
+
+- **Authentication**: 10 requests per second
+- **Web API**: Various limits per endpoint (typically 100 requests per minute)
+- **Player API**: 1 request per second for control endpoints
+
+### Recommended Caching Strategy
+
+- **Currently Playing**: Cache for 5-10 seconds to reduce API calls
+- **User Profile**: Cache for 1 hour
+- **Playlists**: Cache for 15 minutes
+- **Recommendations**: Cache for 1 hour with weather condition as cache key
+
+### Frontend Integration Points
+
+The frontend components that require backend integration:
+
+**NavBar.tsx** (Line 23):
+
+```tsx
+// Replace placeholder login button with real Spotify OAuth
+onClick={() => window.location.href = '/api/auth/spotify/login'}
+```
+
+**CurrentlyPlaying.tsx** (Line 12):
+
+```tsx
+// Replace placeholder data with real API call
+const { songTitle, artistName, albumArtUrl } = useCurrentlyPlaying();
+```
+
+**UpNext.tsx** (Line 11):
+
+```tsx
+// Replace placeholder songs array with real queue data
+const { queue } = useQueue();
+```
+
+## Development Environment Setup
+
+### Required Environment Variables
+
+```bash
+SPOTIFY_CLIENT_ID=your_spotify_app_client_id
+SPOTIFY_CLIENT_SECRET=your_spotify_app_client_secret
+SPOTIFY_REDIRECT_URI=http://localhost:5173/auth/callback
+JWT_SECRET=your_jwt_secret_key
+OPENWEATHER_API_KEY=your_openweather_api_key (optional)
+```
+
+### Spotify App Configuration
+
+1. Create Spotify app at [developer.spotify.com](https://developer.spotify.com)
+2. Add redirect URI: `http://localhost:5173/auth/callback`
+3. Note Client ID and Client Secret for environment variables
+4. Configure required scopes in app settings
+
+### Database Schema Recommendations
+
+**Users Table**:
+
+- `id` (primary key)
+- `spotify_id` (unique)
+- `display_name`
+- `email`
+- `country`
+- `product_type`
+- `created_at`
+- `updated_at`
+
+**User Settings Table**:
+
+- `user_id` (foreign key)
+- `settings_json` (JSON column)
+- `updated_at`
+
+**Sessions Table**:
+
+- `id` (primary key)
+- `user_id` (foreign key)
+- `access_token` (encrypted)
+- `refresh_token` (encrypted)
+- `expires_at`
+- `created_at`
+
+This API specification provides the complete backend requirements for transforming WeatherTunes from a weather-only application into a fully functional weather-based music streaming service.
 
 ```http
 GET /api/forecast?lat={latitude}&lon={longitude}

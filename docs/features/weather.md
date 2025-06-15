@@ -1,103 +1,370 @@
 # Weather System
 
-The weather system is a fully implemented core feature that provides real-time weather data and forecasts using the OpenWeatherMap API.
+The weather system provides real-time weather data and forecasts through OpenWeatherMap API integration. This is a production-ready feature with comprehensive error handling and responsive design.
 
-## Overview
+## System Overview
 
-The weather system automatically detects the user's location and displays:
+The weather system automatically detects user location and displays current conditions with a 5-day forecast. All weather data adapts to user-selected temperature and speed units, persisting preferences across browser sessions.
 
-- Current weather conditions with detailed metrics
-- 5-day weather forecast with interactive cards
-- Sunrise and sunset times
-- Weather-responsive video backgrounds
-- Location-based unit defaults
+### Core Features
 
-## Architecture
+- **Current weather conditions** with detailed meteorological data
+- **5-day weather forecast** with interactive daily cards
+- **Dynamic video backgrounds** that change based on weather and time
+- **Automatic location detection** with graceful fallback handling
+- **Unit conversion** supporting Fahrenheit/Celsius and mph/km/h/m/s
+- **Responsive design** optimized for mobile and desktop viewing
 
-### Core Components
-
-**`WeatherDisplay.tsx`**
-
-- Displays current weather conditions
-- Shows temperature, humidity, pressure, wind speed
-- Includes sunrise/sunset times with custom icons
-- Responsive design with glassmorphism styling
-
-**`ForecastCard.tsx`**
-
-- 5-day weather forecast display
-- Interactive forecast day cards with hover effects
-- Weather icons from OpenWeatherMap
-- Temperature highs and lows
-
-**`VideoBackground.tsx`**
-
-- Dynamic background videos based on weather and time
-- 24 different weather/time combinations
-- Automatic video selection logic
-- Smooth transitions between videos
-
-### Data Management
-
-**`useWeather.ts` Hook**
-
-- Fetches current weather data
-- Handles geolocation and fallbacks
-- Manages loading and error states
-- Processes API response for display
-
-**`useForecast.ts` Hook**
-
-- Fetches 5-day weather forecast
-- Formats data for display components
-- Handles API errors gracefully
-- Caches forecast data
+## Technical Implementation
 
 ### API Integration
 
-**OpenWeatherMap Integration** (`src/lib/weather.ts`)
+**Provider**: OpenWeatherMap API
+**Endpoints Used**:
 
-- Current weather endpoint: `/weather`
-- 5-day forecast endpoint: `/forecast`
-- Coordinate-based location lookup
-- Country code detection for unit defaults
+- Current weather: `https://api.openweathermap.org/data/2.5/weather`
+- 5-day forecast: `https://api.openweathermap.org/data/2.5/forecast`
 
-## Features
+**Authentication**: API key via environment variable `VITE_PUBLIC_OPENWEATHER_API_KEY`
 
-### Current Weather Display
+**API Client**: `src/lib/weather.ts`
 
-**Data Points Shown:**
+```typescript
+export async function fetchWeatherByCoords(
+  lat: number,
+  lon: number,
+  apiKey: string,
+): Promise<WeatherApiResponse> {
+  const res = await fetch(
+    `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`,
+  );
+  if (!res.ok) throw new Error("Weather API error");
+  return res.json();
+}
+```
 
-- Temperature (with unit conversion)
-- Weather condition description
-- Humidity percentage
-- Atmospheric pressure
-- Wind speed and direction
-- Visibility distance
-- Sunrise and sunset times
+### Location Detection System
 
-**Location Detection:**
+**Primary Method**: Browser Geolocation API with user permission
+**Fallback Coordinates**: Bellevue, WA (47.585°N, 122.148°W)
+**Timeout**: 10 seconds before fallback activation
 
-1. Browser geolocation API
-2. Fallback to Bellevue, WA coordinates
-3. Country code extraction for unit defaults
+**Implementation**: `src/lib/weather.ts`
 
-### 5-Day Forecast
+```typescript
+export function getUserLocationAndFetch(
+  apiKey: string,
+): Promise<WeatherApiResponse> {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) {
+      return reject(new Error("Geolocation not supported"));
+    }
 
-**Forecast Cards Display:**
+    navigator.geolocation.getCurrentPosition(
+      async ({ coords: { latitude, longitude } }) => {
+        try {
+          const data = await fetchWeatherByCoords(latitude, longitude, apiKey);
+          resolve(data);
+        } catch (err) {
+          reject(err);
+        }
+      },
+      () => {
+        // Fallback to Bellevue coordinates
+        fetchWeatherByCoords(FALLBACK_COORDS.lat, FALLBACK_COORDS.lon, apiKey)
+          .then(resolve)
+          .catch(reject);
+      },
+      { timeout: GEOLOCATION_TIMEOUT },
+    );
+  });
+}
+```
 
-- Day name and date
-- Weather condition icon
-- High and low temperatures
-- Weather description
-- Interactive hover effects
+### Data Types and Interfaces
 
-**Data Processing:**
+**Weather API Response**: `src/types/weather.ts`
 
-- Filters daily high/low temperatures
-- Formats dates for display
-- Selects representative weather icons
-- Handles missing or incomplete data
+```typescript
+export interface WeatherApiResponse {
+  name: string; // City name
+  main: {
+    temp: number; // Temperature
+    humidity: number; // Humidity percentage
+    pressure: number; // Atmospheric pressure
+  };
+  weather: {
+    main: string; // Weather category
+    description: string; // Detailed description
+    id: number; // Weather condition ID
+  }[];
+  wind?: {
+    speed: number; // Wind speed
+  };
+  clouds?: {
+    all: number; // Cloud coverage percentage
+  };
+  visibility?: number; // Visibility in meters
+  sys: {
+    sunrise: number; // Sunrise Unix timestamp
+    sunset: number; // Sunset Unix timestamp
+    country?: string; // Country code
+  };
+}
+```
+
+**Display Data Interface**:
+
+```typescript
+export interface WeatherDisplayData {
+  location: string; // Formatted location name
+  temperature: string; // Formatted temperature with unit
+  condition: string; // User-friendly condition description
+  unit: string; // Temperature unit symbol
+  isError?: boolean; // Error state indicator
+  sunrise?: string; // Formatted sunrise time
+  sunset?: string; // Formatted sunset time
+}
+```
+
+## Component Architecture
+
+### WeatherDisplay Component
+
+**Location**: `src/components/WeatherDisplay.tsx`
+
+**Features**:
+
+- Intelligent text sizing based on weather condition length
+- Automatic line wrap detection and adjustment
+- Custom sunrise/sunset icons with formatted times
+- Responsive design using CSS clamp functions
+
+**Text Sizing Logic**:
+
+```typescript
+const getConditionTextSize = (text: string) => {
+  const length = text.length;
+  if (length <= 8) return "text-[clamp(1.5rem,5vw,3rem)]"; // "Clear"
+  if (length <= 15) return "text-[clamp(1.2rem,4vw,2.5rem)]"; // "Partly cloudy"
+  if (length <= 25) return "text-[clamp(1rem,3.5vw,2rem)]"; // "Light intensity drizzle"
+  return "text-[clamp(0.9rem,3vw,1.8rem)]"; // Very long conditions
+};
+```
+
+### ForecastCard Component
+
+**Location**: `src/components/ForecastCard.tsx`
+
+**Data Source**: `useForecast()` hook processes 5-day forecast data
+
+**Features**:
+
+- Interactive cards with hover animations and scaling effects
+- Weather icons from OpenWeatherMap icon service
+- Daily high/low temperatures with unit conversion
+- Loading skeleton states during data fetch
+- Error handling with graceful fallback display
+
+### VideoBackground Component
+
+**Location**: `src/components/VideoBackground.tsx`
+
+**Video Assets**: 24 MP4 files in `src/assets/videos/` covering weather and time combinations
+
+**Selection Logic**:
+
+- Weather types: clear, cloudy, fog, rain, snow
+- Time periods: day, evening, morning, night
+- Automatic selection based on weather condition and local time
+- Smooth transitions between video changes
+
+**Performance Optimizations**:
+
+- Lazy loading to prevent blocking initial page load
+- Video preloading for common weather conditions
+- Fallback handling for unsupported video formats
+
+## State Management
+
+### useWeather Hook
+
+**Location**: `src/hooks/useWeather.ts`
+
+**Responsibilities**:
+
+- Coordinate geolocation and API requests
+- Process raw API data into display-ready format
+- Manage loading states and error handling
+- Handle time period calculation for video backgrounds
+
+**State Interface**:
+
+```typescript
+interface EnhancedWeatherState {
+  displayData: WeatherDisplayData; // Processed display data
+  timePeriod: TimePeriod | null; // Current time period for videos
+  isLoading: boolean; // Loading state
+  error: Error | null; // Error state
+  rawResponse: WeatherApiResponse | null; // Raw API data
+}
+```
+
+**Error Handling Strategy**:
+
+```typescript
+const processWeatherData = useCallback(
+  (data, error) => {
+    if (error || !data) {
+      const errorData = createErrorWeatherData();
+      setWeatherState({
+        displayData: {
+          location: "Error",
+          temperature: "--",
+          condition: "Unable to load",
+          unit: `°${settings.temperatureUnit}`,
+          isError: true,
+        },
+        timePeriod: getTimePeriod(new Date()),
+        isLoading: false,
+        error: error || new Error("Failed to fetch weather data"),
+        rawResponse: errorData,
+      });
+      return;
+    }
+    // Process successful data...
+  },
+  [settings.temperatureUnit],
+);
+```
+
+### useForecast Hook
+
+**Location**: `src/hooks/useForecast.ts`
+
+**Data Processing**:
+
+- Groups 3-hour forecast intervals into daily summaries
+- Calculates daily high/low temperatures
+- Selects representative weather icons for each day
+- Formats dates for display with day names
+
+**Daily Forecast Interface**:
+
+```typescript
+interface DailyForecast {
+  date: string; // "December 15"
+  dayName: string; // "Monday"
+  condition: string; // "Partly cloudy"
+  tempHigh: string; // "72°F"
+  tempLow: string; // "58°F"
+  icon: string; // OpenWeatherMap icon code
+}
+```
+
+## Unit Conversion System
+
+### Temperature Conversion
+
+**Location**: `src/lib/temperature.ts`
+
+**Supported Units**: Fahrenheit (°F) and Celsius (°C)
+
+**Implementation**:
+
+```typescript
+export function formatTemperature(tempKelvin: number, unit: "F" | "C"): string {
+  if (unit === "F") {
+    const fahrenheit = ((tempKelvin - 273.15) * 9) / 5 + 32;
+    return `${Math.round(fahrenheit)}°F`;
+  } else {
+    const celsius = tempKelvin - 273.15;
+    return `${Math.round(celsius)}°C`;
+  }
+}
+```
+
+### Speed Unit Conversion
+
+**Location**: `src/lib/units.ts`
+
+**Supported Units**:
+
+- mph (miles per hour)
+- km/h (kilometers per hour)
+- m/s (meters per second)
+
+**Location-Based Defaults**:
+
+- United States: Fahrenheit, mph
+- All other countries: Celsius, km/h
+
+## Error Handling and Resilience
+
+### API Error Recovery
+
+**Network Failures**: Graceful degradation with "Unable to load" messaging
+**Invalid API Key**: Clear error message with setup instructions
+**Geolocation Denied**: Automatic fallback to Bellevue, WA coordinates
+**Malformed API Response**: Validation with fallback error data structure
+
+### Fallback Data Strategy
+
+**Error Weather Data**:
+
+```typescript
+const createErrorWeatherData = () => ({
+  name: "Error",
+  weather: [{ main: "Unable to load", description: "Please try again" }],
+  main: { temp: 0, humidity: 0, pressure: 0 },
+  sys: { sunrise: 0, sunset: 0 },
+  // ... other fallback properties
+});
+```
+
+### Loading States
+
+**Initial Load**: "Loading..." displays in weather components
+**Refresh Operations**: Skeleton placeholders during data updates
+**Background Updates**: Non-blocking refresh with previous data visible
+
+## Performance Optimizations
+
+### API Efficiency
+
+**Request Batching**: Single API call provides all current weather data
+**Coordinate Caching**: Geolocation results cached to avoid repeated permission requests
+**Error Debouncing**: Failed requests wait before retry attempts
+
+### Rendering Optimizations
+
+**Memoized Calculations**: Expensive formatting operations use `useMemo`
+**Stable References**: Event handlers use `useCallback` for performance
+**Conditional Rendering**: Components only re-render when relevant data changes
+
+### Asset Management
+
+**Video Lazy Loading**: Background videos load only when needed
+**Icon Optimization**: Weather icons load from CDN with caching
+**Bundle Splitting**: Weather utilities separate from main bundle
+
+## Future Enhancements
+
+### Planned Features
+
+**Weather Alerts**: Integration with severe weather warning systems
+**Historical Data**: Weather trends and historical comparisons
+**Extended Forecast**: 10-day forecast with hourly details
+**Multiple Locations**: Save and switch between favorite locations
+
+### Backend Integration Opportunities
+
+**Weather Preferences**: Server-side storage of location and unit preferences
+**Push Notifications**: Weather alerts and daily forecast delivery
+**Analytics**: Weather pattern tracking for music recommendation improvements
+**Caching Layer**: Server-side weather data caching for improved performance
+
+The weather system provides a robust foundation for the application's core functionality, with production-ready error handling, performance optimizations, and user experience considerations.
 
 ### Video Background System
 

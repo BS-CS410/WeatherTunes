@@ -1,53 +1,416 @@
 # Settings System
 
-The settings system provides comprehensive user preference management with automatic defaults, persistent storage, and location-based configuration.
+The settings system provides comprehensive user preference management with automatic location-based defaults, persistent browser storage, and real-time updates throughout the application.
 
-## Overview
+## System Overview
 
-The settings system manages:
+The settings system manages four categories of user preferences that affect the entire application experience:
 
-- Temperature units (Fahrenheit/Celsius)
-- Time format (12-hour/24-hour)
-- Speed units (mph/km/h/m/s)
-- Theme mode (automatic/light/dark)
-- Location-based default unit selection
-- Persistent browser storage
+- **Temperature units**: Fahrenheit (°F) or Celsius (°C)
+- **Time format**: 12-hour (12:30 PM) or 24-hour (12:30)
+- **Speed units**: mph, km/h, or m/s for wind speed display
+- **Theme mode**: automatic, light, or dark appearance
 
-## Architecture
+All settings persist across browser sessions and include intelligent location-based defaults for new users.
 
-### Core Components
+## Technical Architecture
 
-**`SettingsContext.tsx`**
+### Global State Management
 
-- Global state management with React Context
-- Persistent storage integration
-- Location-based default detection
-- Settings validation and type safety
+**Settings Context**: `src/contexts/SettingsContext.tsx`
 
-**`SettingsMenu.tsx`**
+The settings system uses React Context to provide global state accessible throughout the component tree. This pattern allows any component to read or update settings without prop drilling.
 
-- User interface for preference management
-- Toggle controls for all settings
+**Settings Interface**:
+
+```typescript
+interface Settings {
+  temperatureUnit: "F" | "C";
+  timeFormat: "12h" | "24h";
+  speedUnit: "mph" | "kmh" | "ms";
+  themeMode: "auto" | "light" | "dark";
+}
+```
+
+**Context Provider Interface**:
+
+```typescript
+interface SettingsContextType {
+  settings: Settings;
+  setTemperatureUnit: (unit: TemperatureUnit) => void;
+  setTimeFormat: (format: TimeFormat) => void;
+  setSpeedUnit: (unit: SpeedUnit) => void;
+  setThemeMode: (mode: ThemeMode) => void;
+  toggleTemperatureUnit: () => void;
+  toggleTimeFormat: () => void;
+  resetToDefaults: () => void;
+  locationDefaults: LocationBasedDefaults | null;
+  isLocationLoading: boolean;
+}
+```
+
+### Persistence Strategy
+
+**LocalStorage Integration**: `src/hooks/useLocalStorage.ts`
+
+Settings automatically save to browser localStorage using a custom hook that handles JSON serialization and error recovery:
+
+```typescript
+export function useLocalStorage<T>(key: string, defaultValue: T) {
+  const [value, setValue] = useState<T>(() => {
+    try {
+      const item = window.localStorage.getItem(key);
+      return item ? JSON.parse(item) : defaultValue;
+    } catch (error) {
+      console.warn(`Error reading localStorage key "${key}":`, error);
+      return defaultValue;
+    }
+  });
+
+  const setStoredValue = (newValue: T) => {
+    try {
+      setValue(newValue);
+      window.localStorage.setItem(key, JSON.stringify(newValue));
+    } catch (error) {
+      console.warn(`Error setting localStorage key "${key}":`, error);
+    }
+  };
+
+  return [value, setStoredValue] as const;
+}
+```
+
+**Storage Keys**:
+
+- `temperatureUnit`: "F" or "C"
+- `timeFormat`: "12h" or "24h"
+- `speedUnit`: "mph", "kmh", or "ms"
+- `themeMode`: "auto", "light", or "dark"
+
+## Location-Based Defaults
+
+### Geographic Unit Detection
+
+**Implementation**: `src/hooks/useLocationBasedDefaults.ts`
+
+The system automatically detects appropriate default units based on user location through a multi-step process:
+
+1. **Geolocation Request**: Browser geolocation API with user permission
+2. **Reverse Geocoding**: Coordinates converted to country code
+3. **Unit Mapping**: Country code mapped to appropriate measurement system
+4. **Fallback Handling**: Metric defaults if location unavailable
+
+**Location Detection Process**:
+
+```typescript
+export function useLocationBasedDefaults(): {
+  locationDefaults: LocationBasedDefaults | null;
+  isLoading: boolean;
+} {
+  const [locationDefaults, setLocationDefaults] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function determineLocationDefaults() {
+      try {
+        if (!navigator.geolocation) {
+          setLocationDefaults(getDefaultUnitsForCountry());
+          setIsLoading(false);
+          return;
+        }
+
+        const position = await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            timeout: 10000,
+            enableHighAccuracy: false,
+            maximumAge: 300000, // 5 minutes
+          });
+        });
+
+        // Reverse geocoding logic...
+      } catch (error) {
+        // Fallback to metric defaults
+      }
+    }
+  }, []);
+}
+```
+
+### Country-Based Unit Mapping
+
+**Implementation**: `src/lib/units.ts`
+
+**Imperial System Countries**:
+
+```typescript
+const IMPERIAL_COUNTRIES = new Set([
+  "US", // United States
+  "BS", // Bahamas
+  "BZ", // Belize
+  "KY", // Cayman Islands
+  "LR", // Liberia
+  "PW", // Palau
+  "FM", // Federated States of Micronesia
+  "MH", // Marshall Islands
+]);
+```
+
+**Default Selection Logic**:
+
+```typescript
+export function getDefaultUnitsForCountry(countryCode?: string): UnitDefaults {
+  if (!countryCode) {
+    return { temperatureUnit: "C", speedUnit: "kmh" };
+  }
+
+  const isImperialCountry = IMPERIAL_COUNTRIES.has(countryCode.toUpperCase());
+
+  return {
+    temperatureUnit: isImperialCountry ? "F" : "C",
+    speedUnit: isImperialCountry ? "mph" : "kmh",
+  };
+}
+```
+
+### Smart Default Application
+
+Defaults only apply to new users who haven't set explicit preferences:
+
+```typescript
+// From SettingsContext.tsx
+useEffect(() => {
+  if (!locationLoading && locationDefaults && !defaultsInitialized) {
+    const hasExistingPrefs =
+      localStorage.getItem("temperatureUnit") ||
+      localStorage.getItem("speedUnit");
+
+    if (!hasExistingPrefs) {
+      console.log("Applying location-based defaults");
+      setTemperatureUnit(locationDefaults.temperatureUnit);
+      setSpeedUnit(locationDefaults.speedUnit);
+    } else {
+      console.log("User has existing preferences, keeping them");
+    }
+
+    setDefaultsInitialized(true);
+  }
+}, [locationLoading, locationDefaults, defaultsInitialized]);
+```
+
+## User Interface Components
+
+### SettingsMenu Component
+
+**Location**: `src/components/SettingsMenu.tsx`
+
+**Features**:
+
+- Modal overlay with backdrop blur effect
+- Toggle buttons for each setting category
+- Visual feedback for current selections
 - Reset to defaults functionality
-- Debug information in development mode
+- Development debug information
 
-**`SettingsButton.tsx`**
+**UI Implementation Pattern**:
 
-- Settings access trigger
-- Animated gear icon
+```typescript
+// Temperature unit selection example
+<div className="flex gap-2">
+  <Button
+    variant={settings.temperatureUnit === "F" ? "default" : "outline"}
+    onClick={() => setTemperatureUnit("F")}
+    className="flex-1"
+  >
+    Fahrenheit (°F)
+  </Button>
+  <Button
+    variant={settings.temperatureUnit === "C" ? "default" : "outline"}
+    onClick={() => setTemperatureUnit("C")}
+    className="flex-1"
+  >
+    Celsius (°C)
+  </Button>
+</div>
+```
+
+### SettingsButton Component
+
+**Location**: `src/components/SettingsButton.tsx`
+
+**Features**:
+
+- Animated gear icon with rotation on interaction
 - Glassmorphism styling consistent with app design
+- Accessible button with proper ARIA labels
+- Hover and focus states
 
-### Custom Hooks
+### Settings Access Hook
 
-**`useSettings.ts`**
+**Location**: `src/hooks/useSettings.ts`
 
-- Context consumer hook
-- Type-safe settings access
-- Automatic re-rendering on changes
+**Usage Pattern**:
 
-**`useLocationBasedDefaults.ts`**
+```typescript
+export function useSettings() {
+  const context = useContext(SettingsContext);
+  if (context === undefined) {
+    throw new Error("useSettings must be used within a SettingsProvider");
+  }
+  return context;
+}
 
-- Geographic location detection
+// Component usage
+const { settings, setTemperatureUnit } = useSettings();
+const currentTemp = `${temperature}°${settings.temperatureUnit}`;
+```
+
+## Real-Time Application Integration
+
+### Weather System Integration
+
+Settings immediately affect weather data display:
+
+**Temperature Display**: `src/lib/temperature.ts`
+
+```typescript
+export function formatTemperature(tempKelvin: number, unit: "F" | "C"): string {
+  if (unit === "F") {
+    const fahrenheit = ((tempKelvin - 273.15) * 9) / 5 + 32;
+    return `${Math.round(fahrenheit)}°F`;
+  } else {
+    const celsius = tempKelvin - 273.15;
+    return `${Math.round(celsius)}°C`;
+  }
+}
+```
+
+**Time Display**: Sunrise/sunset times adapt to 12h/24h format preference
+
+**Speed Display**: Wind speed converts between mph, km/h, and m/s units
+
+### Theme System Integration
+
+**Automatic Theme Detection**:
+
+- Uses CSS `@media (prefers-color-scheme)` queries
+- Detects system dark/light mode preference
+- Overrides with manual selection when user chooses specific theme
+
+**CSS Implementation**:
+
+```css
+/* Automatic theme switching */
+.theme-auto {
+  @apply bg-white text-gray-900 dark:bg-slate-900 dark:text-slate-100;
+}
+
+/* Manual theme overrides */
+.theme-light {
+  @apply bg-white text-gray-900;
+}
+
+.theme-dark {
+  @apply bg-slate-900 text-slate-100;
+}
+```
+
+## Performance Optimizations
+
+### Context Performance
+
+**Memoized Context Value**: Prevents unnecessary re-renders when context value hasn't changed
+
+**Split Contexts**: Settings separated from other global state to minimize re-render scope
+
+**Selective Updates**: Components only re-render when relevant settings change
+
+### Storage Performance
+
+**Debounced Writes**: Rapid setting changes batched into single localStorage writes
+
+**Error Recovery**: Storage failures fallback to in-memory state
+
+**Cache Validation**: localStorage values validated against expected types
+
+## Development and Debugging
+
+### Debug Information
+
+Settings menu displays debug information in development mode:
+
+```typescript
+{process.env.NODE_ENV === 'development' && (
+  <div className="mt-4 p-2 bg-gray-100 dark:bg-slate-800 rounded text-xs">
+    <p>Debug Info:</p>
+    <p>Location Loading: {isLocationLoading.toString()}</p>
+    <p>Location Defaults: {JSON.stringify(locationDefaults)}</p>
+    <p>Current Settings: {JSON.stringify(settings)}</p>
+  </div>
+)}
+```
+
+### Console Logging
+
+Location detection process includes detailed console output:
+
+```typescript
+console.log("🔍 Starting location-based unit detection...");
+console.log("📍 Requesting geolocation permission...");
+console.log("✅ Geolocation permission granted");
+console.log(
+  `Country ${countryCode} uses ${isImperialCountry ? "imperial" : "metric"} units`,
+);
+```
+
+## Error Handling
+
+### Geolocation Errors
+
+- **Permission Denied**: Falls back to metric defaults
+- **Position Unavailable**: Uses metric defaults with user notification
+- **Timeout**: 10-second timeout before fallback activation
+
+### Storage Errors
+
+- **Quota Exceeded**: Graceful degradation to session-only storage
+- **Serialization Errors**: Fallback to default values with error logging
+- **Read Errors**: Default values used with warning messages
+
+### Network Errors
+
+- **Reverse Geocoding Failure**: Falls back to metric defaults
+- **API Unavailable**: Uses cached location data if available
+
+## Future Enhancements
+
+### Planned Features
+
+**Additional Units**:
+
+- Pressure units (hPa, inHg, mmHg)
+- Distance units for visibility (miles, kilometers)
+- Advanced time zone handling
+
+**Enhanced Personalization**:
+
+- Custom default locations
+- Weather alert preferences
+- Display layout customization
+
+**Cloud Synchronization**:
+
+- Cross-device settings sync via backend
+- User account integration
+- Backup and restore functionality
+
+**Advanced Location Features**:
+
+- Multiple saved locations
+- Location-specific preferences
+- Automatic location switching
+
+The settings system provides a robust, user-friendly foundation for personalizing the WeatherTunes experience while maintaining excellent performance and reliability.
+
 - Country-based unit determination
 - Fallback handling for location failures
 

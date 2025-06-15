@@ -1,26 +1,28 @@
 # WeatherTunes 🌪️🎸😎👍
 
-WeatherTunes is a modern web application that connects your Spotify account with real-time weather data to create a personalized music experience. The application automatically selects and plays music that matches your local weather conditions, creating an immersive atmosphere that responds to the world around you.
+WeatherTunes is a React web application that displays real-time weather information alongside music interface components. The application uses modern web development patterns including React hooks for state management, TypeScript for type safety, and Tailwind CSS for styling.
 
-## 📚 Documentation
+## Documentation
 
-This project has comprehensive documentation organized in a wiki format. **[Visit the Documentation Wiki →](docs/README.md)**
+This project maintains comprehensive documentation in the `docs/` directory to help developers understand the system architecture and implementation details.
 
-### Quick Links
+### Available Documentation
 
-- **[Getting Started](docs/development/getting-started.md)** - Installation and first run
-- **[System Overview](docs/architecture/overview.md)** - Architecture and tech stack
-- **[Weather System](docs/features/weather.md)** - Weather integration details
-- **[API Requirements](docs/backend/api-requirements.md)** - Backend integration specs
+- [Getting Started](docs/development/getting-started.md) - Installation and setup instructions
+- [System Overview](docs/architecture/overview.md) - Architecture and technical details
+- [Weather System](docs/features/weather.md) - Weather integration implementation
+- [API Requirements](docs/backend/api-requirements.md) - Backend integration specifications
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
-- Node.js 18+
-- OpenWeatherMap API key
+- Node.js 18 or higher (JavaScript runtime environment)
+- OpenWeatherMap API key (weather data service)
 
 ### Installation
+
+Clone the repository and install dependencies using npm (Node Package Manager):
 
 ```bash
 git clone https://github.com/cpond8/weathertunes.git
@@ -30,307 +32,182 @@ npm install
 
 ### Configuration
 
-Create `.env` file:
+Create a `.env` file in the project root directory to store environment variables:
 
 ```bash
 VITE_PUBLIC_OPENWEATHER_API_KEY=your_api_key_here
 ```
 
-### Run Development Server
+### Development Server
+
+Start the Vite development server with hot module replacement:
 
 ```bash
 npm run dev
 ```
 
-Visit `http://localhost:5173` to see the application.
+The application runs at `http://localhost:5173` with automatic browser refresh during development.
 
-## ✨ Features
+## Current Features
 
-### ✅ Currently Available
+### Weather System
 
-- **Complete Weather System** - Real-time weather with 5-day forecast
-- **Smart Settings** - Location-based unit defaults with persistence
-- **Dynamic Backgrounds** - 24 weather/time-specific video backgrounds
-- **Modern UI** - Responsive glassmorphism design with dark/light themes
-- **Accessibility** - WCAG 2.1 compliant with Radix UI components
+The application integrates with the OpenWeatherMap API to provide current weather conditions and forecasts:
 
-### 🔄 UI Ready (Awaiting Backend)
+- Real-time weather data fetching using HTTP requests
+- 5-day weather forecast display with daily summaries
+- Sunrise and sunset times with automatic calculation
+- Weather metrics including humidity percentage, barometric pressure, and wind speed
+- Dynamic video backgrounds that change based on current weather conditions and time of day
 
-- **Spotify Integration** - Music player components with placeholder data
-- **User Authentication** - Login flow structure in place
-- **Music Controls** - Play/pause/skip interface ready
+### Settings Management
 
-### 📋 Planned Features
+The application provides user preference controls with persistent storage:
 
-- **Weather-Based Music Selection** - AI-powered song recommendations
-- **Cross-Device Sync** - Settings and preferences across devices
-- **Social Features** - Share weather-music combinations
+- Temperature units (Fahrenheit or Celsius conversion)
+- Time format (12-hour or 24-hour display)
+- Speed units (miles per hour, kilometers per hour, or meters per second)
+- Theme mode (automatic, light, or dark theme selection)
+- Location-based default unit selection using geolocation
+- Persistent settings storage using browser localStorage API
 
-## 🛠️ Technology Stack
+### User Interface
 
-- **React 19** + **TypeScript** + **Vite** for modern development
-- **Tailwind CSS** + **Radix UI** for styling and accessibility
-- **OpenWeatherMap API** for weather data
-- **Spotify Web API** for music integration (planned)
+The interface uses modern web development techniques for responsive design:
 
-## 📖 Documentation Structure
+- Responsive layout that adapts to desktop and mobile screen sizes
+- Automatic theme switching based on time of day detection
+- Video backgrounds that update dynamically based on weather and time
+- Glassmorphism design effects using CSS backdrop filters
+- Accessibility support through Radix UI component library
 
-The documentation is organized into focused sections:
+### Music Interface Components
 
-- **[Architecture](docs/architecture/)** - System design and component structure
-- **[Features](docs/features/)** - Detailed feature documentation
-- **[Development](docs/development/)** - Setup and workflow guides
-- **[Backend](docs/backend/)** - API requirements and integration specs
+The application includes user interface components for music controls that display placeholder data:
 
-## 🎯 Current Status
+- Current track display component with song and artist information
+- Music queue interface showing upcoming tracks
+- Play, pause, and skip control buttons
+- Navigation component with authentication placeholders
 
-**Frontend**: Production-ready weather system with complete UI for music features
-**Backend**: Required for Spotify integration and user data management
-**Design**: Modern, responsive interface with comprehensive accessibility support
+## Technology Stack
 
-For detailed implementation status and technical specifications, see the [Documentation Wiki](docs/README.md).
+### Core Framework
 
-## 🤝 Contributing
+The application uses React 19 as the primary JavaScript library for building user interfaces:
 
-This project follows modern development practices with TypeScript, ESLint, and Prettier. See the [Development Setup](docs/development/setup.md) guide for detailed contribution guidelines.
+- React 19 with functional components and React hooks for state management
+- TypeScript for static type checking and improved developer experience
+- Vite as the build tool and development server with fast hot module replacement
+- React Router DOM for client-side navigation between application pages
 
-## 📄 License
+### Styling and UI Components
 
-[Add your license information here]
+The interface uses utility-first CSS and accessible component libraries:
 
-- **Radix UI** - Accessible component primitives
-- **Lucide React** - Beautiful icons
-- **Class Variance Authority** - Component variant management
+- Tailwind CSS for rapid styling with utility classes
+- Radix UI for accessible, unstyled component primitives
+- Lucide React for consistent icon components
+- Class Variance Authority for managing component style variants
 
-### Code Quality
+### Code Quality Tools
 
-- **ESLint 9.25.0** - Code linting
-- **Prettier 3.5.3** - Code formatting
-- **TypeScript ESLint** - TypeScript-specific linting
+The project maintains code quality through automated tools:
 
-## Getting Started
-
-### Prerequisites
-
-Before you begin, ensure you have the following installed:
-
-1. **Node.js** (version 18 or higher)
-
-   - Download from [nodejs.org](https://nodejs.org/)
-   - Choose the LTS (Long Term Support) version for stability
-
-2. **npm** (Node Package Manager)
-   - Included with Node.js installation
-   - Used to install and manage project dependencies
-
-You can verify your installations by running:
-
-```bash
-node -v    # Should show v18.x.x or higher
-npm -v     # Should show 8.x.x or higher
-```
-
-### Installation
-
-1. **Clone the repository**
-
-   ```bash
-   git clone https://github.com/cpond8/weathertunes.git
-   cd weathertunes
-   ```
-
-2. **Install dependencies**
-
-   ```bash
-   npm install
-   ```
-
-   This command will:
-
-   - Read the `package.json` file
-   - Install all required dependencies
-   - Create a `node_modules` directory
-   - Generate a `package-lock.json` file for version control
-
-3. **Set up environment variables**
-
-   Create a `.env` file in the project root and add your API keys:
-
-   ```bash
-   VITE_PUBLIC_OPENWEATHER_API_KEY=your_openweather_api_key_here
-   ```
-
-   You can obtain a free API key from [OpenWeatherMap](https://openweathermap.org/api).
-
-### Running the Application
-
-Start the development server:
-
-```bash
-npm run dev
-```
-
-This will:
-
-- Start the Vite development server (typically on `http://localhost:5173`)
-- Enable Hot Module Replacement for instant updates during development
-- Open your default browser to the application
-
-## Features
-
-### Current Features
-
-**Complete Settings System**
-
-- Temperature units (Fahrenheit/Celsius)
-- Time format (12-hour/24-hour)
-- Speed units (mph/km/h/m/s)
-- Theme mode (automatic/light/dark)
-- Location-based default unit selection
-- Persistent settings storage
-
-**Weather Integration**
-
-- Real-time weather data display
-- 5-day weather forecast
-- Sunrise and sunset times
-- Detailed weather metrics (humidity, pressure, wind speed)
-- Weather-responsive video backgrounds
-
-**User Interface**
-
-- Responsive design for all device sizes
-- Automatic theme switching based on time of day
-- Dynamic video backgrounds based on weather conditions
-- Interactive elements with brightness hover effects
-- Glassmorphism design with backdrop blur effects
-
-**Architecture**
-
-- Modular component structure
-- Custom React hooks for state management
-- TypeScript for type safety
-- Accessible UI components
-
-### Planned Features (Backend Required)
-
-**Spotify Integration**
-
-- OAuth 2.0 authentication
-- Music player controls
-- Weather-based music selection
-- Playlist management
-- User library access
-
-**User Features**
-
-- Personal favorites system
-- Cross-device settings synchronization
-- Music listening history
-- Personalized recommendations
+- ESLint 9.25.0 for identifying and fixing JavaScript code issues
+- Prettier 3.5.3 for consistent code formatting across the project
+- TypeScript ESLint for TypeScript-specific linting rules
 
 ## Project Structure
 
+The application follows React best practices for organizing components and logic:
+
 ```
-weathertunes/
-├── src/
-│   ├── components/         # Reusable UI components
-│   │   ├── ui/            # Base UI primitives
-│   │   ├── icons/         # Custom icon components
-│   │   └── ...            # Feature-specific components
-│   ├── contexts/          # React context providers
-│   ├── hooks/             # Custom React hooks
-│   ├── lib/               # Utility functions and libraries
-│   ├── pages/             # Top-level route components
-│   ├── types/             # TypeScript type definitions
-│   └── assets/            # Static assets and videos
-├── public/                # Static public assets
-├── package.json           # Project configuration and dependencies
-├── tailwind.config.ts     # Tailwind CSS configuration
-├── vite.config.ts         # Vite build configuration
-└── tsconfig.json          # TypeScript configuration
+src/
+├── components/         # Reusable UI components organized by purpose
+│   ├── ui/            # Base UI primitives (button, card, input)
+│   ├── icons/         # Custom SVG icon components
+│   └── ...            # Feature-specific components for weather and music
+├── contexts/          # React Context providers for global state management
+├── hooks/             # Custom React hooks for reusable logic
+├── lib/               # Utility functions and external service integrations
+├── pages/             # Top-level route components that render full pages
+├── types/             # TypeScript type definitions and interfaces
+└── assets/            # Static assets including video files for backgrounds
 ```
 
 ### Key Components
 
-**Main Application**
+#### Main Application Structure
 
-- `App.tsx` - Root component with routing
-- `MainPage.tsx` - Primary application interface
-- `Login.tsx` - Authentication page (placeholder)
+- `src/App.tsx` - Root component that configures React Router for navigation
+- `src/pages/MainPage.tsx` - Primary application interface combining weather and music components
+- `src/pages/Login.tsx` - Authentication page structure with placeholder content
 
-**Weather System**
+#### Weather System Components
 
-- `WeatherDisplay.tsx` - Current weather information
-- `ForecastCard.tsx` - 5-day weather forecast
-- `VideoBackground.tsx` - Dynamic weather-based backgrounds
+- `src/components/WeatherDisplay.tsx` - Current weather information display with real API data
+- `src/components/ForecastCard.tsx` - 5-day weather forecast component using OpenWeatherMap
+- `src/components/VideoBackground.tsx` - Dynamic video backgrounds based on weather conditions
 
-**Settings and Preferences**
+#### Settings and State Management
 
-- `SettingsMenu.tsx` - User preferences interface
-- `SettingsContext.tsx` - Global settings management
-- `useSettings.ts` - Settings hook
+- `src/components/SettingsMenu.tsx` - User preferences interface for units and theme selection
+- `src/contexts/SettingsContext.tsx` - React Context for global settings state management
+- `src/hooks/useSettings.ts` - Custom hook that provides settings state to components
 
-**Music Integration (Placeholders)**
+#### Music Interface Components
 
-- `CurrentlyPlaying.tsx` - Current track display
-- `UpNext.tsx` - Music queue
-- `NavBar.tsx` - Navigation with Spotify login placeholder
+- `src/components/CurrentlyPlaying.tsx` - Current track display with placeholder data structure
+- `src/components/UpNext.tsx` - Music queue interface ready for backend integration
+- `src/components/NavBar.tsx` - Navigation component with authentication placeholder buttons
 
 ## Development
 
 ### Available Scripts
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run lint` - Run ESLint
-- `npm run preview` - Preview production build
+The project includes npm scripts for common development tasks:
 
-### Code Quality
+- `npm run dev` - Start Vite development server with hot module replacement
+- `npm run build` - Create optimized production build in the `dist/` directory
+- `npm run lint` - Run ESLint code analysis to identify potential issues
+- `npm run preview` - Preview the production build locally before deployment
 
-The project maintains high code quality through:
+### Code Organization Patterns
 
-**Linting and Formatting**
+The project implements several React and TypeScript patterns for maintainable code:
 
-- ESLint configuration for JavaScript/TypeScript
-- Prettier for consistent code formatting
-- Automatic Tailwind class sorting
+- **Component composition** - Building complex interfaces from smaller, focused components
+- **Custom hooks** - Extracting reusable logic into hooks like `useWeather` and `useSettings`
+- **Context providers** - Managing global application state through React Context API
+- **TypeScript interfaces** - Ensuring type safety for weather data structures and component props
 
-**Type Safety**
+### Code Quality and Testing
 
-- TypeScript throughout the codebase
-- Strict type checking enabled
-- Custom type definitions for weather data
+The development workflow includes automated tools for consistent code quality:
 
-**Best Practices**
+- TypeScript strict mode enabled for compile-time error detection
+- ESLint configuration enforcing consistent code style and best practices
+- Prettier integration for automatic code formatting on save
+- Component isolation pattern that simplifies testing and maintenance
 
-- Component composition over inheritance
-- Custom hooks for reusable logic
-- Context for global state management
-- Utility-first CSS with Tailwind
+## Implementation Status
 
-## Current Implementation Status
+### Completed Features
 
-### ✅ Completed
+The following systems have full implementation with working functionality:
 
-- Complete settings system with persistence
-- Weather data fetching and display
-- Responsive UI with dynamic themes
-- Location-based unit defaults
-- 5-day weather forecast
-- Interactive UI elements with hover effects
+- Weather data integration with OpenWeatherMap API including error handling
+- Settings system with localStorage persistence and user preference management
+- Responsive user interface with automatic theme switching based on time
+- Video background system supporting 24 weather and time combinations
+- Component structure for music features with placeholder data ready for backend integration
 
-### 🔄 In Progress
+### Backend Integration Requirements
 
-- Spotify integration (UI components ready)
-- Music player interface (placeholder data)
-- User authentication flow (structure in place)
+The following features require external service integration to become fully functional:
 
-### ❌ Pending Backend Development
-
-- Spotify OAuth 2.0 authentication
-- Music playback controls
-- Weather-based music selection algorithm
-- User data persistence
-- Cross-device settings synchronization
-- Favorites system
+- Spotify OAuth 2.0 authentication flow for user login
+- Music playback functionality through Spotify Web API
+- User data synchronization across devices and sessions
+- Music selection algorithms that correlate weather conditions with song recommendations
