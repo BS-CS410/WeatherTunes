@@ -8,7 +8,7 @@ const baseCardStyles = [
   // Glassmorphism effects
   "backdrop-blur-lg shadow-lg dark:shadow-2xl dark:shadow-black/40",
   "border border-white/20 dark:border-white/10",
-  "bg-white/60 dark:bg-slate-900/60",
+  "bg-white/40 dark:bg-slate-900/75",
   // Transitions and hover effects
   "transition-all duration-300",
   "hover:scale-[1.015] hover:border-white/30 hover:bg-white/50 hover:shadow-xl",
