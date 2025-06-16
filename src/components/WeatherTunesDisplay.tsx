@@ -9,6 +9,37 @@ interface WeatherTunesDisplayProps {
   albumArtUrl?: string;
 }
 
+// Reusable section wrapper component
+interface SectionWrapperProps {
+  scale: number;
+  alignment: "start" | "center";
+  padding?: string;
+  children: React.ReactNode;
+}
+
+const SectionWrapper: React.FC<SectionWrapperProps> = ({
+  scale,
+  alignment,
+  padding = "1em",
+  children,
+}) => {
+  const alignmentClass = alignment === "start" ? "items-start" : "items-center";
+  const justifyClass =
+    alignment === "start" ? "justify-center" : "justify-center";
+
+  return (
+    <section
+      className={`group flex h-full w-full flex-col ${alignmentClass} ${justifyClass}`}
+      style={{
+        padding: padding,
+        fontSize: `${scale}em`,
+      }}
+    >
+      {children}
+    </section>
+  );
+};
+
 /**
  * Integrated weather and music display component using 2x1 grid layout
  * Each section completely fills its grid cell for perfect proportions
@@ -23,46 +54,50 @@ const WeatherTunesDisplay: React.FC<WeatherTunesDisplayProps> = ({
     location = "Loading...",
     temperature = "--",
     condition = "Loading...",
+    unit = "°",
     sunrise = "--",
     sunset = "--",
   } = weatherData || {};
 
-  // Common classes for reuse
-  const sectionClasses =
-    "group flex h-full w-full transform transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02]";
+  // Common hover effect classes for consistency
+  const baseTransition = "transition-all duration-300 ease-out";
   const textHoverClasses =
     "group-hover:text-gray-800 dark:text-slate-200 dark:group-hover:text-slate-100";
-  const sunTimeClasses =
-    "inline-flex items-center hover:-translate-y-0.5 hover:scale-105";
+  const elementHoverClasses = `${baseTransition} group-hover:-translate-y-1 group-hover:scale-105`;
+  const sunTimeClasses = `inline-flex items-center ${baseTransition} hover:-translate-y-0.5 hover:scale-105`;
+  const shadowHoverClasses = "drop-shadow-lg group-hover:drop-shadow-xl";
 
   return (
     <div className="grid aspect-[2/1] h-full w-full grid-cols-2 grid-rows-1 text-[clamp(1rem,3.5vw,1.6rem)]">
       {/* Weather Section - Left Grid Cell */}
-      <section
-        className={`${sectionClasses} flex-col items-start justify-center py-[0.25em] pr-[0.125em] pl-[0.5em]`}
-      >
+      <SectionWrapper scale={1.2} alignment="start" padding="0 0 0 1em">
         {/* Location */}
         <h1
-          className={`font-inter-tight mb-[-0.5em] w-full text-left text-[1em] font-semibold tracking-wider text-gray-900 uppercase ${textHoverClasses}`}
+          className={`font-inter-tight w-full text-left text-[1em] font-semibold tracking-wider text-gray-900 uppercase ${baseTransition} hover:-translate-y-1 hover:scale-105 hover:text-gray-800 dark:text-slate-200 dark:hover:text-slate-100`}
         >
           {location}
         </h1>
 
         {/* Temperature */}
-        <div className="font-inter-tight my-[0.3em] mb-[0.1em] -ml-[0.4em] w-full text-left text-[5em] leading-[0.85] font-bold text-gray-900 drop-shadow-lg group-hover:drop-shadow-xl dark:text-cyan-50">
+        <div
+          className={`font-inter-tight -mt-[0.025em] mb-[0.035em] -ml-[0.1em] w-full text-left text-[5em] leading-[0.85] font-bold text-gray-900 ${shadowHoverClasses} ${baseTransition} hover:scale-105 dark:text-cyan-50`}
+          style={{ transformOrigin: "left top" }}
+        >
           {temperature}
-          <span className="align-super text-[0.5em]">°</span>
+          <span className="align-super text-[0.5em]">
+            °{unit.replace("°", "")}
+          </span>
         </div>
 
         {/* Condition */}
         <span
-          className={`font-inter-tight mb-[0.1em] w-full text-left text-[1.3em] leading-[0.9] font-extralight tracking-tighter text-gray-800 lowercase dark:text-cyan-100`}
+          className={`font-inter-tight mb-[0.2em] w-full text-left text-[1.3em] leading-[0.9] font-extralight tracking-tighter text-gray-800 lowercase ${baseTransition} hover:-translate-y-1 hover:scale-105 hover:text-gray-800 dark:text-cyan-100 dark:hover:text-slate-100`}
         >
           {condition}
         </span>
 
         {/* Sunrise/Sunset */}
-        <div className="font-inter-tight mt-[0.1em] w-full max-w-full overflow-hidden text-left text-[0.7em] font-light tracking-tight whitespace-nowrap">
+        <div className="font-inter-tight w-full max-w-full overflow-hidden text-left text-[0.7em] font-light tracking-tight whitespace-nowrap">
           <span
             className={`${sunTimeClasses} text-gray-700 dark:text-cyan-200`}
           >
@@ -77,34 +112,38 @@ const WeatherTunesDisplay: React.FC<WeatherTunesDisplayProps> = ({
             {sunset}
           </span>
         </div>
-      </section>
+      </SectionWrapper>
 
       {/* Music Section - Right Grid Cell */}
-      <section
-        className={`${sectionClasses} flex-col items-center justify-center p-[1em]`}
-      >
+      <SectionWrapper scale={1.1} alignment="center" padding="1em">
         {/* Album Art */}
-        <div className="group/album relative mb-[0.2em] h-[8em] w-[8em] transition-all duration-300 ease-out">
+        <div
+          className={`group/album relative mb-[0.2em] h-[8em] w-[8em] ${baseTransition}`}
+        >
           <img
             src={albumArtUrl}
             alt={`${songTitle} album art`}
-            className="h-full w-full rounded-lg object-cover shadow-lg transition-all duration-300 ease-out group-hover/album:-translate-y-2 group-hover/album:scale-110 group-hover/album:shadow-2xl"
+            className={`h-full w-full rounded-lg object-cover shadow-lg ${baseTransition} group-hover/album:-translate-y-2 group-hover/album:scale-110 group-hover/album:shadow-2xl`}
           />
         </div>
 
         {/* Song Information */}
-        <div className="w-full text-center transition-all duration-300 ease-out group-hover:-translate-y-1 group-hover:scale-105">
+        <div
+          className={`w-full pt-1 text-center text-[0.8em] ${elementHoverClasses}`}
+        >
           <h2
-            className={`truncate text-[1.1em] leading-tight font-semibold text-gray-900 transition-colors duration-300 ease-out ${textHoverClasses}`}
+            className={`truncate text-[1.1em] leading-tight font-semibold text-gray-900 ${baseTransition} ${textHoverClasses}`}
           >
             {songTitle}
           </h2>
 
-          <p className="mt-[0.1em] truncate text-[0.9em] leading-snug text-gray-700 transition-colors duration-300 ease-out group-hover:text-gray-600 dark:text-slate-400 dark:group-hover:text-slate-300">
+          <p
+            className={`mt-[0.1em] truncate text-[0.9em] leading-snug text-gray-700 ${baseTransition} group-hover:text-gray-600 dark:text-slate-400 dark:group-hover:text-slate-300`}
+          >
             {artistName}
           </p>
         </div>
-      </section>
+      </SectionWrapper>
     </div>
   );
 };
