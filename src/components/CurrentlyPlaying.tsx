@@ -106,10 +106,10 @@ const CurrentlyPlaying: React.FC<CurrentlyPlayingProps> = ({
 
   return (
     <div
-      className={`flex flex-col items-center justify-center space-y-4 ${className}`}
+      className={`flex flex-col items-center justify-center space-y-6 ${className}`}
     >
       {/* Spotify Embed Player */}
-      <div className="w-full max-w-md">
+      <div className="w-full">
         <iframe
           key={trackId} // ensures iframe reloads when track changes
           src={`https://open.spotify.com/embed/track/${trackId}`}
@@ -124,24 +124,24 @@ const CurrentlyPlaying: React.FC<CurrentlyPlayingProps> = ({
       </div>
 
       {/* Control Buttons */}
-      <div className="flex space-x-3">
+      <div className="flex w-full space-x-4">
         <button
           onClick={handleBack}
-          className="rounded-lg bg-white/40 px-4 py-2 font-medium text-gray-900 shadow-md backdrop-blur-md transition-all duration-200 hover:bg-white/60 hover:shadow-lg dark:bg-slate-900/75 dark:text-slate-100 dark:hover:bg-slate-900/90"
+          className="flex-1 rounded-lg bg-white/40 px-6 py-3 font-medium text-gray-900 shadow-md backdrop-blur-md transition-all duration-200 hover:bg-white/60 hover:shadow-lg dark:bg-slate-900/75 dark:text-slate-100 dark:hover:bg-slate-900/90"
         >
           ◁ Back
         </button>
 
         <button
           onClick={handleLike}
-          className="rounded-lg bg-white/40 px-4 py-2 font-medium text-gray-900 shadow-md backdrop-blur-md transition-all duration-200 hover:bg-white/60 hover:shadow-lg dark:bg-slate-900/75 dark:text-slate-100 dark:hover:bg-slate-900/90"
+          className="flex-1 rounded-lg bg-white/40 px-6 py-3 font-medium text-gray-900 shadow-md backdrop-blur-md transition-all duration-200 hover:bg-white/60 hover:shadow-lg dark:bg-slate-900/75 dark:text-slate-100 dark:hover:bg-slate-900/90"
         >
           Like ♡
         </button>
 
         <button
           onClick={handleNext}
-          className="rounded-lg bg-white/40 px-4 py-2 font-medium text-gray-900 shadow-md backdrop-blur-md transition-all duration-200 hover:bg-white/60 hover:shadow-lg dark:bg-slate-900/75 dark:text-slate-100 dark:hover:bg-slate-900/90"
+          className="flex-1 rounded-lg bg-white/40 px-6 py-3 font-medium text-gray-900 shadow-md backdrop-blur-md transition-all duration-200 hover:bg-white/60 hover:shadow-lg dark:bg-slate-900/75 dark:text-slate-100 dark:hover:bg-slate-900/90"
         >
           Next ▷
         </button>
@@ -149,7 +149,7 @@ const CurrentlyPlaying: React.FC<CurrentlyPlayingProps> = ({
 
       {/* Message Display */}
       {message && (
-        <div className="max-w-md rounded-md bg-gray-100 p-2 text-center text-sm text-gray-700 dark:bg-slate-700 dark:text-slate-300">
+        <div className="w-full rounded-md bg-gray-100 p-3 text-center text-sm text-gray-700 dark:bg-slate-700 dark:text-slate-300">
           {message}
         </div>
       )}
