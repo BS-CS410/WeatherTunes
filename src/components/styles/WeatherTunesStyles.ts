@@ -41,19 +41,17 @@ export const transitions = {
   quick: "transition-all duration-200 ease-out",
 } as const;
 
-// Typography system - responsive font styling with consistent unitless line-height
+// Typography system - consistent font styling with explicit unitless line-height
 export const fontStyles = {
   locationText:
-    "font-inter-tight text-sm sm:text-base md:text-lg lg:text-xl leading-[1.2] font-semibold tracking-wider uppercase",
-  temperatureDisplay:
-    "font-inter-tight text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl leading-[0.85] font-bold",
+    "font-inter-tight text-[1em] leading-[1.2] font-semibold tracking-wider uppercase",
+  temperatureDisplay: "font-inter-tight text-[5em] leading-[0.85] font-bold",
   conditionText:
-    "font-inter-tight text-lg sm:text-xl md:text-2xl lg:text-3xl leading-[1.1] font-extralight tracking-tighter lowercase",
+    "font-inter-tight text-[1.3em] leading-[1.1] font-extralight tracking-tighter lowercase",
   timeDisplay:
-    "font-inter-tight text-xs sm:text-sm md:text-base lg:text-lg leading-[1.3] font-light tracking-tight whitespace-nowrap",
-  musicTitle:
-    "text-base sm:text-lg md:text-xl lg:text-2xl leading-[1.25] font-semibold",
-  musicArtist: "text-sm sm:text-base md:text-lg lg:text-xl leading-[1.4]",
+    "font-inter-tight text-[0.7em] leading-[1.3] font-light tracking-tight whitespace-nowrap",
+  musicTitle: "text-[1.1em] leading-[1.25] font-semibold",
+  musicArtist: "text-[0.9em] leading-[1.4]",
 } as const;
 
 // Color theme system - centralized color management

@@ -22,11 +22,11 @@ import { colorTheme } from "./styles/WeatherTunesStyles";
  *    -> Album art sizing and music section layout
  *
  * FILE 3: ./layout/SectionWrapper.tsx
- *    -> LAYOUT & SPACING: Section alignment with consistent line-height
- *    -> Uses unitless line-height values to prevent spacing issues during resize
+ *    -> LAYOUT & SPACING: Section scaling and alignment with consistent line-height
+ *    -> Uses original em-based scaling (1.2x for weather, 1.1x for music)
  *
- * RESPONSIVE DESIGN: All sizing uses Tailwind responsive classes with explicit unitless
- * line-height values to prevent line spacing from resetting during window resizing
+ * RESPONSIVE DESIGN: Original scaling restored with explicit unitless line-height
+ * values to prevent line spacing from resetting during window resizing
  */
 
 interface WeatherTunesDisplayProps {
@@ -59,10 +59,10 @@ const WeatherTunesDisplay: React.FC<WeatherTunesDisplayProps> = ({
   const elementStyles = createElementStyles();
 
   return (
-    <div className="grid aspect-[2/1] h-full w-full grid-cols-2 grid-rows-1">
+    <div className="grid aspect-[2/1] h-full w-full grid-cols-2 grid-rows-1 text-[clamp(1rem,3.5vw,1.6rem)]">
       {/* Weather Section - Left Grid Cell */}
       <div className="relative">
-        <SectionWrapper alignment="start" padding="0 0 0 1em">
+        <SectionWrapper scale={1.2} alignment="start" padding="0 0 0 1em">
           {/* Location */}
           <h1 className={elementStyles.weatherLocation}>{location}</h1>
 
@@ -72,7 +72,7 @@ const WeatherTunesDisplay: React.FC<WeatherTunesDisplayProps> = ({
             style={{ transformOrigin: "left top" }}
           >
             {temperature}
-            <span className="align-super text-xs leading-[1] sm:text-sm md:text-base lg:text-lg xl:text-xl">
+            <span className="align-super text-[0.5em]">
               °{unit.replace("°", "")}
             </span>
           </div>
@@ -85,14 +85,14 @@ const WeatherTunesDisplay: React.FC<WeatherTunesDisplayProps> = ({
             <span
               className={`${elementStyles.timeElement} ${colorTheme.timeText}`}
             >
-              <SunriseIcon className="mr-1 h-3 w-3 sm:mr-2 sm:h-4 sm:w-4 md:h-5 md:w-5" />
+              <SunriseIcon className="mr-2 h-[1em] w-[1em]" />
               {sunrise}
             </span>
             <span className={`mx-2 ${colorTheme.separatorText}`}>|</span>
             <span
               className={`${elementStyles.timeElement} ${colorTheme.timeTextAlt}`}
             >
-              <SunsetIcon className="mr-1 h-3 w-3 sm:mr-2 sm:h-4 sm:w-4 md:h-5 md:w-5" />
+              <SunsetIcon className="mr-2 h-[1em] w-[1em]" />
               {sunset}
             </span>
           </div>
@@ -103,7 +103,7 @@ const WeatherTunesDisplay: React.FC<WeatherTunesDisplayProps> = ({
       </div>
 
       {/* Music Section - Right Grid Cell */}
-      <SectionWrapper alignment="center" padding="1em">
+      <SectionWrapper scale={1.1} alignment="center" padding="1em">
         {/* Album Art */}
         <div className={elementStyles.albumContainer}>
           <img

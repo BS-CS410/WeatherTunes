@@ -2,15 +2,17 @@ import React from "react";
 
 /**
  * Reusable section wrapper component for grid-based layouts
- * Uses consistent line-height to prevent spacing issues during responsive resizing
+ * Provides consistent scaling and line-height to prevent spacing issues during responsive resizing
  */
 interface SectionWrapperProps {
+  scale: number;
   alignment: "start" | "center";
   padding?: string;
   children: React.ReactNode;
 }
 
 export const SectionWrapper: React.FC<SectionWrapperProps> = ({
+  scale,
   alignment,
   padding = "1em",
   children,
@@ -18,15 +20,13 @@ export const SectionWrapper: React.FC<SectionWrapperProps> = ({
   const alignmentClasses =
     alignment === "start" ? "items-start" : "items-center";
 
-  // Remove text scaling since individual elements handle their own responsive typography
-  // Apply consistent line-height to prevent inheritance issues
-  const baseClasses = "leading-[1.5]"; // Unitless line-height for consistent scaling
-
   return (
     <section
-      className={`group flex h-full w-full flex-col justify-center ${alignmentClasses} ${baseClasses}`}
+      className={`group flex h-full w-full flex-col justify-center ${alignmentClasses}`}
       style={{
         padding: padding,
+        fontSize: `${scale}em`,
+        lineHeight: 1.5, // Unitless line-height for consistent scaling
       }}
     >
       {children}

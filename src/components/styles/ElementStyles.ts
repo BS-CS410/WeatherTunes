@@ -29,7 +29,7 @@ export const createElementStyles = () => ({
     shadowEffects.baseHover,
     transitions.standard,
     interactionEffects.elementHover,
-    "mb-1 sm:mb-2 md:mb-3 w-full text-left",
+    "-mt-[0.025em] mb-[0.035em] -ml-[0.1em] w-full text-left",
   ),
 
   weatherCondition: combineStyles(
@@ -37,7 +37,7 @@ export const createElementStyles = () => ({
     colorTheme.conditionText,
     transitions.standard,
     interactionEffects.elementHover,
-    "mb-2 sm:mb-3 md:mb-4 w-full text-left",
+    "mb-[0.2em] w-full text-left",
   ),
 
   // Time display elements
@@ -55,7 +55,7 @@ export const createElementStyles = () => ({
   // Music section elements
   albumContainer: combineStyles(
     transitions.standard,
-    "group/album relative mb-2 sm:mb-3 md:mb-4 h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 lg:h-32 lg:w-32 xl:h-40 xl:w-40",
+    "group/album relative mb-[0.2em] h-[8em] w-[8em]",
   ),
 
   albumImage: combineStyles(
@@ -69,7 +69,7 @@ export const createElementStyles = () => ({
   musicInfo: combineStyles(
     transitions.standard,
     interactionEffects.containerHover,
-    "w-full pt-2 sm:pt-3 md:pt-4 text-center",
+    "w-full pt-1 text-center text-[0.8em]",
   ),
 
   musicTitle: combineStyles(
@@ -85,6 +85,6 @@ export const createElementStyles = () => ({
     colorTheme.artistText,
     transitions.standard,
     textInteractions.secondaryHover,
-    "mt-1 sm:mt-2 truncate",
+    "mt-[0.1em] truncate",
   ),
 });
