@@ -13,6 +13,8 @@ export { ForecastCard } from "./ForecastCard";
 // === MUSIC DOMAIN ===
 // Components for music playback, queue management, and audio controls
 export { UpNext } from "./UpNext";
+export { default as CurrentlyPlaying } from "./CurrentlyPlaying";
+export { default as Favorites } from "./Favorites";
 
 // === LAYOUT DOMAIN ===
 // Navigation, settings, unified displays, and overall app structure

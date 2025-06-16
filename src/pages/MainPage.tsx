@@ -1,6 +1,8 @@
 import WeatherTunesDisplay from "@/components/WeatherTunesDisplay";
 import { MuiCard as Card, MuiCardContent as CardContent } from "@/components";
 import UpNext from "@/components/UpNext";
+import CurrentlyPlaying from "@/components/CurrentlyPlaying";
+import Favorites from "@/components/Favorites";
 import { VideoBackground } from "@/components/VideoBackground";
 import { SettingsButton } from "@/components/SettingsButton";
 import { ForecastCard } from "@/components";
@@ -80,8 +82,8 @@ function MainPage() {
 
         {/* Currently Playing Section */}
         <Card className="bg-white/40 backdrop-blur-md dark:bg-slate-900/75">
-          <CardContent className="flex h-32 items-center justify-center text-4xl text-gray-700 dark:text-slate-300">
-            [TODO: put spotify player here]
+          <CardContent className="p-6">
+            <CurrentlyPlaying />
           </CardContent>
         </Card>
 
@@ -97,8 +99,8 @@ function MainPage() {
 
         {/* Favorites List */}
         <Card className="w-full bg-white/40 backdrop-blur-md dark:bg-slate-900/75">
-          <CardContent className="flex h-32 items-center justify-center text-4xl text-gray-700 dark:text-slate-300">
-            [TODO: put favorites list here]
+          <CardContent className="p-4">
+            <Favorites />
           </CardContent>
         </Card>
 

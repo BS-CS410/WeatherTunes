@@ -6,5 +6,8 @@ export * from "@/lib/weather";
 export * from "@/lib/temperature";
 export * from "@/lib/units";
 
+// Music and Spotify integration
+export * from "@/lib/spotifyWeather";
+
 // UI and styling utilities
 export * from "@/lib/styles";
