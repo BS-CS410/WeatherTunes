@@ -4,12 +4,15 @@ import "./index.css";
 import App from "./App.tsx";
 import { BrowserRouter } from "react-router-dom";
 import { SettingsProvider } from "@/contexts/SettingsContext";
+import { MuiThemeProvider } from "@/components/MuiThemeProvider";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
       <SettingsProvider>
-        <App />
+        <MuiThemeProvider>
+          <App />
+        </MuiThemeProvider>
       </SettingsProvider>
     </BrowserRouter>
   </StrictMode>,

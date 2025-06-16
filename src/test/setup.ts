@@ -1,6 +1,5 @@
 import "@testing-library/jest-dom";
 import { beforeEach, vi } from "vitest";
-import type { SpotifySDK } from "../types/spotify";
 
 // Mock environment variables
 vi.mock("../lib/weather", () => ({

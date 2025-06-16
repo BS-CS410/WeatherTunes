@@ -1,9 +1,9 @@
-import UnifiedDisplay from "@/components/UnifiedDisplay"; // Import the new unified component
-import { Card, CardContent } from "@/components/ui/card";
-import { UpNext } from "@/components/UpNext";
+import UnifiedDisplayMui from "@/components/UnifiedDisplayMui"; // Import the MUI unified component
+import { MuiCard as Card, MuiCardContent as CardContent } from "@/components";
+import UpNextMui from "@/components/UpNextMui";
 import { VideoBackground } from "@/components/VideoBackground";
 import { SettingsButton } from "@/components/SettingsButton";
-import { ForecastCard } from "@/components/ForecastCard";
+import { ForecastCardMui as ForecastCard } from "@/components";
 import { useWeatherData } from "@/hooks/useWeather";
 import { useThemeManager } from "@/hooks/useThemeManager";
 
@@ -69,7 +69,7 @@ function MainPage() {
         {/* Unified Weather and Currently Playing Display */}
         <Card className="bg-white/40 backdrop-blur-md dark:bg-slate-900/75">
           <CardContent className="p-0">
-            <UnifiedDisplay
+            <UnifiedDisplayMui
               weatherData={displayData} // Pass the new displayData
               songTitle={songData.songTitle}
               artistName={songData.artistName}
@@ -86,9 +86,9 @@ function MainPage() {
         </Card>
 
         {/* Next Up Scroll Area */}
-        <Card className="bg-white/40 backdrop-blur-md dark:bg-slate-900/75">
+        <Card className="">
           <CardContent className="p-0">
-            <UpNext />
+            <UpNextMui />
           </CardContent>
         </Card>
 

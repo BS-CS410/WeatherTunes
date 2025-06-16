@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { renderHook, waitFor, act } from "@testing-library/react";
+import { renderHook, waitFor } from "@testing-library/react";
 import { useWeatherData } from "../useWeather";
 import { mockWeatherData } from "../../test/testUtils";
 import { SettingsProvider } from "../../contexts/SettingsContext";
