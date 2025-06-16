@@ -1,5 +1,4 @@
 import { useForecastData } from "@/hooks/useForecast";
-import { Card, CardContent } from "@/components/ui/card";
 
 interface ForecastDayProps {
   dayName: string;
@@ -89,13 +88,19 @@ export function ForecastCard() {
   }
 
   return (
-    <Card>
-      <CardContent>
-        <h3 className="mb-6 ml-2.5 text-5xl font-extralight tracking-wider text-gray-900 lowercase dark:text-slate-200">
-          Your Forecast:
-        </h3>
-        {content}
-      </CardContent>
-    </Card>
+    <div className="relative flex flex-col gap-4 overflow-hidden rounded-xl border border-white/20 bg-white/40 py-6 shadow-lg backdrop-blur-lg transition-all duration-300 hover:scale-[1.015] hover:border-white/30 hover:bg-white/50 hover:shadow-xl dark:border-white/10 dark:bg-slate-900/75 dark:shadow-2xl dark:shadow-black/40 dark:hover:border-white/20 dark:hover:bg-slate-900/60">
+      {/* Soft inner shadow for extra depth */}
+      <div className="pointer-events-none absolute inset-0 rounded-xl shadow-[inset_0_1px_8px_0_rgba(0,0,0,0.04)] dark:shadow-[inset_0_1px_8px_0_rgba(0,0,0,0.08)]" />
+      <div className="transition-transform duration-200">
+        <div className="px-6">
+          <h3 className="mb-6 ml-2.5 text-5xl font-extralight tracking-wider text-gray-900 lowercase dark:text-slate-200">
+            Your Forecast:
+          </h3>
+          {content}
+        </div>
+      </div>
+    </div>
   );
 }
+
+export default ForecastCard;

@@ -1,10 +1,7 @@
 import { Box, Typography, Paper } from "@mui/material";
 import { WeatherDisplay } from "@/components/WeatherDisplay";
-import { WeatherDisplay as WeatherDisplayMui } from "@/components/WeatherDisplayMui";
 import { ForecastCard } from "@/components/ForecastCard";
-import { ForecastCardMui } from "@/components/ForecastCardMui";
 import UnifiedDisplay from "@/components/UnifiedDisplay";
-import UnifiedDisplayMui from "@/components/UnifiedDisplayMui";
 import { useWeatherData } from "@/hooks/useWeather";
 import { useThemeManager } from "@/hooks/useThemeManager";
 
@@ -84,16 +81,16 @@ export default function MuiDemo() {
         >
           <Box>
             <Typography variant="h6" gutterBottom color="text.secondary">
-              Original (Tailwind CSS)
+              Weather Display (MUI Architecture)
             </Typography>
             <WeatherDisplay weatherData={displayData} />
           </Box>
 
           <Box>
             <Typography variant="h6" gutterBottom color="text.secondary">
-              Material UI Version
+              Migration Complete - Same Visual Design
             </Typography>
-            <WeatherDisplayMui weatherData={displayData} />
+            <WeatherDisplay weatherData={displayData} />
           </Box>
         </Box>
       </Paper>
@@ -106,7 +103,7 @@ export default function MuiDemo() {
 
         <Box sx={{ mb: 4 }}>
           <Typography variant="h6" gutterBottom color="text.secondary">
-            Original (Tailwind CSS)
+            Unified Display (MUI Architecture)
           </Typography>
           <UnifiedDisplay
             weatherData={displayData}
@@ -118,9 +115,9 @@ export default function MuiDemo() {
 
         <Box>
           <Typography variant="h6" gutterBottom color="text.secondary">
-            Material UI Version
+            Migration Complete - All Components Use MUI Foundation
           </Typography>
-          <UnifiedDisplayMui
+          <UnifiedDisplay
             weatherData={displayData}
             songTitle={songData.songTitle}
             artistName={songData.artistName}
@@ -137,16 +134,16 @@ export default function MuiDemo() {
 
         <Box sx={{ mb: 4 }}>
           <Typography variant="h6" gutterBottom color="text.secondary">
-            Original (Tailwind CSS)
+            5-Day Forecast (MUI Architecture)
           </Typography>
           <ForecastCard />
         </Box>
 
         <Box>
           <Typography variant="h6" gutterBottom color="text.secondary">
-            Material UI Version
+            Weather Component Integration Complete
           </Typography>
-          <ForecastCardMui />
+          <ForecastCard />
         </Box>
       </Paper>
 

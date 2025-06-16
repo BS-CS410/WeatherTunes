@@ -51,4 +51,5 @@ const CurrentlyPlaying: React.FC<CurrentlyPlayingProps> = ({
   );
 };
 
+export { CurrentlyPlaying };
 export default CurrentlyPlaying;

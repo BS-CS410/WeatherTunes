@@ -1,4 +1,3 @@
-import * as ScrollArea from "@radix-ui/react-scroll-area";
 import { useState, useRef } from "react";
 
 interface Song {
@@ -96,55 +95,53 @@ export function UpNext() {
           Up Next:
         </h2>
       </div>
-      <ScrollArea.Root className="relative z-0 overflow-x-auto px-6">
-        <ScrollArea.Viewport className="">
-          <div className="flex min-w-max flex-row gap-2 px-2 py-4">
-            {placeholderSongs.map((song, idx) => {
-              const isHovered = hoveredId === song.id;
-              const isNextUp = hoveredId === null && idx === 0;
-              const isNextUpOrHovered =
-                (hoveredId === null && idx === 0) ||
-                (hoveredId === song.id && idx === 0);
-              return (
-                <div
-                  key={song.id}
-                  className="group flex min-w-[120px] flex-col items-center transition-all duration-300"
-                  onMouseEnter={() => handleMouseEnter(song.id)}
-                  onMouseLeave={handleMouseLeave}
-                >
-                  <div className="relative">
-                    {/* Subtle shadow for Up Next or hovered song */}
-                    <img
-                      src={song.albumCover}
-                      alt={song.name}
-                      className={`relative z-10 h-28 w-28 cursor-pointer rounded-lg object-cover transition-transform duration-300 ${
-                        isHovered || isNextUp
-                          ? "-translate-y-2 scale-110 shadow-2xl hover:brightness-105 dark:hover:brightness-110"
-                          : ""
-                      }`}
-                    />
+      {/* Using simple div with overflow instead of Radix ScrollArea for MUI compatibility */}
+      <div className="scrollbar-thin scrollbar-track-black/10 scrollbar-thumb-slate-600/60 hover:scrollbar-thumb-slate-600/80 relative z-0 overflow-x-auto px-6">
+        <div className="flex min-w-max flex-row gap-2 px-2 py-4">
+          {placeholderSongs.map((song, idx) => {
+            const isHovered = hoveredId === song.id;
+            const isNextUp = hoveredId === null && idx === 0;
+            const isNextUpOrHovered =
+              (hoveredId === null && idx === 0) ||
+              (hoveredId === song.id && idx === 0);
+            return (
+              <div
+                key={song.id}
+                className="group flex min-w-[120px] flex-col items-center transition-all duration-300"
+                onMouseEnter={() => handleMouseEnter(song.id)}
+                onMouseLeave={handleMouseLeave}
+              >
+                <div className="relative">
+                  {/* Subtle shadow for Up Next or hovered song */}
+                  <img
+                    src={song.albumCover}
+                    alt={song.name}
+                    className={`relative z-10 h-28 w-28 cursor-pointer rounded-lg object-cover transition-transform duration-300 ${
+                      isHovered || isNextUp
+                        ? "-translate-y-2 scale-110 shadow-2xl hover:brightness-105 dark:hover:brightness-110"
+                        : ""
+                    }`}
+                  />
+                </div>
+                <div className="mt-2 text-center">
+                  <div
+                    className={`w-28 truncate text-sm font-semibold transition-all duration-300 ${isNextUpOrHovered ? "text-gray-900 drop-shadow-[0_1px_4px_rgba(0,0,0,0.1)] dark:text-slate-100 dark:drop-shadow-[0_1px_6px_rgba(255,255,255,0.13)]" : "text-gray-900 dark:text-slate-200"}`}
+                  >
+                    {song.name}
                   </div>
-                  <div className="mt-2 text-center">
-                    <div
-                      className={`w-28 truncate text-sm font-semibold transition-all duration-300 ${isNextUpOrHovered ? "text-gray-900 drop-shadow-[0_1px_4px_rgba(0,0,0,0.1)] dark:text-slate-100 dark:drop-shadow-[0_1px_6px_rgba(255,255,255,0.13)]" : "text-gray-900 dark:text-slate-200"}`}
-                    >
-                      {song.name}
-                    </div>
-                    <div
-                      className={`w-28 truncate text-xs transition-all duration-300 ${isNextUpOrHovered ? "text-gray-700 drop-shadow-[0_1px_2px_rgba(0,0,0,0.08)] dark:text-slate-300 dark:drop-shadow-[0_1px_2px_rgba(255,255,255,0.10)]" : "text-gray-700 dark:text-slate-400"}`}
-                    >
-                      {song.artist}
-                    </div>
+                  <div
+                    className={`w-28 truncate text-xs transition-all duration-300 ${isNextUpOrHovered ? "text-gray-700 drop-shadow-[0_1px_2px_rgba(0,0,0,0.08)] dark:text-slate-300 dark:drop-shadow-[0_1px_2px_rgba(255,255,255,0.10)]" : "text-gray-700 dark:text-slate-400"}`}
+                  >
+                    {song.artist}
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        </ScrollArea.Viewport>
-        <ScrollArea.Scrollbar orientation="horizontal" className="h-2">
-          <ScrollArea.Thumb className="rounded-full bg-slate-600" />
-        </ScrollArea.Scrollbar>
-      </ScrollArea.Root>
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }
+
+export default UpNext;

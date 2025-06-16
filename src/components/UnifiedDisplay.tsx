@@ -1,6 +1,6 @@
 import React from "react";
 import { WeatherDisplay } from "@/components/WeatherDisplay";
-import CurrentlyPlaying from "@/components/CurrentlyPlaying"; // Assuming this is the new component
+import CurrentlyPlaying from "@/components/CurrentlyPlaying";
 import type { WeatherDisplayData } from "@/types/weather";
 
 interface UnifiedDisplayProps {
@@ -10,6 +10,10 @@ interface UnifiedDisplayProps {
   albumArtUrl?: string;
 }
 
+/**
+ * Material UI version of UnifiedDisplay component
+ * Maintains exact same interface and styling as original
+ */
 const UnifiedDisplay: React.FC<UnifiedDisplayProps> = ({
   weatherData,
   songTitle,

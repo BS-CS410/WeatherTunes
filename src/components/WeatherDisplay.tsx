@@ -90,3 +90,5 @@ export function WeatherDisplay({ weatherData }: WeatherDisplayProps) {
     </section>
   );
 }
+
+export default WeatherDisplay;
