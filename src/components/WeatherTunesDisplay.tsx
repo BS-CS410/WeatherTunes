@@ -42,7 +42,7 @@ const WeatherTunesDisplay: React.FC<WeatherTunesDisplayProps> = ({
   weatherData,
 }) => {
   const { trackMetadata } = useCurrentTrackContext();
-  
+
   const {
     location = "Loading...",
     temperature = "--",
@@ -54,9 +54,14 @@ const WeatherTunesDisplay: React.FC<WeatherTunesDisplayProps> = ({
 
   // Use track metadata from context or fallback to placeholders
   const isTrackLoading = !trackMetadata;
-  const songTitle = trackMetadata?.title || (isTrackLoading ? "Loading track..." : "Unknown Track");
-  const artistName = trackMetadata?.artist || (isTrackLoading ? "Finding music..." : "Unknown Artist");
-  const albumArtUrl = trackMetadata?.albumArt || "https://via.placeholder.com/300x300";
+  const songTitle =
+    trackMetadata?.title ||
+    (isTrackLoading ? "Loading track..." : "Unknown Track");
+  const artistName =
+    trackMetadata?.artist ||
+    (isTrackLoading ? "Finding music..." : "Unknown Artist");
+  const albumArtUrl =
+    trackMetadata?.albumArt || "https://via.placeholder.com/300x300";
 
   // Single source of truth for all element styles
   const elementStyles = createElementStyles();

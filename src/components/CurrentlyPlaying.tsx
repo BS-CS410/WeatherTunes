@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { getSpotifyTrackForWeather } from "@/lib/spotifyWeather";
 import { useCurrentTrackContext } from "@/contexts/useCurrentTrackContext";
 
@@ -27,8 +27,13 @@ const CurrentlyPlaying: React.FC<CurrentlyPlayingProps> = ({
   const [iframeKey, setIframeKey] = useState(0); // Force iframe reload only when needed
   const { updateTrack } = useCurrentTrackContext();
   const apiKey = import.meta.env.VITE_PUBLIC_OPENWEATHER_API_KEY;
+  const hasInitialized = useRef(false);
 
   useEffect(() => {
+    // Prevent re-running during navigation - only run once on mount
+    if (hasInitialized.current) return;
+    hasInitialized.current = true;
+
     getSpotifyTrackForWeather(apiKey)
       .then((weatherTrackId) => {
         // Build queue starting with weather track, followed by others without duplicates
@@ -51,7 +56,7 @@ const CurrentlyPlaying: React.FC<CurrentlyPlayingProps> = ({
           updateTrack(sampleQueue[0]);
         }
       });
-  }, [apiKey, updateTrack]); // updateTrack is now stable with useCallback
+  }, [apiKey, updateTrack]); // Keep dependencies but use ref guard
 
   const trackId = queue[currentIndex];
 
@@ -84,15 +89,15 @@ const CurrentlyPlaying: React.FC<CurrentlyPlayingProps> = ({
   const handleNext = async () => {
     if (queue.length === 0 || isChangingTrack) return;
     setIsChangingTrack(true);
-    
+
     const nextIndex = (currentIndex + 1) % queue.length;
     setCurrentIndex(nextIndex);
     setMessage(null);
-    
+
     // Add delay to prevent rapid requests and update iframe
     setTimeout(() => {
       updateTrack(queue[nextIndex]);
-      setIframeKey(prev => prev + 1); // Force iframe reload
+      setIframeKey((prev) => prev + 1); // Force iframe reload
       setIsChangingTrack(false);
     }, 500); // Increased delay
   };
@@ -100,15 +105,15 @@ const CurrentlyPlaying: React.FC<CurrentlyPlayingProps> = ({
   const handleBack = async () => {
     if (queue.length === 0 || isChangingTrack) return;
     setIsChangingTrack(true);
-    
+
     const prevIndex = (currentIndex - 1 + queue.length) % queue.length;
     setCurrentIndex(prevIndex);
     setMessage(null);
-    
+
     // Add delay to prevent rapid requests and update iframe
     setTimeout(() => {
       updateTrack(queue[prevIndex]);
-      setIframeKey(prev => prev + 1); // Force iframe reload
+      setIframeKey((prev) => prev + 1); // Force iframe reload
       setIsChangingTrack(false);
     }, 500); // Increased delay
   };
@@ -157,8 +162,8 @@ const CurrentlyPlaying: React.FC<CurrentlyPlayingProps> = ({
           onClick={handleBack}
           disabled={isChangingTrack}
           className={`flex-1 rounded-lg px-6 py-3 font-medium shadow-md backdrop-blur-md transition-all duration-200 ${
-            isChangingTrack 
-              ? "bg-gray-300/40 text-gray-500 cursor-not-allowed dark:bg-slate-800/50 dark:text-slate-500"
+            isChangingTrack
+              ? "cursor-not-allowed bg-gray-300/40 text-gray-500 dark:bg-slate-800/50 dark:text-slate-500"
               : "bg-white/40 text-gray-900 hover:bg-white/60 hover:shadow-lg dark:bg-slate-900/75 dark:text-slate-100 dark:hover:bg-slate-900/90"
           }`}
         >
@@ -169,8 +174,8 @@ const CurrentlyPlaying: React.FC<CurrentlyPlayingProps> = ({
           onClick={handleLike}
           disabled={isChangingTrack}
           className={`flex-1 rounded-lg px-6 py-3 font-medium shadow-md backdrop-blur-md transition-all duration-200 ${
-            isChangingTrack 
-              ? "bg-gray-300/40 text-gray-500 cursor-not-allowed dark:bg-slate-800/50 dark:text-slate-500"
+            isChangingTrack
+              ? "cursor-not-allowed bg-gray-300/40 text-gray-500 dark:bg-slate-800/50 dark:text-slate-500"
               : "bg-white/40 text-gray-900 hover:bg-white/60 hover:shadow-lg dark:bg-slate-900/75 dark:text-slate-100 dark:hover:bg-slate-900/90"
           }`}
         >
@@ -181,8 +186,8 @@ const CurrentlyPlaying: React.FC<CurrentlyPlayingProps> = ({
           onClick={handleNext}
           disabled={isChangingTrack}
           className={`flex-1 rounded-lg px-6 py-3 font-medium shadow-md backdrop-blur-md transition-all duration-200 ${
-            isChangingTrack 
-              ? "bg-gray-300/40 text-gray-500 cursor-not-allowed dark:bg-slate-800/50 dark:text-slate-500"
+            isChangingTrack
+              ? "cursor-not-allowed bg-gray-300/40 text-gray-500 dark:bg-slate-800/50 dark:text-slate-500"
               : "bg-white/40 text-gray-900 hover:bg-white/60 hover:shadow-lg dark:bg-slate-900/75 dark:text-slate-100 dark:hover:bg-slate-900/90"
           }`}
         >
