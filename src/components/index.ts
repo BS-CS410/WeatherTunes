@@ -22,6 +22,7 @@ export { default as NavBar } from "./NavBar";
 export { SettingsButton } from "./SettingsButton";
 export { SettingsMenu } from "./SettingsMenu";
 export { default as UnifiedDisplay } from "./UnifiedDisplay";
+export { default as WeatherTunesDisplay } from "./WeatherTunesDisplay";
 export { ResponsiveLayout } from "./ResponsiveLayout";
 export { MuiThemeProvider } from "./MuiThemeProvider";
 export { Card as MuiCard, CardContent as MuiCardContent } from "./MuiCard";

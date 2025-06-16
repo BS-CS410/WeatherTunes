@@ -1,4 +1,4 @@
-import UnifiedDisplay from "@/components/UnifiedDisplay";
+import WeatherTunesDisplay from "@/components/WeatherTunesDisplay";
 import { MuiCard as Card, MuiCardContent as CardContent } from "@/components";
 import UpNext from "@/components/UpNext";
 import { VideoBackground } from "@/components/VideoBackground";
@@ -69,7 +69,7 @@ function MainPage() {
         {/* Unified Weather and Currently Playing Display */}
         <Card className="bg-white/40 backdrop-blur-md dark:bg-slate-900/75">
           <CardContent className="p-0">
-            <UnifiedDisplay
+            <WeatherTunesDisplay
               weatherData={displayData} // Pass the new displayData
               songTitle={songData.songTitle}
               artistName={songData.artistName}
