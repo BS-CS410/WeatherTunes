@@ -5,7 +5,6 @@
   { "id": "7GhIk7Il098yCjg4BQjzvb", "tags": ["pop", "dance", "sunny", "summer acoustic", "tropical morning", "party hits", "summer dance"] },
   { "id": "3AJwUDP919kvQ9QcozQPxg", "tags": ["relax", "chill", "rainy", "rainy night jazz", "soft rain indie", "sleepy lofi"] },
   { "id": "3ZFTkvIE7kyPt6Nu3PEa7V", "tags": ["indie", "cloudy", "mellow", "slow lo-fi", "cloudy day indie", "nighttime lo-fi"] },
-  { "id": "0OFfG8pEGjPBrYpG1kCAVz", "tags": ["acoustic", "calm", "snowy", "winter morning acoustic", "snowy indie vibes", "soft piano", "cozy winter pop"] },
   { "id": "6PWserUKEGiCpOpuJORmA4", "tags": ["dance", "pop", "sunny", "calm pop", "dreamy beats"] },
   { "id": "2WfaOiMkCvy7F5fcp2zZ8L", "tags": ["pop", "happy", "sunny", "fresh pop", "upbeat pop", "feel good hits"] },
   { "id": "0eGsygTp906u18L0Oimnem", "tags": ["pop", "happy", "sunny", "fresh pop", "upbeat pop", "feel good hits"] },
@@ -15,9 +14,12 @@
   { "id": "3n3Ppam7vgaVa1iaRUc9Lp", "tags": ["pop", "happy", "sunny", "fresh pop", "upbeat pop", "feel good hits"] },
   { "id": "2PpruBYCo4H7WOBJ7Q2EwM", "tags": ["pop", "dance", "sunny", "summer acoustic", "tropical morning", "party hits", "summer dance"] },
   { "id": "5QO79kh1waicV47BqGRL3g", "tags": ["indie", "cloudy", "mellow", "slow lo-fi", "cloudy day indie", "nighttime lo-fi"] },
-  { "id": "3iH0Z7HboVnbXwQDoKweUE", "tags": ["intense", "storm", "electronic", "dramatic indie", "stormy vibes"] },
   { "id": "1AhDOtG9vPSOmsWgNW0BEY", "tags": ["pop", "happy", "sunny", "sunset pop", "beach chill", "late night summer vibes"] },
   { "id": "6I9VzXrHxO9rA9A5euc8Ak", "tags": ["pop", "happy", "sunny", "fresh pop", "upbeat pop", "feel good hits"] },
   { "id": "3dYD57lRAUcMHufyqn9GcI", "tags": ["relax", "chill", "rainy", "rainy night jazz", "soft rain indie", "sleepy lofi"] },
-  { "id": "4KkLzvDW36GNQ0NLyzgOTo", "tags": ["pop", "dance", "sunny", "summer acoustic", "tropical morning", "party hits", "summer dance"] }
+  { "id": "0d28khcov6AiegSCpG5TuT", "tags": ["happy", "dance", "sunny", "feel good hits"] },
+  { "id": "5hM5arv9KDbCHS0k9uqwjr", "tags": ["ambient chill", "dreamy beats", "pop", "beach chill", "feel good hits"]},
+  { "id": "7IQDKP9h0HVqlOanXOXz3r", "tags": ["rainy", "cloudy"]} ,
+  { "id": "4keclC0eBhQm8lFtYmX01K", "tags": ["dance", "late night summer vibes", "dreamy beats", "cloudy", "rainy", "sunny"]},
+  { "id": "3pY2M4k9BSk7ulLBSV0tcX", "tags": ["calm pop", "dreamy beats", "dance", "rainy", "relax"]}
 ]
