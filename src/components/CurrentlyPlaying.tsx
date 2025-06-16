@@ -49,7 +49,7 @@ const CurrentlyPlaying: React.FC<CurrentlyPlayingProps> = ({
     if (!trackId) return;
 
     try {
-      const res = await fetch("http://localhost:8000/liked", {
+      const res = await fetch("http://127.0.0.1:8000/liked", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

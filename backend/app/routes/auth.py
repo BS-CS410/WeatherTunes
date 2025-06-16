@@ -47,21 +47,26 @@ def callback():
     session['refresh_token'] = token_info.get('refresh_token')
     session['expires_at'] = token_info.get('expires_at')
     session['spotify_username'] = spotify_username
+    
+    print(f"[DEBUG] Saved session data for user: {spotify_username}")
+    print(f"[DEBUG] Session contents after save: {dict(session)}")
 
     # Update user login metadata
     update_user_login(spotify_username)
 
-    return redirect("http://localhost:5173/auth-callback")
+    return redirect("http://127.0.0.1:5173/auth-callback")
 
 @auth_bp.route('/logout')
 def logout():
     session.clear()
-    return redirect("http://localhost:5173")
+    return redirect("http://127.0.0.1:5173")
 
 @auth_bp.route('/session')
 def session_info():
+    print(f"[DEBUG] Session info request - Session contents: {dict(session)}")
     logged_in = 'access_token' in session and 'spotify_username' in session
     username = session.get('spotify_username') if logged_in else None
+    print(f"[DEBUG] Logged in: {logged_in}, Username: {username}")
     return jsonify({'logged_in': logged_in, 'spotify_username': username})
 
 @auth_bp.route('/userinfo')

@@ -39,7 +39,7 @@ function NavBar() {
               <button
                 className="rounded-lg bg-[#1DB954] px-6 py-2 text-white transition-colors hover:bg-[#1ED760]"
                 onClick={() =>
-                  (window.location.href = "http://localhost:8000/login")
+                  (window.location.href = "http://127.0.0.1:8000/login")
                 }
               >
                 Login with Spotify

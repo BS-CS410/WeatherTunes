@@ -17,7 +17,7 @@ const Favorites: React.FC<FavoritesProps> = ({ className = "" }) => {
   useEffect(() => {
     async function fetchLikedTracks() {
       try {
-        const res = await fetch("http://localhost:8000/liked", {
+        const res = await fetch("http://127.0.0.1:8000/liked", {
           credentials: "include",
         });
         if (!res.ok)

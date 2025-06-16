@@ -14,12 +14,14 @@ from app.routes.auth import auth_bp  # import auth blueprint
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'supersecretkey')
 
-# ✅ SESSION SETTINGS FOR DEV (localhost:5173 + 8000)
+# ✅ SESSION SETTINGS FOR DEV (localhost:5173 + 127.0.0.1:8000)
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'   # allow cross-origin with top-level nav
 app.config['SESSION_COOKIE_SECURE'] = False     # only True if you're using HTTPS
+app.config['SESSION_COOKIE_DOMAIN'] = None      # Don't restrict domain
+app.config['SESSION_COOKIE_HTTPONLY'] = False   # Allow JavaScript access for debugging
 
 # ✅ Enable CORS with credentials support
-CORS(app, supports_credentials=True, origins=["http://localhost:5173", "http://127.0.0.1:5173"])
+CORS(app, supports_credentials=True, origins=["http://127.0.0.1:5173"])
 
 # Register blueprints
 app.register_blueprint(recommended_bp)

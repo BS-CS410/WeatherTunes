@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 function Login() {
   const handleSpotifyLogin = () => {
-    window.location.href = "http://localhost:8000/login";
+    window.location.href = "http://127.0.0.1:8000/login";
   };
 
   return (

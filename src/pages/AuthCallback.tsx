@@ -6,7 +6,7 @@ function AuthCallback() {
 
   useEffect(() => {
     // Call backend session check
-    fetch("http://localhost:8000/session", {
+    fetch("http://127.0.0.1:8000/session", {
       credentials: "include", // important to send cookies
     })
       .then((res) => res.json())
