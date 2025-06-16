@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import NavBar from "./components/NavBar";
 import MainPage from "./pages/MainPage";
+import AuthCallback from "./pages/AuthCallback";  // <-- import the callback page
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Routes>
             <Route path="/" element={<MainPage />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/auth-callback" element={<AuthCallback />} />  {/* <-- add route here */}
             {/* TODO: make fallback Route to send unknown routes to login page */}
           </Routes>
         </main>

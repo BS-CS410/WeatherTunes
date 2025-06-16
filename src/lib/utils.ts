@@ -5,14 +5,15 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// Unified time period calculation for both MainPage and VideoBackground
 export type TimePeriod = "night" | "morning" | "day" | "evening";
 
-/**
- * Returns the time period based on current time and sunrise/sunset.
- * If weatherConditions is provided (with sys.sunrise/sunset), uses those.
- * Otherwise, can use direct sunrise/sunset values or fallback to hour-based.
- */
+function getTimePeriodFromHour(hour: number): TimePeriod {
+  if (hour >= 21 || hour < 5) return "night";
+  if (hour >= 5 && hour < 11) return "morning";
+  if (hour >= 11 && hour < 18) return "day";
+  return "evening";
+}
+
 export function getTimePeriod(
   now: Date,
   sunrise?: number,
@@ -21,7 +22,6 @@ export function getTimePeriod(
   const nowUtcSec = Math.floor(now.getTime() / 1000);
 
   if (sunrise && sunset && sunrise > 0 && sunset > 0) {
-    // Validate that sunrise is before sunset
     if (sunrise >= sunset) {
       console.warn(
         "Invalid sunrise/sunset data: sunrise >= sunset, falling back to hour-based calculation",
@@ -29,24 +29,18 @@ export function getTimePeriod(
       return getTimePeriodFromHour(now.getHours());
     }
 
-    // Convert sunset to local time to determine evening logic
     const sunsetLocal = new Date(sunset * 1000);
     const sunsetHour = sunsetLocal.getHours();
 
-    // Determine evening start and end times
     let eveningStart: number;
     let eveningEnd: number;
 
     if (sunsetHour <= 20) {
-      // sunset at or before 8pm
       eveningStart = sunset;
-      // Evening ends at 8pm local time
       const eightPM = new Date(now);
       eightPM.setHours(20, 0, 0, 0);
       eveningEnd = Math.floor(eightPM.getTime() / 1000);
     } else {
-      // sunset after 8pm
-      // Evening starts at 6pm local time
       const sixPM = new Date(now);
       sixPM.setHours(18, 0, 0, 0);
       eveningStart = Math.floor(sixPM.getTime() / 1000);
@@ -54,7 +48,7 @@ export function getTimePeriod(
     }
 
     const dayLength = sunset - sunrise;
-    const morningEnd = sunrise + Math.max(dayLength / 3, 3600); // At least 1 hour for morning
+    const morningEnd = sunrise + Math.max(dayLength / 3, 3600);
 
     if (nowUtcSec < sunrise) return "night";
     if (nowUtcSec < morningEnd) return "morning";
@@ -63,45 +57,130 @@ export function getTimePeriod(
     return "night";
   }
 
-  // Fallback to local hour-based calculation
-  return getTimePeriodFromHour(now.getHours());
-}
-
-/**
- * Helper function for hour-based time period calculation
- */
-function getTimePeriodFromHour(hour: number): TimePeriod {
+  const hour = now.getHours();
   if (hour >= 21 || hour < 5) return "night";
   if (hour >= 5 && hour < 11) return "morning";
   if (hour >= 11 && hour < 18) return "day";
   return "evening";
 }
 
-/**
- * Converts a UTC unix timestamp (seconds) to a local time string
- * @param unixTime - Unix timestamp in seconds
- * @param format - Time format preference ('12h' or '24h')
- */
-export function formatUnixTimeToLocalString(
-  unixTime: number,
-  format: "12h" | "24h" = "12h",
-): string {
-  if (!unixTime) return "--";
+// ✅ NEW EXPORT HERE
+export function formatUnixTimeToLocalString(unixTime: number): string {
   const date = new Date(unixTime * 1000);
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
 
-  if (format === "24h") {
-    return date.toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
+export async function sendWeatherData(weatherData: {
+  username: string;
+  location: string;
+  temperature: string;
+  condition: string;
+  time_period: string;
+}) {
+  try {
+    const response = await fetch('/weather', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(weatherData),
     });
+    return await response.json();
+  } catch (error) {
+    console.error('Error sending weather data:', error);
   }
+}
 
-  // 12h format
-  const timeString = date.toLocaleTimeString([], {
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
+import type { WeatherApiResponse, ForecastApiResponse } from "@/types/weather";
+
+const FALLBACK_COORDS = {
+  lat: 47.58531518716315,
+  lon: -122.14778448861998,
+} as const;
+
+const GEOLOCATION_TIMEOUT = 10_000;
+
+export async function fetchWeatherByCoords(
+  lat: number,
+  lon: number,
+  apiKey: string,
+): Promise<WeatherApiResponse> {
+  const res = await fetch(
+    `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`,
+  );
+  if (!res.ok) throw new Error("Weather API error");
+  return res.json();
+}
+
+export function getUserLocationAndFetch(
+  apiKey: string,
+): Promise<WeatherApiResponse> {
+  return new Promise<WeatherApiResponse>((resolve, reject) => {
+    if (!navigator.geolocation) {
+      return reject(new Error("Geolocation not supported"));
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async ({ coords: { latitude, longitude } }) => {
+        try {
+          const data = await fetchWeatherByCoords(latitude, longitude, apiKey);
+          resolve(data);
+        } catch (err) {
+          reject(err);
+        }
+      },
+      () => {
+        fetchWeatherByCoords(FALLBACK_COORDS.lat, FALLBACK_COORDS.lon, apiKey)
+          .then(resolve)
+          .catch(reject);
+      },
+      { timeout: GEOLOCATION_TIMEOUT },
+    );
   });
-  return timeString.toLowerCase();
+}
+
+export function createErrorWeatherData(): WeatherApiResponse {
+  return {
+    name: "Error",
+    main: { temp: 0, humidity: 0, pressure: 0 },
+    weather: [{ main: "Unable to load", description: "Error", id: 0 }],
+    sys: { sunrise: 0, sunset: 0, country: undefined },
+  };
+}
+
+export async function fetchForecastByCoords(
+  lat: number,
+  lon: number,
+  apiKey: string,
+): Promise<ForecastApiResponse> {
+  const res = await fetch(
+    `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`,
+  );
+  if (!res.ok) throw new Error("Forecast API error");
+  return res.json();
+}
+
+export function getUserLocationAndFetchForecast(
+  apiKey: string,
+): Promise<ForecastApiResponse> {
+  return new Promise<ForecastApiResponse>((resolve, reject) => {
+    if (!navigator.geolocation) {
+      return reject(new Error("Geolocation not supported"));
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async ({ coords: { latitude, longitude } }) => {
+        try {
+          const data = await fetchForecastByCoords(latitude, longitude, apiKey);
+          resolve(data);
+        } catch (err) {
+          reject(err);
+        }
+      },
+      () => {
+        fetchForecastByCoords(FALLBACK_COORDS.lat, FALLBACK_COORDS.lon, apiKey)
+          .then(resolve)
+          .catch(reject);
+      },
+      { timeout: GEOLOCATION_TIMEOUT },
+    );
+  });
 }

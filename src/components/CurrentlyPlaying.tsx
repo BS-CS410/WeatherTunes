@@ -1,52 +1,118 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { getSpotifyTrackForWeather } from "@/lib/spotifyWeather";
 
-interface CurrentlyPlayingProps {
-  songTitle?: string;
-  artistName?: string;
-  albumArtUrl?: string;
-}
+const sampleQueue = [
+  "2TpxZ7JUBn3uw46aR7qd6V", // Example tracks
+  "7ouMYWpwJ422jRcDASZB7P",
+  "1lDWb6b6ieDQ2xT7ewTC3G",
+];
 
-const CurrentlyPlaying: React.FC<CurrentlyPlayingProps> = ({
-  songTitle = "Song Title",
-  artistName = "Artist Name",
-  albumArtUrl = "https://via.placeholder.com/150", // Placeholder image
-}) => {
+const CurrentlyPlaying = () => {
+  const [queue, setQueue] = useState<string[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState<string | null>(null);
+  const apiKey = import.meta.env.VITE_OPENWEATHER_API_KEY;
+
+  useEffect(() => {
+    getSpotifyTrackForWeather(apiKey)
+      .then((weatherTrackId) => {
+        // Build queue starting with weather track, followed by others without duplicates
+        const newQueue = [weatherTrackId, ...sampleQueue.filter((t) => t !== weatherTrackId)];
+        setQueue(newQueue);
+        setCurrentIndex(0);
+        setLoading(false);
+      })
+      .catch(() => {
+        setQueue(sampleQueue);
+        setCurrentIndex(0);
+        setLoading(false);
+      });
+  }, [apiKey]);
+
+  const trackId = queue[currentIndex];
+
+  const handleLike = async () => {
+    if (!trackId) return;
+
+    try {
+      const res = await fetch("http://localhost:8000/liked", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ track_id: trackId }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        setMessage(`Error: ${errorData.error || "Failed to like track"}`);
+        return;
+      }
+
+      setMessage("Track liked!");
+      window.location.reload();
+    } catch (error) {
+      setMessage("Network error while liking track");
+    }
+  };
+
+  const handleNext = () => {
+    if (queue.length === 0) return;
+    const nextIndex = (currentIndex + 1) % queue.length;
+    setCurrentIndex(nextIndex);
+    setMessage(null);
+  };
+
+  const handleBack = () => {
+    if (queue.length === 0) return;
+    const prevIndex = (currentIndex - 1 + queue.length) % queue.length;
+    setCurrentIndex(prevIndex);
+    setMessage(null);
+  };
+
+  if (loading) return <p>Loading Spotify player...</p>;
+
+  if (!trackId) return <p>No track to play.</p>;
+
   return (
-    <div className="relative flex flex-col items-center justify-center p-4 transition-all duration-300 ease-in-out">
-      {/* Container for album art and its glow, handles sizing and margin */}
-      <div className="group relative mb-4 h-[clamp(6rem,24vw,12rem)] w-[clamp(6rem,24vw,12rem)]">
-        {/* Pulsing glow effect - behind the image */}
-        <style>
-          {`
-            @keyframes custom-pulse-brightness {
-              0%, 100% { filter: brightness(1.1); }
-              50% { filter: brightness(0.7); }
-            }
-          `}
-        </style>
-        <div
-          className="absolute inset-0 z-0 h-full w-full rounded-md bg-gray-100/70 shadow-[0_0_32px_8px_rgba(0,0,0,0.25)] blur-2xl dark:bg-white/30 dark:shadow-[0_0_48px_12px_rgba(255,255,255,0.45)] dark:brightness-105"
-          style={{
-            animation: "custom-pulse-brightness 4s ease-in-out infinite",
-          }}
-        />
-        {/* Album art - on top */}
-        <img
-          src={albumArtUrl}
-          alt={`${songTitle} album art`}
-          className="relative z-10 h-full w-full rounded-md object-cover shadow-lg transition-transform duration-300 ease-in-out group-hover:-translate-y-2 group-hover:scale-110 hover:shadow-2xl hover:drop-shadow-md"
-        />
+    <div className="w-full flex flex-col items-center justify-center space-y-4">
+      <iframe
+        key={trackId} // ensures iframe reloads when track changes
+        src={`https://open.spotify.com/embed/track/${trackId}`}
+        width="100%"
+        height="160"
+        frameBorder="0"
+        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+        allowFullScreen
+        title="Spotify Player"
+      />
+
+      <div className="flex space-x-4">
+        <button
+          onClick={handleBack}
+          className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+        >
+          ◀️ Back
+        </button>
+
+        <button
+          onClick={handleLike}
+          className="rounded bg-green-600 px-4 py-2 text-white hover:bg-green-700"
+        >
+          Like ❤️
+        </button>
+
+        <button
+          onClick={handleNext}
+          className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+        >
+          Next ▶️
+        </button>
       </div>
-      <div className="text-center transition-transform duration-300 ease-in-out hover:-translate-y-2 hover:scale-105 hover:drop-shadow-md">
-        <div className="flex items-center justify-center">
-          <h2 className="truncate text-[clamp(1rem,4vw,2rem)] font-semibold text-gray-900 dark:text-slate-200">
-            {songTitle}
-          </h2>
-        </div>
-        <p className="truncate text-[clamp(0.8rem,2.5vw,1.2rem)] text-gray-700 dark:text-slate-400">
-          {artistName}
-        </p>
-      </div>
+
+      {message && <p className="mt-1 text-sm text-gray-700">{message}</p>}
     </div>
   );
 };
