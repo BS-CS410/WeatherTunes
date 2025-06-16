@@ -1,7 +1,7 @@
 import React from "react";
 
 // MUI Card wrapper that matches our glassomorphic design
-// This preserves the exact same styling as our shadcn/ui Card but uses MUI as the foundation
+// Preserves the exact same styling as our shadcn/ui Card but uses MUI as the foundation
 
 interface MuiCardProps {
   children: React.ReactNode;

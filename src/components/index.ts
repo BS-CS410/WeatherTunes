@@ -8,7 +8,6 @@
 // === WEATHER DOMAIN ===
 // Components related to weather display, forecast, and background visuals
 export { VideoBackground } from "./VideoBackground";
-export { WeatherDisplay } from "./WeatherDisplay";
 export { ForecastCard } from "./ForecastCard";
 
 // === MUSIC DOMAIN ===
@@ -24,6 +23,15 @@ export { default as WeatherTunesDisplay } from "./WeatherTunesDisplay";
 export { ResponsiveLayout } from "./ResponsiveLayout";
 export { MuiThemeProvider } from "./MuiThemeProvider";
 export { Card as MuiCard, CardContent as MuiCardContent } from "./MuiCard";
+
+// === LAYOUT COMPONENTS ===
+// Reusable layout components for consistent structure
+export { SectionWrapper } from "./layout/SectionWrapper";
+
+// === STYLE SYSTEM ===
+// Centralized styling system for maximum maintainability
+export * from "./styles/WeatherTunesStyles";
+export { createElementStyles } from "./styles/ElementStyles";
 
 // === SHARED COMPONENTS ===
 // Reusable UI components and icons used across domains
