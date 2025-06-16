@@ -1,6 +1,7 @@
 import { getUserLocationAndFetch } from "./weather";
 import type { WeatherApiResponse } from "@/types/weather";
 import songs from "./spotifySongs.json";
+import trackMetadata from "./trackMetadata.json";
 
 // Playlist tag mapping by weather + temp + time
 const playlistMap = {
@@ -89,9 +90,8 @@ export async function getSpotifyTrackForWeather(apiKey: string): Promise<string>
 
     const tempRange = getTempRange(tempCelsius);
 
-    // Calculate local hour using UTC timestamp + timezone offset
-    const localUnix = weather.dt + weather.timezone;
-    const localHour = new Date(localUnix * 1000).getUTCHours();
+    // Calculate local hour using current time
+    const localHour = new Date().getHours();
     const timeOfDay = getTimeOfDay(localHour);
 
     // Get playlist tags from map
@@ -120,5 +120,121 @@ export async function getSpotifyTrackForWeather(apiKey: string): Promise<string>
     console.error("Error in getSpotifyTrackForWeather:", error);
     // Return random fallback
     return songs[Math.floor(Math.random() * songs.length)].id;
+  }
+}
+
+// Request cache and throttling
+interface CachedTrackMetadata {
+  title: string;
+  artist: string;
+  albumArt: string;
+}
+
+const metadataCache = new Map<string, { data: CachedTrackMetadata; timestamp: number }>();
+const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes (increased from 10)
+let lastRequestTime = 0;
+const MIN_REQUEST_INTERVAL = 2000; // 2 seconds between requests (increased from 1)
+const failedRequests = new Map<string, number>(); // Track failed requests for backoff
+
+/**
+ * Fetches track metadata from Spotify Web API
+ * Returns simplified track info for display purposes
+ * Falls back to local metadata if API is unavailable
+ */
+export async function getSpotifyTrackMetadata(trackId: string): Promise<{
+  title: string;
+  artist: string;
+  albumArt: string;
+} | null> {
+  try {
+    // Check cache first
+    const cached = metadataCache.get(trackId);
+    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+      return cached.data;
+    }
+
+    // First check local metadata cache
+    const localTrack = trackMetadata.find(track => track.id === trackId);
+    if (localTrack) {
+      const result = {
+        title: localTrack.title,
+        artist: localTrack.artist,
+        albumArt: localTrack.albumArt
+      };
+      metadataCache.set(trackId, { data: result, timestamp: Date.now() });
+      return result;
+    }
+
+    // Check if this track has failed recently (exponential backoff)
+    const failureCount = failedRequests.get(trackId) || 0;
+    if (failureCount > 0) {
+      const backoffDelay = Math.min(1000 * Math.pow(2, failureCount), 60000); // Max 1 minute
+      const lastFailure = metadataCache.get(`${trackId}_failure`)?.timestamp || 0;
+      if (Date.now() - lastFailure < backoffDelay) {
+        console.log(`Skipping request for ${trackId} due to backoff (${failureCount} failures)`);
+        throw new Error("Rate limited - using backoff");
+      }
+    }
+
+    // Throttle API requests
+    const now = Date.now();
+    const timeSinceLastRequest = now - lastRequestTime;
+    if (timeSinceLastRequest < MIN_REQUEST_INTERVAL) {
+      await new Promise(resolve => setTimeout(resolve, MIN_REQUEST_INTERVAL - timeSinceLastRequest));
+    }
+    lastRequestTime = Date.now();
+
+    // Try Spotify oEmbed API with timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
+    const response = await fetch(
+      `https://open.spotify.com/oembed?url=https://open.spotify.com/track/${trackId}&format=json`,
+      { signal: controller.signal }
+    );
+    
+    clearTimeout(timeoutId);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: Failed to fetch track metadata`);
+    }
+    
+    const data = await response.json();
+    
+    // Parse title which comes in format "Song Title by Artist Name"
+    const titleMatch = data.title?.match(/^(.+?) by (.+)$/);
+    const result = titleMatch ? {
+      title: titleMatch[1],
+      artist: titleMatch[2], 
+      albumArt: data.thumbnail_url || "https://via.placeholder.com/300x300"
+    } : {
+      title: data.title || "Unknown Track",
+      artist: "Unknown Artist",
+      albumArt: data.thumbnail_url || "https://via.placeholder.com/300x300"
+    };
+    
+    // Cache the result
+    metadataCache.set(trackId, { data: result, timestamp: Date.now() });
+    // Clear any previous failures on success
+    failedRequests.delete(trackId);
+    return result;
+  } catch (error) {
+    console.warn("Could not fetch Spotify track metadata, using fallback:", error);
+    
+    // Track failures for exponential backoff
+    const currentFailures = failedRequests.get(trackId) || 0;
+    failedRequests.set(trackId, currentFailures + 1);
+    metadataCache.set(`${trackId}_failure`, { data: {} as CachedTrackMetadata, timestamp: Date.now() });
+    
+    // Return generic info - this will display nicely until the API works
+    const fallback = {
+      title: "Loading track info...",
+      artist: "Spotify",
+      albumArt: "https://via.placeholder.com/300x300"
+    };
+    
+    // Cache fallback briefly to prevent rapid retries
+    metadataCache.set(trackId, { data: fallback, timestamp: Date.now() });
+    return fallback;
   }
 }

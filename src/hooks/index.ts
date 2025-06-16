@@ -4,6 +4,9 @@
 export { useWeatherData, useThemeFromWeather } from "@/hooks/useWeather";
 export { useForecastData } from "@/hooks/useForecast";
 
+// Music and Spotify hooks
+export { useCurrentTrack } from "@/hooks/useCurrentTrack";
+
 // UI and interaction hooks
 // (No UI hooks currently in use)
 

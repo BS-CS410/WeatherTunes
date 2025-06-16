@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getSpotifyTrackForWeather } from "@/lib/spotifyWeather";
+import { useCurrentTrackContext } from "@/contexts/useCurrentTrackContext";
 
 const sampleQueue = [
   "2TpxZ7JUBn3uw46aR7qd6V", // Example tracks
@@ -22,6 +23,9 @@ const CurrentlyPlaying: React.FC<CurrentlyPlayingProps> = ({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
+  const [isChangingTrack, setIsChangingTrack] = useState(false);
+  const [iframeKey, setIframeKey] = useState(0); // Force iframe reload only when needed
+  const { updateTrack } = useCurrentTrackContext();
   const apiKey = import.meta.env.VITE_PUBLIC_OPENWEATHER_API_KEY;
 
   useEffect(() => {
@@ -35,13 +39,19 @@ const CurrentlyPlaying: React.FC<CurrentlyPlayingProps> = ({
         setQueue(newQueue);
         setCurrentIndex(0);
         setLoading(false);
+        // Update track metadata for the first track
+        updateTrack(weatherTrackId);
       })
       .catch(() => {
         setQueue(sampleQueue);
         setCurrentIndex(0);
         setLoading(false);
+        // Update track metadata for the first track in sample queue
+        if (sampleQueue.length > 0) {
+          updateTrack(sampleQueue[0]);
+        }
       });
-  }, [apiKey]);
+  }, [apiKey, updateTrack]); // updateTrack is now stable with useCallback
 
   const trackId = queue[currentIndex];
 
@@ -71,18 +81,36 @@ const CurrentlyPlaying: React.FC<CurrentlyPlayingProps> = ({
     }
   };
 
-  const handleNext = () => {
-    if (queue.length === 0) return;
+  const handleNext = async () => {
+    if (queue.length === 0 || isChangingTrack) return;
+    setIsChangingTrack(true);
+    
     const nextIndex = (currentIndex + 1) % queue.length;
     setCurrentIndex(nextIndex);
     setMessage(null);
+    
+    // Add delay to prevent rapid requests and update iframe
+    setTimeout(() => {
+      updateTrack(queue[nextIndex]);
+      setIframeKey(prev => prev + 1); // Force iframe reload
+      setIsChangingTrack(false);
+    }, 500); // Increased delay
   };
 
-  const handleBack = () => {
-    if (queue.length === 0) return;
+  const handleBack = async () => {
+    if (queue.length === 0 || isChangingTrack) return;
+    setIsChangingTrack(true);
+    
     const prevIndex = (currentIndex - 1 + queue.length) % queue.length;
     setCurrentIndex(prevIndex);
     setMessage(null);
+    
+    // Add delay to prevent rapid requests and update iframe
+    setTimeout(() => {
+      updateTrack(queue[prevIndex]);
+      setIframeKey(prev => prev + 1); // Force iframe reload
+      setIsChangingTrack(false);
+    }, 500); // Increased delay
   };
 
   if (loading) {
@@ -111,7 +139,7 @@ const CurrentlyPlaying: React.FC<CurrentlyPlayingProps> = ({
       {/* Spotify Embed Player */}
       <div className="w-full">
         <iframe
-          key={trackId} // ensures iframe reloads when track changes
+          key={`${trackId}-${iframeKey}`} // ensures iframe reloads when track changes with controlled timing
           src={`https://open.spotify.com/embed/track/${trackId}`}
           width="100%"
           height="160"
@@ -127,21 +155,36 @@ const CurrentlyPlaying: React.FC<CurrentlyPlayingProps> = ({
       <div className="flex w-full space-x-4">
         <button
           onClick={handleBack}
-          className="flex-1 rounded-lg bg-white/40 px-6 py-3 font-medium text-gray-900 shadow-md backdrop-blur-md transition-all duration-200 hover:bg-white/60 hover:shadow-lg dark:bg-slate-900/75 dark:text-slate-100 dark:hover:bg-slate-900/90"
+          disabled={isChangingTrack}
+          className={`flex-1 rounded-lg px-6 py-3 font-medium shadow-md backdrop-blur-md transition-all duration-200 ${
+            isChangingTrack 
+              ? "bg-gray-300/40 text-gray-500 cursor-not-allowed dark:bg-slate-800/50 dark:text-slate-500"
+              : "bg-white/40 text-gray-900 hover:bg-white/60 hover:shadow-lg dark:bg-slate-900/75 dark:text-slate-100 dark:hover:bg-slate-900/90"
+          }`}
         >
           ◁ Back
         </button>
 
         <button
           onClick={handleLike}
-          className="flex-1 rounded-lg bg-white/40 px-6 py-3 font-medium text-gray-900 shadow-md backdrop-blur-md transition-all duration-200 hover:bg-white/60 hover:shadow-lg dark:bg-slate-900/75 dark:text-slate-100 dark:hover:bg-slate-900/90"
+          disabled={isChangingTrack}
+          className={`flex-1 rounded-lg px-6 py-3 font-medium shadow-md backdrop-blur-md transition-all duration-200 ${
+            isChangingTrack 
+              ? "bg-gray-300/40 text-gray-500 cursor-not-allowed dark:bg-slate-800/50 dark:text-slate-500"
+              : "bg-white/40 text-gray-900 hover:bg-white/60 hover:shadow-lg dark:bg-slate-900/75 dark:text-slate-100 dark:hover:bg-slate-900/90"
+          }`}
         >
           Like ♡
         </button>
 
         <button
           onClick={handleNext}
-          className="flex-1 rounded-lg bg-white/40 px-6 py-3 font-medium text-gray-900 shadow-md backdrop-blur-md transition-all duration-200 hover:bg-white/60 hover:shadow-lg dark:bg-slate-900/75 dark:text-slate-100 dark:hover:bg-slate-900/90"
+          disabled={isChangingTrack}
+          className={`flex-1 rounded-lg px-6 py-3 font-medium shadow-md backdrop-blur-md transition-all duration-200 ${
+            isChangingTrack 
+              ? "bg-gray-300/40 text-gray-500 cursor-not-allowed dark:bg-slate-800/50 dark:text-slate-500"
+              : "bg-white/40 text-gray-900 hover:bg-white/60 hover:shadow-lg dark:bg-slate-900/75 dark:text-slate-100 dark:hover:bg-slate-900/90"
+          }`}
         >
           Next ▷
         </button>

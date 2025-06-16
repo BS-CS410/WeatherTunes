@@ -4,6 +4,7 @@ import type { WeatherDisplayData } from "@/types/weather";
 import { SectionWrapper } from "./layout/SectionWrapper";
 import { createElementStyles } from "./styles/ElementStyles";
 import { colorTheme } from "./styles/WeatherTunesStyles";
+import { useCurrentTrackContext } from "@/contexts/useCurrentTrackContext";
 
 /**
  * STYLE CUSTOMIZATION GUIDE
@@ -31,9 +32,6 @@ import { colorTheme } from "./styles/WeatherTunesStyles";
 
 interface WeatherTunesDisplayProps {
   weatherData: WeatherDisplayData;
-  songTitle?: string;
-  artistName?: string;
-  albumArtUrl?: string;
 }
 
 /**
@@ -42,10 +40,9 @@ interface WeatherTunesDisplayProps {
  */
 const WeatherTunesDisplay: React.FC<WeatherTunesDisplayProps> = ({
   weatherData,
-  songTitle = "Song Title",
-  artistName = "Artist Name",
-  albumArtUrl = "https://via.placeholder.com/150",
 }) => {
+  const { trackMetadata } = useCurrentTrackContext();
+  
   const {
     location = "Loading...",
     temperature = "--",
@@ -54,6 +51,12 @@ const WeatherTunesDisplay: React.FC<WeatherTunesDisplayProps> = ({
     sunrise = "--",
     sunset = "--",
   } = weatherData || {};
+
+  // Use track metadata from context or fallback to placeholders
+  const isTrackLoading = !trackMetadata;
+  const songTitle = trackMetadata?.title || (isTrackLoading ? "Loading track..." : "Unknown Track");
+  const artistName = trackMetadata?.artist || (isTrackLoading ? "Finding music..." : "Unknown Artist");
+  const albumArtUrl = trackMetadata?.albumArt || "https://via.placeholder.com/300x300";
 
   // Single source of truth for all element styles
   const elementStyles = createElementStyles();

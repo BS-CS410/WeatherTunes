@@ -12,14 +12,6 @@ import { useThemeManager } from "@/hooks/useThemeManager";
 function MainPage() {
   const { displayData, timePeriod, isLoading, error } = useWeatherData();
 
-  // PLACEHOLDER DATA FOR CURRENTLY PLAYING //
-  const songData = {
-    songTitle: "Angel's Fake",
-    artistName: "DAZBEE",
-    albumArtUrl:
-      "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/f9/3c/d1/f93cd16d-2329-561c-a851-672eea4e48c3/23UMGIM87924.rgb.jpg/800x800cc.jpg",
-  };
-
   useThemeManager(timePeriod);
 
   // Loading State
@@ -73,9 +65,6 @@ function MainPage() {
           <CardContent className="p-0">
             <WeatherTunesDisplay
               weatherData={displayData} // Pass the new displayData
-              songTitle={songData.songTitle}
-              artistName={songData.artistName}
-              albumArtUrl={songData.albumArtUrl}
             />
           </CardContent>
         </Card>
