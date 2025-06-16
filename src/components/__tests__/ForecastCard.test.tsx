@@ -9,20 +9,36 @@ vi.mock("../../hooks/useForecast", () => ({
   useForecastData: vi.fn(() => ({
     forecast: [
       {
-        dayName: "Monday",
-        date: "Jan 15",
-        condition: "clear sky",
-        tempHigh: "25",
-        tempLow: "18",
-        icon: "01d",
+        dayName: "Today",
+        date: "Jun 16",
+        condition: "scattered clouds",
+        tempHigh: "22",
+        tempLow: "22",
+        icon: "02d",
       },
       {
         dayName: "Tuesday",
-        date: "Jan 16",
-        condition: "light rain",
+        date: "Jun 17",
+        condition: "scattered clouds",
+        tempHigh: "26",
+        tempLow: "12",
+        icon: "02d",
+      },
+      {
+        dayName: "Wednesday",
+        date: "Jun 18",
+        condition: "few clouds",
         tempHigh: "22",
-        tempLow: "15",
-        icon: "10d",
+        tempLow: "8",
+        icon: "02d",
+      },
+      {
+        dayName: "Thursday",
+        date: "Jun 19",
+        condition: "overcast clouds",
+        tempHigh: "22",
+        tempLow: "9",
+        icon: "04d",
       },
     ],
     isLoading: false,
@@ -59,11 +75,10 @@ describe("ForecastCard", () => {
     render(<ForecastCard />, { wrapper: TestWrapper });
 
     expect(screen.getByText("Your Forecast:")).toBeInTheDocument();
-    expect(screen.getByText("Monday")).toBeInTheDocument();
-    expect(screen.getByText("Jan 15")).toBeInTheDocument();
-    expect(screen.getByText("clear sky")).toBeInTheDocument();
-    expect(screen.getByText("25°")).toBeInTheDocument();
-    expect(screen.getByText("18°")).toBeInTheDocument();
+    expect(screen.getByText("Today")).toBeInTheDocument();
+    expect(screen.getByText("Jun 16")).toBeInTheDocument();
+    expect(screen.getByText("scattered clouds")).toBeInTheDocument();
+    expect(screen.getByText("22°")).toBeInTheDocument();
   });
 
   it("should show loading state", async () => {
@@ -118,7 +133,7 @@ describe("ForecastCard", () => {
     useForecastData.mockReturnValue({
       forecast: [
         {
-          dayName: "Monday",
+          dayName: "Today",
           date: "Dec 15",
           condition: "clear sky",
           tempHigh: "25",
@@ -140,7 +155,7 @@ describe("ForecastCard", () => {
 
     render(<ForecastCard />, { wrapper: TestWrapper });
 
-    expect(screen.getByText("Monday")).toBeInTheDocument();
+    expect(screen.getByText("Today")).toBeInTheDocument();
     expect(screen.getByText("Tuesday")).toBeInTheDocument();
     expect(screen.getByText("clear sky")).toBeInTheDocument();
     expect(screen.getByText("light rain")).toBeInTheDocument();

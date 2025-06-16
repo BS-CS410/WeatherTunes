@@ -44,21 +44,31 @@ function processForecastData(
     });
   });
 
-  // Convert to DailyForecast array (take first 5 days)
-  const result: DailyForecast[] = [];
-  const entries = Array.from(dailyData.entries()).slice(0, 5);
+  // Sort entries by date to ensure chronological order
+  const sortedEntries = Array.from(dailyData.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .slice(0, 5); // Take first 5 chronological days
 
-  entries.forEach(([, dayData]) => {
+  const result: DailyForecast[] = [];
+  const today = new Date();
+  const todayDateKey = today.toISOString().split("T")[0];
+
+  sortedEntries.forEach(([dateKey, dayData]) => {
     const tempHigh = Math.max(...dayData.temps);
     const tempLow = Math.min(...dayData.temps);
 
     // Get the most common condition for the day (or first one)
     const primaryCondition = dayData.conditions[0];
 
-    // Format day name
-    const dayName = dayData.date.toLocaleDateString("en-US", {
-      weekday: "long",
-    });
+    // For today, show "Today" instead of day name to avoid duplicate "Monday"
+    let dayName: string;
+    if (dateKey === todayDateKey) {
+      dayName = "Today";
+    } else {
+      dayName = dayData.date.toLocaleDateString("en-US", {
+        weekday: "long",
+      });
+    }
 
     // Format date
     const formattedDate = dayData.date.toLocaleDateString("en-US", {

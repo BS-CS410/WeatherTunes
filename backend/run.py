@@ -22,7 +22,11 @@ app.config["SESSION_COOKIE_DOMAIN"] = None  # Don't restrict domain
 app.config["SESSION_COOKIE_HTTPONLY"] = False  # Allow JavaScript access for debugging
 
 # ✅ Enable CORS with credentials support
-CORS(app, supports_credentials=True, origins=["http://127.0.0.1:5173"])
+CORS(
+    app,
+    supports_credentials=True,
+    origins=["http://127.0.0.1:5173", "http://localhost:5173"],
+)
 
 # Register blueprints
 app.register_blueprint(recommended_bp)

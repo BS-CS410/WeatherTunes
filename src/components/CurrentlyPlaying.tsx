@@ -106,7 +106,7 @@ const CurrentlyPlaying: React.FC<CurrentlyPlayingProps> = ({
 
   return (
     <div
-      className={`flex flex-col items-center justify-center space-y-6 ${className}`}
+      className={`flex flex-col items-center justify-center space-y-4 ${className}`}
     >
       {/* Spotify Embed Player */}
       <div className="w-full">

@@ -73,13 +73,13 @@ const Favorites: React.FC<FavoritesProps> = ({ className = "" }) => {
 
   return (
     <div className={`relative w-full ${className}`}>
-      <div className="px-4 pb-4 pl-6">
-        <h3 className="text-2xl font-semibold text-gray-900 dark:text-slate-200">
-          Liked Tracks
+      <div className="px-4 pb-4 pl-2">
+        <h3 className="text-5xl font-extralight tracking-wider text-gray-900 lowercase dark:text-slate-200">
+          liked tracks:
         </h3>
       </div>
 
-      <ScrollArea.Root className="relative z-0 w-full overflow-x-auto px-6">
+      <ScrollArea.Root className="relative z-0 w-full overflow-x-auto px-2">
         <ScrollArea.Viewport className="w-full">
           <div
             className="flex min-w-max flex-row px-2 py-4"
