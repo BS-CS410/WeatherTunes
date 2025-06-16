@@ -13,7 +13,6 @@ export { ForecastCard } from "./ForecastCard";
 
 // === MUSIC DOMAIN ===
 // Components for music playback, queue management, and audio controls
-export { default as CurrentlyPlaying } from "./CurrentlyPlaying";
 export { UpNext } from "./UpNext";
 
 // === LAYOUT DOMAIN ===
@@ -21,7 +20,6 @@ export { UpNext } from "./UpNext";
 export { default as NavBar } from "./NavBar";
 export { SettingsButton } from "./SettingsButton";
 export { SettingsMenu } from "./SettingsMenu";
-export { default as UnifiedDisplay } from "./UnifiedDisplay";
 export { default as WeatherTunesDisplay } from "./WeatherTunesDisplay";
 export { ResponsiveLayout } from "./ResponsiveLayout";
 export { MuiThemeProvider } from "./MuiThemeProvider";
