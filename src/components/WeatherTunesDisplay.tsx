@@ -41,7 +41,7 @@ interface WeatherTunesDisplayProps {
 const WeatherTunesDisplay: React.FC<WeatherTunesDisplayProps> = ({
   weatherData,
 }) => {
-  const { trackMetadata } = useCurrentTrackContext();
+  const { trackMetadata, currentTrackId, isLoading } = useCurrentTrackContext();
 
   const {
     location = "Loading...",
@@ -53,7 +53,7 @@ const WeatherTunesDisplay: React.FC<WeatherTunesDisplayProps> = ({
   } = weatherData || {};
 
   // Use track metadata from context or fallback to placeholders
-  const isTrackLoading = !trackMetadata;
+  const isTrackLoading = isLoading || !trackMetadata;
   const songTitle =
     trackMetadata?.title ||
     (isTrackLoading ? "Loading track..." : "Unknown Track");
@@ -125,6 +125,13 @@ const WeatherTunesDisplay: React.FC<WeatherTunesDisplayProps> = ({
         <div className={elementStyles.musicInfo}>
           <h2 className={elementStyles.musicTitle}>{songTitle}</h2>
           <p className={elementStyles.musicArtist}>{artistName}</p>
+          
+          {/* Development debug info */}
+          {import.meta.env.DEV && currentTrackId && (
+            <div className="text-xs opacity-50 mt-1 font-mono">
+              ID: {currentTrackId.substring(0, 8)}...{isLoading && " (loading)"}
+            </div>
+          )}
         </div>
       </SectionWrapper>
     </div>

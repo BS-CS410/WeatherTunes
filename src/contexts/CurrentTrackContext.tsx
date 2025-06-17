@@ -11,6 +11,7 @@ interface TrackMetadata {
 interface CurrentTrackContextType {
   trackMetadata: TrackMetadata | null;
   isLoading: boolean;
+  currentTrackId: string | null;
   updateTrack: (trackId: string) => Promise<void>;
 }
 
