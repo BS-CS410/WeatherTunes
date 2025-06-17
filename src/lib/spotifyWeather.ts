@@ -146,9 +146,11 @@ const MIN_REQUEST_INTERVAL = 2000; // 2 seconds between requests (increased from
 const failedRequests = new Map<string, number>(); // Track failed requests for backoff
 
 /**
- * Fetches artist information from Last.fm API
+ * PLACEHOLDER: Get artist information from Last.fm API
  * Free API that often has comprehensive track metadata
+ * Currently unused - marked for future music service integration
  */
+// @ts-expect-error - placeholder function for future use
 async function getArtistFromLastFm(trackTitle: string): Promise<string | null> {
   try {
     // Last.fm has a free API for track search
@@ -257,9 +259,11 @@ async function getArtistFromMultipleSources(
 }
 
 /**
- * Fetches artist information by scraping the Spotify track page
+ * PLACEHOLDER: Fetch artist information by scraping the Spotify track page
  * Used as fallback when oEmbed API doesn't provide artist info
+ * Currently unused - marked for future music service integration
  */
+// @ts-expect-error - placeholder function for future use
 async function getArtistFromSpotifyPage(
   trackId: string,
 ): Promise<string | null> {

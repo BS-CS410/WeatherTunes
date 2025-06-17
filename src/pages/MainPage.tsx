@@ -1,5 +1,4 @@
 import WeatherTunesDisplay from "@/components/WeatherTunesDisplay";
-import { MuiCard as Card, MuiCardContent as CardContent } from "@/components";
 import UpNext from "@/components/UpNext";
 import CurrentlyPlaying from "@/components/CurrentlyPlaying";
 import Favorites from "@/components/Favorites";
@@ -8,6 +7,9 @@ import { SettingsButton } from "@/components/SettingsButton";
 import { ForecastCard } from "@/components";
 import { useWeatherData } from "@/hooks/useWeather";
 import { useThemeManager } from "@/hooks/useThemeManager";
+import { GlassCard } from "@/components/shared/GlassCard";
+import { LoadingState, ErrorState } from "@/components/shared/StateComponents";
+import { LAYOUT } from "@/lib/sharedStyles";
 
 function MainPage() {
   const { displayData, timePeriod, isLoading, error } = useWeatherData();
@@ -16,24 +18,16 @@ function MainPage() {
 
   // Loading State
   if (isLoading) {
-    return (
-      <div className="flex min-h-dvh flex-col items-center justify-center overflow-auto">
-        <p className="text-2xl text-gray-700 dark:text-slate-300">
-          Loading weather data...
-        </p>
-      </div>
-    );
+    return <LoadingState message="Loading weather data..." />;
   }
 
   // Error State
   if (error || displayData.isError) {
     return (
-      <div className="flex min-h-dvh flex-col items-center justify-center overflow-auto">
-        <p className="text-2xl text-red-500">
-          Error: {displayData.condition || "Could not load weather data."}
-        </p>
-        {error && <p className="text-sm text-red-400">{error.message}</p>}
-      </div>
+      <ErrorState
+        title={`Error: ${displayData.condition || "Could not load weather data."}`}
+        message={error?.message}
+      />
     );
   }
 
@@ -50,7 +44,7 @@ function MainPage() {
       />
 
       {/* Main Content Area (centered column) */}
-      <div className="flex h-full w-full max-w-2xl flex-col items-stretch gap-4 px-4">
+      <div className={LAYOUT.container}>
         {/* App Header (left-aligned within centered column) */}
         <header className="-mb-5 py-6 text-left">
           <h1 className="text-5xl font-bold tracking-tight text-gray-900 transition-transform duration-200 will-change-transform select-none dark:text-slate-100">
@@ -61,37 +55,27 @@ function MainPage() {
         </header>
 
         {/* Unified Weather and Currently Playing Display */}
-        <Card className="bg-white/40 backdrop-blur-md dark:bg-slate-900/75">
-          <CardContent className="p-0">
-            <WeatherTunesDisplay
-              weatherData={displayData} // Pass the new displayData
-            />
-          </CardContent>
-        </Card>
+        <GlassCard withPadding={false}>
+          <WeatherTunesDisplay weatherData={displayData} />
+        </GlassCard>
 
         {/* Currently Playing Section */}
-        <Card className="bg-white/40 backdrop-blur-md dark:bg-slate-900/75">
-          <CardContent className="p-6">
-            <CurrentlyPlaying />
-          </CardContent>
-        </Card>
+        <GlassCard>
+          <CurrentlyPlaying />
+        </GlassCard>
 
         {/* Next Up Scroll Area */}
-        <Card className="">
-          <CardContent className="p-0">
-            <UpNext />
-          </CardContent>
-        </Card>
+        <GlassCard withPadding={false} className="">
+          <UpNext />
+        </GlassCard>
 
         {/* 5-Day Weather Forecast */}
         <ForecastCard />
 
         {/* Favorites List */}
-        <Card className="w-full bg-white/40 backdrop-blur-md dark:bg-slate-900/75">
-          <CardContent className="p-4">
-            <Favorites />
-          </CardContent>
-        </Card>
+        <GlassCard className="w-full" contentClassName="p-4">
+          <Favorites />
+        </GlassCard>
 
         {/* Bottom Padding */}
         <div className="h-16" />

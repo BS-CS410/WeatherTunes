@@ -11,3 +11,7 @@ export * from "@/lib/spotifyWeather";
 
 // UI and styling utilities
 export * from "@/lib/styles";
+export * from "@/lib/sharedStyles";
+
+// Video mapping utilities
+export * from "@/lib/videoMapping";

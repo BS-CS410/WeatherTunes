@@ -1,7 +1,5 @@
 import {
   NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuLink,
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
 import { useState } from "react";

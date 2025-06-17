@@ -5,6 +5,16 @@
  * Each domain represents a specific area of functionality within the app.
  */
 
+// === SHARED COMPONENTS ===
+// Reusable components used across multiple domains
+export { GlassCard } from "./shared/GlassCard";
+export { LoadingState, ErrorState } from "./shared/StateComponents";
+export {
+  SettingsSection,
+  SettingsButtonGroup,
+} from "./shared/SettingsComponents";
+export { ErrorBoundary, withErrorBoundary } from "./shared/ErrorBoundary";
+
 // === WEATHER DOMAIN ===
 // Components related to weather display, forecast, and background visuals
 export { VideoBackground } from "./VideoBackground";

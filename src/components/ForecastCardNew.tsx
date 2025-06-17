@@ -72,7 +72,7 @@ export function ForecastCard() {
   if (error) {
     return (
       <GlassCard>
-        <ErrorState 
+        <ErrorState
           title="Could not load forecast"
           message={error.message}
           className="py-8"
