@@ -15,7 +15,9 @@ interface CurrentTrackContextType {
   updateTrack: (trackId: string) => Promise<void>;
 }
 
-const CurrentTrackContext = createContext<CurrentTrackContextType | undefined>(undefined);
+const CurrentTrackContext = createContext<CurrentTrackContextType | undefined>(
+  undefined,
+);
 
 interface CurrentTrackProviderProps {
   children: ReactNode;
@@ -25,7 +27,9 @@ interface CurrentTrackProviderProps {
  * Provides current track metadata state across components
  * Manages Spotify track information for display synchronization
  */
-export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({ children }) => {
+export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
+  children,
+}) => {
   const trackData = useCurrentTrack();
 
   return (

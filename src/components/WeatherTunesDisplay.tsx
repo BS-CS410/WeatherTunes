@@ -125,10 +125,10 @@ const WeatherTunesDisplay: React.FC<WeatherTunesDisplayProps> = ({
         <div className={elementStyles.musicInfo}>
           <h2 className={elementStyles.musicTitle}>{songTitle}</h2>
           <p className={elementStyles.musicArtist}>{artistName}</p>
-          
+
           {/* Development debug info */}
           {import.meta.env.DEV && currentTrackId && (
-            <div className="text-xs opacity-50 mt-1 font-mono">
+            <div className="mt-1 font-mono text-xs opacity-50">
               ID: {currentTrackId.substring(0, 8)}...{isLoading && " (loading)"}
             </div>
           )}

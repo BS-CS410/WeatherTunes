@@ -1,3 +1,5 @@
+"""Authentication routes for Spotify OAuth integration."""
+
 import os
 
 import spotipy
@@ -5,6 +7,7 @@ from flask import Blueprint, jsonify, redirect, request, session
 from flask_cors import cross_origin
 from spotipy.oauth2 import SpotifyOAuth
 
+from app.config import SPOTIFY_SCOPE
 from app.services.user_data import update_user_login
 
 auth_bp = Blueprint("auth", __name__)
@@ -13,8 +16,8 @@ sp_oauth = SpotifyOAuth(
     client_id=os.getenv("SPOTIPY_CLIENT_ID"),
     client_secret=os.getenv("SPOTIPY_CLIENT_SECRET"),
     redirect_uri=os.getenv("SPOTIPY_REDIRECT_URI"),
-    scope="user-library-read user-read-email user-read-private",
-    cache_path=".cache",  # optional
+    scope=SPOTIFY_SCOPE,
+    cache_path=".cache",
 )
 
 
@@ -41,7 +44,7 @@ def callback():
 
     sp = spotipy.Spotify(auth=token_info["access_token"])
     profile = sp.current_user()
-    spotify_username = profile.get("id")
+    spotify_username = profile.get("id") if profile else None
     if not spotify_username:
         return jsonify({"error": "Failed to get Spotify user ID"}), 400
 

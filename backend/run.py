@@ -1,10 +1,11 @@
-import os
+"""Flask application entry point for WeatherTunes backend."""
 
 from dotenv import load_dotenv
 
 # Load env vars from root directory (default .env file)
 load_dotenv()
 
+from app.config import Config
 from app.routes.auth import auth_bp  # import auth blueprint
 from app.routes.liked_songs import liked_songs_bp
 from app.routes.recommended import recommended_bp
@@ -13,15 +14,9 @@ from flask import Flask
 from flask_cors import CORS
 
 app = Flask(__name__)
-app.secret_key = os.getenv("FLASK_SECRET_KEY", "supersecretkey")
+app.config.from_object(Config)
 
-# ✅ SESSION SETTINGS FOR DEV (localhost:5173 + 127.0.0.1:8000)
-app.config["SESSION_COOKIE_SAMESITE"] = "Lax"  # allow cross-origin with top-level nav
-app.config["SESSION_COOKIE_SECURE"] = False  # only True if you're using HTTPS
-app.config["SESSION_COOKIE_DOMAIN"] = None  # Don't restrict domain
-app.config["SESSION_COOKIE_HTTPONLY"] = False  # Allow JavaScript access for debugging
-
-# ✅ Enable CORS with credentials support
+# Enable CORS with credentials support
 CORS(
     app,
     supports_credentials=True,
