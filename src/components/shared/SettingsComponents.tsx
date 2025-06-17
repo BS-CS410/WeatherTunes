@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { BUTTON_STYLES, TEXT_COLORS } from "@/lib/sharedStyles";
+import { COLORS, TYPOGRAPHY } from "@/lib/unifiedStyles";
 import { cn } from "@/lib/utils";
 
 interface SettingsSectionProps {
@@ -11,7 +11,12 @@ export function SettingsSection({ label, children }: SettingsSectionProps) {
   return (
     <div>
       <label
-        className={cn("mb-2 block text-sm font-medium", TEXT_COLORS.secondary)}
+        className={cn(
+          "mb-2 block",
+          TYPOGRAPHY.body.sm,
+          "font-medium",
+          COLORS.text.secondary,
+        )}
       >
         {label}
       </label>
@@ -38,10 +43,7 @@ export function SettingsButtonGroup({ options }: SettingsButtonGroupProps) {
           variant={isSelected ? "default" : "outline"}
           size="sm"
           onClick={onClick}
-          className={cn(
-            "flex-1",
-            isSelected ? BUTTON_STYLES.primary : BUTTON_STYLES.outline,
-          )}
+          className="flex-1"
         >
           {label}
         </Button>

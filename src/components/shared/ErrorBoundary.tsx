@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import type { ErrorInfo, ReactNode } from "react";
-import { ErrorState } from "./StateComponents";
+import { ErrorDisplay } from "./StatusComponents";
 
 interface Props {
   children: ReactNode;
@@ -36,7 +36,7 @@ export class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <ErrorState
+        <ErrorDisplay
           title="Something went wrong"
           message={this.state.error?.message || "An unexpected error occurred"}
         />

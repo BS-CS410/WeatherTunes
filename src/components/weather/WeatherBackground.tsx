@@ -11,10 +11,13 @@ interface VideoBackgroundProps {
  * Optimized video background component with smooth transitions
  * Handles video loading, transitions, and performance optimization
  */
-export function VideoBackground({ condition, timePeriod }: VideoBackgroundProps) {
-  const videoSrc = useMemo(() => 
-    getVideoSource(condition, timePeriod), 
-    [condition, timePeriod]
+export function WeatherBackground({
+  condition,
+  timePeriod,
+}: VideoBackgroundProps) {
+  const videoSrc = useMemo(
+    () => getVideoSource(condition, timePeriod),
+    [condition, timePeriod],
   );
 
   const [currentSrc, setCurrentSrc] = useState(videoSrc);
@@ -84,7 +87,7 @@ export function VideoBackground({ condition, timePeriod }: VideoBackgroundProps)
         <source src={currentSrc} type="video/mp4" />
         <track kind="captions" />
       </video>
-      
+
       {/* Loading overlay during transitions */}
       {isTransitioning && (
         <div className="absolute inset-0 bg-black/20 transition-opacity duration-300" />

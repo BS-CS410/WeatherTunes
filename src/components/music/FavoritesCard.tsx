@@ -1,0 +1,140 @@
+import { useEffect, useState } from "react";
+import * as ScrollArea from "@radix-ui/react-scroll-area";
+import { COLORS, TYPOGRAPHY, LAYOUT } from "@/lib/unifiedStyles";
+import { cn } from "@/lib/utils";
+
+interface FavoritesCardProps {
+  className?: string;
+}
+
+/**
+ * User's liked tracks display component with horizontal scrolling
+ * Uses unified styling system for consistent appearance
+ */
+export function FavoritesCard({ className = "" }: FavoritesCardProps) {
+  const [likedTracks, setLikedTracks] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchLikedTracks() {
+      try {
+        const res = await fetch("http://127.0.0.1:8000/liked", {
+          credentials: "include",
+        });
+        if (!res.ok)
+          throw new Error(`Error fetching liked tracks: ${res.status}`);
+        const data = await res.json();
+        setLikedTracks((data.favorites || []).reverse());
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Unknown error occurred");
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchLikedTracks();
+  }, []);
+
+  if (loading) {
+    return (
+      <div
+        className={cn(LAYOUT.container.center, LAYOUT.padding.xl, className)}
+      >
+        <div className="text-center">
+          <div className={cn("mb-2", TYPOGRAPHY.body.lg, COLORS.text.muted)}>
+            Loading liked tracks...
+          </div>
+          <div className={cn(TYPOGRAPHY.body.sm, COLORS.text.muted)}>
+            Fetching your favorites
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    if (error.includes("401")) {
+      return (
+        <div
+          className={cn(LAYOUT.container.center, LAYOUT.padding.xl, className)}
+        >
+          <div className="text-center">
+            <p className={cn(TYPOGRAPHY.body.lg, COLORS.text.muted)}>
+              Please log into Spotify to view your liked tracks.
+            </p>
+            <button
+              onClick={() => (window.location.href = "/login")}
+              className="mt-4 rounded-lg bg-[#1DB954] px-6 py-2 text-white transition-colors hover:bg-[#1ED760]"
+            >
+              Login to Spotify
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return (
+      <div
+        className={cn(LAYOUT.container.center, LAYOUT.padding.xl, className)}
+      >
+        <p className="text-center text-red-500">
+          Error loading liked tracks: {error}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className={cn("relative w-full", className)}>
+      <div className="px-4 pb-4 pl-2">
+        <h3 className={cn(TYPOGRAPHY.display.xl, COLORS.text.primary)}>
+          liked tracks:
+        </h3>
+      </div>
+
+      <ScrollArea.Root className="relative z-0 w-full overflow-x-auto px-2">
+        <ScrollArea.Viewport className="w-full">
+          <div
+            className="flex min-w-max flex-row px-2 py-4"
+            style={{ gap: "2px" }}
+          >
+            {likedTracks.length === 0 ? (
+              <div className={cn(LAYOUT.container.center, LAYOUT.padding.xl)}>
+                <div className="text-center">
+                  <p className={cn(TYPOGRAPHY.body.lg, COLORS.text.muted)}>
+                    No liked tracks found.
+                  </p>
+                  <p
+                    className={cn(
+                      "mt-2",
+                      TYPOGRAPHY.body.sm,
+                      COLORS.text.muted,
+                    )}
+                  >
+                    Start liking tracks to see them here!
+                  </p>
+                </div>
+              </div>
+            ) : (
+              likedTracks.map((trackId) => (
+                <iframe
+                  key={trackId}
+                  src={`https://open.spotify.com/embed/track/${trackId}`}
+                  width="280"
+                  height="80"
+                  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                  loading="lazy"
+                  style={{ borderRadius: 12, flexShrink: 0, border: "none" }}
+                  title={`Spotify Track ${trackId}`}
+                />
+              ))
+            )}
+          </div>
+        </ScrollArea.Viewport>
+
+        <ScrollArea.Scrollbar orientation="horizontal" className="h-2">
+          <ScrollArea.Thumb className="rounded-full bg-slate-600" />
+        </ScrollArea.Scrollbar>
+      </ScrollArea.Root>
+    </div>
+  );
+}

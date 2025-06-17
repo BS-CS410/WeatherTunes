@@ -29,7 +29,7 @@ import { useCurrentTrackContext } from "@/contexts/useCurrentTrackContext";
  * values to prevent line spacing from resetting during window resizing
  */
 
-interface WeatherDisplayProps {
+interface WeatherCardProps {
   weatherData: WeatherDisplayData;
 }
 
@@ -37,7 +37,7 @@ interface WeatherDisplayProps {
  * Integrated weather and music display component using 2x1 grid layout
  * Maximizes maintainability through centralized styling and clear separation of concerns
  */
-export function WeatherDisplay({ weatherData }: WeatherDisplayProps) {
+export function WeatherCard({ weatherData }: WeatherCardProps) {
   const { trackMetadata, currentTrackId, isLoading } = useCurrentTrackContext();
 
   const {

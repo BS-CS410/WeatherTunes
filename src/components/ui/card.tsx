@@ -1,28 +1,34 @@
 import React from "react";
+import { CARD_STYLES, LAYOUT } from "@/lib/unifiedStyles";
+import { cn } from "@/lib/utils";
 
-// Card wrapper that matches our glassomorphic design
-
-interface CardProps {
+interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
+  variant?: keyof typeof CARD_STYLES;
   className?: string;
 }
 
 interface CardContentProps {
   children: React.ReactNode;
   className?: string;
+  withPadding?: boolean;
 }
 
 export const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ children, className = "", ...props }, ref) => {
+  ({ children, variant = "base", className = "", ...props }, ref) => {
     return (
       <div
         ref={ref}
-        className={`relative flex flex-col gap-4 overflow-hidden rounded-xl border border-white/20 bg-white/40 py-6 shadow-lg backdrop-blur-lg transition-all duration-300 hover:scale-[1.015] hover:border-white/30 hover:bg-white/50 hover:shadow-xl dark:border-white/10 dark:bg-slate-900/75 dark:shadow-2xl dark:shadow-black/40 dark:hover:border-white/20 dark:hover:bg-slate-900/60 ${className}`}
+        className={cn(
+          "relative flex flex-col overflow-hidden",
+          CARD_STYLES[variant],
+          className,
+        )}
         {...props}
       >
-        {/* Soft inner shadow for extra depth */}
+        {/* Soft inner shadow for depth */}
         <div className="pointer-events-none absolute inset-0 rounded-xl shadow-[inset_0_1px_8px_0_rgba(0,0,0,0.04)] dark:shadow-[inset_0_1px_8px_0_rgba(0,0,0,0.08)]" />
-        <div className="transition-transform duration-200">{children}</div>
+        <div className="relative z-10 flex-1">{children}</div>
       </div>
     );
   },
@@ -30,14 +36,29 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
 
 Card.displayName = "Card";
 
-export function CardContent({ children, className = "" }: CardContentProps) {
-  return <div className={`px-6 ${className}`}>{children}</div>;
+export function CardContent({
+  children,
+  className = "",
+  withPadding = true,
+}: CardContentProps) {
+  return (
+    <div
+      className={cn(
+        withPadding ? LAYOUT.padding.lg : LAYOUT.padding.none,
+        className,
+      )}
+    >
+      {children}
+    </div>
+  );
 }
 
 export function CardHeader({ children, className = "" }: CardContentProps) {
-  return <div className={`px-6 pb-0 ${className}`}>{children}</div>;
+  return (
+    <div className={cn(LAYOUT.padding.lg, "pb-0", className)}>{children}</div>
+  );
 }
 
 export function CardTitle({ children, className = "" }: CardContentProps) {
-  return <h3 className={`text-lg font-semibold ${className}`}>{children}</h3>;
+  return <h3 className={cn("text-lg font-semibold", className)}>{children}</h3>;
 }

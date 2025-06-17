@@ -1,14 +1,14 @@
 import {
-  WeatherDisplay,
-  UpNext,
-  CurrentlyPlaying,
-  Favorites,
-  VideoBackground,
+  WeatherCard,
+  QueueCard,
+  CurrentTrackCard,
+  FavoritesCard,
+  WeatherBackground,
   SettingsButton,
   ForecastCard,
-  GlassCard,
-  LoadingState,
-  ErrorState,
+  BaseCard,
+  LoadingSpinner,
+  ErrorDisplay,
 } from "@/components";
 import { useWeatherData } from "@/hooks/useWeather";
 import { useThemeManager } from "@/hooks/useThemeManager";
@@ -21,13 +21,13 @@ function MainPage() {
 
   // Loading State
   if (isLoading) {
-    return <LoadingState message="Loading weather data..." />;
+    return <LoadingSpinner message="Loading weather data..." />;
   }
 
   // Error State
   if (error || displayData.isError) {
     return (
-      <ErrorState
+      <ErrorDisplay
         title={`Error: ${displayData.condition || "Could not load weather data."}`}
         message={error?.message}
       />
@@ -41,7 +41,7 @@ function MainPage() {
       <SettingsButton />
 
       {/* Video Background */}
-      <VideoBackground
+      <WeatherBackground
         condition={displayData.condition}
         timePeriod={timePeriod}
       />
@@ -58,27 +58,27 @@ function MainPage() {
         </header>
 
         {/* Unified Weather and Currently Playing Display */}
-        <GlassCard withPadding={false}>
-          <WeatherDisplay weatherData={displayData} />
-        </GlassCard>
+        <BaseCard withPadding={false}>
+          <WeatherCard weatherData={displayData} />
+        </BaseCard>
 
         {/* Currently Playing Section */}
-        <GlassCard>
-          <CurrentlyPlaying />
-        </GlassCard>
+        <BaseCard>
+          <CurrentTrackCard />
+        </BaseCard>
 
         {/* Next Up Scroll Area */}
-        <GlassCard withPadding={false} className="">
-          <UpNext />
-        </GlassCard>
+        <BaseCard withPadding={false} className="">
+          <QueueCard />
+        </BaseCard>
 
         {/* 5-Day Weather Forecast */}
         <ForecastCard />
 
         {/* Favorites List */}
-        <GlassCard className="w-full" contentClassName="p-4">
-          <Favorites />
-        </GlassCard>
+        <BaseCard className="w-full" contentClassName="p-4">
+          <FavoritesCard />
+        </BaseCard>
 
         {/* Bottom Padding */}
         <div className="h-16" />

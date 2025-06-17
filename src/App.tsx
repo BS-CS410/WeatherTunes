@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
-import { NavBar, AppLayout } from "./components";
+import { AppLayout } from "./components";
 import MainPage from "./pages/MainPage";
 import AuthCallback from "./pages/AuthCallback";
 import { ErrorBoundary } from "./components/shared/ErrorBoundary";
@@ -12,8 +12,6 @@ function App() {
         maxWidth="lg"
         className="min-height-full relative mx-auto flex w-full flex-1 flex-col"
       >
-        {/* Shared NavBar */}
-        <NavBar />
         {/* Page Content */}
         <main>
           <Routes>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { SettingsIcon } from "@/components/icons";
-import { SettingsMenu } from "./SettingsMenu";
+import { SettingsCard } from "./SettingsCard";
 import { Button } from "@/components/ui/button";
 
 export function SettingsButton() {
@@ -18,7 +18,7 @@ export function SettingsButton() {
         <SettingsIcon className="h-4 w-4" />
       </Button>
 
-      <SettingsMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
+      <SettingsCard isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
     </>
   );
 }
