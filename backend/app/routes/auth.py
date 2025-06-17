@@ -1,86 +1,148 @@
 """Authentication routes for Spotify OAuth integration."""
 
-import os
+import logging
+from typing import Tuple
 
 import spotipy
-from flask import Blueprint, jsonify, redirect, request, session
+from flask import Blueprint, redirect, request
 from flask_cors import cross_origin
 from spotipy.oauth2 import SpotifyOAuth
+from werkzeug.wrappers import Response
 
-from app.config import SPOTIFY_SCOPE
-from app.services.user_data import update_user_login
+from app.config import AppConfig, SpotifyConfig
+from app.models.models import SpotifyTokens
+from app.services.user_data import user_data_service
+from app.utils.auth import (
+    clear_auth_session,
+    get_authenticated_user,
+    is_user_authenticated,
+    save_auth_session,
+)
+from app.utils.responses import error_response, success_response, unauthorized_response
+
+logger = logging.getLogger(__name__)
 
 auth_bp = Blueprint("auth", __name__)
 
+# Initialize Spotify OAuth
 sp_oauth = SpotifyOAuth(
-    client_id=os.getenv("SPOTIPY_CLIENT_ID"),
-    client_secret=os.getenv("SPOTIPY_CLIENT_SECRET"),
-    redirect_uri=os.getenv("SPOTIPY_REDIRECT_URI"),
-    scope=SPOTIFY_SCOPE,
+    client_id=SpotifyConfig.CLIENT_ID,
+    client_secret=SpotifyConfig.CLIENT_SECRET,
+    redirect_uri=SpotifyConfig.REDIRECT_URI,
+    scope=SpotifyConfig.SCOPE,
     cache_path=".cache",
 )
 
 
 @auth_bp.route("/login")
 @cross_origin(supports_credentials=True)
-def login():
+def login() -> Response:
+    """Initiate Spotify OAuth login flow.
+
+    Returns:
+        Redirect to Spotify authorization URL
+    """
     auth_url = sp_oauth.get_authorize_url()
-    print("Spotify auth URL:", auth_url)  # DEBUG
+    logger.info("Redirecting to Spotify authorization")
     return redirect(auth_url)
 
 
 @auth_bp.route("/callback")
 @cross_origin(supports_credentials=True)
-def callback():
+def callback() -> Tuple[Response, int] | Response:
+    """Handle Spotify OAuth callback.
+
+    Returns:
+        Redirect to frontend callback URL or error response
+    """
     code = request.args.get("code")
     error = request.args.get("error")
 
     if error:
-        return jsonify({"error": error}), 400
+        logger.warning(f"OAuth error: {error}")
+        return error_response(f"OAuth error: {error}")
 
-    token_info = sp_oauth.get_access_token(code)
-    if not token_info:
-        return jsonify({"error": "Failed to get token"}), 400
+    if not code:
+        return error_response("Missing authorization code")
 
-    sp = spotipy.Spotify(auth=token_info["access_token"])
-    profile = sp.current_user()
-    spotify_username = profile.get("id") if profile else None
-    if not spotify_username:
-        return jsonify({"error": "Failed to get Spotify user ID"}), 400
+    try:
+        # Exchange code for tokens
+        token_info = sp_oauth.get_access_token(code)
+        if not token_info:
+            return error_response("Failed to get access token")
 
-    # Save tokens and username in session
-    session["access_token"] = token_info["access_token"]
-    session["refresh_token"] = token_info.get("refresh_token")
-    session["expires_at"] = token_info.get("expires_at")
-    session["spotify_username"] = spotify_username
+        # Get user profile
+        sp = spotipy.Spotify(auth=token_info["access_token"])
+        profile = sp.current_user()
 
-    print(f"[DEBUG] Saved session data for user: {spotify_username}")
-    print(f"[DEBUG] Session contents after save: {dict(session)}")
+        if not profile or not profile.get("id"):
+            return error_response("Failed to get Spotify user profile")
 
-    # Update user login metadata
-    update_user_login(spotify_username)
+        spotify_username = profile["id"]
 
-    return redirect("http://127.0.0.1:5173/auth-callback")
+        # Create token model
+        tokens = SpotifyTokens(
+            access_token=token_info["access_token"],
+            refresh_token=token_info.get("refresh_token"),
+            expires_at=token_info.get("expires_at"),
+        )
+
+        # Save authentication session
+        save_auth_session(spotify_username, tokens)
+
+        # Update user login data
+        user_data_service.update_user_login(spotify_username)
+
+        logger.info(f"User {spotify_username} authenticated successfully")
+        return redirect(AppConfig.CALLBACK_URL)
+
+    except Exception as e:
+        logger.error(f"Authentication callback error: {e}")
+        return error_response("Authentication failed")
 
 
 @auth_bp.route("/logout")
-def logout():
-    session.clear()
-    return redirect("http://127.0.0.1:5173")
+@cross_origin(supports_credentials=True)
+def logout() -> Response:
+    """Log out user and clear session.
+
+    Returns:
+        Redirect to frontend home page
+    """
+    username = get_authenticated_user()
+    clear_auth_session()
+
+    if username:
+        logger.info(f"User {username} logged out")
+
+    return redirect(AppConfig.FRONTEND_URL)
 
 
 @auth_bp.route("/session")
-def session_info():
-    print(f"[DEBUG] Session info request - Session contents: {dict(session)}")
-    logged_in = "access_token" in session and "spotify_username" in session
-    username = session.get("spotify_username") if logged_in else None
-    print(f"[DEBUG] Logged in: {logged_in}, Username: {username}")
-    return jsonify({"logged_in": logged_in, "spotify_username": username})
+@cross_origin(supports_credentials=True)
+def session_info() -> Tuple[Response, int]:
+    """Get current session information.
+
+    Returns:
+        JSON response with authentication status
+    """
+    logged_in = is_user_authenticated()
+    username = get_authenticated_user() if logged_in else None
+
+    return success_response({"logged_in": logged_in, "spotify_username": username})
 
 
 @auth_bp.route("/userinfo")
 @cross_origin(supports_credentials=True)
-def userinfo():
-    if "spotify_username" in session:
-        return jsonify({"spotify_username": session["spotify_username"]})
-    return jsonify({"error": "Not logged in"}), 401
+def userinfo() -> Tuple[Response, int]:
+    """Get authenticated user information.
+
+    Returns:
+        JSON response with user info or error
+    """
+    username = get_authenticated_user()
+
+    if not username:
+        return unauthorized_response("Not logged in")
+
+    return success_response({"spotify_username": username})

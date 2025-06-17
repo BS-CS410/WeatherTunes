@@ -1,72 +1,101 @@
-import json
-from datetime import datetime
+"""User data service for managing user operations."""
+
+import logging
+from typing import List, Optional
+
 from flask import request
-from app.services.weather import get_weather_by_ip, save_weather_data
 
-USER_DATA_FILE = 'user_data.json'  # adjust path if needed
+from app.models.models import UserData
+from app.services.storage import user_storage
+from app.services.weather import weather_service
 
-def read_user_data():
-    try:
-        with open(USER_DATA_FILE, 'r') as f:
-            return json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
-        return {}
+logger = logging.getLogger(__name__)
 
-def write_user_data(data):
-    with open(USER_DATA_FILE, 'w') as f:
-        json.dump(data, f, indent=2)
 
-def get_user_info(username):
-    data = read_user_data()
-    return data.get(username)
+class UserDataService:
+    """Handles user data operations."""
 
-def update_user_login(username):
-    data = read_user_data()
-    now_iso = datetime.utcnow().isoformat()
-    if username not in data:
-        data[username] = {
-            "created_at": now_iso,
-            "last_login": now_iso,
-            "last_weather": {},
-            "favorites": []
-        }
-    else:
-        data[username]["last_login"] = now_iso
+    def __init__(self) -> None:
+        """Initialize user data service."""
+        self.storage = user_storage
+        self.weather = weather_service
 
-    ip = request.headers.get('X-Forwarded-For', request.remote_addr)
-    if ip:
-        ip = ip.split(',')[0].strip()  # Take the first IP if there are multiple
-    if ip == '127.0.0.1':
-        ip = '8.8.8.8'  # fallback for local testing
-    print(f"[DEBUG] IP address: {ip}")
+    def get_user_info(self, username: str) -> Optional[UserData]:
+        """Get user information.
 
-    weather = get_weather_by_ip(ip)
-    print(f"[DEBUG] Weather returned: {weather}")
+        Args:
+            username: Spotify username
 
-    if weather:
-        data[username]["last_weather"] = weather
-    else:
-        print("[WARNING] Weather data was not fetched or was incomplete.")
+        Returns:
+            UserData object if found, None otherwise
+        """
+        return self.storage.get_user(username)
 
-    write_user_data(data)
+    def update_user_login(self, username: str) -> UserData:
+        """Update user login and fetch current weather.
 
-    # Fetch and store weather
-    ip = request.headers.get('X-Forwarded-For', request.remote_addr)
-    weather = get_weather_by_ip(ip)
-    if weather:
-        data[username]["last_weather"] = weather
+        Args:
+            username: Spotify username
 
-    write_user_data(data)
+        Returns:
+            Updated UserData object
+        """
+        # Update login timestamp
+        user = self.storage.update_login(username)
 
-def add_favorite(username, track_id):
-    data = read_user_data()
-    if username not in data:
-        update_user_login(username)  # creates user if missing
-        data = read_user_data()
-    if track_id not in data[username].get("favorites", []):
-        data[username]["favorites"].append(track_id)
-        write_user_data(data)
+        # Fetch and save current weather
+        ip_address = self._get_client_ip()
+        if ip_address:
+            weather_data = self.weather.get_weather_by_ip(ip_address)
+            if weather_data:
+                self.storage.update_weather(username, weather_data)
+                user.last_weather = weather_data
+                logger.info(f"Updated weather for user {username}")
+            else:
+                logger.warning(f"Failed to fetch weather for user {username}")
 
-def get_favorites(username):
-    data = read_user_data()
-    return data.get(username, {}).get("favorites", [])
+        return user
+
+    def add_favorite(self, username: str, track_id: str) -> None:
+        """Add a track to user's favorites.
+
+        Args:
+            username: Spotify username
+            track_id: Spotify track ID
+        """
+        self.storage.add_favorite(username, track_id)
+
+    def get_favorites(self, username: str) -> List[str]:
+        """Get user's favorite tracks.
+
+        Args:
+            username: Spotify username
+
+        Returns:
+            List of track IDs
+        """
+        return self.storage.get_favorites(username)
+
+    def _get_client_ip(self) -> Optional[str]:
+        """Get client IP address from request.
+
+        Returns:
+            Client IP address or None if not available
+        """
+        # Check for forwarded IP first (proxy/load balancer)
+        forwarded_for = request.headers.get("X-Forwarded-For")
+        if forwarded_for:
+            # Take the first IP if there are multiple
+            return forwarded_for.split(",")[0].strip()
+
+        # Check for real IP header
+        real_ip = request.headers.get("X-Real-IP")
+        if real_ip:
+            return real_ip.strip()
+
+        # Fall back to remote address
+        return request.remote_addr
+
+
+# Create singleton instance
+user_data_service = UserDataService()

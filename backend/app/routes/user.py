@@ -1,21 +1,112 @@
-from flask import Blueprint, request, jsonify
-from app.services.storage import write_track_id
+"""Routes for user data and listening history."""
+
+import logging
+from typing import Tuple
+
+from flask import Blueprint, request
+from flask_cors import cross_origin
+from werkzeug.wrappers import Response
+
+from app.services.user_data import user_data_service
+from app.utils.auth import get_authenticated_user
+from app.utils.responses import error_response, success_response, unauthorized_response
+from app.utils.validation import validate_track_id
+
+logger = logging.getLogger(__name__)
 
 user_bp = Blueprint("user", __name__)
 
+
 @user_bp.route("/history", methods=["POST"])
-def log_history():
-    data = request.get_json()
-    track_id = data.get("track_id")
-    if not track_id:
-        return jsonify({"error": "Missing track_id"}), 400
-    write_track_id("listening_history.txt", track_id)
-    return jsonify({"message": "History recorded"}), 200
+@cross_origin(supports_credentials=True)
+def log_history() -> Tuple[Response, int]:
+    """Log a track to user's listening history (stored as favorites).
 
+    Returns:
+        JSON response confirming history logging
+    """
+    username = get_authenticated_user()
+    if not username:
+        return unauthorized_response("Authentication required")
 
-from app.services.storage import read_track_ids  # Make sure this import is present
+    try:
+        data = request.get_json()
+        if not data:
+            return error_response("Request body must be JSON")
+
+        track_id = data.get("track_id")
+        if not validate_track_id(track_id):
+            return error_response("Missing or invalid track_id")
+
+        # Add to favorites (which serves as listening history)
+        user_data_service.add_favorite(username, track_id)
+
+        logger.info(f"Logged track {track_id} to history for user {username}")
+        return success_response({"message": "History recorded"})
+
+    except Exception as e:
+        logger.error(f"Error logging history for {username}: {e}")
+        return error_response("Failed to record history")
+
 
 @user_bp.route("/history", methods=["GET"])
-def get_history():
-    ids = read_track_ids("listening_history.txt")
-    return jsonify({"listening_history": ids})
+@cross_origin(supports_credentials=True)
+def get_history() -> Tuple[Response, int]:
+    """Get user's listening history (favorites).
+
+    Returns:
+        JSON response with listening history
+    """
+    username = get_authenticated_user()
+    if not username:
+        return unauthorized_response("Authentication required")
+
+    try:
+        favorites = user_data_service.get_favorites(username)
+        logger.info(f"Retrieved history ({len(favorites)} tracks) for user {username}")
+        return success_response({"listening_history": favorites})
+
+    except Exception as e:
+        logger.error(f"Error retrieving history for {username}: {e}")
+        return error_response("Failed to retrieve history")
+
+
+@user_bp.route("/profile", methods=["GET"])
+@cross_origin(supports_credentials=True)
+def get_profile() -> Tuple[Response, int]:
+    """Get user profile information.
+
+    Returns:
+        JSON response with user profile data
+    """
+    username = get_authenticated_user()
+    if not username:
+        return unauthorized_response("Authentication required")
+
+    try:
+        user_info = user_data_service.get_user_info(username)
+        if not user_info:
+            return error_response("User profile not found")
+
+        profile_data = {
+            "username": user_info.username,
+            "created_at": user_info.created_at.isoformat(),
+            "last_login": user_info.last_login.isoformat(),
+            "favorites_count": len(user_info.favorites) if user_info.favorites else 0,
+            "last_weather": None,
+        }
+
+        if user_info.last_weather:
+            profile_data["last_weather"] = {
+                "location": user_info.last_weather.location,
+                "temperature": user_info.last_weather.temperature,
+                "condition": user_info.last_weather.condition,
+                "time_period": user_info.last_weather.time_period,
+            }
+
+        logger.info(f"Retrieved profile for user {username}")
+        return success_response(profile_data)
+
+    except Exception as e:
+        logger.error(f"Error retrieving profile for {username}: {e}")
+        return error_response("Failed to retrieve profile")
