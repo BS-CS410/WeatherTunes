@@ -26,6 +26,7 @@ export { WeatherDisplay } from "./weather/WeatherDisplay";
 export { UpNext } from "./music/UpNext";
 export { CurrentlyPlaying } from "./music/CurrentlyPlaying";
 export { Favorites } from "./music/Favorites";
+export { MusicDebugPanel } from "./music/MusicDebugPanel";
 
 // === SETTINGS DOMAIN ===
 // Settings interface and controls
@@ -37,10 +38,7 @@ export { SettingsMenu } from "./settings/SettingsMenu";
 export { NavBar } from "./layout/NavBar";
 export { AppLayout } from "./layout/AppLayout";
 export { SectionWrapper } from "./layout/SectionWrapper";
-
-// === THEME & PROVIDERS ===
-// Theme and context providers
-export { ThemeProvider } from "./ThemeProvider";
+export { ThemeProvider } from "./layout/ThemeProvider";
 
 // === STYLE SYSTEM ===
 // Centralized styling system for maximum maintainability

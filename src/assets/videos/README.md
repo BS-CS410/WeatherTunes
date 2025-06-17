@@ -23,27 +23,42 @@ Videos follow the pattern: `{weather}_{timeOfDay}.mp4`
 
 ## Current Status
 
-### ✅ Available Videos (actual files):
+**Complete video set: 24 files (5 weather types × 4 time periods)**
 
-- `clear_night.mp4` (24.4 MB)
-- `clear_morning.mp4` (4.4 MB)
-- `clear_day.mp4` (5.8 MB)
-- `clear_evening.mp4` (16.0 MB)
-- `rain_morning.mp4` (49.0 MB)
-- `rain_night.mp4` (61.6 MB)
+All videos are properly named and follow the established naming convention. This provides comprehensive coverage for weather-based background video selection.
 
-### 📝 Placeholder Videos (0 bytes - to be replaced):
+### Available Videos:
 
+**Clear Weather:**
+
+- `clear_night.mp4`
+- `clear_morning.mp4`
+- `clear_day.mp4`
+- `clear_evening.mp4`
+
+**Rain Weather:**
+
+- `rain_night.mp4`
+- `rain_morning.mp4`
 - `rain_day.mp4`
 - `rain_evening.mp4`
+
+**Snow Weather:**
+
 - `snow_night.mp4`
 - `snow_morning.mp4`
 - `snow_day.mp4`
 - `snow_evening.mp4`
+
+**Fog Weather:**
+
 - `fog_night.mp4`
 - `fog_morning.mp4`
 - `fog_day.mp4`
 - `fog_evening.mp4`
+
+**Cloudy Weather:**
+
 - `cloudy_night.mp4`
 - `cloudy_morning.mp4`
 - `cloudy_day.mp4`

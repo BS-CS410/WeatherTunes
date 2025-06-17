@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import type { WeatherApiResponse, EnhancedWeatherState } from "@/types/weather";
 import { getUserLocationAndFetch, createErrorWeatherData } from "@/lib/weather";
 import {
@@ -29,21 +29,34 @@ function formatWeatherCondition(
   );
 }
 
+/**
+ * Unified weather data hook with enhanced error handling and memoization
+ * Manages weather API calls, processing, and state management
+ * 
+ * Combines functionality from useWeather.ts and useWeatherOptimized.ts
+ */
 export function useWeatherData() {
   const { settings } = useSettings();
-  const [weatherState, setWeatherState] = useState<EnhancedWeatherState>({
-    displayData: {
-      location: "Loading...",
-      temperature: "--",
-      condition: "Loading...",
-      unit: `°${settings.temperatureUnit}`,
-      isError: false,
-    },
-    timePeriod: null,
-    isLoading: true,
-    error: null,
-    rawResponse: null,
-  });
+
+  const initialState = useMemo<EnhancedWeatherState>(
+    () => ({
+      displayData: {
+        location: "Loading...",
+        temperature: "--",
+        condition: "Loading...",
+        unit: `°${settings.temperatureUnit}`,
+        isError: false,
+      },
+      timePeriod: null,
+      isLoading: true,
+      error: null,
+      rawResponse: null,
+    }),
+    [settings.temperatureUnit],
+  );
+
+  const [weatherState, setWeatherState] =
+    useState<EnhancedWeatherState>(initialState);
 
   const processWeatherData = useCallback(
     (data: WeatherApiResponse | null, error?: Error) => {
@@ -51,13 +64,13 @@ export function useWeatherData() {
         const errorData = createErrorWeatherData();
         setWeatherState({
           displayData: {
-            location: errorData.name, // "Error"
+            location: errorData.name,
             temperature: "--",
-            condition: errorData.weather[0].main, // "Unable to load"
+            condition: errorData.weather[0].main,
             unit: `°${settings.temperatureUnit}`,
             isError: true,
           },
-          timePeriod: getTimePeriod(new Date()), // Fallback time period
+          timePeriod: getTimePeriod(new Date()),
           isLoading: false,
           error: error || new Error("Failed to fetch weather data"),
           rawResponse: errorData,
@@ -66,11 +79,7 @@ export function useWeatherData() {
       }
 
       // Validate essential data fields
-      if (
-        !data.weather ||
-        !Array.isArray(data.weather) ||
-        data.weather.length === 0
-      ) {
+      if (!data.weather?.length) {
         console.error("Invalid weather data: missing weather array", data);
         const errorData = createErrorWeatherData();
         setWeatherState({
@@ -92,19 +101,7 @@ export function useWeatherData() {
       const now = new Date();
       const period = getTimePeriod(now, data.sys?.sunrise, data.sys?.sunset);
 
-      // Debug logging for weather condition
-      console.log("Weather API Debug:", {
-        apiCondition: data.weather[0].main,
-        apiDescription: data.weather[0].description,
-        weatherId: data.weather[0].id,
-        fullWeatherArray: data.weather,
-        location: data.name,
-        temp: data.main.temp,
-        sunrise: data.sys?.sunrise,
-        sunset: data.sys?.sunset,
-        calculatedPeriod: period,
-      });
-
+      // Process successful data
       setWeatherState({
         displayData: {
           location: data.name || "Unknown Location",
@@ -137,30 +134,49 @@ export function useWeatherData() {
     [settings.temperatureUnit, settings.timeFormat],
   );
 
+  // Fetch weather data on mount and when settings change
   useEffect(() => {
-    const apiKey = import.meta.env.VITE_PUBLIC_OPENWEATHER_API_KEY;
-    if (!apiKey) {
-      console.error("API key is missing.");
-      processWeatherData(null, new Error("API key is missing."));
-      return;
-    }
+    let mounted = true;
 
-    setWeatherState((prevState: EnhancedWeatherState) => ({
-      ...prevState,
-      isLoading: true,
-    }));
+    const fetchWeather = async () => {
+      const apiKey = import.meta.env.VITE_PUBLIC_OPENWEATHER_API_KEY;
+      if (!apiKey) {
+        console.error("API key is missing.");
+        if (mounted) {
+          processWeatherData(null, new Error("API key is missing."));
+        }
+        return;
+      }
 
-    getUserLocationAndFetch(apiKey)
-      .then((data) => processWeatherData(data))
-      .catch((err) => {
-        console.error("Error fetching weather:", err);
-        processWeatherData(null, err);
-      });
-  }, [processWeatherData]); // processWeatherData is memoized
+      try {
+        const data = await getUserLocationAndFetch(apiKey);
+        if (mounted) {
+          processWeatherData(data);
+        }
+      } catch (error) {
+        if (mounted) {
+          processWeatherData(
+            null,
+            error instanceof Error ? error : new Error("Unknown error"),
+          );
+        }
+      }
+    };
+
+    fetchWeather();
+
+    return () => {
+      mounted = false;
+    };
+  }, [processWeatherData]);
 
   return weatherState;
 }
 
+/**
+ * Hook for managing theme based on weather time period
+ * Separated for single responsibility and optional usage
+ */
 export function useThemeFromWeather(timePeriod: TimePeriod | null) {
   useEffect(() => {
     if (!timePeriod) return;

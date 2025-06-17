@@ -37,9 +37,7 @@ interface WeatherDisplayProps {
  * Integrated weather and music display component using 2x1 grid layout
  * Maximizes maintainability through centralized styling and clear separation of concerns
  */
-export function WeatherDisplay({
-  weatherData,
-}: WeatherDisplayProps) {
+export function WeatherDisplay({ weatherData }: WeatherDisplayProps) {
   const { trackMetadata, currentTrackId, isLoading } = useCurrentTrackContext();
 
   const {

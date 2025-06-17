@@ -25,28 +25,19 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
         <div className="transition-transform duration-200">{children}</div>
       </div>
     );
-  }
+  },
 );
 
 Card.displayName = "Card";
 
-export function CardContent({
-  children,
-  className = "",
-}: CardContentProps) {
+export function CardContent({ children, className = "" }: CardContentProps) {
   return <div className={`px-6 ${className}`}>{children}</div>;
 }
 
-export function CardHeader({
-  children,
-  className = "",
-}: CardContentProps) {
+export function CardHeader({ children, className = "" }: CardContentProps) {
   return <div className={`px-6 pb-0 ${className}`}>{children}</div>;
 }
 
-export function CardTitle({
-  children,
-  className = "",
-}: CardContentProps) {
+export function CardTitle({ children, className = "" }: CardContentProps) {
   return <h3 className={`text-lg font-semibold ${className}`}>{children}</h3>;
 }

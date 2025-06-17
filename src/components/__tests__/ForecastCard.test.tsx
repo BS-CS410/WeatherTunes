@@ -74,7 +74,7 @@ describe("ForecastCard", () => {
   it("should render forecast information", () => {
     render(<ForecastCard />, { wrapper: TestWrapper });
 
-    expect(screen.getByText("Your Forecast:")).toBeInTheDocument();
+    expect(screen.getByText("5-Day Forecast")).toBeInTheDocument();
     expect(screen.getByText("Today")).toBeInTheDocument();
     expect(screen.getByText("Jun 16")).toBeInTheDocument();
     expect(screen.getByText("scattered clouds")).toBeInTheDocument();
@@ -108,7 +108,7 @@ describe("ForecastCard", () => {
 
     render(<ForecastCard />, { wrapper: TestWrapper });
 
-    expect(screen.getByText("Unable to load forecast")).toBeInTheDocument();
+    expect(screen.getByText("Could not load forecast")).toBeInTheDocument();
   });
 
   it("should show no data message when forecast is empty", async () => {

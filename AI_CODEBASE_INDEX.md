@@ -1,6 +1,6 @@
 # WeatherTunes AI Codebase Index
 
-**LAST_UPDATED**: 2025-06-15
+**LAST_UPDATED**: 2025-06-16
 **PURPOSE**: AI agent rapid context acquisition for WeatherTunes codebase
 **SCOPE**: Complete architectural overview for AI assistance optimization
 
@@ -47,46 +47,21 @@ weathertunes/
 │   │   ├── LAYOUT_DOMAIN: NavBar.tsx*, SettingsButton.tsx, SettingsMenu.tsx, UnifiedDisplay.tsx
 │   │   ├── icons/: SettingsIcon.tsx, SunriseIcon.tsx, SunsetIcon.tsx + index.ts
 │   │   └── ui/: button.tsx, card.tsx, input.tsx, label.tsx, navigation-menu.tsx
-│   ├── contexts/: SettingsContext.tsx [COMPLETE_GLOBAL_STATE]
-│   ├── hooks/ [11 HOOKS - WEATHER=COMPLETE, MUSIC=STUB]
+│   ├── contexts/: SettingsContext.tsx [COMPLETE_GLOBAL_STATE], CurrentTrackContext.tsx
+│   ├── hooks/ [10 HOOKS - WEATHER=COMPLETE, MUSIC=STUB]
 │   │   ├── WEATHER_HOOKS: useWeather.ts, useForecast.ts [OPENWEATHER_API_INTEGRATED]
 │   │   ├── SETTINGS_HOOKS: useSettings.ts, useLocalStorage.ts, useLocationBasedDefaults.ts
-│   │   ├── UI_HOOKS: useCardOrder.ts, useThemeManager.ts
+│   │   ├── UI_HOOKS: useThemeManager.ts
+│   │   ├── MUSIC_HOOKS: useCurrentTrack.ts [STUB_IMPLEMENTATION]
 │   │   └── index.ts [EXPORT_BARREL]
 │   ├── lib/ [UTILITY_LIBRARIES]
 │   │   ├── weather.ts [OPENWEATHER_API_CLIENT], temperature.ts, units.ts
-│   │   ├── utils.ts [TIME_UTILS], styles.ts [CSS_UTILS]
+│   │   ├── utils.ts [TIME_UTILS], sharedStyles.ts [CSS_UTILS]
+│   │   ├── muiTheme.ts [MATERIAL_UI_THEME], videoMapping.ts [VIDEO_MAPPING]
+│   │   ├── spotifyWeather.ts, spotifySongs.json, trackMetadata.json [SPOTIFY_STUBS]
 │   │   └── index.ts [EXPORT_BARREL]
-│   ├── pages/: MainPage.tsx [PRIMARY_INTERFACE], Login.tsx [PLACEHOLDER]
-│   ├── types/: weather.ts [COMPLETE_TYPE_DEFINITIONS]
-│   └── assets/videos/ [24_WEATHER_VIDEOS: {clear,cloudy,fog,rain,snow}_{day,evening,morning,night}.mp4]
-├── DOCUMENTATION: README.md, docs/ (comprehensive wiki structure)
-│   ├── docs/README.md [WIKI_INDEX]
-│   ├── docs/architecture/ [SYSTEM_DESIGN]
-│   ├── docs/features/ [FEATURE_SPECS]
-│   ├── docs/development/ [DEV_GUIDES]
-│   └── docs/backend/ [API_REQUIREMENTS]
-├── CRITICAL_CONFIG: components.json, tailwind.config.ts, vite.config.ts, tsconfig.json
-├── ENTRY_POINTS: index.html, src/main.tsx, src/App.tsx
-├── src/
-│   ├── components/ [28 COMPONENTS - FULLY IMPLEMENTED UI]
-│   │   ├── WEATHER_DOMAIN: VideoBackground.tsx, WeatherDisplay.tsx, ForecastCard.tsx
-│   │   ├── MUSIC_DOMAIN: CurrentlyPlaying.tsx*, UpNext.tsx* (*=PLACEHOLDER_DATA)
-│   │   ├── LAYOUT_DOMAIN: NavBar.tsx*, SettingsButton.tsx, SettingsMenu.tsx, UnifiedDisplay.tsx
-│   │   ├── icons/: SettingsIcon.tsx, SunriseIcon.tsx, SunsetIcon.tsx + index.ts
-│   │   └── ui/: button.tsx, card.tsx, input.tsx, label.tsx, navigation-menu.tsx
-│   ├── contexts/: SettingsContext.tsx [COMPLETE_GLOBAL_STATE]
-│   ├── hooks/ [11 HOOKS - WEATHER=COMPLETE, MUSIC=STUB]
-│   │   ├── WEATHER_HOOKS: useWeather.ts, useForecast.ts [OPENWEATHER_API_INTEGRATED]
-│   │   ├── SETTINGS_HOOKS: useSettings.ts, useLocalStorage.ts, useLocationBasedDefaults.ts
-│   │   ├── UI_HOOKS: useCardOrder.ts, useThemeManager.ts
-│   │   └── index.ts [EXPORT_BARREL]
-│   ├── lib/ [UTILITY_LIBRARIES]
-│   │   ├── weather.ts [OPENWEATHER_API_CLIENT], temperature.ts, units.ts
-│   │   ├── utils.ts [TIME_UTILS], styles.ts [CSS_UTILS]
-│   │   └── index.ts [EXPORT_BARREL]
-│   ├── pages/: MainPage.tsx [PRIMARY_INTERFACE], Login.tsx [PLACEHOLDER]
-│   ├── types/: weather.ts [COMPLETE_TYPE_DEFINITIONS]
+│   ├── pages/: MainPage.tsx [PRIMARY_INTERFACE], Login.tsx, AuthCallback.tsx [PLACEHOLDERS]
+│   ├── types/: weather.ts, spotify.ts [COMPLETE_TYPE_DEFINITIONS]
 │   └── assets/videos/ [24_WEATHER_VIDEOS: {clear,cloudy,fog,rain,snow}_{day,evening,morning,night}.mp4]
 ```
 
@@ -347,6 +322,30 @@ docs/
 - **PLUGIN_READY**: Component structure supports additional integrations
 - **THEME_EXTENSIBLE**: Design system supports custom themes/branding
 - **API_AGNOSTIC**: Weather/music logic abstracted for provider flexibility
+
+## Recent Cleanup (2025-06-16)
+
+### FILES_REMOVED
+
+- **DEPRECATED_HOOKS**: useCurrentTrackInfo.ts (deprecated hook, replaced by direct context usage)
+- **UNUSED_HOOKS**: useWeatherOptimized.ts (merged functionality into useWeather.ts)
+- **DEBUG_SCRIPTS**: debug-track.js, test-metadata.js (temporary development files)
+- **DUPLICATE_VIDEOS**: 1clear_evening.mp4, 2clear_evening.mp4, PM_1.mp4, PM_3.mp4, Sunny_AM2.mp4, Sunny_AM3.mp4
+
+### UPDATES_MADE
+
+- **HOOKS_COUNT**: Reduced from 11 to 10 hooks (removed deprecated/unused)
+- **VIDEO_ASSETS**: Cleaned to 24 files (5 weather types × 4 time periods)
+- **VIDEO_README**: Updated to reflect actual file structure
+- **EXPORT_CLEANUP**: Removed deprecated exports from hooks/index.ts
+- **STRUCTURE_DEDUPLICATION**: Fixed duplicate sections in AI_CODEBASE_INDEX.md
+
+### RESULT
+
+- **CLEANER_CODEBASE**: Removed 8 unused/duplicate files
+- **CLEARER_STRUCTURE**: Better organization and documentation
+- **REDUCED_COMPLEXITY**: Simplified hook architecture
+- **MAINTENANCE_READY**: Easier to understand and maintain
 
 ---
 

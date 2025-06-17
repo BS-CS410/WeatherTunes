@@ -16,9 +16,7 @@ interface CurrentlyPlayingProps {
  * Spotify-integrated music player component that uses weather data to select tracks
  * Integrates seamlessly with the MUI-based design system
  */
-export function CurrentlyPlaying({
-  className = "",
-}: CurrentlyPlayingProps) {
+export function CurrentlyPlaying({ className = "" }: CurrentlyPlayingProps) {
   const [queue, setQueue] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);

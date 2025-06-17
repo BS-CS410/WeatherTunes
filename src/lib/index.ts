@@ -10,7 +10,7 @@ export * from "@/lib/units";
 export * from "@/lib/spotifyWeather";
 
 // UI and styling utilities
-export * from "@/lib/styles";
+export * from "@/lib/sharedStyles";
 export * from "@/lib/sharedStyles";
 
 // Video mapping utilities

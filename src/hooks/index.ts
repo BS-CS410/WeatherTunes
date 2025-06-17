@@ -1,14 +1,15 @@
-// Hook organization and exports for better maintainability
+/**
+ * Unified Hook Exports
+ *
+ * Consolidated and simplified hooks for better maintainability
+ */
 
-// Core weather and data hooks
+// Core weather and data hooks (unified)
 export { useWeatherData, useThemeFromWeather } from "@/hooks/useWeather";
 export { useForecastData } from "@/hooks/useForecast";
 
-// Music and Spotify hooks
+// Music and Spotify hooks (streamlined)
 export { useCurrentTrack } from "@/hooks/useCurrentTrack";
-
-// UI and interaction hooks
-// (No UI hooks currently in use)
 
 // Settings and storage hooks
 export { useSettings } from "@/hooks/useSettings";
