@@ -5,12 +5,6 @@ import { Button } from "@/components/ui/button";
 import { COLORS, TYPOGRAPHY, LAYOUT } from "@/lib/unifiedStyles";
 import { cn } from "@/lib/utils";
 
-const sampleQueue = [
-  "2TpxZ7JUBn3uw46aR7qd6V", // Example tracks
-  "7ouMYWpwJ422jRcDASZB7P",
-  "1lDWb6b6ieDQ2xT7ewTC3G",
-];
-
 interface CurrentTrackCardProps {
   className?: string;
 }
@@ -25,7 +19,6 @@ export function CurrentTrackCard({ className = "" }: CurrentTrackCardProps) {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
   const [isChangingTrack, setIsChangingTrack] = useState(false);
-  const [iframeKey, setIframeKey] = useState(0); // Force iframe reload only when needed
   const { updateTrack } = useCurrentTrackContext();
   const apiKey = import.meta.env.VITE_PUBLIC_OPENWEATHER_API_KEY;
   const hasInitialized = useRef(false);
@@ -38,28 +31,35 @@ export function CurrentTrackCard({ className = "" }: CurrentTrackCardProps) {
     getSpotifyTrackForWeather(apiKey)
       .then((weatherTrackId) => {
         // Build queue starting with weather track, followed by others without duplicates
-        const newQueue = [
-          weatherTrackId,
-          ...sampleQueue.filter((t) => t !== weatherTrackId),
-        ];
-        setQueue(newQueue);
+        // const newQueue = [ // Simplified queue logic, directly use weather track or fallback
+        //   weatherTrackId,
+        //   ...sampleQueue.filter((t) => t !== weatherTrackId),
+        // ];
+        // setQueue(newQueue);
+        // setCurrentIndex(0);
+        setQueue([weatherTrackId]); // Initialize queue with only the weather-based track
         setCurrentIndex(0);
         setLoading(false);
         // Update track metadata for the first track
         updateTrack(weatherTrackId);
       })
       .catch(() => {
-        setQueue(sampleQueue);
-        setCurrentIndex(0);
+        // setQueue(sampleQueue); // Fallback to an empty queue or a predefined default if API fails
+        // setCurrentIndex(0);
+        setQueue([]); // Set an empty queue on error
+        setCurrentIndex(0); // Reset index
         setLoading(false);
+        setMessage(
+          "Failed to load weather-based track. Please try again later.",
+        ); // Inform user of failure
         // Update track metadata for the first track in sample queue
-        if (sampleQueue.length > 0) {
-          updateTrack(sampleQueue[0]);
-        }
+        // if (sampleQueue.length > 0) { // No sample queue, so this is not needed
+        //   updateTrack(sampleQueue[0]);
+        // }
       });
   }, [apiKey, updateTrack]); // Keep dependencies but use ref guard
 
-  const trackId = queue[currentIndex];
+  const trackId = queue.length > 0 ? queue[currentIndex] : null; // Ensure trackId is null if queue is empty
 
   const handleLike = async () => {
     if (!trackId) return;
@@ -91,32 +91,35 @@ export function CurrentTrackCard({ className = "" }: CurrentTrackCardProps) {
     if (queue.length === 0 || isChangingTrack) return;
     setIsChangingTrack(true);
 
-    const nextIndex = (currentIndex + 1) % queue.length;
-    setCurrentIndex(nextIndex);
-    setMessage(null);
-
-    // Add delay to prevent rapid requests and update iframe
+    // const nextIndex = (currentIndex + 1) % queue.length; // Simplified: only one track in queue for now
+    // setCurrentIndex(nextIndex);
+    // For now, with a single track queue, "Next" and "Back" might not be meaningful
+    // or could re-fetch/refresh the current track or a new weather-based track.
+    // This part needs clarification on desired behavior for a single-item or dynamic queue.
+    setMessage(
+      "Next track functionality is not yet fully implemented for the current queue setup.",
+    );
     setTimeout(() => {
-      updateTrack(queue[nextIndex]);
-      setIframeKey((prev) => prev + 1); // Force iframe reload
+      // updateTrack(queue[nextIndex]);
       setIsChangingTrack(false);
-    }, 500); // Increased delay
+      setMessage(null); // Clear message after a bit
+    }, 1500); // Increased delay
   };
 
   const handleBack = async () => {
     if (queue.length === 0 || isChangingTrack) return;
     setIsChangingTrack(true);
 
-    const prevIndex = (currentIndex - 1 + queue.length) % queue.length;
-    setCurrentIndex(prevIndex);
-    setMessage(null);
-
-    // Add delay to prevent rapid requests and update iframe
+    // const prevIndex = (currentIndex - 1 + queue.length) % queue.length; // Simplified
+    // setCurrentIndex(prevIndex);
+    setMessage(
+      "Previous track functionality is not yet fully implemented for the current queue setup.",
+    );
     setTimeout(() => {
-      updateTrack(queue[prevIndex]);
-      setIframeKey((prev) => prev + 1); // Force iframe reload
+      // updateTrack(queue[prevIndex]);
       setIsChangingTrack(false);
-    }, 500); // Increased delay
+      setMessage(null); // Clear message
+    }, 1500); // Increased delay
   };
 
   if (loading) {
@@ -158,7 +161,7 @@ export function CurrentTrackCard({ className = "" }: CurrentTrackCardProps) {
       {/* Spotify Embed Player */}
       <div className="w-full">
         <iframe
-          key={`${trackId}-${iframeKey}`}
+          key={`${trackId}`}
           src={`https://open.spotify.com/embed/track/${trackId}`}
           width="100%"
           height="160"

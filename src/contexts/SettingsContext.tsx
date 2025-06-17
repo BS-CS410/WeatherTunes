@@ -78,22 +78,14 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
   // Update defaults when location is determined (only if not already set)
   useEffect(() => {
     if (!locationLoading && locationDefaults && !defaultsInitialized) {
-      console.log("Checking if we should apply location-based defaults...");
-
       // Only update if the user hasn't explicitly set their preferences
       const hasExistingPrefs =
         localStorage.getItem("temperatureUnit") ||
         localStorage.getItem("speedUnit");
 
-      console.log(`Has existing preferences: ${!!hasExistingPrefs}`);
-      console.log(`Location defaults:`, locationDefaults);
-
       if (!hasExistingPrefs) {
-        console.log("Applying location-based defaults");
         setTemperatureUnit(locationDefaults.temperatureUnit);
         setSpeedUnit(locationDefaults.speedUnit);
-      } else {
-        console.log("User has existing preferences, keeping them");
       }
 
       setDefaultsInitialized(true);

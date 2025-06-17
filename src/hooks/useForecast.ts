@@ -121,7 +121,6 @@ export function useForecastData() {
           error: null,
         });
       } catch (err) {
-        console.error("Error processing forecast data:", err);
         setForecastState({
           forecast: [],
           isLoading: false,
@@ -138,7 +137,6 @@ export function useForecastData() {
   useEffect(() => {
     const apiKey = import.meta.env.VITE_PUBLIC_OPENWEATHER_API_KEY;
     if (!apiKey) {
-      console.error("API key is missing for forecast.");
       processForecast(null, new Error("API key is missing."));
       return;
     }
@@ -151,7 +149,6 @@ export function useForecastData() {
     getUserLocationAndFetchForecast(apiKey)
       .then((data) => processForecast(data))
       .catch((err) => {
-        console.error("Error fetching forecast:", err);
         processForecast(null, err);
       });
   }, [processForecast]);

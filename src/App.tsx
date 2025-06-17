@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import { AppLayout } from "./components";
 import MainPage from "./pages/MainPage";
@@ -18,7 +18,8 @@ function App() {
             <Route path="/" element={<MainPage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/auth-callback" element={<AuthCallback />} />
-            {/* TODO: make fallback Route to send unknown routes to login page */}
+            {/* Fallback route: redirects unknown paths to the main page */}
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
       </AppLayout>

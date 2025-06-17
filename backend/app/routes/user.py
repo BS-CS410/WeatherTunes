@@ -5,12 +5,13 @@ from typing import Tuple
 
 from flask import Blueprint, request
 from flask_cors import cross_origin
+from pydantic import ValidationError  # Import ValidationError
 from werkzeug.wrappers import Response
 
+from app.models.models import TrackIdRequest  # Import TrackIdRequest
 from app.services.user_data import user_data_service
 from app.utils.auth import get_authenticated_user
 from app.utils.responses import error_response, success_response, unauthorized_response
-from app.utils.validation import validate_track_id
 
 logger = logging.getLogger(__name__)
 
@@ -34,14 +35,23 @@ def log_history() -> Tuple[Response, int]:
         if not data:
             return error_response("Request body must be JSON")
 
-        track_id = data.get("track_id")
-        if not validate_track_id(track_id):
-            return error_response("Missing or invalid track_id")
+        try:
+            track_request = TrackIdRequest(**data)
+        except ValidationError as e:
+            logger.warning(f"Track ID request validation error: {e.errors()}")
+            error_messages = []
+            for error in e.errors():
+                field = ".".join(str(loc) for loc in error["loc"])
+                message = error["msg"]
+                error_messages.append(f"Field '{field}': {message}")
+            return error_response(f"Invalid request: {'; '.join(error_messages)}", 422)
 
         # Add to favorites (which serves as listening history)
-        user_data_service.add_favorite(username, track_id)
+        user_data_service.add_favorite(username, track_request.track_id)
 
-        logger.info(f"Logged track {track_id} to history for user {username}")
+        logger.info(
+            f"Logged track {track_request.track_id} to history for user {username}"
+        )
         return success_response({"message": "History recorded"})
 
     except Exception as e:

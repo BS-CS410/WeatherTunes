@@ -12,7 +12,7 @@ import {
 } from "@/components";
 import { useWeatherData } from "@/hooks/useWeather";
 import { useThemeManager } from "@/hooks/useThemeManager";
-import { LAYOUT } from "@/lib/sharedStyles";
+import { LAYOUT } from "@/lib/unifiedStyles"; // Updated import
 
 function MainPage() {
   const { displayData, timePeriod, isLoading, error } = useWeatherData();
@@ -47,7 +47,9 @@ function MainPage() {
       />
 
       {/* Main Content Area (centered column) */}
-      <div className={LAYOUT.container}>
+      <div
+        className={`flex w-full max-w-2xl items-stretch ${LAYOUT.container.column} ${LAYOUT.spacing.md} ${LAYOUT.padding.md}`}
+      >
         {/* App Header (left-aligned within centered column) */}
         <header className="-mb-5 py-6 text-left">
           <h1 className="text-5xl font-bold tracking-tight text-gray-900 transition-transform duration-200 will-change-transform select-none dark:text-slate-100">

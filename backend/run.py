@@ -1,6 +1,6 @@
 """Flask application entry point for WeatherTunes backend."""
 
-import logging
+import logging  # Keep for basicConfig fallback if needed, or remove if setup_logging is robust
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -14,15 +14,21 @@ from app.routes.liked_songs import liked_songs_bp
 from app.routes.recommended import recommended_bp
 from app.routes.user import user_bp
 from app.routes.weather import weather_bp
+from app.utils.logging import setup_logging  # Import setup_logging
 from flask import Flask
 from flask_cors import CORS
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+# Configure logging using the centralized setup function
+# LOG_FILE = "./logs/backend.log" # Example: define a log file path if desired
+LOG_FILE = None  # Set to None to disable file logging, or provide a path
+setup_logging(log_level="INFO", log_file=LOG_FILE)
 
-logger = logging.getLogger(__name__)
+# Fallback basicConfig - can be removed if setup_logging is always used
+# logging.basicConfig(
+#     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+# )
+
+logger = logging.getLogger(__name__)  # Get logger after setup
 
 
 def create_app() -> Flask:
@@ -53,15 +59,6 @@ def create_app() -> Flask:
         logger.info("Registered routes:")
         for rule in app.url_map.iter_rules():
             logger.info(f"  {rule.methods} {rule.rule} -> {rule.endpoint}")
-
-    @app.route("/")
-    def health_check() -> dict[str, str]:
-        """Health check endpoint.
-
-        Returns:
-            Status message
-        """
-        return {"status": "WeatherTunes backend is running!", "version": "2.0"}
 
     @app.route("/health")
     def health() -> dict[str, str]:

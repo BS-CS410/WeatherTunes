@@ -1,12 +1,12 @@
 """Data models for the WeatherTunes backend."""
 
-from dataclasses import dataclass
 from datetime import datetime
 from typing import List, Optional
 
+from pydantic import BaseModel, Field
 
-@dataclass
-class WeatherData:
+
+class WeatherData(BaseModel):
     """Weather information model."""
 
     location: str
@@ -15,24 +15,17 @@ class WeatherData:
     time_period: str
 
 
-@dataclass
-class UserData:
+class UserData(BaseModel):
     """User data model."""
 
     username: str
     created_at: datetime
     last_login: datetime
     last_weather: Optional[WeatherData] = None
-    favorites: Optional[List[str]] = None
-
-    def __post_init__(self) -> None:
-        """Initialize favorites list if None."""
-        if self.favorites is None:
-            self.favorites = []
+    favorites: List[str] = Field(default_factory=list)
 
 
-@dataclass
-class SpotifyTokens:
+class SpotifyTokens(BaseModel):
     """Spotify OAuth tokens model."""
 
     access_token: str
@@ -40,9 +33,14 @@ class SpotifyTokens:
     expires_at: Optional[int] = None
 
 
-@dataclass
-class AuthSession:
+class AuthSession(BaseModel):
     """Authentication session model."""
 
     spotify_username: str
     tokens: SpotifyTokens
+
+
+class TrackIdRequest(BaseModel):
+    """Request model for operations requiring a track ID."""
+
+    track_id: str

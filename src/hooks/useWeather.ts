@@ -32,8 +32,6 @@ function formatWeatherCondition(
 /**
  * Unified weather data hook with enhanced error handling and memoization
  * Manages weather API calls, processing, and state management
- * 
- * Combines functionality from useWeather.ts and useWeatherOptimized.ts
  */
 export function useWeatherData() {
   const { settings } = useSettings();
@@ -80,7 +78,6 @@ export function useWeatherData() {
 
       // Validate essential data fields
       if (!data.weather?.length) {
-        console.error("Invalid weather data: missing weather array", data);
         const errorData = createErrorWeatherData();
         setWeatherState({
           displayData: {
@@ -141,7 +138,6 @@ export function useWeatherData() {
     const fetchWeather = async () => {
       const apiKey = import.meta.env.VITE_PUBLIC_OPENWEATHER_API_KEY;
       if (!apiKey) {
-        console.error("API key is missing.");
         if (mounted) {
           processWeatherData(null, new Error("API key is missing."));
         }

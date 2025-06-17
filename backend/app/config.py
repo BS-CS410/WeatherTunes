@@ -48,6 +48,10 @@ class Config:
 
     SECRET_KEY: str = os.getenv("FLASK_SECRET_KEY", "dev-secret-change-in-production")
     SESSION_COOKIE_SAMESITE: str = "Lax"
-    SESSION_COOKIE_SECURE: bool = False
+    SESSION_COOKIE_SECURE: bool = not os.getenv("FLASK_DEBUG", "True").lower() in (
+        "true",
+        "1",
+        "t",
+    )
     SESSION_COOKIE_DOMAIN: str | None = None
     SESSION_COOKIE_HTTPONLY: bool = True

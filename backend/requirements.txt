@@ -11,6 +11,9 @@ requests>=2.31.0,<3.0.0
 # Environment configuration
 python-dotenv>=1.0.0,<2.0.0
 
+# Data validation
+pydantic>=2.0.0,<3.0.0
+
 # Development dependencies (optional)
 # pytest>=7.0.0,<8.0.0
 # pytest-flask>=1.2.0,<2.0.0

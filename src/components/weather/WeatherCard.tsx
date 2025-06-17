@@ -1,32 +1,25 @@
 import { SunriseIcon, SunsetIcon } from "@/components/icons";
 import type { WeatherDisplayData } from "@/types/weather";
 import { SectionWrapper } from "../layout/SectionWrapper";
-import { createElementStyles } from "../styles/ElementStyles";
-import { colorTheme } from "../styles/WeatherTunesStyles";
 import { useCurrentTrackContext } from "@/contexts/useCurrentTrackContext";
+import {
+  TYPOGRAPHY,
+  COLORS,
+  MUSIC_STYLES,
+  ANIMATIONS,
+} from "@/lib/unifiedStyles"; // Import unified styles
 
 /**
  * STYLE CUSTOMIZATION GUIDE
  *
- * To modify visual appearance of this component, edit one of these 3 files:
+ * To modify visual appearance of this component, edit this file:
  *
- * FILE 1: ./styles/WeatherTunesStyles.ts
- *    -> HOVER EFFECTS & ANIMATIONS: interactionEffects section
- *    -> COLORS & THEME: colorTheme section
- *    -> TYPOGRAPHY & FONTS: fontStyles section (uses Tailwind responsive classes)
- *    -> SHADOWS & DEPTH: shadowEffects section
+ * FILE 1: src/lib/unifiedStyles.ts
+ *    -> COLORS & THEME: COLORS object
+ *    -> TYPOGRAPHY & FONTS: TYPOGRAPHY object
  *
- * FILE 2: ./styles/ElementStyles.ts
- *    -> ELEMENT-SPECIFIC STYLES: createElementStyles() function
- *    -> Individual element combinations with responsive spacing
- *    -> Album art sizing and music section layout
- *
- * FILE 3: ./layout/SectionWrapper.tsx
- *    -> LAYOUT & SPACING: Section scaling and alignment with consistent line-height
- *    -> Uses original em-based scaling (1.2x for weather, 1.1x for music)
- *
- * RESPONSIVE DESIGN: Original scaling restored with explicit unitless line-height
- * values to prevent line spacing from resetting during window resizing
+ * RESPONSIVE DESIGN: Uses Tailwind CSS utility classes for responsiveness.
+ * Base font size is clamped for scalability.
  */
 
 interface WeatherCardProps {
@@ -38,7 +31,7 @@ interface WeatherCardProps {
  * Maximizes maintainability through centralized styling and clear separation of concerns
  */
 export function WeatherCard({ weatherData }: WeatherCardProps) {
-  const { trackMetadata, currentTrackId, isLoading } = useCurrentTrackContext();
+  const { trackMetadata, isLoading } = useCurrentTrackContext();
 
   const {
     location = "Loading...",
@@ -60,20 +53,21 @@ export function WeatherCard({ weatherData }: WeatherCardProps) {
   const albumArtUrl =
     trackMetadata?.albumArt || "https://via.placeholder.com/300x300";
 
-  // Single source of truth for all element styles
-  const elementStyles = createElementStyles();
-
   return (
     <div className="grid aspect-[2/1] h-full w-full grid-cols-2 grid-rows-1 text-[clamp(1rem,3.5vw,1.6rem)]">
       {/* Weather Section - Left Grid Cell */}
       <div className="relative">
         <SectionWrapper scale={1.2} alignment="start" padding="0 0 0 1em">
           {/* Location */}
-          <h1 className={elementStyles.weatherLocation}>{location}</h1>
+          <h1
+            className={`${TYPOGRAPHY.weather.location} ${COLORS.text.weather}`}
+          >
+            {location}
+          </h1>
 
           {/* Temperature */}
           <div
-            className={elementStyles.weatherTemperature}
+            className={`${TYPOGRAPHY.weather.temperature} ${COLORS.text.weather}`}
             style={{ transformOrigin: "left top" }}
           >
             {temperature}
@@ -83,20 +77,22 @@ export function WeatherCard({ weatherData }: WeatherCardProps) {
           </div>
 
           {/* Condition */}
-          <span className={elementStyles.weatherCondition}>{condition}</span>
+          <span
+            className={`${TYPOGRAPHY.weather.condition} ${COLORS.text.condition}`}
+          >
+            {condition}
+          </span>
 
           {/* Sunrise/Sunset */}
-          <div className={elementStyles.timeContainer}>
-            <span
-              className={`${elementStyles.timeElement} ${colorTheme.timeText}`}
-            >
+          <div
+            className={`flex items-center ${TYPOGRAPHY.weather.time} mt-auto pb-[0.5em]`}
+          >
+            <span className={`flex items-center ${COLORS.text.weather}`}>
               <SunriseIcon className="mr-2 h-[1em] w-[1em]" />
               {sunrise}
             </span>
-            <span className={`mx-2 ${colorTheme.separatorText}`}>|</span>
-            <span
-              className={`${elementStyles.timeElement} ${colorTheme.timeTextAlt}`}
-            >
+            <span className={`mx-2 ${COLORS.text.muted}`}>|</span>
+            <span className={`flex items-center ${COLORS.text.weather}`}>
               <SunsetIcon className="mr-2 h-[1em] w-[1em]" />
               {sunset}
             </span>
@@ -108,29 +104,28 @@ export function WeatherCard({ weatherData }: WeatherCardProps) {
       </div>
 
       {/* Music Section - Right Grid Cell */}
-      <SectionWrapper scale={1.1} alignment="center" padding="1em">
-        {/* Album Art */}
-        <div className={elementStyles.albumContainer}>
-          <img
-            src={albumArtUrl}
-            alt={`${songTitle} album art`}
-            className={elementStyles.albumImage}
-          />
-        </div>
-
-        {/* Song Information */}
-        <div className={elementStyles.musicInfo}>
-          <h2 className={elementStyles.musicTitle}>{songTitle}</h2>
-          <p className={elementStyles.musicArtist}>{artistName}</p>
-
-          {/* Development debug info */}
-          {import.meta.env.DEV && currentTrackId && (
-            <div className="mt-1 font-mono text-xs opacity-50">
-              ID: {currentTrackId.substring(0, 8)}...{isLoading && " (loading)"}
-            </div>
-          )}
-        </div>
-      </SectionWrapper>
+      <div className="relative">
+        <SectionWrapper scale={1.1} alignment="center" padding="1em">
+          <div className={MUSIC_STYLES.albumContainer}>
+            <img
+              src={albumArtUrl}
+              alt={`${songTitle} album art`}
+              className={`aspect-square w-full object-cover ${ANIMATIONS.transition.slow} group-hover/album:scale-110`}
+              loading="lazy"
+            />
+          </div>
+          <div className={MUSIC_STYLES.trackInfo}>
+            <h2 className={`${TYPOGRAPHY.music.title} ${COLORS.text.primary}`}>
+              {songTitle}
+            </h2>
+            <p
+              className={`${TYPOGRAPHY.music.artist} ${COLORS.text.secondary}`}
+            >
+              {artistName}
+            </p>
+          </div>
+        </SectionWrapper>
+      </div>
     </div>
   );
 }

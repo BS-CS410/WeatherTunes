@@ -1,10 +1,5 @@
 import { useState, useRef } from "react";
-import {
-  MUSIC_STYLES,
-  COLORS,
-  TYPOGRAPHY,
-  ANIMATIONS,
-} from "@/lib/unifiedStyles";
+import { COLORS, TYPOGRAPHY, ANIMATIONS } from "@/lib/unifiedStyles";
 import { cn } from "@/lib/utils";
 
 interface Song {
@@ -137,7 +132,7 @@ export function QueueCard() {
                   />
                 </div>
 
-                <div className={cn(MUSIC_STYLES.trackInfo, "mt-2")}>
+                <div className={cn("mt-2")}>
                   <div
                     className={cn(
                       "w-28 truncate",

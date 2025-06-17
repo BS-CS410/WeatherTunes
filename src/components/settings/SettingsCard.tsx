@@ -21,8 +21,6 @@ export function SettingsCard({ isOpen, onClose }: SettingsCardProps) {
     setSpeedUnit,
     setThemeMode,
     resetToDefaults,
-    locationDefaults,
-    isLocationLoading,
   } = useSettings();
 
   if (!isOpen) return null;
@@ -137,29 +135,6 @@ export function SettingsCard({ isOpen, onClose }: SettingsCardProps) {
                 ]}
               />
             </SettingsSection>
-
-            {/* Debug info in development */}
-            {import.meta.env.DEV && (
-              <div className="rounded-md bg-blue-50/80 p-3 dark:bg-slate-800/80">
-                <p className="text-xs text-blue-800 dark:text-blue-200">
-                  <strong>🔍 Debug Info:</strong>
-                  <br />• Location loading: {isLocationLoading ? "Yes" : "No"}
-                  {locationDefaults ? (
-                    <>
-                      <br />• Detected defaults:{" "}
-                      {locationDefaults.temperatureUnit}°,{" "}
-                      {locationDefaults.speedUnit}
-                    </>
-                  ) : (
-                    <>
-                      <br />• Detected defaults: None yet
-                    </>
-                  )}
-                  <br />• Has saved prefs:{" "}
-                  {localStorage.getItem("temperatureUnit") ? "Yes" : "No"}
-                </p>
-              </div>
-            )}
 
             {/* Action Buttons */}
             <div className="flex gap-3 border-t border-gray-200 pt-4 dark:border-slate-700">
