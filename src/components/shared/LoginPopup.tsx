@@ -1,9 +1,13 @@
+import { useAuth } from "@/hooks/useAuth";
+
 interface LoginPopupProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
 export function LoginPopup({ isOpen, onClose }: LoginPopupProps) {
+  const { login } = useAuth();
+
   if (!isOpen) return null;
 
   return (
@@ -15,9 +19,7 @@ export function LoginPopup({ isOpen, onClose }: LoginPopupProps) {
         <div className="flex flex-col gap-3">
           <button
             className="rounded-lg bg-[#1DB954] px-6 py-2 text-white transition-colors hover:bg-[#1ED760]"
-            onClick={() =>
-              (window.location.href = "http://127.0.0.1:8000/login")
-            }
+            onClick={login}
           >
             Login with Spotify
           </button>

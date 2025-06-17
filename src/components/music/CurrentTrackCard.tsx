@@ -1,6 +1,8 @@
-import { useEffect, useState, useRef } from "react";
-import { getSpotifyTrackForWeather } from "@/lib/spotifyWeather";
+import { useEffect, useState } from "react";
 import { useCurrentTrackContext } from "@/contexts/useCurrentTrackContext";
+import { useAuth } from "@/hooks/useAuth";
+import { WeatherMusicService } from "@/lib/weatherMusicService";
+import { useWeatherData } from "@/hooks/useWeather";
 import { Button } from "@/components/ui/button";
 import { COLORS, TYPOGRAPHY, LAYOUT } from "@/lib/unifiedStyles";
 import { cn } from "@/lib/utils";
@@ -14,65 +16,53 @@ interface CurrentTrackCardProps {
  * Uses unified styling system for consistent appearance
  */
 export function CurrentTrackCard({ className = "" }: CurrentTrackCardProps) {
-  const [queue, setQueue] = useState<string[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
-  const [isChangingTrack, setIsChangingTrack] = useState(false);
-  const { updateTrack } = useCurrentTrackContext();
-  const apiKey = import.meta.env.VITE_PUBLIC_OPENWEATHER_API_KEY;
-  const hasInitialized = useRef(false);
+  const {
+    trackMetadata,
+    currentTrackId,
+    songQueue,
+    setNextTrack,
+    replaceQueueWithTracks,
+    isLoading,
+  } = useCurrentTrackContext();
+
+  const { user, isLoading: authLoading, login } = useAuth();
+  const { rawResponse: weatherData } = useWeatherData();
 
   useEffect(() => {
-    // Prevent re-running during navigation - only run once on mount
-    if (hasInitialized.current) return;
-    hasInitialized.current = true;
-
-    getSpotifyTrackForWeather(apiKey)
-      .then((weatherTrackId) => {
-        // Build queue starting with weather track, followed by others without duplicates
-        // const newQueue = [ // Simplified queue logic, directly use weather track or fallback
-        //   weatherTrackId,
-        //   ...sampleQueue.filter((t) => t !== weatherTrackId),
-        // ];
-        // setQueue(newQueue);
-        // setCurrentIndex(0);
-        setQueue([weatherTrackId]); // Initialize queue with only the weather-based track
-        setCurrentIndex(0);
-        setLoading(false);
-        // Update track metadata for the first track
-        updateTrack(weatherTrackId);
-      })
-      .catch(() => {
-        // setQueue(sampleQueue); // Fallback to an empty queue or a predefined default if API fails
-        // setCurrentIndex(0);
-        setQueue([]); // Set an empty queue on error
-        setCurrentIndex(0); // Reset index
-        setLoading(false);
-        setMessage(
-          "Failed to load weather-based track. Please try again later.",
-        ); // Inform user of failure
-        // Update track metadata for the first track in sample queue
-        // if (sampleQueue.length > 0) { // No sample queue, so this is not needed
-        //   updateTrack(sampleQueue[0]);
-        // }
-      });
-  }, [apiKey, updateTrack]); // Keep dependencies but use ref guard
-
-  const trackId = queue.length > 0 ? queue[currentIndex] : null; // Ensure trackId is null if queue is empty
+    // Generate initial weather-based queue if authenticated and no queue exists
+    if (user && !isLoading && songQueue.length === 0 && weatherData) {
+      const weatherQueue = WeatherMusicService.generateWeatherBasedQueue(
+        weatherData.main.temp,
+        weatherData.weather[0].main.toLowerCase(),
+        "afternoon",
+        10,
+      );
+      replaceQueueWithTracks(weatherQueue);
+    }
+  }, [user, isLoading, songQueue.length, weatherData, replaceQueueWithTracks]);
 
   const handleLike = async () => {
-    if (!trackId) return;
+    if (!currentTrackId) return;
+
+    if (!user) {
+      setMessage("Please log in to like tracks");
+      setTimeout(() => setMessage(null), 3000);
+      return;
+    }
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/liked", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL || "http://127.0.0.1:8000"}/liked`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ track_id: currentTrackId }),
         },
-        credentials: "include",
-        body: JSON.stringify({ track_id: trackId }),
-      });
+      );
 
       if (!res.ok) {
         const errorData = await res.json();
@@ -81,70 +71,97 @@ export function CurrentTrackCard({ className = "" }: CurrentTrackCardProps) {
       }
 
       setMessage("Track liked!");
-      setTimeout(() => setMessage(null), 2000); // Clear message after 2 seconds
+      setTimeout(() => setMessage(null), 2000);
     } catch (error) {
       setMessage("Network error while liking track");
+      setTimeout(() => setMessage(null), 3000);
     }
   };
 
   const handleNext = async () => {
-    if (queue.length === 0 || isChangingTrack) return;
-    setIsChangingTrack(true);
-
-    // const nextIndex = (currentIndex + 1) % queue.length; // Simplified: only one track in queue for now
-    // setCurrentIndex(nextIndex);
-    // For now, with a single track queue, "Next" and "Back" might not be meaningful
-    // or could re-fetch/refresh the current track or a new weather-based track.
-    // This part needs clarification on desired behavior for a single-item or dynamic queue.
-    setMessage(
-      "Next track functionality is not yet fully implemented for the current queue setup.",
-    );
-    setTimeout(() => {
-      // updateTrack(queue[nextIndex]);
-      setIsChangingTrack(false);
-      setMessage(null); // Clear message after a bit
-    }, 1500); // Increased delay
+    if (!user) {
+      setMessage("Please log in to control playback");
+      setTimeout(() => setMessage(null), 3000);
+      return;
+    }
+    await setNextTrack();
   };
 
-  const handleBack = async () => {
-    if (queue.length === 0 || isChangingTrack) return;
-    setIsChangingTrack(true);
+  const handleRefreshQueue = async () => {
+    if (!user) {
+      setMessage("Please log in to generate weather playlists");
+      setTimeout(() => setMessage(null), 3000);
+      return;
+    }
 
-    // const prevIndex = (currentIndex - 1 + queue.length) % queue.length; // Simplified
-    // setCurrentIndex(prevIndex);
-    setMessage(
-      "Previous track functionality is not yet fully implemented for the current queue setup.",
+    if (!weatherData) return;
+
+    const newQueue = WeatherMusicService.generateDynamicDayQueue(
+      weatherData.main.temp,
+      weatherData.weather[0].main.toLowerCase(),
+      12,
     );
-    setTimeout(() => {
-      // updateTrack(queue[prevIndex]);
-      setIsChangingTrack(false);
-      setMessage(null); // Clear message
-    }, 1500); // Increased delay
+    await replaceQueueWithTracks(newQueue);
+    setMessage("Queue refreshed with new weather-based tracks!");
+    setTimeout(() => setMessage(null), 2000);
   };
 
-  if (loading) {
+  if (authLoading || isLoading) {
     return (
       <div
         className={cn(LAYOUT.container.center, LAYOUT.padding.xl, className)}
       >
         <div className="text-center">
           <div className={cn("mb-2", TYPOGRAPHY.body.lg, COLORS.text.muted)}>
-            Loading Spotify player...
+            Loading music player...
           </div>
           <div className={cn(TYPOGRAPHY.body.sm, COLORS.text.muted)}>
-            Finding music for your weather
+            {authLoading
+              ? "Checking authentication..."
+              : "Finding music for your weather"}
           </div>
         </div>
       </div>
     );
   }
 
-  if (!trackId) {
+  if (!user) {
     return (
       <div
         className={cn(LAYOUT.container.center, LAYOUT.padding.xl, className)}
       >
-        <p className={cn(COLORS.text.muted)}>No track to play.</p>
+        <div className="text-center">
+          <div className={cn("mb-4", TYPOGRAPHY.body.lg, COLORS.text.muted)}>
+            Please log in to access the music player
+          </div>
+          <Button
+            onClick={login}
+            className="bg-green-600 text-white hover:bg-green-700"
+          >
+            Login with Spotify
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!trackMetadata || !currentTrackId) {
+    return (
+      <div
+        className={cn(LAYOUT.container.center, LAYOUT.padding.xl, className)}
+      >
+        <div className="text-center">
+          <p className={cn("mb-4", COLORS.text.muted)}>
+            No track currently playing.
+          </p>
+          <Button
+            onClick={handleRefreshQueue}
+            disabled={isLoading}
+            variant="outline"
+          >
+            Generate Weather Playlist
+          </Button>
+        </div>
       </div>
     );
   }
@@ -158,11 +175,21 @@ export function CurrentTrackCard({ className = "" }: CurrentTrackCardProps) {
         className,
       )}
     >
+      {/* Track Information */}
+      <div className="mb-4 w-full text-center">
+        <h3 className={cn(TYPOGRAPHY.display.md, COLORS.text.primary, "mb-1")}>
+          {trackMetadata.title}
+        </h3>
+        <p className={cn(TYPOGRAPHY.body.base, COLORS.text.secondary)}>
+          {trackMetadata.artist}
+        </p>
+      </div>
+
       {/* Spotify Embed Player */}
       <div className="w-full">
         <iframe
-          key={`${trackId}`}
-          src={`https://open.spotify.com/embed/track/${trackId}`}
+          key={`${currentTrackId}`}
+          src={`https://open.spotify.com/embed/track/${currentTrackId}`}
           width="100%"
           height="160"
           frameBorder="0"
@@ -174,20 +201,20 @@ export function CurrentTrackCard({ className = "" }: CurrentTrackCardProps) {
       </div>
 
       {/* Control Buttons */}
-      <div className={cn("flex w-full", LAYOUT.spacing.md)}>
+      <div className={cn("flex w-full gap-2", LAYOUT.spacing.md)}>
         <Button
-          onClick={handleBack}
-          disabled={isChangingTrack}
-          variant={isChangingTrack ? "ghost" : "outline"}
+          onClick={handleRefreshQueue}
+          disabled={isLoading}
+          variant="outline"
           className="flex-1"
         >
-          ◁ Back
+          🔄 Refresh
         </Button>
 
         <Button
           onClick={handleLike}
-          disabled={isChangingTrack}
-          variant={isChangingTrack ? "ghost" : "outline"}
+          disabled={isLoading}
+          variant="outline"
           className="flex-1"
         >
           ♡ Like
@@ -195,8 +222,8 @@ export function CurrentTrackCard({ className = "" }: CurrentTrackCardProps) {
 
         <Button
           onClick={handleNext}
-          disabled={isChangingTrack}
-          variant={isChangingTrack ? "ghost" : "outline"}
+          disabled={isLoading || songQueue.length === 0}
+          variant="outline"
           className="flex-1"
         >
           Next ▷

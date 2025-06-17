@@ -12,7 +12,7 @@ import {
 } from "@/components";
 import { useWeatherData } from "@/hooks/useWeather";
 import { useThemeManager } from "@/hooks/useThemeManager";
-import { LAYOUT } from "@/lib/unifiedStyles"; // Updated import
+import { LAYOUT } from "@/lib/unifiedStyles";
 
 function MainPage() {
   const { displayData, timePeriod, isLoading, error } = useWeatherData();

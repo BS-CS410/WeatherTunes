@@ -41,14 +41,16 @@ weathertunes/
 ├── CRITICAL_CONFIG: components.json, tailwind.config.ts, vite.config.ts, tsconfig.json
 ├── ENTRY_POINTS: index.html, src/main.tsx, src/App.tsx
 ├── src/
-│   ├── components/ [28 COMPONENTS - FULLY IMPLEMENTED UI]
-│   │   ├── WEATHER_DOMAIN: VideoBackground.tsx, WeatherDisplay.tsx, ForecastCard.tsx
-│   │   ├── MUSIC_DOMAIN: CurrentlyPlaying.tsx*, UpNext.tsx* (*=PLACEHOLDER_DATA)
-│   │   ├── LAYOUT_DOMAIN: NavBar.tsx*, SettingsButton.tsx, SettingsMenu.tsx, UnifiedDisplay.tsx
-│   │   ├── icons/: SettingsIcon.tsx, SunriseIcon.tsx, SunsetIcon.tsx + index.ts
-│   │   └── ui/: button.tsx, card.tsx, input.tsx, label.tsx, navigation-menu.tsx
+│   ├── components/ [21 COMPONENTS - UI IMPLEMENTATION DETAILS BELOW]
+│   │   ├── WEATHER_DOMAIN: WeatherBackground.tsx, WeatherCard.tsx, ForecastCard.tsx
+│   │   ├── MUSIC_DOMAIN: CurrentTrackCard.tsx*, QueueCard.tsx*, FavoritesCard.tsx* (*=PLACEHOLDER_DATA)
+│   │   ├── LAYOUT_DOMAIN: AppLayout.tsx, SectionWrapper.tsx, ThemeProvider.tsx
+│   │   ├── settings/: SettingsButton.tsx, SettingsCard.tsx
+│   │   ├── shared/: BaseCard.tsx, ErrorBoundary.tsx, LoginPopup.tsx, SettingsComponents.tsx, StatusComponents.tsx
+│   │   ├── icons/: SettingsIcon.tsx, SunriseIcon.tsx, SunsetIcon.tsx, index.ts
+│   │   └── ui/: button.tsx, card.tsx
 │   ├── contexts/: SettingsContext.tsx [COMPLETE_GLOBAL_STATE], CurrentTrackContext.tsx
-│   ├── hooks/ [10 HOOKS - WEATHER=COMPLETE, MUSIC=STUB]
+│   ├── hooks/ [7 HOOKS - WEATHER=COMPLETE, MUSIC=STUB]
 │   │   ├── WEATHER_HOOKS: useWeather.ts, useForecast.ts [OPENWEATHER_API_INTEGRATED]
 │   │   ├── SETTINGS_HOOKS: useSettings.ts, useLocalStorage.ts, useLocationBasedDefaults.ts
 │   │   ├── UI_HOOKS: useThemeManager.ts
@@ -56,13 +58,13 @@ weathertunes/
 │   │   └── index.ts [EXPORT_BARREL]
 │   ├── lib/ [UTILITY_LIBRARIES]
 │   │   ├── weather.ts [OPENWEATHER_API_CLIENT], temperature.ts, units.ts
-│   │   ├── utils.ts [TIME_UTILS], sharedStyles.ts [CSS_UTILS]
+│   │   ├── utils.ts [TIME_UTILS], unifiedStyles.ts [CSS_UTILS]
 │   │   ├── muiTheme.ts [MATERIAL_UI_THEME], videoMapping.ts [VIDEO_MAPPING]
 │   │   ├── spotifyWeather.ts, spotifySongs.json, trackMetadata.json [SPOTIFY_STUBS]
 │   │   └── index.ts [EXPORT_BARREL]
 │   ├── pages/: MainPage.tsx [PRIMARY_INTERFACE], Login.tsx, AuthCallback.tsx [PLACEHOLDERS]
 │   ├── types/: weather.ts, spotify.ts [COMPLETE_TYPE_DEFINITIONS]
-│   └── assets/videos/ [24_WEATHER_VIDEOS: {clear,cloudy,fog,rain,snow}_{day,evening,morning,night}.mp4]
+│   └── assets/videos/ [20_WEATHER_VIDEOS: {clear,cloudy,fog,rain,snow}_{day,evening,morning,night}.mp4]
 ```
 
 ## Implementation Status Matrix
@@ -78,8 +80,8 @@ weathertunes/
 
 ### 🔄 PARTIAL_IMPLEMENTATION (UI_READY_BACKEND_PENDING)
 
-- **MUSIC_COMPONENTS**: CurrentlyPlaying.tsx, UpNext.tsx (placeholder data structures ready for Spotify API)
-- **AUTH_FLOW**: Login.tsx, NavBar.tsx login button (OAuth structure planned)
+- **MUSIC_COMPONENTS**: CurrentTrackCard.tsx, QueueCard.tsx, FavoritesCard.tsx (placeholder data structures ready for Spotify API)
+- **AUTH_FLOW**: Login.tsx, AppLayout.tsx login button (OAuth structure planned)
 - **USER_DATA**: Favorites system UI exists, backend persistence needed
 
 ### ❌ REQUIRES_BACKEND_DEVELOPMENT
@@ -120,14 +122,15 @@ SPOTIFY_WEB_API: {
 SettingsContext (Global)
   ↓ useSettings()
   ↓ [useWeather, useForecast, useThemeManager]
-  ↓ [WeatherDisplay, ForecastCard, VideoBackground]
+  ↓ [WeatherCard, ForecastCard, WeatherBackground]
 
 MainPage (Layout Root)
-  ├── UnifiedDisplay (weather + music combined)
-  ├── CurrentlyPlaying (Spotify data awaited)
-  ├── UpNext (queue data awaited)
-  ├── ForecastCard (OpenWeather data active)
-  └── SettingsMenu (complete functionality)
+  ├── AppLayout (contains main structure, nav, settings access)
+  │   ├── UnifiedDisplay (weather + music combined)
+  │   ├── CurrentTrackCard (Spotify data awaited)
+  │   ├── QueueCard (queue data awaited)
+  │   ├── ForecastCard (OpenWeather data active)
+  │   └── SettingsCard (accessed via SettingsButton in AppLayout)
 ```
 
 ### STATE_MANAGEMENT_PATTERN
@@ -212,11 +215,11 @@ PLANNED: VITE_SPOTIFY_CLIENT_ID=<spotify_client_id>
 
 ```typescript
 // Primary integration locations requiring backend endpoints
-src/components/NavBar.tsx:36        // Spotify OAuth trigger
-src/components/CurrentlyPlaying.tsx:12 // Real music data replacement
-src/components/UpNext.tsx:11        // Dynamic queue data
-src/pages/MainPage.tsx:78           // Spotify player controls
-src/pages/MainPage.tsx:92           // Favorites system
+// src/components/layout/AppLayout.tsx:XX // Spotify OAuth trigger (e.g., in a NavBar part of AppLayout)
+src/components/music/CurrentTrackCard.tsx:XX // Real music data replacement
+src/components/music/QueueCard.tsx:XX        // Dynamic queue data
+src/pages/MainPage.tsx:XX           // Spotify player controls
+src/pages/MainPage.tsx:XX           // Favorites system
 ```
 
 ### FRONTEND_BACKEND_CONTRACT
@@ -245,7 +248,7 @@ interface UserSettings {
 ### OPTIMIZATION_STATUS
 
 - **BUNDLE_SIZE**: Optimized via Vite tree-shaking and code splitting
-- **ASSET_LOADING**: 24 video files (~2-5MB each) with lazy loading
+- **ASSET_LOADING**: 20 video files (~2-5MB each) with lazy loading
 - **API_EFFICIENCY**: Weather data cached, geolocation with fallback coordinates
 - **ACCESSIBILITY**: WCAG 2.1 compliance through Radix UI primitives
 
@@ -334,15 +337,18 @@ docs/
 
 ### UPDATES_MADE
 
-- **HOOKS_COUNT**: Reduced from 11 to 10 hooks (removed deprecated/unused)
-- **VIDEO_ASSETS**: Cleaned to 24 files (5 weather types × 4 time periods)
-- **VIDEO_README**: Updated to reflect actual file structure
-- **EXPORT_CLEANUP**: Removed deprecated exports from hooks/index.ts
-- **STRUCTURE_DEDUPLICATION**: Fixed duplicate sections in AI_CODEBASE_INDEX.md
+- **HOOKS_COUNT**: Reduced from 9 to 7 hooks (reflecting removal of deprecated/unused hooks like useCurrentTrackInfo.ts and useWeatherOptimized.ts).
+- **VIDEO_ASSETS**: Cleaned to 20 files (5 weather types × 4 time periods).
+- **VIDEO_README**: Updated to reflect actual file structure.
+- **EXPORT_CLEANUP**: Removed deprecated exports from hooks/index.ts.
+- **STRUCTURE_DEDUPLICATION**: Fixed duplicate sections in AI_CODEBASE_INDEX.md.
+- **COMPONENT_LISTING**: Updated component names and counts to match current project structure.
+- **LIB_REFERENCES**: Corrected `sharedStyles.ts` to `unifiedStyles.ts`.
 
 ### RESULT
 
-- **CLEANER_CODEBASE**: Removed 8 unused/duplicate files
+- **CLEANER_CODEBASE**: Removed 8 unused/duplicate files (as per previous cleanup)
+- **ACCURATE_INDEX**: AI Codebase Index now reflects the latest file structure and counts.
 - **CLEARER_STRUCTURE**: Better organization and documentation
 - **REDUCED_COMPLEXITY**: Simplified hook architecture
 - **MAINTENANCE_READY**: Easier to understand and maintain

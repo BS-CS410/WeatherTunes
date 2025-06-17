@@ -1,4 +1,5 @@
 import { useSettings } from "@/hooks/useSettings";
+import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -7,6 +8,7 @@ import {
 } from "@/components/shared/SettingsComponents";
 import { COLORS, TYPOGRAPHY, LAYOUT } from "@/lib/unifiedStyles";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
 
 interface SettingsCardProps {
   isOpen: boolean;
@@ -22,6 +24,21 @@ export function SettingsCard({ isOpen, onClose }: SettingsCardProps) {
     setThemeMode,
     resetToDefaults,
   } = useSettings();
+
+  const { user, logout } = useAuth();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await logout();
+      onClose(); // Close settings menu after successful logout
+    } catch (error) {
+      console.error("Logout failed:", error);
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -149,6 +166,20 @@ export function SettingsCard({ isOpen, onClose }: SettingsCardProps) {
                 Done
               </Button>
             </div>
+
+            {/* Authentication Section */}
+            {user && (
+              <div className="border-t border-gray-200 pt-4 dark:border-slate-700">
+                <Button
+                  variant="outline"
+                  onClick={handleLogout}
+                  disabled={isLoggingOut}
+                  className="w-full border-red-300 text-red-700 hover:bg-red-50 hover:text-red-800 disabled:opacity-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-900/20 dark:hover:text-red-300"
+                >
+                  {isLoggingOut ? "Signing Out..." : "Sign Out of Spotify"}
+                </Button>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

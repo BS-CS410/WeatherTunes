@@ -1,18 +1,18 @@
 import React, { createContext } from "react";
 import type { ReactNode } from "react";
 import { useCurrentTrack } from "@/hooks/useCurrentTrack";
-
-interface TrackMetadata {
-  title: string;
-  artist: string;
-  albumArt: string;
-}
+import type { TrackMetadata } from "@/types/queue";
 
 interface CurrentTrackContextType {
   trackMetadata: TrackMetadata | null;
   isLoading: boolean;
   currentTrackId: string | null;
   updateTrack: (trackId: string) => Promise<void>;
+  songQueue: TrackMetadata[];
+  setNextTrack: () => Promise<void>;
+  addTrackToQueue: (trackId: string) => Promise<void>;
+  replaceQueueWithTracks: (trackIds: string[]) => Promise<void>;
+  clearQueue: () => Promise<void>;
 }
 
 const CurrentTrackContext = createContext<CurrentTrackContextType | undefined>(

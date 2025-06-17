@@ -11,6 +11,9 @@ export { useForecastData } from "@/hooks/useForecast";
 // Music and Spotify hooks (streamlined)
 export { useCurrentTrack } from "@/hooks/useCurrentTrack";
 
+// Authentication hooks
+export { useAuth } from "@/hooks/useAuth";
+
 // Settings and storage hooks
 export { useSettings } from "@/hooks/useSettings";
 export { useLocalStorage } from "@/hooks/useLocalStorage";

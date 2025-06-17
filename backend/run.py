@@ -11,6 +11,7 @@ load_dotenv()
 from app.config import AppConfig, Config
 from app.routes.auth import auth_bp
 from app.routes.liked_songs import liked_songs_bp
+from app.routes.queue import queue_bp  # Import the new queue blueprint
 from app.routes.recommended import recommended_bp
 from app.routes.user import user_bp
 from app.routes.weather import weather_bp
@@ -48,11 +49,12 @@ def create_app() -> Flask:
     )
 
     # Register blueprints
-    app.register_blueprint(auth_bp)
+    app.register_blueprint(auth_bp, url_prefix="/auth")
     app.register_blueprint(liked_songs_bp)
     app.register_blueprint(recommended_bp)
     app.register_blueprint(user_bp)
     app.register_blueprint(weather_bp)
+    app.register_blueprint(queue_bp)  # Register the queue blueprint
 
     # Log registered routes in debug mode
     if app.config.get("DEBUG"):

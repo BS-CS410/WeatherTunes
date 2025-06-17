@@ -4,7 +4,46 @@ WeatherTunes is a React web application that displays real-time weather informat
 
 ## Documentation
 
-This project maintains comprehensive documentation in the `docs/` directory to help developers understand the system architecture and implementation details.
+This project maintains comprehensive documentation in the `docs/` directory to help developers understand the system architecture and implementation details. The documentation is also synced to the project's GitHub Wiki.
+
+### Syncing Local Docs to GitHub Wiki
+
+The `sync-docs-to-wiki.sh` script is used to synchronize the content of the `docs/` folder with the GitHub Wiki.
+
+**Workflow:**
+
+1.  **Make changes** to files in the `docs/` folder.
+2.  **Test locally** that your documentation looks correct.
+3.  **Run the sync script** from the project root to push changes to the GitHub wiki:
+    ```bash
+    ./sync-docs-to-wiki.sh
+    ```
+4.  **Verify on GitHub** that the wiki pages updated correctly.
+
+**File Mapping:**
+
+The sync script automatically converts the hierarchical `docs/` structure to GitHub's flat wiki format:
+
+| Local File                              | Wiki Page                       |
+| --------------------------------------- | ------------------------------- |
+| `docs/README.md`                        | `Home`                          |
+| `docs/architecture/overview.md`         | `Architecture-Overview`         |
+| `docs/architecture/components.md`       | `Architecture-Components`       |
+| `docs/architecture/state-management.md` | `Architecture-State-Management` |
+| `docs/features/weather.md`              | `Features-Weather`              |
+| `docs/features/settings.md`             | `Features-Settings`             |
+| `docs/features/video-backgrounds.md`    | `Features-Video-Backgrounds`    |
+| `docs/features/music.md`                | `Features-Music`                |
+| `docs/development/getting-started.md`   | `Development-Getting-Started`   |
+| `docs/development/setup.md`             | `Development-Setup`             |
+| `docs/backend/api-requirements.md`      | `Backend-API-Requirements`      |
+
+**Notes on Syncing:**
+
+- The script automatically updates internal links to work with the wiki format.
+- Missing files in the `docs/` directory are skipped and won't cause errors during the sync.
+- The script checks for changes and only commits to the wiki repository if there are actual modifications.
+- You can run the script multiple times safely.
 
 ### Available Documentation
 

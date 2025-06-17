@@ -1,35 +1,40 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { authService } from "@/lib/auth";
 
 function AuthCallback() {
   const navigate = useNavigate();
+  const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
-    // Call backend session check
-    fetch("http://127.0.0.1:8000/session", {
-      credentials: "include", // important to send cookies
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.logged_in) {
-          // Logged in, go to main page
+    const handleCallback = async () => {
+      try {
+        const success = await authService.handleCallback();
+        if (success) {
           navigate("/");
         } else {
-          // Not logged in, go to login page
           navigate("/login");
         }
-      })
-      .catch(() => {
-        // On error, go to login page
+      } catch (error) {
+        console.error("Auth callback error:", error);
         navigate("/login");
-      });
+      } finally {
+        setIsChecking(false);
+      }
+    };
+
+    handleCallback();
   }, [navigate]);
 
-  return (
-    <div className="flex min-h-screen items-center justify-center">
-      <p>Checking login status...</p>
-    </div>
-  );
+  if (isChecking) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p>Checking login status...</p>
+      </div>
+    );
+  }
+
+  return null;
 }
 
 export default AuthCallback;

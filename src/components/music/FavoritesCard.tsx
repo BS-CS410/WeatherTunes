@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import * as ScrollArea from "@radix-ui/react-scroll-area";
 import { COLORS, TYPOGRAPHY, LAYOUT } from "@/lib/unifiedStyles";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
 
 interface FavoritesCardProps {
   className?: string;
@@ -12,16 +13,27 @@ interface FavoritesCardProps {
  * Uses unified styling system for consistent appearance
  */
 export function FavoritesCard({ className = "" }: FavoritesCardProps) {
+  const { user } = useAuth();
   const [likedTracks, setLikedTracks] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchLikedTracks() {
+      // Only fetch if user is authenticated
+      if (!user) {
+        setLikedTracks([]);
+        setLoading(false);
+        return;
+      }
+
       try {
-        const res = await fetch("http://127.0.0.1:8000/liked", {
-          credentials: "include",
-        });
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL || "http://127.0.0.1:8000"}/liked`,
+          {
+            credentials: "include",
+          },
+        );
         if (!res.ok)
           throw new Error(`Error fetching liked tracks: ${res.status}`);
         const data = await res.json();
@@ -33,7 +45,22 @@ export function FavoritesCard({ className = "" }: FavoritesCardProps) {
       }
     }
     fetchLikedTracks();
-  }, []);
+  }, [user]); // Add user dependency
+
+  // Show login prompt when not authenticated
+  if (!user) {
+    return (
+      <div
+        className={cn(LAYOUT.container.center, LAYOUT.padding.xl, className)}
+      >
+        <div className="text-center">
+          <p className={cn(TYPOGRAPHY.body.lg, COLORS.text.muted)}>
+            Please log into Spotify to view your liked tracks.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -64,7 +91,10 @@ export function FavoritesCard({ className = "" }: FavoritesCardProps) {
             </p>
             <button
               onClick={() => (window.location.href = "/login")}
-              className="mt-4 rounded-lg bg-[#1DB954] px-6 py-2 text-white transition-colors hover:bg-[#1ED760]"
+              className={cn(
+                "mt-4 rounded-lg bg-[#1DB954] text-white transition-colors hover:bg-[#1ED760]",
+                LAYOUT.padding.button.md,
+              )}
             >
               Login to Spotify
             </button>
@@ -85,7 +115,7 @@ export function FavoritesCard({ className = "" }: FavoritesCardProps) {
 
   return (
     <div className={cn("relative w-full", className)}>
-      <div className="px-4 pb-4 pl-2">
+      <div className={LAYOUT.padding.section.md}>
         <h3 className={cn(TYPOGRAPHY.display.xl, COLORS.text.primary)}>
           liked tracks:
         </h3>
@@ -94,8 +124,11 @@ export function FavoritesCard({ className = "" }: FavoritesCardProps) {
       <ScrollArea.Root className="relative z-0 w-full overflow-x-auto px-2">
         <ScrollArea.Viewport className="w-full">
           <div
-            className="flex min-w-max flex-row px-2 py-4"
-            style={{ gap: "2px" }}
+            className={cn(
+              "flex min-w-max flex-row",
+              LAYOUT.padding.section.sm,
+              LAYOUT.spacing.micro,
+            )}
           >
             {likedTracks.length === 0 ? (
               <div className={cn(LAYOUT.container.center, LAYOUT.padding.xl)}>

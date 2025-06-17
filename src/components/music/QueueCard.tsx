@@ -1,76 +1,53 @@
-import { useState, useRef } from "react";
-import { COLORS, TYPOGRAPHY, ANIMATIONS } from "@/lib/unifiedStyles";
+import { useState, useRef, useEffect } from "react"; // Added useEffect
+import { COLORS, TYPOGRAPHY, ANIMATIONS, LAYOUT } from "@/lib/unifiedStyles";
 import { cn } from "@/lib/utils";
-
-interface Song {
-  id: string;
-  name: string;
-  artist: string;
-  albumCover: string;
-}
-
-const placeholderSongs: Song[] = [
-  {
-    id: "1",
-    name: "I beg you",
-    artist: "Aimer",
-    albumCover:
-      "https://m.media-amazon.com/images/I/61Nwxib42TL._UF1000,1000_QL80_.jpg",
-  },
-  {
-    id: "2",
-    name: "Galaxy",
-    artist: "LADIES' CODE",
-    albumCover:
-      "https://coverartarchive.org/release-group/cf67d786-96a3-4705-a4da-c273ba7bd511/front",
-  },
-  {
-    id: "3",
-    name: "CYM",
-    artist: "Billyrom",
-    albumCover:
-      "https://i.scdn.co/image/ab67616d0000b273a30e39ed9dc33a1fa3533269",
-  },
-  {
-    id: "4",
-    name: "俺の彼女",
-    artist: "Hikaru Utada",
-    albumCover:
-      "https://i.scdn.co/image/ab67616d0000b2737321208918877ea522ceb6ac",
-  },
-  {
-    id: "5",
-    name: "Darkshines",
-    artist: "Muse",
-    albumCover:
-      "https://media.pitchfork.com/photos/60e71df9331c9bf60f4b0db6/1:1/w_1425,h_1425,c_limit/F01A01D5-5AFB-47E3-BEF3-EFABB3134DBC.jpeg",
-  },
-  {
-    id: "6",
-    name: "DIORAMA",
-    artist: "Yves",
-    albumCover:
-      "https://lastfm.freetls.fastly.net/i/u/ar0/137fcdf412d3a9e065f55f4173402178.jpg",
-  },
-  {
-    id: "7",
-    name: "Heart-Shaped Box",
-    artist: "Nirvana",
-    albumCover:
-      "https://i.discogs.com/KitJKt2LSSOdjXOmOcIeKUgcnaYNhL6hF4FVHF_d2Tg/rs:fit/g:sm/q:90/h:592/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTM3NDEz/MjMtMTM0MjUwOTI0/Ny0xODI1LmpwZWc.jpeg",
-  },
-  {
-    id: "8",
-    name: "Electioneering",
-    artist: "Radiohead",
-    albumCover:
-      "https://i.scdn.co/image/ab67616d0000b273c8b444df094279e70d0ed856",
-  },
-];
+import { useCurrentTrackContext } from "@/contexts/useCurrentTrackContext";
+import { useAuth } from "@/hooks/useAuth";
+import { QueueManager } from "@/lib/queueManager";
+import { Button } from "@/components/ui/button";
 
 export function QueueCard() {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const hoverTimeout = useRef<NodeJS.Timeout | null>(null);
+  const {
+    songQueue,
+    updateTrack,
+    setNextTrack,
+    clearQueue,
+    replaceQueueWithTracks,
+    isLoading: contextIsLoading, // Renamed from isLoading
+  } = useCurrentTrackContext();
+
+  const { user, isLoading: authLoading } = useAuth();
+
+  // State and ref for delayed visual loader
+  const [showVisualLoader, setShowVisualLoader] = useState(false);
+  const loaderTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (contextIsLoading) {
+      if (loaderTimerRef.current) {
+        clearTimeout(loaderTimerRef.current);
+      }
+      loaderTimerRef.current = setTimeout(() => {
+        setShowVisualLoader(true);
+      }, 300); // Show loader if loading persists > 300ms
+    } else {
+      if (loaderTimerRef.current) {
+        clearTimeout(loaderTimerRef.current);
+        loaderTimerRef.current = null;
+      }
+      setShowVisualLoader(false);
+    }
+
+    return () => {
+      // Cleanup timer on unmount or if contextIsLoading changes
+      if (loaderTimerRef.current) {
+        clearTimeout(loaderTimerRef.current);
+        loaderTimerRef.current = null;
+      }
+    };
+  }, [contextIsLoading]);
 
   const handleMouseEnter = (id: string) => {
     if (hoverTimeout.current) {
@@ -86,89 +63,215 @@ export function QueueCard() {
     }
     hoverTimeout.current = setTimeout(() => {
       setHoveredId(null);
-    }, 80); // 80ms delay for smoothness
+    }, 80);
   };
+
+  const handleGenerateQueue = async () => {
+    if (!user) {
+      console.warn("Cannot generate queue: user not authenticated");
+      return;
+    }
+
+    const newQueue = QueueManager.generateDiverseQueue(12);
+    await replaceQueueWithTracks(newQueue); // This uses contextIsLoading internally
+  };
+
+  const handleClearQueue = async () => {
+    if (!user) {
+      console.warn("Cannot clear queue: user not authenticated");
+      return;
+    }
+    await clearQueue();
+  };
+
+  const handleSkipTrack = async () => {
+    if (!user) {
+      console.warn("Cannot skip track: user not authenticated");
+      return;
+    }
+    await setNextTrack();
+  };
+
+  if (authLoading) {
+    return (
+      <div className="relative">
+        <div className={LAYOUT.padding.section.queue}>
+          <h2 className={cn(TYPOGRAPHY.display.xl, COLORS.text.primary)}>
+            Up Next:
+          </h2>
+        </div>
+        <div className={cn(LAYOUT.container.center, LAYOUT.padding.xl)}>
+          {/* Use TYPOGRAPHY.body.base for consistency if this is a body text */}
+          <p className={cn(TYPOGRAPHY.body.base, COLORS.text.muted)}>
+            Loading...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="relative">
+        <div className={LAYOUT.padding.section.queue}>
+          <h2 className={cn(TYPOGRAPHY.display.xl, COLORS.text.primary)}>
+            Up Next:
+          </h2>
+        </div>
+        <div className={cn(LAYOUT.container.center, LAYOUT.padding.xl)}>
+          <p className={cn(TYPOGRAPHY.body.base, COLORS.text.muted)}>
+            Please log in to manage your music queue.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative">
-      {/* Up Next header */}
-      <div className="px-4 pb-4 pl-6">
+      {/* Header with controls */}
+      <div
+        className={cn(
+          "flex items-center justify-between",
+          LAYOUT.padding.section.queue,
+        )}
+      >
         <h2 className={cn(TYPOGRAPHY.display.xl, COLORS.text.primary)}>
           Up Next:
         </h2>
+        <div className={cn("flex", LAYOUT.spacing.sm)}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleGenerateQueue}
+            disabled={contextIsLoading} // Use factual loading state for disabling
+            className="text-xs"
+          >
+            Generate Queue
+          </Button>
+          {songQueue.length > 0 && (
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleSkipTrack}
+                disabled={contextIsLoading} // Use factual loading state
+                className="text-xs"
+              >
+                Skip
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleClearQueue}
+                disabled={contextIsLoading} // Use factual loading state
+                className="text-xs"
+              >
+                Clear
+              </Button>
+            </>
+          )}
+        </div>
       </div>
 
-      {/* Horizontal scroll container */}
-      <div className="scrollbar-thin scrollbar-track-black/10 scrollbar-thumb-slate-600/60 hover:scrollbar-thumb-slate-600/80 relative z-0 overflow-x-auto px-6">
-        <div className="flex min-w-max flex-row gap-2 px-2 py-4">
-          {placeholderSongs.map((song, idx) => {
-            const isHovered = hoveredId === song.id;
-            const isNextUp = hoveredId === null && idx === 0;
-            const isNextUpOrHovered =
-              (hoveredId === null && idx === 0) ||
-              (hoveredId === song.id && idx === 0);
+      {/* Queue display area */}
+      <div className="queue-display-area">
+        {" "}
+        {/* Wrapper for conditional content below */}
+        {showVisualLoader ? (
+          <div className="flex items-center justify-center px-6 py-8">
+            {" "}
+            {/* Added px-6 for consistency */}
+            <p className={cn(TYPOGRAPHY.body.base, COLORS.text.muted)}>
+              Loading queue...
+            </p>
+          </div>
+        ) : songQueue.length === 0 ? (
+          <div className="flex items-center justify-center px-6 py-8">
+            {" "}
+            {/* Added px-6 for consistency */}
+            <p className={cn(TYPOGRAPHY.body.base, COLORS.text.muted)}>
+              Queue is empty. Generate a new queue to get started!
+            </p>
+          </div>
+        ) : (
+          <div className="scrollbar-thin scrollbar-track-black/10 scrollbar-thumb-slate-600/60 hover:scrollbar-thumb-slate-600/80 relative z-0 overflow-x-auto px-6">
+            <div className="flex min-w-max flex-row gap-2 px-2 py-4">
+              {songQueue.map((song, idx) => {
+                const isHovered = hoveredId === song.id;
+                const isNextUp = idx === 0 && hoveredId === null;
+                const isNextUpOrHovered =
+                  isNextUp || (hoveredId === song.id && idx === 0);
 
-            return (
-              <div
-                key={song.id}
-                className={cn(
-                  "group flex min-w-[120px] flex-col items-center",
-                  ANIMATIONS.transition.standard,
-                )}
-                onMouseEnter={() => handleMouseEnter(song.id)}
-                onMouseLeave={handleMouseLeave}
-              >
-                <div className="relative">
-                  <img
-                    src={song.albumCover}
-                    alt={song.name}
+                return (
+                  <div
+                    key={song.id}
                     className={cn(
-                      "relative z-10 h-28 w-28 cursor-pointer rounded-lg object-cover",
+                      "group flex min-w-[120px] flex-col items-center",
                       ANIMATIONS.transition.standard,
-                      isHovered || isNextUp
-                        ? "-translate-y-2 scale-110 shadow-2xl hover:brightness-105 dark:hover:brightness-110"
-                        : "",
                     )}
-                  />
-                </div>
+                    onMouseEnter={() => song.id && handleMouseEnter(song.id)}
+                    onMouseLeave={handleMouseLeave}
+                    onClick={() => song.id && updateTrack(song.id)}
+                  >
+                    <div className="relative">
+                      <img
+                        src={song.albumArt || "/placeholder-album.png"}
+                        alt={song.title}
+                        className={cn(
+                          "relative z-10 h-28 w-28 cursor-pointer rounded-lg object-cover",
+                          ANIMATIONS.transition.standard,
+                          isHovered || isNextUp
+                            ? "-translate-y-2 scale-110 shadow-2xl hover:brightness-105 dark:hover:brightness-110"
+                            : "",
+                        )}
+                      />
+                      {idx === 0 && (
+                        <div className="absolute -top-2 -right-2 z-20 rounded-full bg-blue-500 px-2 py-1 text-xs text-white">
+                          Next
+                        </div>
+                      )}
+                    </div>
 
-                <div className={cn("mt-2")}>
-                  <div
-                    className={cn(
-                      "w-28 truncate",
-                      TYPOGRAPHY.body.sm,
-                      "font-semibold",
-                      ANIMATIONS.transition.standard,
-                      isNextUpOrHovered
-                        ? cn(
-                            COLORS.text.primary,
-                            "drop-shadow-[0_1px_4px_rgba(0,0,0,0.1)] dark:drop-shadow-[0_1px_6px_rgba(255,255,255,0.13)]",
-                          )
-                        : COLORS.text.primary,
-                    )}
-                  >
-                    {song.name}
+                    <div className={cn("mt-2")}>
+                      <div
+                        className={cn(
+                          "w-28 truncate text-center",
+                          TYPOGRAPHY.body.sm,
+                          "font-semibold",
+                          ANIMATIONS.transition.standard,
+                          isNextUpOrHovered
+                            ? cn(
+                                COLORS.text.primary,
+                                "drop-shadow-[0_1px_4px_rgba(0,0,0,0.1)] dark:drop-shadow-[0_1px_6px_rgba(255,255,255,0.13)]",
+                              )
+                            : COLORS.text.primary,
+                        )}
+                      >
+                        {song.title}
+                      </div>
+                      <div
+                        className={cn(
+                          "w-28 truncate text-center",
+                          TYPOGRAPHY.body.xs,
+                          ANIMATIONS.transition.standard,
+                          isNextUpOrHovered
+                            ? cn(
+                                COLORS.text.secondary,
+                                "drop-shadow-[0_1px_2px_rgba(0,0,0,0.08)] dark:drop-shadow-[0_1px_2px_rgba(255,255,255,0.10)]",
+                              )
+                            : COLORS.text.muted,
+                        )}
+                      >
+                        {song.artist}
+                      </div>
+                    </div>
                   </div>
-                  <div
-                    className={cn(
-                      "w-28 truncate",
-                      TYPOGRAPHY.body.xs,
-                      ANIMATIONS.transition.standard,
-                      isNextUpOrHovered
-                        ? cn(
-                            COLORS.text.secondary,
-                            "drop-shadow-[0_1px_2px_rgba(0,0,0,0.08)] dark:drop-shadow-[0_1px_2px_rgba(255,255,255,0.10)]",
-                          )
-                        : COLORS.text.muted,
-                    )}
-                  >
-                    {song.artist}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

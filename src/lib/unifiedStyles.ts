@@ -111,22 +111,50 @@ export const LAYOUT = {
     grid: "grid",
   },
 
-  // Spacing scale
+  // Spacing scale (includes legacy space-* patterns)
   spacing: {
     xs: "gap-1",
     sm: "gap-2",
     md: "gap-4",
     lg: "gap-6",
     xl: "gap-8",
+    // Legacy vertical spacing
+    spaceY: {
+      sm: "space-y-2",
+      md: "space-y-4",
+      lg: "space-y-6",
+    },
+    // Legacy horizontal spacing
+    spaceX: {
+      sm: "space-x-2",
+      md: "space-x-4",
+      lg: "space-x-6",
+    },
+    // Micro gaps for tight layouts
+    micro: "gap-[2px]",
   },
 
-  // Padding patterns
+  // Padding patterns (includes button-specific padding)
   padding: {
     none: "p-0",
+    xs: "p-2",
     sm: "p-3",
     md: "p-4",
     lg: "p-6",
     xl: "p-8",
+    // Button-specific padding patterns
+    button: {
+      sm: "px-4 py-2",
+      md: "px-6 py-3",
+      lg: "px-8 py-4",
+    },
+    // Legacy component-specific patterns
+    section: {
+      sm: "px-2 py-4",
+      md: "px-4 pb-4 pl-2",
+      lg: "p-8",
+      queue: "px-4 pb-4 pl-6", // Specific to queue components
+    },
   },
 
   // Rounded corners
@@ -192,6 +220,14 @@ export const BUTTON_STYLES = {
     "dark:hover:bg-slate-700/80 dark:hover:text-slate-200",
     "border",
     ANIMATIONS.transition.fast,
+  ].join(" "),
+
+  // Legacy glass morphism style from original components
+  glassButton: [
+    "rounded-lg bg-white/40 font-medium text-gray-900 shadow-md backdrop-blur-md",
+    "transition-all duration-200 hover:bg-white/60 hover:shadow-lg",
+    "dark:bg-slate-900/75 dark:text-slate-100 dark:hover:bg-slate-900/90",
+    LAYOUT.padding.button.md,
   ].join(" "),
 
   ghost: [

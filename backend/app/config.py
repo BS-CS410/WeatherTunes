@@ -26,7 +26,9 @@ class WeatherConfig:
 class SpotifyConfig:
     """Spotify API configuration."""
 
-    SCOPE: Final[str] = "user-library-read user-read-email user-read-private"
+    SCOPE: Final[str] = (
+        "user-library-read user-read-email user-read-private user-read-playback-state user-modify-playback-state user-read-currently-playing"
+    )
     CLIENT_ID: Final[str] = os.getenv("SPOTIPY_CLIENT_ID", "")
     CLIENT_SECRET: Final[str] = os.getenv("SPOTIPY_CLIENT_SECRET", "")
     REDIRECT_URI: Final[str] = os.getenv("SPOTIPY_REDIRECT_URI", "")
