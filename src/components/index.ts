@@ -59,5 +59,3 @@ export * from "./icons";
 
 // === STYLE SYSTEM (Deprecated - Use unifiedStyles) ===
 // Legacy style exports - prefer importing from @/lib/unifiedStyles
-export * from "./styles/WeatherTunesStyles";
-export { createElementStyles } from "./styles/ElementStyles";
