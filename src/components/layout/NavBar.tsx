@@ -4,7 +4,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import { useState } from "react";
 
-function NavBar() {
+export function NavBar() {
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   return (
     <>
@@ -55,5 +55,3 @@ function NavBar() {
     </>
   );
 }
-
-export default NavBar;

@@ -1,9 +1,8 @@
-import React from "react";
 import { SunriseIcon, SunsetIcon } from "@/components/icons";
 import type { WeatherDisplayData } from "@/types/weather";
-import { SectionWrapper } from "./layout/SectionWrapper";
-import { createElementStyles } from "./styles/ElementStyles";
-import { colorTheme } from "./styles/WeatherTunesStyles";
+import { SectionWrapper } from "../layout/SectionWrapper";
+import { createElementStyles } from "../styles/ElementStyles";
+import { colorTheme } from "../styles/WeatherTunesStyles";
 import { useCurrentTrackContext } from "@/contexts/useCurrentTrackContext";
 
 /**
@@ -30,7 +29,7 @@ import { useCurrentTrackContext } from "@/contexts/useCurrentTrackContext";
  * values to prevent line spacing from resetting during window resizing
  */
 
-interface WeatherTunesDisplayProps {
+interface WeatherDisplayProps {
   weatherData: WeatherDisplayData;
 }
 
@@ -38,9 +37,9 @@ interface WeatherTunesDisplayProps {
  * Integrated weather and music display component using 2x1 grid layout
  * Maximizes maintainability through centralized styling and clear separation of concerns
  */
-const WeatherTunesDisplay: React.FC<WeatherTunesDisplayProps> = ({
+export function WeatherDisplay({
   weatherData,
-}) => {
+}: WeatherDisplayProps) {
   const { trackMetadata, currentTrackId, isLoading } = useCurrentTrackContext();
 
   const {
@@ -136,6 +135,4 @@ const WeatherTunesDisplay: React.FC<WeatherTunesDisplayProps> = ({
       </SectionWrapper>
     </div>
   );
-};
-
-export default WeatherTunesDisplay;
+}

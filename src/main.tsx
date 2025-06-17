@@ -4,7 +4,7 @@ import "./index.css";
 import App from "./App.tsx";
 import { BrowserRouter } from "react-router-dom";
 import { SettingsProvider } from "@/contexts/SettingsContext";
-import { MuiThemeProvider } from "@/components/MuiThemeProvider";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import { CurrentTrackProvider } from "@/contexts/CurrentTrackContext";
 
 createRoot(document.getElementById("root")!).render(
@@ -12,9 +12,9 @@ createRoot(document.getElementById("root")!).render(
     <BrowserRouter>
       <SettingsProvider>
         <CurrentTrackProvider>
-          <MuiThemeProvider>
+          <ThemeProvider>
             <App />
-          </MuiThemeProvider>
+          </ThemeProvider>
         </CurrentTrackProvider>
       </SettingsProvider>
     </BrowserRouter>

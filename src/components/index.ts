@@ -17,28 +17,30 @@ export { ErrorBoundary, withErrorBoundary } from "./shared/ErrorBoundary";
 
 // === WEATHER DOMAIN ===
 // Components related to weather display, forecast, and background visuals
-export { VideoBackground } from "./VideoBackground";
-export { ForecastCard } from "./ForecastCard";
+export { VideoBackground } from "./weather/VideoBackground";
+export { ForecastCard } from "./weather/ForecastCard";
+export { WeatherDisplay } from "./weather/WeatherDisplay";
 
 // === MUSIC DOMAIN ===
 // Components for music playback, queue management, and audio controls
-export { UpNext } from "./UpNext";
-export { default as CurrentlyPlaying } from "./CurrentlyPlaying";
-export { default as Favorites } from "./Favorites";
+export { UpNext } from "./music/UpNext";
+export { CurrentlyPlaying } from "./music/CurrentlyPlaying";
+export { Favorites } from "./music/Favorites";
+
+// === SETTINGS DOMAIN ===
+// Settings interface and controls
+export { SettingsButton } from "./settings/SettingsButton";
+export { SettingsMenu } from "./settings/SettingsMenu";
 
 // === LAYOUT DOMAIN ===
-// Navigation, settings, unified displays, and overall app structure
-export { default as NavBar } from "./NavBar";
-export { SettingsButton } from "./SettingsButton";
-export { SettingsMenu } from "./SettingsMenu";
-export { default as WeatherTunesDisplay } from "./WeatherTunesDisplay";
-export { ResponsiveLayout } from "./ResponsiveLayout";
-export { MuiThemeProvider } from "./MuiThemeProvider";
-export { Card as MuiCard, CardContent as MuiCardContent } from "./MuiCard";
-
-// === LAYOUT COMPONENTS ===
-// Reusable layout components for consistent structure
+// Navigation, layout, and overall app structure
+export { NavBar } from "./layout/NavBar";
+export { AppLayout } from "./layout/AppLayout";
 export { SectionWrapper } from "./layout/SectionWrapper";
+
+// === THEME & PROVIDERS ===
+// Theme and context providers
+export { ThemeProvider } from "./ThemeProvider";
 
 // === STYLE SYSTEM ===
 // Centralized styling system for maximum maintainability
@@ -50,7 +52,7 @@ export { createElementStyles } from "./styles/ElementStyles";
 export * from "./icons";
 
 // === UI PRIMITIVES ===
-// Base shadcn/ui components for consistent design system (kept for compatibility)
+// Base shadcn/ui components for consistent design system
 export * from "./ui/button";
 export * from "./ui/card";
 export * from "./ui/input";

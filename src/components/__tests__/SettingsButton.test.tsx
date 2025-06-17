@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { SettingsButton } from "../SettingsButton";
+import { SettingsButton } from "../settings/SettingsButton";
 import { SettingsProvider } from "../../contexts/SettingsContext";
 import { createElement, type ReactNode } from "react";
 

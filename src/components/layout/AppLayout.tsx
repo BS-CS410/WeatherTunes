@@ -1,7 +1,7 @@
 import { Container, useMediaQuery, useTheme } from "@mui/material";
 import { type ReactNode } from "react";
 
-interface ResponsiveLayoutProps {
+interface AppLayoutProps {
   children: ReactNode;
   maxWidth?: "xs" | "sm" | "md" | "lg" | "xl";
   className?: string;
@@ -11,11 +11,11 @@ interface ResponsiveLayoutProps {
  * Responsive layout wrapper that provides consistent spacing and breakpoints
  * Integrates MUI's responsive system with existing design
  */
-export function ResponsiveLayout({
+export function AppLayout({
   children,
   maxWidth = "lg",
   className = "",
-}: ResponsiveLayoutProps) {
+}: AppLayoutProps) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 

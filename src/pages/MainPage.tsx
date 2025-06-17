@@ -1,14 +1,17 @@
-import WeatherTunesDisplay from "@/components/WeatherTunesDisplay";
-import UpNext from "@/components/UpNext";
-import CurrentlyPlaying from "@/components/CurrentlyPlaying";
-import Favorites from "@/components/Favorites";
-import { VideoBackground } from "@/components/VideoBackground";
-import { SettingsButton } from "@/components/SettingsButton";
-import { ForecastCard } from "@/components";
+import {
+  WeatherDisplay,
+  UpNext,
+  CurrentlyPlaying,
+  Favorites,
+  VideoBackground,
+  SettingsButton,
+  ForecastCard,
+  GlassCard,
+  LoadingState,
+  ErrorState,
+} from "@/components";
 import { useWeatherData } from "@/hooks/useWeather";
 import { useThemeManager } from "@/hooks/useThemeManager";
-import { GlassCard } from "@/components/shared/GlassCard";
-import { LoadingState, ErrorState } from "@/components/shared/StateComponents";
 import { LAYOUT } from "@/lib/sharedStyles";
 
 function MainPage() {
@@ -56,7 +59,7 @@ function MainPage() {
 
         {/* Unified Weather and Currently Playing Display */}
         <GlassCard withPadding={false}>
-          <WeatherTunesDisplay weatherData={displayData} />
+          <WeatherDisplay weatherData={displayData} />
         </GlassCard>
 
         {/* Currently Playing Section */}

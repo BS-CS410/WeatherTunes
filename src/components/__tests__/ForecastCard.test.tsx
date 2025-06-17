@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { ForecastCard } from "../ForecastCard";
+import { ForecastCard } from "../weather/ForecastCard";
 import { SettingsProvider } from "../../contexts/SettingsContext";
 import { createElement, type ReactNode } from "react";
 

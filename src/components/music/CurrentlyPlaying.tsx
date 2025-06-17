@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { getSpotifyTrackForWeather } from "@/lib/spotifyWeather";
 import { useCurrentTrackContext } from "@/contexts/useCurrentTrackContext";
 
@@ -16,9 +16,9 @@ interface CurrentlyPlayingProps {
  * Spotify-integrated music player component that uses weather data to select tracks
  * Integrates seamlessly with the MUI-based design system
  */
-const CurrentlyPlaying: React.FC<CurrentlyPlayingProps> = ({
+export function CurrentlyPlaying({
   className = "",
-}) => {
+}: CurrentlyPlayingProps) {
   const [queue, setQueue] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -203,6 +203,4 @@ const CurrentlyPlaying: React.FC<CurrentlyPlayingProps> = ({
       )}
     </div>
   );
-};
-
-export default CurrentlyPlaying;
+}

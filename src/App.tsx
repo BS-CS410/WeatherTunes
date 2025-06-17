@@ -1,15 +1,14 @@
 import { Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
-import NavBar from "./components/NavBar";
+import { NavBar, AppLayout } from "./components";
 import MainPage from "./pages/MainPage";
 import AuthCallback from "./pages/AuthCallback";
-import { ResponsiveLayout } from "./components/ResponsiveLayout";
 import { ErrorBoundary } from "./components/shared/ErrorBoundary";
 
 function App() {
   return (
     <ErrorBoundary>
-      <ResponsiveLayout
+      <AppLayout
         maxWidth="lg"
         className="min-height-full relative mx-auto flex w-full flex-1 flex-col"
       >
@@ -24,7 +23,7 @@ function App() {
             {/* TODO: make fallback Route to send unknown routes to login page */}
           </Routes>
         </main>
-      </ResponsiveLayout>
+      </AppLayout>
     </ErrorBoundary>
   );
 }

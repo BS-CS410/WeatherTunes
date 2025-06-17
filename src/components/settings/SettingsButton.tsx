@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { SettingsIcon } from "@/components/icons";
-import { SettingsMenu } from "@/components/SettingsMenu";
+import { SettingsMenu } from "./SettingsMenu";
 import { Button } from "@/components/ui/button";
 
 export function SettingsButton() {

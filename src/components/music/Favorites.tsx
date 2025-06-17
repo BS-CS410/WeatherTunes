@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import * as ScrollArea from "@radix-ui/react-scroll-area";
 
 interface FavoritesProps {
@@ -9,7 +9,7 @@ interface FavoritesProps {
  * User's liked tracks display component with horizontal scrolling
  * Integrates with backend to fetch and display liked Spotify tracks
  */
-const Favorites: React.FC<FavoritesProps> = ({ className = "" }) => {
+export function Favorites({ className = "" }: FavoritesProps) {
   const [likedTracks, setLikedTracks] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -117,6 +117,4 @@ const Favorites: React.FC<FavoritesProps> = ({ className = "" }) => {
       </ScrollArea.Root>
     </div>
   );
-};
-
-export default Favorites;
+}

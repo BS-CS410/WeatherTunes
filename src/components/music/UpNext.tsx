@@ -143,5 +143,3 @@ export function UpNext() {
     </div>
   );
 }
-
-export default UpNext;

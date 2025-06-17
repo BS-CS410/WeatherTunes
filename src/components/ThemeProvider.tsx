@@ -1,10 +1,10 @@
-import { ThemeProvider } from "@mui/material/styles";
+import { ThemeProvider as MuiThemeProvider } from "@mui/material/styles";
 import { CssBaseline } from "@mui/material";
 import { type ReactNode } from "react";
 import { muiTheme, muiDarkTheme } from "../lib/muiTheme";
 import { useSettings } from "../hooks/useSettings";
 
-interface MuiThemeProviderProps {
+interface ThemeProviderProps {
   children: ReactNode;
 }
 
@@ -12,7 +12,7 @@ interface MuiThemeProviderProps {
  * Material UI theme provider that integrates with existing settings context
  * Automatically switches between light and dark themes based on user preferences
  */
-export function MuiThemeProvider({ children }: MuiThemeProviderProps) {
+export function ThemeProvider({ children }: ThemeProviderProps) {
   const { settings } = useSettings();
 
   // Determine which theme to use based on settings
@@ -24,9 +24,9 @@ export function MuiThemeProvider({ children }: MuiThemeProviderProps) {
   const theme = isDark ? muiDarkTheme : muiTheme;
 
   return (
-    <ThemeProvider theme={theme}>
+    <MuiThemeProvider theme={theme}>
       <CssBaseline enableColorScheme />
       {children}
-    </ThemeProvider>
+    </MuiThemeProvider>
   );
 }
