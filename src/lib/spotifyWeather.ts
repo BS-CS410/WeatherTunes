@@ -150,6 +150,7 @@ export async function getSpotifyTrackForWeather(
       return matchingSongs[randomIndex].id;
     }
 
+    // Fallback: find songs with at least one matching tag
     const fallbackSongs = tracks.filter((song) => {
       if (!song.tags) return false;
       return selectedTags.some((tag) => song.tags!.includes(tag));
@@ -157,15 +158,40 @@ export async function getSpotifyTrackForWeather(
 
     if (fallbackSongs.length > 0) {
       const randomIndex = Math.floor(Math.random() * fallbackSongs.length);
-      console.warn("Using fallback song (any tag match)");
+      console.warn("Using fallback song (partial tag match)");
       return fallbackSongs[randomIndex].id;
     }
 
-    console.warn("No matching songs found, picking random song from library.");
+    // Final fallback: return a random song with tags
+    const songsWithTags = tracks.filter(
+      (song) => song.tags && song.tags.length > 0,
+    );
+    if (songsWithTags.length > 0) {
+      const randomIndex = Math.floor(Math.random() * songsWithTags.length);
+      console.warn("No matching songs found, picking random song with tags.");
+      return songsWithTags[randomIndex].id;
+    }
+
+    // Last resort: any song
+    console.warn("No songs with tags found, picking any random song.");
     const randomTrackIndex = Math.floor(Math.random() * tracks.length);
     return tracks[randomTrackIndex].id;
   } catch (error) {
     console.error("Error fetching weather or selecting track:", error);
+    // Fallback to random track with tags
+    const tracksWithTags = tracks.filter(
+      (track) => track.tags && track.tags.length > 0,
+    );
+    const fallbackTracks = tracksWithTags.length > 0 ? tracksWithTags : tracks;
+
+    if (fallbackTracks.length > 0) {
+      const randomTrackIndex = Math.floor(
+        Math.random() * fallbackTracks.length,
+      );
+      return fallbackTracks[randomTrackIndex].id;
+    }
+
+    // Absolute fallback
     const randomTrackIndex = Math.floor(Math.random() * tracks.length);
     return tracks[randomTrackIndex].id;
   }
@@ -203,15 +229,20 @@ export async function getPlaylistForWeather(
     }
 
     if (selectedTags.length === 0) {
+      console.warn(
+        `No tags found for condition: ${condition}, temp: ${tempRange}, time: ${timeOfDay}`,
+      );
       selectedTags = (playlistMap.clear as TempSpecificPlaylists).mild
         .afternoon;
     }
 
+    // First try: exact tag matches
     let matchingSongs = tracks.filter((song) => {
       if (!song.tags) return false;
       return selectedTags.every((tag) => song.tags!.includes(tag));
     });
 
+    // Second try: any tag match if exact matches are insufficient
     if (matchingSongs.length < count) {
       const additionalSongs = tracks.filter((song) => {
         if (!song.tags || matchingSongs.find((ms) => ms.id === song.id)) {
@@ -222,36 +253,52 @@ export async function getPlaylistForWeather(
       matchingSongs = [...matchingSongs, ...additionalSongs];
     }
 
+    // Shuffle the results
     matchingSongs.sort(() => 0.5 - Math.random());
     const playlistIds = matchingSongs.slice(0, count).map((song) => song.id);
 
+    // Fill remaining slots with random songs if needed
     if (playlistIds.length < count) {
       const remainingCount = count - playlistIds.length;
-      const randomFallbackSongs = tracks
-        .filter((song) => !playlistIds.includes(song.id))
+      const availableTracks = tracks.filter(
+        (song) =>
+          song.tags && song.tags.length > 0 && !playlistIds.includes(song.id),
+      );
+
+      const randomFallbackSongs = availableTracks
         .sort(() => 0.5 - Math.random())
         .slice(0, remainingCount)
         .map((song) => song.id);
       playlistIds.push(...randomFallbackSongs);
     }
 
+    // Final fallback if still no tracks
     if (playlistIds.length === 0 && tracks.length > 0) {
       console.warn(
-        "No songs found for weather, returning random tracks from library.",
+        "No suitable songs found for weather, returning random tracks from library.",
       );
-      return tracks
+      const tracksWithTags = tracks.filter((t) => t.tags && t.tags.length > 0);
+      const fallbackTracks =
+        tracksWithTags.length > 0 ? tracksWithTags : tracks;
+      return fallbackTracks
         .sort(() => 0.5 - Math.random())
-        .slice(0, Math.min(count, tracks.length))
+        .slice(0, Math.min(count, fallbackTracks.length))
         .map((s) => s.id);
     }
 
     return playlistIds;
   } catch (error) {
     console.error("Error fetching weather or generating playlist:", error);
-    if (tracks.length > 0) {
-      return tracks
+    // Fallback to random tracks with tags
+    const tracksWithTags = tracks.filter(
+      (track) => track.tags && track.tags.length > 0,
+    );
+    const fallbackTracks = tracksWithTags.length > 0 ? tracksWithTags : tracks;
+
+    if (fallbackTracks.length > 0) {
+      return fallbackTracks
         .sort(() => 0.5 - Math.random())
-        .slice(0, Math.min(count, tracks.length))
+        .slice(0, Math.min(count, fallbackTracks.length))
         .map((s) => s.id);
     }
     return [];

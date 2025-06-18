@@ -23,7 +23,25 @@ export class QueueManager {
    * Generate a queue based on mood/tags
    */
   static generateMoodQueue(tags: string[], maxTracks: number = 10): string[] {
-    const tracks = TracksManager.getTracksByTags(tags);
+    // First try to find tracks with any of the tags
+    let tracks = TracksManager.getTracksByTags(tags);
+
+    // If no tracks found with any tags, fall back to random tracks
+    if (tracks.length === 0) {
+      console.warn(
+        `No tracks found for tags: ${tags.join(", ")}. Using random tracks.`,
+      );
+      return this.getRandomTracks(maxTracks);
+    }
+
+    // If we have fewer tracks than needed, add more variety
+    if (tracks.length < maxTracks) {
+      const additionalTracks = TracksManager.getAllTracks().filter(
+        (track) =>
+          !tracks.some((existingTrack) => existingTrack.id === track.id),
+      );
+      tracks = [...tracks, ...additionalTracks];
+    }
 
     // Shuffle and limit tracks
     const shuffled = this.shuffleArray([...tracks]);

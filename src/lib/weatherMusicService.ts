@@ -15,46 +15,55 @@ export class WeatherMusicService {
     timeOfDay: "morning" | "afternoon" | "evening" | "night" = "afternoon",
     maxTracks: number = 12,
   ): string[] {
-    // Map weather conditions to music tags
+    // Map weather conditions to music tags that actually exist in tracks.json
     const weatherTagMap: Record<string, string[]> = {
-      clear: ["sunny", "happy", "upbeat", "feel good"],
-      sunny: ["sunny", "happy", "upbeat", "feel good"],
-      "partly-cloudy": ["mellow", "indie", "chill"],
-      cloudy: ["cloudy", "mellow", "indie", "lo-fi"],
-      overcast: ["cloudy", "mellow", "indie", "lo-fi"],
-      rain: ["rainy", "chill", "sleepy", "soft"],
-      drizzle: ["rainy", "chill", "sleepy", "soft"],
-      thunderstorm: ["storm", "intense", "dramatic"],
-      snow: ["snowy", "acoustic", "winter", "cozy"],
-      fog: ["mellow", "ambient", "chill"],
-      mist: ["mellow", "ambient", "chill"],
+      clear: ["sunny", "happy", "pop", "upbeat pop", "feel good hits"],
+      sunny: ["sunny", "happy", "pop", "upbeat pop", "feel good hits"],
+      "partly-cloudy": ["chill", "indie", "pop"],
+      cloudy: ["chill", "indie", "pop", "relax"],
+      overcast: ["chill", "indie", "pop", "relax"],
+      rain: ["rainy", "chill", "relax", "rainy night jazz", "soft rain indie"],
+      drizzle: ["rainy", "chill", "relax", "rainy night jazz"],
+      thunderstorm: [
+        "intense",
+        "storm",
+        "dramatic",
+        "electronic",
+        "stormy vibes",
+      ],
+      snow: ["acoustic", "winter", "chill", "cozy", "indie"],
+      fog: ["chill", "ambient", "relax"],
+      mist: ["chill", "ambient", "relax"],
     };
 
-    // Map temperature ranges to mood modifiers
+    // Map temperature ranges to mood modifiers using actual tags
     const tempMoodMap = (temp: number): string[] => {
-      if (temp < 0) return ["winter", "cozy", "acoustic"];
-      if (temp < 10) return ["cool", "mellow", "indie"];
-      if (temp < 20) return ["mild", "indie", "acoustic"];
-      if (temp < 30) return ["warm", "upbeat", "happy"];
-      return ["hot", "summer", "dance", "tropical"];
+      if (temp < 0) return ["winter", "acoustic", "chill"];
+      if (temp < 10) return ["chill", "indie"];
+      if (temp < 20) return ["indie", "acoustic", "pop"];
+      if (temp < 30) return ["pop", "upbeat pop", "happy"];
+      return ["sunny", "dance", "party hits", "summer dance"];
     };
 
-    // Map time of day to additional tags
+    // Map time of day to additional tags using actual tags
     const timeTagMap: Record<string, string[]> = {
-      morning: ["morning", "fresh", "upbeat"],
-      afternoon: ["bright", "energetic"],
-      evening: ["sunset", "mellow", "chill"],
-      night: ["nighttime", "lo-fi", "ambient"],
+      morning: ["fresh pop", "upbeat pop", "happy"],
+      afternoon: ["pop", "upbeat pop", "sunny"],
+      evening: ["sunset pop", "beach chill", "chill"],
+      night: ["late night summer vibes", "rainy night jazz", "dreamy beats"],
     };
 
     // Combine all tags
-    const weatherTags = weatherTagMap[condition.toLowerCase()] || ["mellow"];
+    const weatherTags = weatherTagMap[condition.toLowerCase()] || [
+      "pop",
+      "chill",
+    ];
     const tempTags = tempMoodMap(temperature);
     const timeTags = timeTagMap[timeOfDay];
 
     const allTags = [...weatherTags, ...tempTags, ...timeTags];
 
-    // Generate queue based on combined tags
+    // Generate queue based on combined tags with improved fallback
     return QueueManager.generateMoodQueue(allTags, maxTracks);
   }
 
@@ -116,19 +125,19 @@ export class WeatherMusicService {
     temperature: number,
   ): string[] {
     const weatherTagMap: Record<string, string[]> = {
-      clear: ["sunny", "bright"],
-      sunny: ["sunny", "bright"],
-      rain: ["rainy", "wet"],
-      cloudy: ["cloudy", "overcast"],
-      snow: ["snowy", "cold"],
-      storm: ["stormy", "intense"],
+      clear: ["sunny", "happy", "pop"],
+      sunny: ["sunny", "happy", "pop"],
+      rain: ["rainy", "chill", "relax"],
+      cloudy: ["chill", "indie"],
+      snow: ["acoustic", "winter", "chill"],
+      storm: ["intense", "storm", "dramatic"],
     };
 
-    const weatherTags = weatherTagMap[condition.toLowerCase()] || [];
+    const weatherTags = weatherTagMap[condition.toLowerCase()] || ["pop"];
 
-    // Add temperature-based tags
-    if (temperature > 25) weatherTags.push("hot", "summer");
-    else if (temperature < 5) weatherTags.push("cold", "winter");
+    // Add temperature-based tags using actual tags from tracks.json
+    if (temperature > 25) weatherTags.push("sunny", "dance", "party hits");
+    else if (temperature < 5) weatherTags.push("winter", "acoustic", "chill");
 
     return weatherTags;
   }
@@ -142,16 +151,22 @@ export class WeatherMusicService {
     let seasonalTags: string[];
     if (month >= 2 && month <= 4) {
       // Spring (March-May)
-      seasonalTags = ["fresh", "upbeat", "bright", "indie"];
+      seasonalTags = ["fresh pop", "upbeat pop", "happy", "indie"];
     } else if (month >= 5 && month <= 7) {
       // Summer (June-August)
-      seasonalTags = ["summer", "sunny", "dance", "tropical", "upbeat"];
+      seasonalTags = [
+        "sunny",
+        "dance",
+        "party hits",
+        "summer dance",
+        "upbeat pop",
+      ];
     } else if (month >= 8 && month <= 10) {
       // Fall (September-November)
-      seasonalTags = ["mellow", "indie", "acoustic", "chill"];
+      seasonalTags = ["chill", "indie", "acoustic"];
     } else {
       // Winter (December-February)
-      seasonalTags = ["cozy", "winter", "acoustic", "soft"];
+      seasonalTags = ["acoustic", "winter", "chill"];
     }
 
     return QueueManager.generateMoodQueue(seasonalTags, maxTracks);

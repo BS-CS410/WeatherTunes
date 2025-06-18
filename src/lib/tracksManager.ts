@@ -34,9 +34,14 @@ export class TracksManager {
    * Search tracks by tags
    */
   static getTracksByTags(tags: string[]): TrackMetadata[] {
-    return Array.from(this.tracks.values()).filter((track) =>
-      track.tags?.some((tag) => tags.includes(tag)),
-    );
+    return Array.from(this.tracks.values()).filter((track) => {
+      // Skip tracks without tags
+      if (!track.tags || track.tags.length === 0) {
+        return false;
+      }
+      // Return tracks that have at least one matching tag
+      return track.tags.some((tag) => tags.includes(tag));
+    });
   }
 
   /**
@@ -52,13 +57,27 @@ export class TracksManager {
   static getTracksForWeather(condition: string): TrackMetadata[] {
     const weatherTagMap: Record<string, string[]> = {
       sunny: ["sunny", "happy", "upbeat pop", "summer dance", "fresh pop"],
-      rainy: ["rainy", "chill", "sleepy lofi", "soft rain indie"],
-      cloudy: ["cloudy", "mellow", "indie", "lo-fi"],
-      snowy: ["snowy", "acoustic", "winter", "cozy"],
-      stormy: ["storm", "intense", "dramatic"],
+      clear: ["sunny", "happy", "upbeat pop", "summer dance", "fresh pop"],
+      rainy: ["rainy", "chill", "rainy night jazz", "soft rain indie"],
+      rain: ["rainy", "chill", "rainy night jazz", "soft rain indie"],
+      cloudy: ["chill", "indie", "pop", "relax"],
+      snowy: ["acoustic", "winter", "chill"],
+      snow: ["acoustic", "winter", "chill"],
+      stormy: ["intense", "storm", "dramatic", "stormy vibes"],
+      thunderstorm: ["intense", "storm", "dramatic", "stormy vibes"],
     };
 
-    const tags = weatherTagMap[condition.toLowerCase()] || [];
-    return this.getTracksByTags(tags);
+    const tags = weatherTagMap[condition.toLowerCase()] || ["pop", "chill"];
+    const tracks = this.getTracksByTags(tags);
+
+    // If no tracks found for weather condition, return random tracks
+    if (tracks.length === 0) {
+      console.warn(
+        `No tracks found for weather condition: ${condition}. Using random tracks.`,
+      );
+      return this.getAllTracks().slice(0, 10);
+    }
+
+    return tracks;
   }
 }

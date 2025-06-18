@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useCurrentTrackContext } from "@/contexts/useCurrentTrackContext";
 import { useAuth } from "@/hooks/useAuth";
 import { WeatherMusicService } from "@/lib/weatherMusicService";
@@ -17,6 +17,7 @@ interface CurrentTrackCardProps {
  */
 export function CurrentTrackCard({ className = "" }: CurrentTrackCardProps) {
   const [message, setMessage] = useState<string | null>(null);
+  const hasGeneratedInitialQueue = useRef(false);
   const {
     trackMetadata,
     currentTrackId,
@@ -29,18 +30,32 @@ export function CurrentTrackCard({ className = "" }: CurrentTrackCardProps) {
   const { user, isLoading: authLoading, login } = useAuth();
   const { rawResponse: weatherData } = useWeatherData();
 
+  // Generate initial queue only once when conditions are met
   useEffect(() => {
-    // Generate initial weather-based queue if authenticated and no queue exists
-    if (user && !isLoading && songQueue.length === 0 && weatherData) {
+    if (
+      user &&
+      !isLoading &&
+      songQueue.length === 0 &&
+      weatherData &&
+      !hasGeneratedInitialQueue.current
+    ) {
+      hasGeneratedInitialQueue.current = true;
       const weatherQueue = WeatherMusicService.generateWeatherBasedQueue(
         weatherData.main.temp,
         weatherData.weather[0].main.toLowerCase(),
         "afternoon",
         10,
       );
+      // Call replaceQueueWithTracks directly without including it in deps
       replaceQueueWithTracks(weatherQueue);
     }
-  }, [user, isLoading, songQueue.length, weatherData, replaceQueueWithTracks]);
+
+    // Reset the flag if user logs out
+    if (!user) {
+      hasGeneratedInitialQueue.current = false;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, isLoading, songQueue.length, weatherData]); // Intentionally excluding replaceQueueWithTracks to prevent infinite loop
 
   const handleLike = async () => {
     if (!currentTrackId) return;
@@ -94,16 +109,33 @@ export function CurrentTrackCard({ className = "" }: CurrentTrackCardProps) {
       return;
     }
 
-    if (!weatherData) return;
+    if (!weatherData) {
+      setMessage("Weather data not available. Please wait and try again.");
+      setTimeout(() => setMessage(null), 3000);
+      return;
+    }
 
-    const newQueue = WeatherMusicService.generateDynamicDayQueue(
-      weatherData.main.temp,
-      weatherData.weather[0].main.toLowerCase(),
-      12,
-    );
-    await replaceQueueWithTracks(newQueue);
-    setMessage("Queue refreshed with new weather-based tracks!");
-    setTimeout(() => setMessage(null), 2000);
+    try {
+      const newQueue = WeatherMusicService.generateDynamicDayQueue(
+        weatherData.main.temp,
+        weatherData.weather[0].main.toLowerCase(),
+        12,
+      );
+
+      if (newQueue.length === 0) {
+        setMessage("No tracks found for current weather conditions.");
+        setTimeout(() => setMessage(null), 3000);
+        return;
+      }
+
+      await replaceQueueWithTracks(newQueue);
+      setMessage("Queue refreshed with new weather-based tracks!");
+      setTimeout(() => setMessage(null), 2000);
+    } catch (error) {
+      console.error("Error refreshing queue:", error);
+      setMessage("Failed to refresh queue. Please try again.");
+      setTimeout(() => setMessage(null), 3000);
+    }
   };
 
   if (authLoading || isLoading) {

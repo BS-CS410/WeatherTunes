@@ -45,22 +45,28 @@
     "id": "2TpxZ7JUBn3uw46aR7qd6V",
     "title": "All I Want",
     "artist": "Kodaline",
-    "albumArt": "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e021ae2bdc1378da1b440e1f610"
+    "albumArt": "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e021ae2bdc1378da1b440e1f610",
+    "tags": ["indie", "acoustic", "chill", "pop"]
   },
   {
     "id": "7ouMYWpwJ422jRcDASZB7P",
     "title": "Knights of Cydonia",
     "artist": "Muse",
-    "albumArt": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e0228933b808bfb4cbbd0385400"
+    "albumArt": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e0228933b808bfb4cbbd0385400",
+    "tags": ["intense", "electronic", "upbeat pop", "dramatic"]
   },
   {
     "id": "1lDWb6b6ieDQ2xT7ewTC3G",
     "title": "Somebody Told Me",
     "artist": "The Killers",
-    "albumArt": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02797febe9f06dd027b67a3e64"
+    "albumArt": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02797febe9f06dd027b67a3e64",
+    "tags": ["indie", "upbeat pop", "pop", "happy"]
   },
   {
     "id": "7GhIk7Il098yCjg4BQjzvb",
+    "title": "Summer Vibes",
+    "artist": "Dance Collective",
+    "albumArt": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02placeholder7.jpg",
     "tags": [
       "pop",
       "dance",
@@ -73,6 +79,9 @@
   },
   {
     "id": "3AJwUDP919kvQ9QcozQPxg",
+    "title": "Chill Nights",
+    "artist": "Ambient Artist",
+    "albumArt": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02placeholder8.jpg",
     "tags": [
       "relax",
       "chill",
@@ -84,6 +93,9 @@
   },
   {
     "id": "3ZFTkvIE7kyPt6Nu3PEa7V",
+    "title": "Cloudy Skies",
+    "artist": "Indie Collective",
+    "albumArt": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02placeholder9.jpg",
     "tags": [
       "indie",
       "cloudy",
@@ -95,6 +107,9 @@
   },
   {
     "id": "0OFfG8pEGjPBrYpG1kCAVz",
+    "title": "Winter Acoustic",
+    "artist": "Folk Artist",
+    "albumArt": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02placeholder10.jpg",
     "tags": [
       "acoustic",
       "calm",
@@ -107,6 +122,9 @@
   },
   {
     "id": "6PWserUKEGiCpOpuJORmA4",
+    "title": "Dreamy Pop",
+    "artist": "Pop Dreams",
+    "albumArt": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02placeholder11.jpg",
     "tags": ["dance", "pop", "sunny", "calm pop", "dreamy beats"]
   },
   {
@@ -118,7 +136,10 @@
       "fresh pop",
       "upbeat pop",
       "feel good hits"
-    ]
+    ],
+    "title": "Track 12",
+    "artist": "Pop Artist",
+    "albumArt": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02placeholder12.jpg"
   },
   {
     "id": "0eGsygTp906u18L0Oimnem",
@@ -129,7 +150,10 @@
       "fresh pop",
       "upbeat pop",
       "feel good hits"
-    ]
+    ],
+    "title": "Track 13",
+    "artist": "Pop Artist",
+    "albumArt": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02placeholder13.jpg"
   },
   {
     "id": "5ChkMS8OtdzJeqyybCc9R5",
@@ -141,7 +165,10 @@
       "morning lo-fi",
       "chill beats to work",
       "ambient chill"
-    ]
+    ],
+    "title": "Track 14",
+    "artist": "Indie Artist",
+    "albumArt": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02placeholder14.jpg"
   },
   {
     "id": "4WNcduiCmDNfmTEz7JvmLv",
@@ -152,7 +179,10 @@
       "rainy night jazz",
       "soft rain indie",
       "sleepy lofi"
-    ]
+    ],
+    "title": "Track 15",
+    "artist": "Chill Artist",
+    "albumArt": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02placeholder15.jpg"
   },
   {
     "id": "3n3Ppam7vgaVa1iaRUc9Lp",
@@ -163,7 +193,10 @@
       "fresh pop",
       "upbeat pop",
       "feel good hits"
-    ]
+    ],
+    "title": "Track 16",
+    "artist": "Pop Artist",
+    "albumArt": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02placeholder16.jpg"
   },
   {
     "id": "2PpruBYCo4H7WOBJ7Q2EwM",
@@ -175,7 +208,10 @@
       "tropical morning",
       "party hits",
       "summer dance"
-    ]
+    ],
+    "title": "Track 17",
+    "artist": "Electronic Artist",
+    "albumArt": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02placeholder17.jpg"
   },
   {
     "id": "5QO79kh1waicV47BqGRL3g",
@@ -186,11 +222,23 @@
       "slow lo-fi",
       "cloudy day indie",
       "nighttime lo-fi"
-    ]
+    ],
+    "title": "Track 18",
+    "artist": "Indie Artist",
+    "albumArt": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02placeholder18.jpg"
   },
   {
     "id": "3iH0Z7HboVnbXwQDoKweUE",
-    "tags": ["intense", "storm", "electronic", "dramatic indie", "stormy vibes"]
+    "tags": [
+      "intense",
+      "storm",
+      "electronic",
+      "dramatic indie",
+      "stormy vibes"
+    ],
+    "title": "Track 19",
+    "artist": "Electronic Artist",
+    "albumArt": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02placeholder19.jpg"
   },
   {
     "id": "1AhDOtG9vPSOmsWgNW0BEY",
@@ -201,7 +249,10 @@
       "sunset pop",
       "beach chill",
       "late night summer vibes"
-    ]
+    ],
+    "title": "Track 20",
+    "artist": "Pop Artist",
+    "albumArt": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02placeholder20.jpg"
   },
   {
     "id": "6I9VzXrHxO9rA9A5euc8Ak",
@@ -212,7 +263,10 @@
       "fresh pop",
       "upbeat pop",
       "feel good hits"
-    ]
+    ],
+    "title": "Track 21",
+    "artist": "Pop Artist",
+    "albumArt": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02placeholder21.jpg"
   },
   {
     "id": "3dYD57lRAUcMHufyqn9GcI",
@@ -223,7 +277,10 @@
       "rainy night jazz",
       "soft rain indie",
       "sleepy lofi"
-    ]
+    ],
+    "title": "Track 22",
+    "artist": "Chill Artist",
+    "albumArt": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02placeholder22.jpg"
   },
   {
     "id": "4KkLzvDW36GNQ0NLyzgOTo",
@@ -235,6 +292,9 @@
       "tropical morning",
       "party hits",
       "summer dance"
-    ]
+    ],
+    "title": "Track 23",
+    "artist": "Electronic Artist",
+    "albumArt": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02placeholder23.jpg"
   }
 ]
