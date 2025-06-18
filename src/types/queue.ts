@@ -7,6 +7,7 @@ export interface TrackMetadata {
   title: string;
   artist: string;
   albumArt: string;
+  albumArtFallback?: string;
   tags?: string[];
 }
 

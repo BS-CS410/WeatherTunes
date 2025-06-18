@@ -129,7 +129,9 @@ export function CurrentTrackCard({ className = "" }: CurrentTrackCardProps) {
       }
 
       await replaceQueueWithTracks(newQueue);
-      setMessage("Queue refreshed with new weather-based tracks!");
+      setMessage(
+        `${songQueue.length > 0 ? "Queue refreshed" : "Playlist generated"} with ${newQueue.length} weather-based tracks!`,
+      );
       setTimeout(() => setMessage(null), 2000);
     } catch (error) {
       console.error("Error refreshing queue:", error);
@@ -184,14 +186,18 @@ export function CurrentTrackCard({ className = "" }: CurrentTrackCardProps) {
       >
         <div className="text-center">
           <p className={cn("mb-4", COLORS.text.muted)}>
-            No track currently playing.
+            {songQueue.length > 0
+              ? "Queue ready. Select a track to play."
+              : "No track currently playing."}
           </p>
           <Button
             onClick={handleRefreshQueue}
             disabled={isLoading}
             variant="outline"
           >
-            Generate Weather Playlist
+            {songQueue.length > 0
+              ? "Refresh Playlist"
+              : "Generate Weather Playlist"}
           </Button>
         </div>
       </div>
@@ -232,15 +238,25 @@ export function CurrentTrackCard({ className = "" }: CurrentTrackCardProps) {
         />
       </div>
 
+      {/* Queue Status */}
+      {songQueue.length > 0 && (
+        <div className="w-full text-center">
+          <p className={cn("text-xs", COLORS.text.muted)}>
+            Queue: {songQueue.length} track{songQueue.length !== 1 ? "s" : ""}{" "}
+            ready
+          </p>
+        </div>
+      )}
+
       {/* Control Buttons */}
       <div className={cn("flex w-full gap-2", LAYOUT.spacing.md)}>
         <Button
           onClick={handleRefreshQueue}
           disabled={isLoading}
           variant="outline"
-          className="flex-1"
+          className={cn("flex-1", songQueue.length > 1 ? "opacity-75" : "")}
         >
-          🔄 Refresh
+          {songQueue.length > 1 ? "🔄 Refresh Queue" : "🎵 Generate Playlist"}
         </Button>
 
         <Button

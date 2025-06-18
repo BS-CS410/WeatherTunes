@@ -216,8 +216,23 @@ export function QueueCard() {
                   >
                     <div className="relative">
                       <img
-                        src={song.albumArt || "/placeholder-album.png"}
+                        src={
+                          song.albumArt ||
+                          song.albumArtFallback ||
+                          "/placeholder-album.svg"
+                        }
                         alt={song.title}
+                        onError={(e) => {
+                          // Try fallback first, then placeholder
+                          if (
+                            song.albumArtFallback &&
+                            e.currentTarget.src !== song.albumArtFallback
+                          ) {
+                            e.currentTarget.src = song.albumArtFallback;
+                          } else {
+                            e.currentTarget.src = "/placeholder-album.svg";
+                          }
+                        }}
                         className={cn(
                           "relative z-10 h-28 w-28 cursor-pointer rounded-lg object-cover",
                           ANIMATIONS.transition.standard,
