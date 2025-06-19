@@ -28,12 +28,10 @@ export { WeatherMusicCard } from "./shared/WeatherMusicCard";
 // Components related to weather display, forecast, and background visuals
 export { WeatherBackground } from "./weather/WeatherBackground";
 export { ForecastCard } from "./weather/ForecastCard";
-export { WeatherCard } from "./weather/WeatherCard";
 
 // === MUSIC DOMAIN ===
 // Components for music playback, queue management, and audio controls
 export { QueueCard } from "./music/QueueCard";
-export { CurrentTrackCard } from "./music/CurrentTrackCard";
 export { FavoritesCard } from "./music/FavoritesCard";
 export { SpotifySearchCard } from "./music/SpotifySearchCard";
 

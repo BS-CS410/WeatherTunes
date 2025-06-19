@@ -144,7 +144,7 @@ export function QueueCard() {
   if (authLoading) {
     return (
       <div className="relative">
-        <div className={LAYOUT.padding.section.queue}>
+        <div className={LAYOUT.padding.lg}>
           <h2 className={cn(TYPOGRAPHY.display.xl, COLORS.text.primary)}>
             Up Next:
           </h2>
@@ -162,7 +162,7 @@ export function QueueCard() {
   if (!user) {
     return (
       <div className="relative">
-        <div className={LAYOUT.padding.section.queue}>
+        <div className={LAYOUT.padding.lg}>
           <h2 className={cn(TYPOGRAPHY.display.xl, COLORS.text.primary)}>
             Up Next:
           </h2>
@@ -182,7 +182,7 @@ export function QueueCard() {
       <div
         className={cn(
           "flex items-center justify-between",
-          LAYOUT.padding.section.queue,
+          LAYOUT.padding.lg,
         )}
       >
         <h2 className={cn(TYPOGRAPHY.display.xl, COLORS.text.primary)}>

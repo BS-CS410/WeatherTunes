@@ -18,7 +18,7 @@ export interface AuthState {
 
 class AuthService {
   private static instance: AuthService;
-  private listeners: ((state: AuthState) => void)[] = [];
+  private listeners: ((_state: AuthState) => void)[] = [];
   private state: AuthState = {
     user: null,
     isLoading: true,
@@ -39,7 +39,7 @@ class AuthService {
   /**
    * Subscribe to auth state changes
    */
-  subscribe(listener: (state: AuthState) => void): () => void {
+  subscribe(listener: (_state: AuthState) => void): () => void {
     this.listeners.push(listener);
     return () => {
       this.listeners = this.listeners.filter((l) => l !== listener);

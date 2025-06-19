@@ -70,7 +70,7 @@ export function useLocationBasedDefaults(): {
           // Fallback to metric if API call fails
           setLocationDefaults(getDefaultUnitsForCountry());
         }
-      } catch (error) {
+      } catch {
         // Fallback to metric units
         setLocationDefaults(getDefaultUnitsForCountry());
       } finally {

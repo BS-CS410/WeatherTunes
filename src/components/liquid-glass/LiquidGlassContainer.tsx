@@ -1,7 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import {
   LIQUID_GLASS_STYLES,
-  MOUSE_TRACKING_UTILS,
   createLiquidGlassCard,
   combineStyles,
 } from "../../lib/unifiedStyles";
@@ -42,19 +41,26 @@ export const LiquidGlassContainer: React.FC<LiquidGlassContainerProps> = ({
     if (!container || !mouseResponsive) return;
 
     const handleMouseMove = (event: MouseEvent) => {
-      MOUSE_TRACKING_UTILS.applyMouseTracking(container, event);
+      const rect = container.getBoundingClientRect();
+      const x = ((event.clientX - rect.left) / rect.width) * 100;
+      const y = ((event.clientY - rect.top) / rect.height) * 100;
+
+      container.style.setProperty("--mouse-x", `${x}%`);
+      container.style.setProperty("--mouse-y", `${y}%`);
 
       if (variant === "elastic") {
-        MOUSE_TRACKING_UTILS.applyElasticDeformation(
-          container,
-          event,
-          elasticity,
-        );
+        const elasticX = (x - 50) * (elasticity || 0.15) * 0.1;
+        const elasticY = (y - 50) * (elasticity || 0.15) * 0.1;
+        container.style.setProperty("--elastic-x", elasticX.toString());
+        container.style.setProperty("--elastic-y", elasticY.toString());
       }
     };
 
     const handleMouseLeave = () => {
-      MOUSE_TRACKING_UTILS.resetMouseTracking(container);
+      container.style.setProperty("--mouse-x", "50%");
+      container.style.setProperty("--mouse-y", "50%");
+      container.style.setProperty("--elastic-x", "0");
+      container.style.setProperty("--elastic-y", "0");
       setIsHovered(false);
     };
 

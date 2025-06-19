@@ -35,7 +35,7 @@ async function request<T = unknown>(
     let errorData;
     try {
       errorData = await response.json();
-    } catch (e) {
+    } catch {
       // Ignore if error response is not JSON
     }
     console.error(

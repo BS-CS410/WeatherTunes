@@ -269,12 +269,11 @@ export const LAYOUT = {
       md: "px-6 py-3",
       lg: "px-8 py-4",
     },
-    // Legacy component-specific patterns
+    // Legacy component-specific patterns (keep for existing components)
     section: {
       sm: "px-2 py-4",
       md: "px-4 pb-4 pl-2",
       lg: "p-8",
-      queue: "px-4 pb-4 pl-6", // Specific to queue components
     },
   },
 
@@ -1095,94 +1094,4 @@ export const createLiquidGlassCard = (
   }
 
   return styles;
-};
-
-// JavaScript utility functions for mouse tracking (to be used in React components)
-export const MOUSE_TRACKING_UTILS = {
-  // Calculate mouse position relative to element
-  getMousePosition: (event: MouseEvent, element: HTMLElement) => {
-    const rect = element.getBoundingClientRect();
-    const x = ((event.clientX - rect.left) / rect.width) * 100;
-    const y = ((event.clientY - rect.top) / rect.height) * 100;
-    const centerX = 50;
-    const centerY = 50;
-    const fromCenter =
-      Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2)) / 70.71; // Normalized to 0-1
-
-    return { x, y, fromCenter };
-  },
-
-  // Apply mouse tracking to element
-  applyMouseTracking: (element: HTMLElement, event: MouseEvent) => {
-    const { x, y, fromCenter } = MOUSE_TRACKING_UTILS.getMousePosition(
-      event,
-      element,
-    );
-
-    element.style.setProperty("--mouse-x", `${x}%`);
-    element.style.setProperty("--mouse-y", `${y}%`);
-    element.style.setProperty("--mouse-from-center", fromCenter.toString());
-  },
-
-  // Reset mouse tracking
-  resetMouseTracking: (element: HTMLElement) => {
-    element.style.setProperty("--mouse-x", "50%");
-    element.style.setProperty("--mouse-y", "50%");
-    element.style.setProperty("--mouse-from-center", "0");
-  },
-
-  // Calculate elastic deformation
-  calculateElasticDeformation: (
-    mouseX: number,
-    mouseY: number,
-    intensity: number = 0.15,
-  ) => {
-    const elasticX = (mouseX - 50) * intensity * 0.1;
-    const elasticY = (mouseY - 50) * intensity * 0.1;
-
-    return { elasticX, elasticY };
-  },
-
-  // Apply elastic deformation
-  applyElasticDeformation: (
-    element: HTMLElement,
-    event: MouseEvent,
-    intensity: number = 0.15,
-  ) => {
-    const { x, y } = MOUSE_TRACKING_UTILS.getMousePosition(event, element);
-    const { elasticX, elasticY } =
-      MOUSE_TRACKING_UTILS.calculateElasticDeformation(x, y, intensity);
-
-    element.style.setProperty("--elastic-x", elasticX.toString());
-    element.style.setProperty("--elastic-y", elasticY.toString());
-    element.style.setProperty("--elastic-intensity", intensity.toString());
-  },
-};
-
-// React Hook for mouse tracking (to be used in React components)
-export const useMouseTracking = () => {
-  const handleMouseMove = (
-    event: MouseEvent,
-    element: HTMLElement,
-    options?: {
-      elastic?: boolean;
-      intensity?: number;
-    },
-  ) => {
-    MOUSE_TRACKING_UTILS.applyMouseTracking(element, event);
-
-    if (options?.elastic) {
-      MOUSE_TRACKING_UTILS.applyElasticDeformation(
-        element,
-        event,
-        options.intensity,
-      );
-    }
-  };
-
-  const handleMouseLeave = (element: HTMLElement) => {
-    MOUSE_TRACKING_UTILS.resetMouseTracking(element);
-  };
-
-  return { handleMouseMove, handleMouseLeave };
 };

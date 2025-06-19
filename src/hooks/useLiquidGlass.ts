@@ -1,5 +1,26 @@
 import { useRef, useEffect, useState, useCallback } from "react";
-import { MOUSE_TRACKING_UTILS } from "../lib/unifiedStyles";
+
+// Simple utility functions for mouse tracking
+const getMousePosition = (event: MouseEvent, element: HTMLElement) => {
+  const rect = element.getBoundingClientRect();
+  const x = ((event.clientX - rect.left) / rect.width) * 100;
+  const y = ((event.clientY - rect.top) / rect.height) * 100;
+  const centerX = 50;
+  const centerY = 50;
+  const fromCenter =
+    Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2)) / 70.71;
+  return { x, y, fromCenter };
+};
+
+const calculateElasticDeformation = (
+  mouseX: number,
+  mouseY: number,
+  intensity: number = 0.15,
+) => {
+  const elasticX = (mouseX - 50) * intensity * 0.1;
+  const elasticY = (mouseY - 50) * intensity * 0.1;
+  return { elasticX, elasticY };
+};
 
 interface UseLiquidGlassOptions {
   mouseResponsive?: boolean;
@@ -55,12 +76,11 @@ export const useLiquidGlass = (options: UseLiquidGlassOptions = {}) => {
     };
 
     if (enableElastic) {
-      const { elasticX, elasticY } =
-        MOUSE_TRACKING_UTILS.calculateElasticDeformation(
-          mousePosition.x,
-          mousePosition.y,
-          elasticity,
-        );
+      const { elasticX, elasticY } = calculateElasticDeformation(
+        mousePosition.x,
+        mousePosition.y,
+        elasticity,
+      );
       styles["--elastic-x"] = elasticX;
       styles["--elastic-y"] = elasticY;
       styles["--elastic-intensity"] = elasticity;
@@ -97,10 +117,7 @@ export const useLiquidGlass = (options: UseLiquidGlassOptions = {}) => {
     (event: MouseEvent) => {
       if (!elementRef.current || !mouseResponsive) return;
 
-      const { x, y, fromCenter } = MOUSE_TRACKING_UTILS.getMousePosition(
-        event,
-        elementRef.current,
-      );
+      const { x, y, fromCenter } = getMousePosition(event, elementRef.current);
 
       setState((prev) => ({
         ...prev,
@@ -109,13 +126,30 @@ export const useLiquidGlass = (options: UseLiquidGlassOptions = {}) => {
       }));
 
       // Apply CSS variables directly for real-time updates
-      MOUSE_TRACKING_UTILS.applyMouseTracking(elementRef.current, event);
+      elementRef.current.style.setProperty("--mouse-x", `${x}%`);
+      elementRef.current.style.setProperty("--mouse-y", `${y}%`);
+      elementRef.current.style.setProperty(
+        "--mouse-from-center",
+        fromCenter.toString(),
+      );
 
       if (enableElastic) {
-        MOUSE_TRACKING_UTILS.applyElasticDeformation(
-          elementRef.current,
-          event,
+        const { elasticX, elasticY } = calculateElasticDeformation(
+          x,
+          y,
           elasticity,
+        );
+        elementRef.current.style.setProperty(
+          "--elastic-x",
+          elasticX.toString(),
+        );
+        elementRef.current.style.setProperty(
+          "--elastic-y",
+          elasticY.toString(),
+        );
+        elementRef.current.style.setProperty(
+          "--elastic-intensity",
+          elasticity.toString(),
         );
       }
     },
@@ -135,7 +169,11 @@ export const useLiquidGlass = (options: UseLiquidGlassOptions = {}) => {
     }));
 
     if (elementRef.current) {
-      MOUSE_TRACKING_UTILS.resetMouseTracking(elementRef.current);
+      elementRef.current.style.setProperty("--mouse-x", "50%");
+      elementRef.current.style.setProperty("--mouse-y", "50%");
+      elementRef.current.style.setProperty("--mouse-from-center", "0");
+      elementRef.current.style.setProperty("--elastic-x", "0");
+      elementRef.current.style.setProperty("--elastic-y", "0");
     }
   }, []);
 

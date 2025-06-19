@@ -77,7 +77,7 @@ export function WeatherMusicCard({
 
       setMessage("Track liked!");
       setTimeout(() => setMessage(null), 2000);
-    } catch (error) {
+    } catch {
       setMessage("Network error while liking track");
       setTimeout(() => setMessage(null), 3000);
     }
