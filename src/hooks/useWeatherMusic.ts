@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useWeatherData } from "./useWeather";
-import { WeatherMusicService } from "@/lib/weatherMusicService";
+import { SpotifyApiService } from "@/lib/spotifyApiService";
 import type { TrackMetadata } from "@/types/queue";
 
 /**
@@ -46,12 +46,14 @@ export function useWeatherMusic() {
     const { condition, temperature, timeOfDay } = musicWeatherConditions;
 
     try {
-      return await WeatherMusicService.generateWeatherBasedQueue(
-        temperature,
-        condition,
-        timeOfDay,
-        maxTracks,
-      );
+      const tracks =
+        await SpotifyApiService.getRecommendationsForCurrentWeather(
+          condition,
+          temperature,
+          maxTracks,
+          timeOfDay,
+        );
+      return tracks.map((track) => track.id);
     } catch (error) {
       console.error("Failed to generate weather queue:", error);
       return [];
@@ -67,7 +69,7 @@ export function useWeatherMusic() {
     const { condition, temperature, timeOfDay } = musicWeatherConditions;
 
     try {
-      return await WeatherMusicService.getPersonalizedWeatherRecommendations(
+      return await SpotifyApiService.getPersonalizedWeatherRecommendations(
         condition,
         temperature,
         timeOfDay,
@@ -90,7 +92,7 @@ export function useWeatherMusic() {
     limit: number = 10,
   ): Promise<TrackMetadata[]> => {
     try {
-      return await WeatherMusicService.searchTracks(query, limit);
+      return await SpotifyApiService.searchTracks(query, limit);
     } catch (error) {
       console.error("Failed to search weather tracks:", error);
       return [];

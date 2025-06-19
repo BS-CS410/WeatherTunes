@@ -6,8 +6,8 @@ import {
   type TimePeriod,
   formatUnixTimeToLocalString,
 } from "@/lib/utils";
-import { formatTemperature } from "@/lib/temperature";
-import { useSettings } from "@/hooks/useSettings";
+import { formatTemperature } from "@/lib/utils";
+import { useSettings } from "@/hooks";
 
 // Helper function to format weather condition for display
 function formatWeatherCondition(

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useSettings } from "@/hooks/useSettings";
+import { useSettings } from "@/hooks";
 import type { TimePeriod } from "@/lib/utils";
 
 /**

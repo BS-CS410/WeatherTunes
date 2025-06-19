@@ -4,6 +4,40 @@ import { useForecastData } from "../useForecast";
 import { SettingsProvider } from "../../contexts/SettingsContext";
 import { createElement, type ReactNode } from "react";
 
+// Mock the useLocalStorage and useSettings hooks from the new utility location
+const mockSetters = {
+  setTemperatureUnit: vi.fn(),
+  setSpeedUnit: vi.fn(),
+  setTimeFormat: vi.fn(),
+  setThemeMode: vi.fn(),
+};
+
+const mockSettings = {
+  settings: {
+    temperatureUnit: "F",
+    speedUnit: "mph",
+    timeFormat: "12h",
+    themeMode: "auto",
+  },
+  setTemperatureUnit: mockSetters.setTemperatureUnit,
+  setSpeedUnit: mockSetters.setSpeedUnit,
+  setTimeFormat: mockSetters.setTimeFormat,
+  setThemeMode: mockSetters.setThemeMode,
+  toggleTemperatureUnit: vi.fn(),
+  toggleTimeFormat: vi.fn(),
+  resetToDefaults: vi.fn(),
+  locationDefaults: { temperatureUnit: "F", speedUnit: "mph" },
+  isLocationLoading: false,
+};
+
+vi.mock("../utility", () => ({
+  useLocalStorage: vi.fn((_key: string, defaultValue: unknown) => [
+    defaultValue,
+    vi.fn(),
+  ]),
+  useSettings: vi.fn(() => mockSettings),
+}));
+
 // Mock the weather utility functions
 vi.mock("../../lib/weather", () => ({
   getUserLocationAndFetchForecast: vi.fn(() =>
@@ -17,14 +51,6 @@ vi.mock("../../lib/weather", () => ({
       list: [],
     }),
   ),
-}));
-
-// Mock the useLocalStorage hook for settings
-vi.mock("../useLocalStorage", () => ({
-  useLocalStorage: vi.fn((_key: string, defaultValue: unknown) => [
-    defaultValue,
-    vi.fn(),
-  ]),
 }));
 
 // Mock location based defaults

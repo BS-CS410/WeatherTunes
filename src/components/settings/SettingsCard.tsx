@@ -1,5 +1,4 @@
-import { useSettings } from "@/hooks/useSettings";
-import { useAuth } from "@/hooks/useAuth";
+import { useSettings, useAuth } from "@/hooks";
 import {
   SettingsSection,
   SettingsButtonGroup,

@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react"; // Added useEffect
 import { COLORS, TYPOGRAPHY, ANIMATIONS, LAYOUT } from "@/lib/unifiedStyles";
 import { cn } from "@/lib/utils";
 import { useCurrentTrackContext } from "@/contexts/useCurrentTrackContext";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks";
 import { useWeatherMusic } from "@/hooks/useWeatherMusic";
 import { Button } from "@/components/ui/button";
 
@@ -180,10 +180,7 @@ export function QueueCard() {
     <div className="relative">
       {/* Header with controls */}
       <div
-        className={cn(
-          "flex items-center justify-between",
-          LAYOUT.padding.lg,
-        )}
+        className={cn("flex items-center justify-between", LAYOUT.padding.lg)}
       >
         <h2 className={cn(TYPOGRAPHY.display.xl, COLORS.text.primary)}>
           Up Next:

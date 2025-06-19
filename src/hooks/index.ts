@@ -13,11 +13,11 @@ export { useCurrentTrack } from "@/hooks/useCurrentTrack";
 export { useSpotifySearch } from "@/hooks/useSpotifySearch";
 
 // Authentication hooks
-export { useAuth } from "@/hooks/useAuth";
+export { useAuth } from "@/hooks/utility";
 
 // Settings and storage hooks
-export { useSettings } from "@/hooks/useSettings";
-export { useLocalStorage } from "@/hooks/useLocalStorage";
+export { useSettings } from "@/hooks/utility";
+export { useLocalStorage } from "@/hooks/utility";
 export { useLocationBasedDefaults } from "@/hooks/useLocationBasedDefaults";
 
 // Theme and styling hooks

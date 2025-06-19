@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Search, Music, Plus, Loader2 } from "lucide-react";
 import { useSpotifySearch } from "@/hooks/useSpotifySearch";
 import { useCurrentTrack } from "@/hooks/useCurrentTrack";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks";
 import type { TrackMetadata } from "@/types/queue";
 import {
   COLORS,

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import * as ScrollArea from "@radix-ui/react-scroll-area";
 import { COLORS, TYPOGRAPHY, LAYOUT } from "@/lib/unifiedStyles";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks";
 
 interface FavoritesCardProps {
   className?: string;

@@ -3,7 +3,7 @@ import { renderHook, act, waitFor } from "@testing-library/react";
 import { useCurrentTrack } from "../useCurrentTrack";
 import { apiClient } from "@/lib";
 import { SpotifyApiService } from "@/lib/spotifyApiService";
-import { useAuth } from "../useAuth";
+import { useAuth } from "../utility";
 import type { TrackMetadata } from "@/types/queue";
 
 // Mock dependencies
@@ -23,7 +23,7 @@ vi.mock("@/lib/spotifyApiService", () => ({
   },
 }));
 
-vi.mock("../useAuth", () => ({
+vi.mock("../utility", () => ({
   useAuth: vi.fn(),
 }));
 
@@ -306,18 +306,19 @@ describe("useCurrentTrack", () => {
   });
 
   it("should update queue state when operations succeed", async () => {
+    // Use the same queue as mockQueueResponse for consistency
     const updatedQueue = [
-      {
-        id: "track1",
-        title: "Track 1",
-        artist: "Artist 1",
-        albumArt: "art1.jpg",
-      },
       {
         id: "track123",
         title: "Test Song",
         artist: "Test Artist",
         albumArt: "https://example.com/image.jpg",
+      },
+      {
+        id: "track456",
+        title: "Next Song",
+        artist: "Next Artist",
+        albumArt: "https://example.com/image2.jpg",
       },
     ];
 

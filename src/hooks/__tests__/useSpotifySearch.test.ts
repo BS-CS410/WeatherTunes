@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { useSpotifySearch } from "../useSpotifySearch";
 import { SpotifyApiService } from "@/lib/spotifyApiService";
-import { useAuth } from "../useAuth";
+import { useAuth } from "../utility";
 import type { TrackMetadata } from "@/types/queue";
 
 // Mock dependencies
@@ -13,7 +13,7 @@ vi.mock("@/lib/spotifyApiService", () => ({
   },
 }));
 
-vi.mock("../useAuth", () => ({
+vi.mock("../utility", () => ({
   useAuth: vi.fn(),
 }));
 

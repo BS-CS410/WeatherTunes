@@ -1,6 +1,6 @@
 import { getUserLocationAndFetch } from "./weather";
 import type { WeatherApiResponse } from "@/types/weather";
-import { kelvinToCelsius } from "./temperature";
+import { kelvinToCelsius } from "./utils";
 import tracks from "./tracks.json"; // Updated import
 
 // Define more specific types for the playlistMap

@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { apiClient } from "@/lib";
 import { SpotifyApiService } from "@/lib/spotifyApiService";
-import { useAuth } from "./useAuth";
+import { useAuth } from "./utility";
 import type {
   TrackMetadata,
   QueueResponse,

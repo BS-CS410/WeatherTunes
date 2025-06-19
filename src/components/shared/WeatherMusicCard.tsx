@@ -3,7 +3,7 @@ import { SunriseIcon, SunsetIcon } from "@/components/icons";
 import type { WeatherDisplayData } from "@/types/weather";
 import { SectionWrapper } from "../layout/SectionWrapper";
 import { useCurrentTrackContext } from "@/contexts/useCurrentTrackContext";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks";
 import { Button } from "@/components/ui/button";
 import { TYPOGRAPHY, COLORS } from "@/lib/unifiedStyles";
 import { cn } from "@/lib/utils";

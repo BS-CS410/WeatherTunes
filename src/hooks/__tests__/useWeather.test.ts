@@ -4,6 +4,45 @@ import { useWeatherData } from "../useWeather";
 import { mockWeatherData } from "../../test/testUtils";
 import { SettingsProvider } from "../../contexts/SettingsContext";
 import { createElement, type ReactNode } from "react";
+import { useLocalStorage } from "../utility";
+import type { TemperatureUnit, SpeedUnit } from "../../types/units";
+
+// Mock the useLocalStorage and useSettings hooks from the new utility location
+const mockSetters = {
+  setTemperatureUnit: vi.fn(),
+  setSpeedUnit: vi.fn(),
+  setTimeFormat: vi.fn(),
+  setThemeMode: vi.fn(),
+};
+
+const mockSettings = {
+  settings: {
+    temperatureUnit: "F" as TemperatureUnit,
+    speedUnit: "mph" as SpeedUnit,
+    timeFormat: "12h",
+    themeMode: "auto",
+  },
+  setTemperatureUnit: mockSetters.setTemperatureUnit,
+  setSpeedUnit: mockSetters.setSpeedUnit,
+  setTimeFormat: mockSetters.setTimeFormat,
+  setThemeMode: mockSetters.setThemeMode,
+  toggleTemperatureUnit: vi.fn(),
+  toggleTimeFormat: vi.fn(),
+  resetToDefaults: vi.fn(),
+  locationDefaults: {
+    temperatureUnit: "F" as TemperatureUnit,
+    speedUnit: "mph" as SpeedUnit,
+  },
+  isLocationLoading: false,
+};
+
+vi.mock("../utility", () => ({
+  useLocalStorage: vi.fn((_key: string, defaultValue: unknown) => [
+    defaultValue,
+    vi.fn(),
+  ]),
+  useSettings: vi.fn(() => mockSettings),
+}));
 
 // Mock the weather utility functions
 vi.mock("../../lib/weather", () => ({
@@ -16,18 +55,13 @@ vi.mock("../../lib/weather", () => ({
   })),
 }));
 
-// Mock the useLocalStorage hook for settings
-vi.mock("../useLocalStorage", () => ({
-  useLocalStorage: vi.fn((_key: string, defaultValue: unknown) => [
-    defaultValue,
-    vi.fn(),
-  ]),
-}));
-
 // Mock location based defaults
 vi.mock("../useLocationBasedDefaults", () => ({
   useLocationBasedDefaults: vi.fn(() => ({
-    locationDefaults: { temperatureUnit: "F", speedUnit: "mph" },
+    locationDefaults: {
+      temperatureUnit: "F" as TemperatureUnit,
+      speedUnit: "mph" as SpeedUnit,
+    },
     isLoading: false,
   })),
 }));
@@ -105,10 +139,9 @@ describe("useWeatherData", () => {
   });
 
   it("should format temperature correctly for celsius", async () => {
-    // Mock settings to use Celsius
-    const { useLocalStorage } = await import("../useLocalStorage");
-    const mockUseLocalStorage = vi.mocked(useLocalStorage);
-    mockUseLocalStorage.mockImplementation(
+    // Patch the mock to return Celsius for this test
+    mockSettings.settings.temperatureUnit = "C";
+    vi.mocked(useLocalStorage).mockImplementation(
       (key: string, defaultValue: unknown) => {
         if (key === "temperatureUnit") {
           return ["C", vi.fn()];
@@ -121,22 +154,20 @@ describe("useWeatherData", () => {
         return [values[key] || defaultValue, vi.fn()];
       },
     );
-
     mockGetUserLocationAndFetch.mockResolvedValueOnce({
       ...mockWeatherData,
       main: { ...mockWeatherData.main, temp: 298.15 }, // 298.15K = 25°C
     });
-
     const { result } = renderHook(() => useWeatherData(), {
       wrapper: TestWrapper,
     });
-
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
     });
-
     expect(result.current.displayData.temperature).toBe("25");
     expect(result.current.displayData.unit).toBe("°C");
+    // Restore to F for other tests
+    mockSettings.settings.temperatureUnit = "F";
   });
 
   it("should determine correct time period", async () => {
