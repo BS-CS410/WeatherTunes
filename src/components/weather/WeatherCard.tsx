@@ -51,7 +51,7 @@ export function WeatherCard({ weatherData }: WeatherCardProps) {
   return (
     <div className="grid aspect-[2/1] h-full w-full grid-cols-2 grid-rows-1 text-[clamp(1rem,3.5vw,1.6rem)]">
       {/* Weather Section - Left Grid Cell */}
-      <div className="relative">
+      <div className="relative flex h-full flex-col justify-between">
         <SectionWrapper scale={1.2} alignment="start" padding="0 0 0 1em">
           {/* Location */}
           <h1
@@ -62,7 +62,7 @@ export function WeatherCard({ weatherData }: WeatherCardProps) {
 
           {/* Temperature */}
           <div
-            className={`${TYPOGRAPHY.weather.temperature} ${COLORS.text.weather}`}
+            className={`-ml-2.5 ${TYPOGRAPHY.weather.temperature} ${COLORS.text.weather}`}
             style={{ transformOrigin: "left top" }}
           >
             {temperature}
@@ -80,15 +80,20 @@ export function WeatherCard({ weatherData }: WeatherCardProps) {
 
           {/* Sunrise/Sunset */}
           <div
-            className={`flex items-center ${TYPOGRAPHY.weather.time} mt-auto pb-[0.5em]`}
+            className={`flex items-center gap-3 ${TYPOGRAPHY.weather.time} w-full max-w-full overflow-hidden pt-2 text-[0.95rem] whitespace-nowrap`}
+            style={{}}
           >
-            <span className={`flex items-center ${COLORS.text.weather}`}>
-              <SunriseIcon className="mr-2 h-[1em] w-[1em]" />
+            <span
+              className={`flex items-center ${COLORS.text.weather} whitespace-nowrap`}
+            >
+              <SunriseIcon className="mr-1 h-[1em] w-[1em]" />
               {sunrise}
             </span>
-            <span className={`mx-2 ${COLORS.text.muted}`}>|</span>
-            <span className={`flex items-center ${COLORS.text.weather}`}>
-              <SunsetIcon className="mr-2 h-[1em] w-[1em]" />
+            <span className={`mx-1 ${COLORS.text.muted}`}>|</span>
+            <span
+              className={`flex items-center ${COLORS.text.weather} whitespace-nowrap`}
+            >
+              <SunsetIcon className="mr-1 h-[1em] w-[1em]" />
               {sunset}
             </span>
           </div>

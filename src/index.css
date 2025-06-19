@@ -120,3 +120,48 @@
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes glow-simple {
+  0%,
+  100% {
+    opacity: 0.6;
+    filter: blur(32px);
+  }
+  50% {
+    opacity: 0.85;
+    filter: blur(48px);
+  }
+}
+
+.animate-glow {
+  background: radial-gradient(
+    ellipse at 60% 40%,
+    rgba(255, 255, 255, 0.7) 0%,
+    rgba(255, 255, 255, 0.2) 60%,
+    transparent 100%
+  );
+  pointer-events: none;
+  width: 140%;
+  height: 140%;
+  left: -20%;
+  top: -20%;
+  opacity: 0.8;
+  filter: blur(16px);
+  animation: glow 4s ease-in-out infinite alternate;
+}
+
+.animate-glow-simple {
+  animation: glow-simple 3.5s ease-in-out infinite;
+}
+
+.animate-glow-hover {
+  background: radial-gradient(
+    ellipse at 60% 40%,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(255, 255, 255, 0.35) 60%,
+    transparent 100%
+  );
+  opacity: 1;
+  filter: blur(24px) brightness(1.2);
+  animation: glow 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
+}
