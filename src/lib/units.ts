@@ -2,13 +2,7 @@
  * Utility functions for handling measurement units based on location
  */
 
-type TemperatureUnit = "F" | "C";
-type SpeedUnit = "mph" | "kmh" | "ms";
-
-interface UnitDefaults {
-  temperatureUnit: TemperatureUnit;
-  speedUnit: SpeedUnit;
-}
+import type { UnitDefaults } from "@/types/units";
 
 /**
  * Countries that primarily use imperial (Fahrenheit) system
@@ -35,7 +29,7 @@ export function getDefaultUnitsForCountry(countryCode?: string): UnitDefaults {
   if (!countryCode) {
     console.log("No country code provided, defaulting to metric");
     return {
-      temperatureUnit: "C",
+      temperatureUnit: "C", // Still default to C for most countries
       speedUnit: "kmh",
     };
   }
@@ -46,7 +40,7 @@ export function getDefaultUnitsForCountry(countryCode?: string): UnitDefaults {
   );
 
   return {
-    temperatureUnit: isImperialCountry ? "F" : "C",
+    temperatureUnit: isImperialCountry ? "F" : "C", // Still only F or C for country defaults
     speedUnit: isImperialCountry ? "mph" : "kmh",
   };
 }

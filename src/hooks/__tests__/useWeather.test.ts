@@ -124,7 +124,7 @@ describe("useWeatherData", () => {
 
     mockGetUserLocationAndFetch.mockResolvedValueOnce({
       ...mockWeatherData,
-      main: { ...mockWeatherData.main, temp: 77 }, // 77°F = 25°C
+      main: { ...mockWeatherData.main, temp: 298.15 }, // 298.15K = 25°C
     });
 
     const { result } = renderHook(() => useWeatherData(), {

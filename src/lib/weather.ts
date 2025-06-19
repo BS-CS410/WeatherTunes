@@ -15,7 +15,7 @@ export async function fetchWeatherByCoords(
   apiKey: string,
 ): Promise<WeatherApiResponse> {
   const res = await fetch(
-    `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`,
+    `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}`,
   );
   if (!res.ok) throw new Error("Weather API error");
   return res.json();
@@ -67,7 +67,7 @@ export async function fetchForecastByCoords(
   apiKey: string,
 ): Promise<ForecastApiResponse> {
   const res = await fetch(
-    `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`,
+    `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}`,
   );
   if (!res.ok) throw new Error("Forecast API error");
   return res.json();

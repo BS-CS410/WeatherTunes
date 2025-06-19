@@ -92,6 +92,12 @@ export function SettingsCard({ isOpen, onClose }: SettingsCardProps) {
                       isSelected: settings.temperatureUnit === "C",
                       onClick: () => setTemperatureUnit("C"),
                     },
+                    {
+                      value: "K",
+                      label: "Kelvin (K)",
+                      isSelected: settings.temperatureUnit === "K",
+                      onClick: () => setTemperatureUnit("K"),
+                    },
                   ]}
                 />
               </SettingsSection>

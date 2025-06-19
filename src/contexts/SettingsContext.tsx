@@ -2,11 +2,12 @@ import { createContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { useLocationBasedDefaults } from "@/hooks/useLocationBasedDefaults";
-
-type TemperatureUnit = "F" | "C";
-type TimeFormat = "12h" | "24h";
-type SpeedUnit = "mph" | "kmh" | "ms";
-type ThemeMode = "auto" | "light" | "dark";
+import type {
+  TemperatureUnit,
+  TimeFormat,
+  SpeedUnit,
+  ThemeMode,
+} from "@/types/units";
 
 interface Settings {
   temperatureUnit: TemperatureUnit;
@@ -106,7 +107,10 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
   };
 
   const toggleTemperatureUnit = () => {
-    setTemperatureUnit(temperatureUnit === "F" ? "C" : "F");
+    // Cycle through F -> C -> K -> F
+    setTemperatureUnit(
+      temperatureUnit === "F" ? "C" : temperatureUnit === "C" ? "K" : "F",
+    );
   };
 
   const toggleTimeFormat = () => {

@@ -1,33 +1,27 @@
 /**
  * Temperature conversion utilities
+ * All temperatures are stored and processed in Kelvin internally.
  */
 
-export function fahrenheitToCelsius(fahrenheit: number): number {
-  return Math.round((fahrenheit - 32) * (5 / 9));
+export function kelvinToCelsius(kelvin: number): number {
+  return Math.round(kelvin - 273.15);
 }
 
-export function celsiusToFahrenheit(celsius: number): number {
-  return Math.round((celsius * 9) / 5 + 32);
+export function kelvinToFahrenheit(kelvin: number): number {
+  return Math.round((kelvin - 273.15) * (9 / 5) + 32);
 }
 
-export function formatTemperature(
-  temp: number,
-  unit: "F" | "C",
-  targetUnit: "F" | "C",
-): string {
-  if (unit === targetUnit) {
-    return Math.round(temp).toString();
-  }
-
-  if (unit === "F" && targetUnit === "C") {
-    return fahrenheitToCelsius(temp).toString();
-  }
-
-  if (unit === "C" && targetUnit === "F") {
-    return celsiusToFahrenheit(temp).toString();
-  }
-
-  return Math.round(temp).toString();
+/**
+ * Format temperature from Kelvin to the user's display unit.
+ * @param kelvin - The temperature value in Kelvin
+ * @param to - The unit to display ("F", "C", or "K")
+ * @returns The converted temperature as a rounded string
+ */
+export function formatTemperature(kelvin: number, to: "F" | "C" | "K"): string {
+  if (to === "K") return Math.round(kelvin).toString();
+  if (to === "C") return kelvinToCelsius(kelvin).toString();
+  if (to === "F") return kelvinToFahrenheit(kelvin).toString();
+  return Math.round(kelvin).toString();
 }
 
 /**

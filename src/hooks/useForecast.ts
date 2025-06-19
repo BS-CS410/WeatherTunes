@@ -11,7 +11,7 @@ import { useSettings } from "@/hooks/useSettings";
 // Helper function to process forecast data into daily forecasts
 function processForecastData(
   data: ForecastApiResponse,
-  temperatureUnit: "F" | "C",
+  temperatureUnit: "F" | "C" | "K",
 ): DailyForecast[] {
   // Group forecast items by date
   const dailyData = new Map<
@@ -82,8 +82,8 @@ function processForecastData(
       condition:
         primaryCondition.description.charAt(0).toUpperCase() +
         primaryCondition.description.slice(1),
-      tempHigh: formatTemperature(tempHigh, "F", temperatureUnit),
-      tempLow: formatTemperature(tempLow, "F", temperatureUnit),
+      tempHigh: formatTemperature(tempHigh, temperatureUnit),
+      tempLow: formatTemperature(tempLow, temperatureUnit),
       icon: primaryCondition.icon,
     });
   });

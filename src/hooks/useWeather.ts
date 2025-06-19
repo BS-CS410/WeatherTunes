@@ -104,14 +104,16 @@ export function useWeatherData() {
           location: data.name || "Unknown Location",
           temperature: formatTemperature(
             data.main.temp,
-            "F",
             settings.temperatureUnit,
           ),
           condition: formatWeatherCondition(
             data.weather[0].main,
             data.weather[0].description,
           ),
-          unit: `°${settings.temperatureUnit}`,
+          unit:
+            settings.temperatureUnit === "K"
+              ? "K"
+              : `°${settings.temperatureUnit}`,
           isError: false,
           sunrise: formatUnixTimeToLocalString(
             data.sys?.sunrise,

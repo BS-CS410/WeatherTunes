@@ -1,5 +1,6 @@
 import { getUserLocationAndFetch } from "./weather";
 import type { WeatherApiResponse } from "@/types/weather";
+import { kelvinToCelsius } from "./temperature";
 import tracks from "./tracks.json"; // Updated import
 
 // Define more specific types for the playlistMap
@@ -90,8 +91,7 @@ function getTimeOfDay(hour: number): TimeOfDay {
   return "night";
 }
 
-// Categorize temp (Kelvin or Celsius based on your API)
-// Assuming temp is in Celsius, adjust if needed.
+// Categorize temperature (input is in Kelvin, converted to Celsius)
 function getTempRange(tempCelsius: number): TempRange {
   if (tempCelsius < 10) return "cold";
   if (tempCelsius >= 25) return "hot";
@@ -111,7 +111,7 @@ export async function getSpotifyTrackForWeather(
         ? "clouds"
         : conditionRaw;
 
-    const tempCelsius = weather.main.temp;
+    const tempCelsius = kelvinToCelsius(weather.main.temp);
     const tempRange = getTempRange(tempCelsius);
     const now = new Date();
     const localHour = now.getHours();
@@ -209,7 +209,7 @@ export async function getPlaylistForWeather(
       conditionRaw === "fog" || conditionRaw === "mist"
         ? "clouds"
         : conditionRaw;
-    const tempCelsius = weather.main.temp;
+    const tempCelsius = kelvinToCelsius(weather.main.temp);
     const tempRange = getTempRange(tempCelsius);
     const now = new Date();
     const localHour = now.getHours();

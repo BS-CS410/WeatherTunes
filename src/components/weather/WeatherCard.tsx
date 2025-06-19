@@ -62,7 +62,7 @@ export function WeatherCard({ weatherData }: WeatherCardProps) {
 
           {/* Temperature */}
           <div
-            className={`-ml-2.5 ${TYPOGRAPHY.weather.temperature} ${COLORS.text.weather}`}
+            className={`-ml-2.5 ${TYPOGRAPHY.weather.temperature} ${COLORS.text.weather} ${String(temperature).length >= 3 ? "font-light tracking-tight" : ""}`}
             style={{ transformOrigin: "left top" }}
           >
             {temperature}

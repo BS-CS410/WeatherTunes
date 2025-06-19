@@ -1,13 +1,8 @@
 import { useEffect, useState } from "react";
 import { getDefaultUnitsForCountry } from "@/lib/units";
+import type { UnitDefaults } from "@/types/units";
 
-type TemperatureUnit = "F" | "C";
-type SpeedUnit = "mph" | "kmh" | "ms";
-
-interface LocationBasedDefaults {
-  temperatureUnit: TemperatureUnit;
-  speedUnit: SpeedUnit;
-}
+type LocationBasedDefaults = UnitDefaults;
 
 /**
  * Hook to determine default units based on user's location
