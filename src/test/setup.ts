@@ -2,15 +2,55 @@ import "@testing-library/jest-dom";
 import { beforeEach, vi } from "vitest";
 
 // Mock environment variables
+process.env.VITE_API_URL = "http://localhost:8000";
+process.env.VITE_PUBLIC_OPENWEATHER_API_KEY = "test-api-key";
+
+// Mock weather service functions
 vi.mock("../lib/weather", () => ({
   getUserLocationAndFetch: vi.fn(),
   getUserLocationAndFetchForecast: vi.fn(),
   createErrorWeatherData: vi.fn(() => ({
     name: "Error",
-    weather: [{ main: "Unable to load", description: "Error" }],
+    weather: [{ main: "Unable to load", description: "Error", id: 0 }],
     main: { temp: 0, humidity: 0, pressure: 0 },
     sys: { sunrise: 0, sunset: 0 },
   })),
+}));
+
+// Mock authentication service
+vi.mock("../lib/auth", () => ({
+  authService: {
+    getState: vi.fn(() => ({
+      user: null,
+      isLoading: false,
+      error: null,
+    })),
+    subscribe: vi.fn(() => vi.fn()),
+    login: vi.fn(),
+    logout: vi.fn(),
+    checkAuth: vi.fn(),
+  },
+}));
+
+// Mock API client
+vi.mock("../lib/apiClient", () => ({
+  apiClient: {
+    get: vi.fn(),
+    post: vi.fn(),
+    put: vi.fn(),
+    delete: vi.fn(),
+  },
+}));
+
+// Mock Spotify API service
+vi.mock("../lib/spotifyApiService", () => ({
+  SpotifyApiService: {
+    getTrackById: vi.fn(),
+    getTracksByIds: vi.fn(),
+    searchTracks: vi.fn(),
+    getRecommendations: vi.fn(),
+    getCurrentTrack: vi.fn(),
+  },
 }));
 
 // Mock IntersectionObserver

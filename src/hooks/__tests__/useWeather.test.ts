@@ -140,9 +140,14 @@ describe("useWeatherData", () => {
   });
 
   it("should determine correct time period", async () => {
-    const now = Math.floor(Date.now() / 1000);
-    const sunrise = now - 3600; // 1 hour ago
-    const sunset = now + 3600; // 1 hour from now
+    // Create a fixed date for predictable testing (2 PM UTC - clearly day time)
+    const fixedDate = new Date("2024-06-18T14:00:00Z");
+    const now = Math.floor(fixedDate.getTime() / 1000);
+    const sunrise = now - 28800; // 8 hours ago (6 AM)
+    const sunset = now + 14400; // 4 hours from now (6 PM)
+
+    // Use vitest's system time mocking
+    vi.setSystemTime(fixedDate);
 
     mockGetUserLocationAndFetch.mockResolvedValueOnce({
       ...mockWeatherData,
@@ -158,6 +163,9 @@ describe("useWeatherData", () => {
     });
 
     expect(result.current.timePeriod).toBe("day");
+
+    // Restore real time
+    vi.useRealTimers();
   });
 
   it("should handle invalid weather data", async () => {

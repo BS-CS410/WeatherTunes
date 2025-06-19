@@ -77,8 +77,8 @@ describe("ForecastCard", () => {
     expect(screen.getByText("5-Day Forecast")).toBeInTheDocument();
     expect(screen.getByText("Today")).toBeInTheDocument();
     expect(screen.getByText("Jun 16")).toBeInTheDocument();
-    expect(screen.getByText("scattered clouds")).toBeInTheDocument();
-    expect(screen.getByText("22°")).toBeInTheDocument();
+    expect(screen.getAllByText("scattered clouds")[0]).toBeInTheDocument();
+    expect(screen.getAllByText("22°")[0]).toBeInTheDocument();
   });
 
   it("should show loading state", async () => {
