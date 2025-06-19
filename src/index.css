@@ -133,6 +133,120 @@
   }
 }
 
+/* === ADVANCED LIQUID GLASS EFFECTS === */
+/* Inspired by Apple's design and rdev/liquid-glass-react */
+
+@keyframes liquid-morph {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+    border-radius: 1rem;
+  }
+  25% {
+    transform: scale(1.02) rotate(0.5deg);
+    border-radius: 1.2rem 0.8rem 1.1rem 0.9rem;
+  }
+  50% {
+    transform: scale(1.01) rotate(-0.3deg);
+    border-radius: 0.9rem 1.1rem 0.8rem 1.2rem;
+  }
+  75% {
+    transform: scale(1.03) rotate(0.2deg);
+    border-radius: 1.1rem 0.9rem 1.3rem 0.7rem;
+  }
+}
+
+@keyframes liquid-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    backdrop-filter: blur(12px) saturate(1.8);
+  }
+  50% {
+    transform: scale(1.01);
+    backdrop-filter: blur(16px) saturate(2.2);
+  }
+}
+
+@keyframes liquid-shimmer {
+  0% {
+    background-position: -200% 0;
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    background-position: 200% 0;
+    opacity: 0;
+  }
+}
+
+@keyframes chromatic-shift {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0 rgba(255, 0, 0, 0))
+      drop-shadow(0 0 0 rgba(0, 255, 0, 0))
+      drop-shadow(0 0 0 rgba(0, 0, 255, 0));
+  }
+  33% {
+    filter: drop-shadow(1px 0 0 rgba(255, 0, 0, 0.1))
+      drop-shadow(-0.5px 0 0 rgba(0, 255, 0, 0.1))
+      drop-shadow(0 0.5px 0 rgba(0, 0, 255, 0.1));
+  }
+  66% {
+    filter: drop-shadow(-1px 0 0 rgba(255, 0, 0, 0.1))
+      drop-shadow(0.5px 0 0 rgba(0, 255, 0, 0.1))
+      drop-shadow(0 -0.5px 0 rgba(0, 0, 255, 0.1));
+  }
+}
+
+@keyframes elastic-deform {
+  0%,
+  100% {
+    transform: scale(1) skew(0deg, 0deg);
+  }
+  25% {
+    transform: scale(1.01) skew(0.5deg, 0.2deg);
+  }
+  50% {
+    transform: scale(1.02) skew(-0.3deg, 0.4deg);
+  }
+  75% {
+    transform: scale(1.01) skew(0.2deg, -0.1deg);
+  }
+}
+
+@keyframes displacement-wave {
+  0%,
+  100% {
+    transform: translateX(0) scaleX(1);
+    opacity: 0.3;
+  }
+  25% {
+    transform: translateX(2px) scaleX(1.02);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateX(-1px) scaleX(0.98);
+    opacity: 0.8;
+  }
+  75% {
+    transform: translateX(1px) scaleX(1.01);
+    opacity: 0.4;
+  }
+}
+
+@keyframes wave {
+  0%,
+  100% {
+    transform: translateX(-100%) skewX(0deg);
+  }
+  50% {
+    transform: translateX(100%) skewX(2deg);
+  }
+}
+
 /* Gentle Liquid Glass morphing animation */
 @keyframes liquid-morph {
   0% {
@@ -230,6 +344,80 @@
   );
   background-size: 200% 100%;
   animation: liquid-shimmer 2.5s ease-in-out infinite;
+}
+
+/* Advanced Liquid Glass Utility Classes */
+.liquid-glass-hover {
+  transition: all 400ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.liquid-glass-hover:hover {
+  transform: translateY(-2px) scale(1.02);
+  backdrop-filter: blur(20px) saturate(2.4);
+}
+
+.liquid-glass-interactive {
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.liquid-glass-interactive::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 255, 255, 0.1),
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 300ms ease;
+  pointer-events: none;
+}
+
+.liquid-glass-interactive:hover::before {
+  opacity: 1;
+}
+
+/* Mouse tracking utilities */
+.mouse-tracking {
+  --mouse-x: 50%;
+  --mouse-y: 50%;
+  --mouse-from-center: 0;
+}
+
+.elastic-mouse-response {
+  transition: transform 200ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform: perspective(1000px)
+    rotateX(calc(var(--mouse-y, 50%) * 0.1deg - 5deg))
+    rotateY(calc(var(--mouse-x, 50%) * 0.1deg - 5deg))
+    scale(calc(1 + var(--mouse-from-center, 0) * 0.02));
+}
+
+/* Animation classes for easy application */
+.animate-liquid-morph {
+  animation: liquid-morph 2s ease-in-out infinite;
+}
+
+.animate-liquid-breathe {
+  animation: liquid-breathe 3s ease-in-out infinite;
+}
+
+.animate-liquid-shimmer {
+  animation: liquid-shimmer 2s ease-in-out;
+}
+
+.animate-chromatic-shift {
+  animation: chromatic-shift 4s ease-in-out infinite;
+}
+
+.animate-elastic-deform {
+  animation: elastic-deform 2s ease-in-out infinite;
+}
+
+.animate-displacement-wave {
+  animation: displacement-wave 3s ease-in-out infinite;
 }
 
 /* Gentle Apple-style depth for controls */
@@ -401,4 +589,105 @@
     transparent 100%
   );
   filter: blur(20px) brightness(1.1);
+}
+
+/* Advanced glassmorphism with enhanced backdrop effects */
+.advanced-glassmorphism {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.06),
+    0 1px 3px rgba(0, 0, 0, 0.08),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.dark .advanced-glassmorphism {
+  background: rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 1px 3px rgba(0, 0, 0, 0.4),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+/* Chromatic aberration simulation */
+.chromatic-glass {
+  position: relative;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(16px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.chromatic-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow:
+    inset 1px 0 0 rgba(255, 0, 0, 0.02),
+    inset -1px 0 0 rgba(0, 255, 0, 0.02),
+    inset 0 1px 0 rgba(0, 0, 255, 0.02);
+  pointer-events: none;
+}
+
+.dark .chromatic-glass {
+  background: rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.dark .chromatic-glass::before {
+  box-shadow:
+    inset 1px 0 0 rgba(255, 0, 0, 0.01),
+    inset -1px 0 0 rgba(0, 255, 0, 0.01),
+    inset 0 1px 0 rgba(0, 0, 255, 0.01);
+}
+
+/* Elastic container with deformation */
+.elastic-container {
+  transition: transform 300ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform-origin: center center;
+}
+
+.elastic-container:hover {
+  transform: scale(calc(1 + var(--elastic-intensity, 0) * 0.02))
+    skewX(calc(var(--elastic-x, 0) * 0.5deg))
+    skewY(calc(var(--elastic-y, 0) * 0.3deg));
+}
+
+/* Frosted glass with texture simulation */
+.frosted-glass {
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(40px) saturate(300%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.frosted-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(
+      circle at 20% 50%,
+      rgba(255, 255, 255, 0.1) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 50%,
+      rgba(255, 255, 255, 0.1) 0%,
+      transparent 50%
+    );
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.dark .frosted-glass {
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(40px) saturate(250%);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }

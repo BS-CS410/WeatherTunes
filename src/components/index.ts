@@ -50,3 +50,7 @@ export { ThemeProvider } from "./layout/ThemeProvider";
 // === ICONS ===
 // Custom icon components with consistent styling
 export * from "./icons";
+
+// === LIQUID GLASS COMPONENTS ===
+// Advanced liquid glass effects inspired by Apple's design
+export * from "./liquid-glass";
