@@ -138,7 +138,7 @@ export function ForecastCard() {
   }
 
   return (
-    <BaseCard>
+    <BaseCard enableLiquidGlass>
       <div className="space-y-4">
         <h3
           className={cn(

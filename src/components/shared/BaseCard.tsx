@@ -7,6 +7,7 @@ interface BaseCardProps {
   className?: string;
   contentClassName?: string;
   withPadding?: boolean;
+  enableLiquidGlass?: boolean;
 }
 
 export const BaseCard = forwardRef<HTMLDivElement, BaseCardProps>(
@@ -17,11 +18,17 @@ export const BaseCard = forwardRef<HTMLDivElement, BaseCardProps>(
       className = "",
       contentClassName = "",
       withPadding = true,
+      enableLiquidGlass = false,
     },
     ref,
   ) => {
     return (
-      <Card ref={ref} variant={variant} className={className}>
+      <Card
+        ref={ref}
+        variant={variant}
+        className={className}
+        enableLiquidGlass={enableLiquidGlass}
+      >
         <CardContent className={contentClassName} withPadding={withPadding}>
           {children}
         </CardContent>

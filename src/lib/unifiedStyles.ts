@@ -308,8 +308,6 @@ export const CARD_STYLES = {
     COLORS.shadow.liquidGlass,
     COLORS.shadow.liquidHover.replace("shadow-", "hover:shadow-"),
     ANIMATIONS.transition.liquid,
-    ANIMATIONS.hover.liquidGlass,
-    ANIMATIONS.liquidGlass.hover,
     "group",
   ].join(" "),
 
@@ -339,7 +337,6 @@ export const CARD_STYLES = {
     LAYOUT.rounded.lg,
     COLORS.shadow.liquidHover,
     ANIMATIONS.transition.spring,
-    ANIMATIONS.hover.liquidGlass,
     "relative overflow-hidden",
   ].join(" "),
 
@@ -387,7 +384,6 @@ export const CARD_STYLES = {
     LAYOUT.rounded.base,
     COLORS.shadow.liquidGlass,
     ANIMATIONS.transition.elastic,
-    ANIMATIONS.hover.elastic,
     ANIMATIONS.liquidGlass.elastic,
     "relative overflow-hidden transform-gpu cursor-pointer",
     "before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/[0.1] before:to-transparent before:opacity-0 before:transition-opacity before:duration-300",

@@ -1,11 +1,13 @@
 import React from "react";
 import { CARD_STYLES, LAYOUT } from "@/lib/unifiedStyles";
 import { cn } from "@/lib/utils";
+import { LiquidGlassContainer } from "@/components/liquid-glass";
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
   variant?: keyof typeof CARD_STYLES;
   className?: string;
+  enableLiquidGlass?: boolean;
 }
 
 interface CardContentProps {
@@ -15,12 +17,28 @@ interface CardContentProps {
 }
 
 export const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ children, variant = "base", className = "", ...props }, ref) => {
-    return (
+  (
+    {
+      children,
+      variant = "base",
+      className = "",
+      enableLiquidGlass = false,
+      ...props
+    },
+    ref,
+  ) => {
+    // Use overflow-visible for interactive and base variants to prevent clipping
+    const overflowClass =
+      variant === "interactive" || variant === "base"
+        ? "overflow-visible"
+        : "overflow-hidden";
+
+    const cardContent = (
       <div
         ref={ref}
         className={cn(
-          "relative flex flex-col overflow-hidden",
+          "relative flex flex-col",
+          overflowClass,
           CARD_STYLES[variant],
           className,
         )}
@@ -31,6 +49,16 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
         <div className="relative z-10 flex-1">{children}</div>
       </div>
     );
+
+    if (enableLiquidGlass) {
+      return (
+        <LiquidGlassContainer variant="enhanced" className="w-full">
+          {cardContent}
+        </LiquidGlassContainer>
+      );
+    }
+
+    return cardContent;
   },
 );
 

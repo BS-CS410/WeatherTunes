@@ -11,6 +11,7 @@ import {
   BUTTON_STYLES,
 } from "@/lib/unifiedStyles";
 import { cn } from "@/lib/utils";
+import { LiquidGlassContainer } from "@/components/liquid-glass";
 
 interface SpotifySearchCardProps {
   className?: string;
@@ -74,160 +75,164 @@ export function SpotifySearchCard({ className = "" }: SpotifySearchCardProps) {
   }
 
   return (
-    <div className={cn(CARD_STYLES.interactive, "p-6", className)}>
-      <div className="mb-4 flex items-center gap-3">
-        <Search className={cn("h-5 w-5", COLORS.text.secondary)} />
-        <h3 className={cn("text-lg font-semibold", COLORS.text.primary)}>
-          Spotify Search
-        </h3>
-        {isSearching && (
-          <Loader2 className="h-4 w-4 animate-spin text-gray-400 dark:text-white/60" />
-        )}
-      </div>
+    <LiquidGlassContainer variant="enhanced" className={className}>
+      <div className={cn(CARD_STYLES.interactive, "p-6")}>
+        <div className="mb-4 flex items-center gap-3">
+          <Search className={cn("h-5 w-5", COLORS.text.secondary)} />
+          <h3 className={cn("text-lg font-semibold", COLORS.text.primary)}>
+            Spotify Search
+          </h3>
+          {isSearching && (
+            <Loader2 className="h-4 w-4 animate-spin text-gray-400 dark:text-white/60" />
+          )}
+        </div>
 
-      {/* Search Form */}
-      <form onSubmit={handleSearch} className="mb-4">
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search for songs, artists, or albums..."
-            className={cn(
-              INPUT_STYLES.base,
-              "flex-1 placeholder-gray-700 dark:placeholder-slate-300",
-            )}
-            disabled={isSearching}
-          />
+        {/* Search Form */}
+        <form onSubmit={handleSearch} className="mb-4">
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search for songs, artists, or albums..."
+              className={cn(
+                INPUT_STYLES.base,
+                "flex-1 placeholder-gray-700 dark:placeholder-slate-300",
+              )}
+              disabled={isSearching}
+            />
+            <button
+              type="submit"
+              disabled={isSearching || !searchQuery.trim()}
+              className={cn(
+                BUTTON_STYLES.liquidGlass,
+                "px-6 py-2 text-base font-semibold",
+              )}
+            >
+              Search
+            </button>
+          </div>
+        </form>
+
+        {/* Mood Search Buttons */}
+        <div className="mb-4 flex flex-wrap gap-2">
+          {["happy", "chill", "energetic", "sad", "romantic", "party"].map(
+            (mood) => (
+              <button
+                key={mood}
+                onClick={() => handleMoodSearch(mood)}
+                disabled={isSearching}
+                className={cn(
+                  BUTTON_STYLES.ghost,
+                  "rounded-full px-3 py-1 text-sm capitalize",
+                )}
+              >
+                {mood}
+              </button>
+            ),
+          )}
+        </div>
+
+        {/* Clear Results */}
+        {(searchResults.length > 0 || searchError) && (
           <button
-            type="submit"
-            disabled={isSearching || !searchQuery.trim()}
+            onClick={handleClear}
             className={cn(
-              BUTTON_STYLES.liquidGlass,
-              "px-6 py-2 text-base font-semibold",
+              "mb-4 text-sm underline hover:text-inherit",
+              COLORS.text.muted,
             )}
           >
-            Search
+            Clear results
           </button>
-        </div>
-      </form>
-
-      {/* Mood Search Buttons */}
-      <div className="mb-4 flex flex-wrap gap-2">
-        {["happy", "chill", "energetic", "sad", "romantic", "party"].map(
-          (mood) => (
-            <button
-              key={mood}
-              onClick={() => handleMoodSearch(mood)}
-              disabled={isSearching}
-              className={cn(
-                BUTTON_STYLES.ghost,
-                "rounded-full px-3 py-1 text-sm capitalize",
-              )}
-            >
-              {mood}
-            </button>
-          ),
         )}
-      </div>
 
-      {/* Clear Results */}
-      {(searchResults.length > 0 || searchError) && (
-        <button
-          onClick={handleClear}
-          className={cn(
-            "mb-4 text-sm underline hover:text-inherit",
-            COLORS.text.muted,
-          )}
-        >
-          Clear results
-        </button>
-      )}
+        {/* Error Display */}
+        {searchError && (
+          <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/20 p-3 text-sm text-red-700 dark:text-red-200">
+            {searchError}
+          </div>
+        )}
 
-      {/* Error Display */}
-      {searchError && (
-        <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/20 p-3 text-sm text-red-700 dark:text-red-200">
-          {searchError}
-        </div>
-      )}
-
-      {/* Search Results */}
-      {searchResults.length > 0 && (
-        <div className="max-h-64 space-y-2 overflow-y-auto">
-          <h4 className={cn("mb-2 text-sm font-medium", COLORS.text.secondary)}>
-            Found {searchResults.length} tracks:
-          </h4>
-          {searchResults.map((track) => (
-            <div
-              key={track.id}
-              className={cn(
-                CARD_STYLES.interactive,
-                "flex items-center gap-3 p-2",
-              )}
+        {/* Search Results */}
+        {searchResults.length > 0 && (
+          <div className="max-h-64 space-y-2 overflow-y-auto">
+            <h4
+              className={cn("mb-2 text-sm font-medium", COLORS.text.secondary)}
             >
-              {track.albumArt ? (
-                <img
-                  src={track.albumArt}
-                  alt={`${track.title} album art`}
-                  className="h-10 w-10 rounded object-cover"
-                />
-              ) : (
-                <div className="flex h-10 w-10 items-center justify-center rounded bg-white/10">
-                  <Music className="h-5 w-5 text-gray-300 dark:text-white/40" />
-                </div>
-              )}
-
-              <div className="min-w-0 flex-1">
-                <p
-                  className={cn(
-                    "truncate text-sm font-medium",
-                    COLORS.text.primary,
-                  )}
-                >
-                  {track.title}
-                </p>
-                <p className={cn("truncate text-xs", COLORS.text.muted)}>
-                  {track.artist}
-                </p>
-              </div>
-
-              <button
-                onClick={() => handleAddToQueue(track)}
+              Found {searchResults.length} tracks:
+            </h4>
+            {searchResults.map((track) => (
+              <div
+                key={track.id}
                 className={cn(
-                  BUTTON_STYLES.icon,
-                  "rounded-full bg-green-500 p-1.5 text-white hover:bg-green-600",
+                  CARD_STYLES.interactive,
+                  "flex items-center gap-3 p-2",
                 )}
-                title="Add to queue"
               >
-                <Plus className="h-4 w-4" />
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
+                {track.albumArt ? (
+                  <img
+                    src={track.albumArt}
+                    alt={`${track.title} album art`}
+                    className="h-10 w-10 rounded object-cover"
+                  />
+                ) : (
+                  <div className="flex h-10 w-10 items-center justify-center rounded bg-white/10">
+                    <Music className="h-5 w-5 text-gray-300 dark:text-white/40" />
+                  </div>
+                )}
 
-      {/* Loading State */}
-      {isSearching && searchResults.length === 0 && !searchError && (
-        <div className="py-8 text-center">
-          <Loader2 className="mx-auto mb-2 h-6 w-6 animate-spin text-gray-400 dark:text-white/60" />
-          <p className={cn("text-sm", COLORS.text.muted)}>
-            Searching Spotify...
-          </p>
-        </div>
-      )}
+                <div className="min-w-0 flex-1">
+                  <p
+                    className={cn(
+                      "truncate text-sm font-medium",
+                      COLORS.text.primary,
+                    )}
+                  >
+                    {track.title}
+                  </p>
+                  <p className={cn("truncate text-xs", COLORS.text.muted)}>
+                    {track.artist}
+                  </p>
+                </div>
 
-      {/* Empty State */}
-      {!isSearching &&
-        searchResults.length === 0 &&
-        !searchError &&
-        searchQuery === "" && (
+                <button
+                  onClick={() => handleAddToQueue(track)}
+                  className={cn(
+                    BUTTON_STYLES.icon,
+                    "rounded-full bg-green-500 p-1.5 text-white hover:bg-green-600",
+                  )}
+                  title="Add to queue"
+                >
+                  <Plus className="h-4 w-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Loading State */}
+        {isSearching && searchResults.length === 0 && !searchError && (
           <div className="py-8 text-center">
-            <Music className="mx-auto mb-2 h-8 w-8 text-gray-300 dark:text-white/40" />
+            <Loader2 className="mx-auto mb-2 h-6 w-6 animate-spin text-gray-400 dark:text-white/60" />
             <p className={cn("text-sm", COLORS.text.muted)}>
-              Search for tracks or try a mood to discover music
+              Searching Spotify...
             </p>
           </div>
         )}
-    </div>
+
+        {/* Empty State */}
+        {!isSearching &&
+          searchResults.length === 0 &&
+          !searchError &&
+          searchQuery === "" && (
+            <div className="py-8 text-center">
+              <Music className="mx-auto mb-2 h-8 w-8 text-gray-300 dark:text-white/40" />
+              <p className={cn("text-sm", COLORS.text.muted)}>
+                Search for tracks or try a mood to discover music
+              </p>
+            </div>
+          )}
+      </div>
+    </LiquidGlassContainer>
   );
 }

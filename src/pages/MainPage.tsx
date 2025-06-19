@@ -38,9 +38,6 @@ function MainPage() {
   // MainPage Component //
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center overflow-auto">
-      {/* Settings Button */}
-      <SettingsButton />
-
       {/* Video Background */}
       <WeatherBackground
         condition={displayData.condition}
@@ -51,6 +48,11 @@ function MainPage() {
       <div
         className={`flex w-full max-w-2xl items-stretch ${LAYOUT.container.column} ${LAYOUT.spacing.md} ${LAYOUT.padding.md}`}
       >
+        {/* Settings Button (left-aligned above header) */}
+        <div className="mb-2 flex w-full items-center">
+          <SettingsButton />
+        </div>
+
         {/* App Header (left-aligned within centered column) */}
         <header className="-mb-5 py-6 text-left">
           <h1 className="text-5xl font-bold tracking-tight text-gray-900 transition-transform duration-200 will-change-transform select-none dark:text-gray-100">
@@ -62,30 +64,42 @@ function MainPage() {
         </header>
 
         {/* Unified Weather and Currently Playing Display */}
-        <BaseCard withPadding={false}>
-          <WeatherCard weatherData={displayData} />
-        </BaseCard>
+        <div className="transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02]">
+          <BaseCard withPadding={false} enableLiquidGlass>
+            <WeatherCard weatherData={displayData} />
+          </BaseCard>
+        </div>
 
         {/* Currently Playing Section */}
-        <BaseCard>
-          <CurrentTrackCard />
-        </BaseCard>
+        <div className="transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02]">
+          <BaseCard enableLiquidGlass>
+            <CurrentTrackCard />
+          </BaseCard>
+        </div>
 
         {/* Next Up Scroll Area */}
-        <BaseCard withPadding={false} className="">
-          <QueueCard />
-        </BaseCard>
+        <div className="transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02]">
+          <BaseCard withPadding={false} className="" enableLiquidGlass>
+            <QueueCard />
+          </BaseCard>
+        </div>
 
         {/* Spotify Search */}
-        <SpotifySearchCard />
+        <div className="transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02]">
+          <SpotifySearchCard />
+        </div>
 
         {/* 5-Day Weather Forecast */}
-        <ForecastCard />
+        <div className="transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02]">
+          <ForecastCard />
+        </div>
 
         {/* Favorites List */}
-        <BaseCard className="w-full" contentClassName="p-4">
-          <FavoritesCard />
-        </BaseCard>
+        <div className="transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02]">
+          <BaseCard className="w-full" contentClassName="p-4" enableLiquidGlass>
+            <FavoritesCard />
+          </BaseCard>
+        </div>
 
         {/* Bottom Padding */}
         <div className="h-16" />
