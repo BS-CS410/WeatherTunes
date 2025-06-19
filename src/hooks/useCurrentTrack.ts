@@ -145,6 +145,21 @@ export const useCurrentTrack = (): UseCurrentTrackReturn => {
     }
   }, [user]);
 
+  // Auto-select first track when queue is populated and no track is selected
+  useEffect(() => {
+    if (
+      user && // User is authenticated
+      songQueue.length > 0 && // Queue has tracks
+      !trackMetadata && // No track currently selected
+      !isLoading // Not currently loading
+    ) {
+      console.log(
+        `Auto-selecting first track from queue of ${songQueue.length} tracks...`,
+      );
+      setNextTrack();
+    }
+  }, [user, songQueue.length, trackMetadata, isLoading, setNextTrack]);
+
   const addTrackToQueue = useCallback(
     async (trackId: string) => {
       if (!trackId) return;
@@ -167,10 +182,9 @@ export const useCurrentTrack = (): UseCurrentTrackReturn => {
         const response = await apiClient.post<AddTrackResponse>(
           `${API_BASE_URL}/queue/add`,
           {
-            track: trackToAdd, // Send the full track object
+            track: trackToAdd, // Send full track object
           },
         );
-        // Update queue from backend response (source of truth)
         if (response.data && response.data.queue) {
           // Backend now sends full TrackMetadata objects
           setSongQueue(response.data.queue);

@@ -46,7 +46,7 @@ export function WeatherCard({ weatherData }: WeatherCardProps) {
     trackMetadata?.artist ||
     (isTrackLoading ? "Finding music..." : "Unknown Artist");
   const albumArtUrl =
-    trackMetadata?.albumArt || "https://via.placeholder.com/300x300";
+    trackMetadata?.albumArt || "/public/placeholder-album.svg";
 
   return (
     <div className="grid aspect-[2/1] h-full w-full grid-cols-2 grid-rows-1 text-[clamp(1rem,3.5vw,1.6rem)]">
@@ -123,6 +123,10 @@ export function WeatherCard({ weatherData }: WeatherCardProps) {
                 alt={`${songTitle} album art`}
                 className="h-full w-full object-cover"
                 loading="lazy"
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).src =
+                    "/public/placeholder-album.svg";
+                }}
               />
             </div>
             <div className="mt-3 flex w-full flex-col items-center text-center">
