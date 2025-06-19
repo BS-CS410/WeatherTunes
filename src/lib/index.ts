@@ -14,7 +14,6 @@ export * from "@/lib/spotifyWeather";
 export * from "@/lib/tracksManager";
 export * from "@/lib/queueManager";
 export * from "@/lib/weatherMusicService";
-export * from "@/lib/advancedWeatherMusicService";
 export * from "@/lib/spotifyApiService";
 
 // UI and styling utilities

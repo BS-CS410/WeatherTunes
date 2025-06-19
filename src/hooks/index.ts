@@ -22,6 +22,3 @@ export { useLocationBasedDefaults } from "@/hooks/useLocationBasedDefaults";
 
 // Theme and styling hooks
 export { useThemeManager } from "@/hooks/useThemeManager";
-
-// Advanced Music hooks
-export * from "@/hooks/useAdvancedCurrentTrack";

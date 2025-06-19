@@ -1,15 +1,5 @@
 /**
- * Component Exports - Trans// === MUSIC DOMAIN ===
-// Components for music playback, queue management, and audio controls
-export { QueueCard } from "./music/QueueCard";
-export { CurrentTrackCard } from "./music/CurrentTrackCard";
-export { FavoritesCard } from "./music/FavoritesCard";
-export { SpotifySearchCard } from "./music/SpotifySearchCard";
-
-// === SETTINGS DOMAIN ===
-// Settings interface and controls
-export { SettingsButton } from "./settings/SettingsButton";
-export { SettingsCard } from "./settings/SettingsCard";ng Scheme
+ * Component Exports - WeatherTunes Component Library
  *
  * Card-centric hierarchy where names immediately reveal component purpose.
  * All main UI units are "Cards", with supporting components clearly named.
@@ -58,6 +48,3 @@ export { ThemeProvider } from "./layout/ThemeProvider";
 // === ICONS ===
 // Custom icon components with consistent styling
 export * from "./icons";
-
-// === STYLE SYSTEM (Deprecated - Use unifiedStyles) ===
-// Legacy style exports - prefer importing from @/lib/unifiedStyles
