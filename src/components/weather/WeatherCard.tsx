@@ -108,7 +108,7 @@ export function WeatherCard({ weatherData }: WeatherCardProps) {
         <SectionWrapper scale={1.1} alignment="center" padding="1em">
           <div className="flex h-full w-full flex-col items-center justify-center">
             <div
-              className="flex-shrink-0 overflow-hidden rounded-lg bg-gray-200 dark:bg-slate-700"
+              className="flex-shrink-0 overflow-hidden rounded-xl bg-gray-200 dark:bg-slate-700"
               style={{
                 width: "82%",
                 height: "82%",

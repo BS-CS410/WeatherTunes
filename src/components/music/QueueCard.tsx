@@ -283,7 +283,7 @@ export function QueueCard() {
                           }
                         }}
                         className={cn(
-                          "relative z-10 h-28 w-28 cursor-pointer rounded-lg object-cover",
+                          "relative z-10 h-28 w-28 cursor-pointer rounded-xl object-cover",
                           ANIMATIONS.transition.standard,
                           isHovered || isNextUp
                             ? "-translate-y-2 scale-110 shadow-2xl hover:brightness-105 dark:hover:brightness-110"

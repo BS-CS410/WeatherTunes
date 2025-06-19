@@ -9,6 +9,8 @@
 // Base shadcn/ui components with unified styling system
 export * from "./ui/button";
 export * from "./ui/card";
+export * from "./ui/segmented-control";
+export * from "./ui/slider";
 
 // === SHARED COMPONENTS ===
 // Reusable components used across multiple domains

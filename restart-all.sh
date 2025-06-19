@@ -19,10 +19,9 @@ FRONTEND_PID=$!
 
 sleep 2
 
-echo "Starting backend (FastAPI)..."
+echo "Starting backend (Flask)..."
 cd backend && (
-  # Use your preferred backend start command
-  uvicorn app.run:app --reload --host 0.0.0.0 --port 8000 &
+  python run.py &
   BACKEND_PID=$!
   wait $BACKEND_PID
 )

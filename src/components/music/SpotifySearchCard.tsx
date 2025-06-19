@@ -146,7 +146,7 @@ export function SpotifySearchCard({ className = "" }: SpotifySearchCardProps) {
 
       {/* Error Display */}
       {searchError && (
-        <div className="mb-4 rounded-lg border border-red-500/30 bg-red-500/20 p-3 text-sm text-red-700 dark:text-red-200">
+        <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/20 p-3 text-sm text-red-700 dark:text-red-200">
           {searchError}
         </div>
       )}

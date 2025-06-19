@@ -92,7 +92,7 @@ export function FavoritesCard({ className = "" }: FavoritesCardProps) {
             <button
               onClick={() => (window.location.href = "/login")}
               className={cn(
-                "mt-4 rounded-lg bg-[#1DB954] text-white transition-colors hover:bg-[#1ED760]",
+                "mt-4 rounded-xl bg-[#1DB954] text-white transition-all duration-300 hover:scale-[1.02] hover:bg-[#1ED760]",
                 LAYOUT.padding.button.md,
               )}
             >
@@ -156,7 +156,7 @@ export function FavoritesCard({ className = "" }: FavoritesCardProps) {
                   height="80"
                   allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                   loading="lazy"
-                  style={{ borderRadius: 12, flexShrink: 0, border: "none" }}
+                  style={{ borderRadius: 16, flexShrink: 0, border: "none" }}
                   title={`Spotify Track ${trackId}`}
                 />
               ))

@@ -59,7 +59,7 @@ export function SettingsCard({ isOpen, onClose }: SettingsCardProps) {
         <div
           className={cn(
             CARD_STYLES.modal,
-            "flex h-full w-auto max-w-lg min-w-[28rem] flex-col justify-start rounded-l-2xl rounded-r-none p-6 shadow-2xl",
+            "flex h-full w-auto max-w-lg min-w-[28rem] flex-col justify-start rounded-l-3xl rounded-r-none p-6 shadow-2xl",
           )}
         >
           <div className="mb-6 flex items-center justify-between">

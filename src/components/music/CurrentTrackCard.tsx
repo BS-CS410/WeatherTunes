@@ -150,7 +150,7 @@ export function CurrentTrackCard({ className = "" }: CurrentTrackCardProps) {
             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
             allowFullScreen
             title="Spotify Player"
-            className="rounded-lg shadow-lg"
+            className="rounded-xl shadow-lg"
           />
         </div>
       ) : (
@@ -194,7 +194,7 @@ export function CurrentTrackCard({ className = "" }: CurrentTrackCardProps) {
 
       {/* Message Display */}
       {message && (
-        <div className="w-full rounded-md bg-gray-100 p-3 text-center text-sm text-gray-700 dark:bg-slate-700 dark:text-slate-300">
+        <div className="w-full rounded-xl border border-white/[0.15] bg-white/[0.07] p-3 text-center text-sm text-gray-700 backdrop-blur-xl backdrop-saturate-[1.6] dark:border-white/[0.08] dark:bg-white/[0.05] dark:text-slate-300">
           {message}
         </div>
       )}
