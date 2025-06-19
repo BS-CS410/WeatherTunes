@@ -48,13 +48,9 @@ function MainPage() {
       <div
         className={`flex w-full max-w-2xl items-stretch ${LAYOUT.container.column} ${LAYOUT.spacing.md} ${LAYOUT.padding.md}`}
       >
-        {/* Settings Button (left-aligned above header) */}
-        <div className="mb-2 flex w-full items-center">
+        {/* App Header with Settings Button (subtle, top-left) */}
+        <header className="-mb-5 flex w-full items-center justify-between py-6 text-left">
           <SettingsButton />
-        </div>
-
-        {/* App Header (left-aligned within centered column) */}
-        <header className="-mb-5 py-6 text-left">
           <h1 className="text-5xl font-bold tracking-tight text-gray-900 transition-transform duration-200 will-change-transform select-none dark:text-gray-100">
             <span className="group relative inline-block">
               <span className="bg-gradient-radial animate-glow-simple pointer-events-none absolute top-1/2 left-1/2 -z-10 block h-[220%] w-[220%] -translate-x-1/2 -translate-y-1/2 rounded-full from-yellow-100 via-white/80 to-blue-200/0 opacity-70 blur-3xl transition-all duration-700 group-hover:scale-110 group-hover:opacity-100 dark:from-blue-900/30 dark:via-slate-800/40 dark:to-transparent dark:opacity-50" />

@@ -83,7 +83,10 @@ export function SpotifySearchCard({ className = "" }: SpotifySearchCardProps) {
             Spotify Search
           </h3>
           {isSearching && (
-            <Loader2 className="h-4 w-4 animate-spin text-gray-400 dark:text-white/60" />
+            <Loader2
+              className="h-4 w-4 animate-spin"
+              style={{ color: "var(--color-text-secondary)" }}
+            />
           )}
         </div>
 
@@ -97,7 +100,9 @@ export function SpotifySearchCard({ className = "" }: SpotifySearchCardProps) {
               placeholder="Search for songs, artists, or albums..."
               className={cn(
                 INPUT_STYLES.base,
-                "flex-1 placeholder-gray-700 dark:placeholder-slate-300",
+                "flex-1",
+                COLORS.text.secondary,
+                "placeholder-opacity-100 placeholder:!text-inherit",
               )}
               disabled={isSearching}
             />
@@ -177,7 +182,7 @@ export function SpotifySearchCard({ className = "" }: SpotifySearchCardProps) {
                   />
                 ) : (
                   <div className="flex h-10 w-10 items-center justify-center rounded bg-white/10">
-                    <Music className="h-5 w-5 text-gray-300 dark:text-white/40" />
+                    <Music className={cn("h-5 w-5", COLORS.text.secondary)} />
                   </div>
                 )}
 
@@ -190,7 +195,7 @@ export function SpotifySearchCard({ className = "" }: SpotifySearchCardProps) {
                   >
                     {track.title}
                   </p>
-                  <p className={cn("truncate text-xs", COLORS.text.muted)}>
+                  <p className={cn("truncate text-xs", COLORS.text.secondary)}>
                     {track.artist}
                   </p>
                 </div>
@@ -213,7 +218,10 @@ export function SpotifySearchCard({ className = "" }: SpotifySearchCardProps) {
         {/* Loading State */}
         {isSearching && searchResults.length === 0 && !searchError && (
           <div className="py-8 text-center">
-            <Loader2 className="mx-auto mb-2 h-6 w-6 animate-spin text-gray-400 dark:text-white/60" />
+            <Loader2
+              className="mx-auto mb-2 h-6 w-6 animate-spin"
+              style={{ color: "var(--color-text-secondary)" }}
+            />
             <p className={cn("text-sm", COLORS.text.muted)}>
               Searching Spotify...
             </p>
@@ -226,7 +234,9 @@ export function SpotifySearchCard({ className = "" }: SpotifySearchCardProps) {
           !searchError &&
           searchQuery === "" && (
             <div className="py-8 text-center">
-              <Music className="mx-auto mb-2 h-8 w-8 text-gray-300 dark:text-white/40" />
+              <Music
+                className={cn("mx-auto mb-2 h-8 w-8", COLORS.text.secondary)}
+              />
               <p className={cn("text-sm", COLORS.text.muted)}>
                 Search for tracks or try a mood to discover music
               </p>

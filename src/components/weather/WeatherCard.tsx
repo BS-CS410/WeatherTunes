@@ -62,12 +62,24 @@ export function WeatherCard({ weatherData }: WeatherCardProps) {
 
           {/* Temperature */}
           <div
-            className={`-ml-2.5 ${TYPOGRAPHY.weather.temperature} ${COLORS.text.weather} ${String(temperature).length >= 3 ? "font-light tracking-tight" : ""}`}
-            style={{ transformOrigin: "left top" }}
+            className={`-ml-2.5 ${TYPOGRAPHY.weather.temperature} ${COLORS.text.weather} ${String(temperature).length >= 3 ? "font-normal" : ""}`}
+            style={{
+              transformOrigin: "left top",
+              letterSpacing:
+                String(temperature).length >= 3 ? "-0.08em" : undefined,
+            }}
           >
             {temperature}
-            <span className="align-super text-[0.5em]">
-              °{unit.replace("°", "")}
+            <span
+              className={
+                String(temperature).length >= 3
+                  ? "ml-2 align-super text-[0.5em]"
+                  : "align-super text-[0.5em]"
+              }
+            >
+              {unit.replace("°", "") === "K"
+                ? "K"
+                : `°${unit.replace("°", "")}`}
             </span>
           </div>
 
@@ -129,16 +141,16 @@ export function WeatherCard({ weatherData }: WeatherCardProps) {
                 }}
               />
             </div>
-            <div className="mt-3 flex w-full flex-col items-center text-center">
+            <div className="mt-2 flex w-full flex-col items-center text-center">
               <h2
-                className="max-w-[18em] truncate text-lg font-semibold text-ellipsis sm:text-xl md:text-2xl"
-                style={{ lineHeight: 1.2 }}
+                className={`max-w-[10em] truncate overflow-hidden text-base font-semibold text-ellipsis whitespace-nowrap ${COLORS.text.primary}`}
+                style={{ lineHeight: 1.3 }}
               >
                 {songTitle}
               </h2>
               <p
-                className="max-w-[20em] truncate text-base text-ellipsis text-gray-600 sm:text-lg md:text-xl dark:text-gray-200"
-                style={{ lineHeight: 1.2 }}
+                className={`max-w-[12em] truncate overflow-hidden text-xs text-ellipsis whitespace-nowrap ${COLORS.text.secondary}`}
+                style={{ lineHeight: 1.3 }}
               >
                 {artistName}
               </p>
