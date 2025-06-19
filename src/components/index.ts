@@ -4,6 +4,7 @@
 export { QueueCard } from "./music/QueueCard";
 export { CurrentTrackCard } from "./music/CurrentTrackCard";
 export { FavoritesCard } from "./music/FavoritesCard";
+export { SpotifySearchCard } from "./music/SpotifySearchCard";
 
 // === SETTINGS DOMAIN ===
 // Settings interface and controls
@@ -41,6 +42,7 @@ export { WeatherCard } from "./weather/WeatherCard";
 export { QueueCard } from "./music/QueueCard";
 export { CurrentTrackCard } from "./music/CurrentTrackCard";
 export { FavoritesCard } from "./music/FavoritesCard";
+export { SpotifySearchCard } from "./music/SpotifySearchCard";
 
 // === SETTINGS DOMAIN ===
 // Settings interface and controls

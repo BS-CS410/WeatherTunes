@@ -10,6 +10,7 @@ export { useForecastData } from "@/hooks/useForecast";
 
 // Music and Spotify hooks (streamlined)
 export { useCurrentTrack } from "@/hooks/useCurrentTrack";
+export { useSpotifySearch } from "@/hooks/useSpotifySearch";
 
 // Authentication hooks
 export { useAuth } from "@/hooks/useAuth";
@@ -21,3 +22,6 @@ export { useLocationBasedDefaults } from "@/hooks/useLocationBasedDefaults";
 
 // Theme and styling hooks
 export { useThemeManager } from "@/hooks/useThemeManager";
+
+// Advanced Music hooks
+export * from "@/hooks/useAdvancedCurrentTrack";

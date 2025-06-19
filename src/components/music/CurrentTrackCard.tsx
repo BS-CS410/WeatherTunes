@@ -17,11 +17,13 @@ interface CurrentTrackCardProps {
  */
 export function CurrentTrackCard({ className = "" }: CurrentTrackCardProps) {
   const [message, setMessage] = useState<string | null>(null);
+  const [isAutoLoading, setIsAutoLoading] = useState(false);
   const hasGeneratedInitialQueue = useRef(false);
   const {
     trackMetadata,
     currentTrackId,
     songQueue,
+    updateTrack,
     setNextTrack,
     replaceQueueWithTracks,
     isLoading,
@@ -30,32 +32,52 @@ export function CurrentTrackCard({ className = "" }: CurrentTrackCardProps) {
   const { user, isLoading: authLoading, login } = useAuth();
   const { rawResponse: weatherData } = useWeatherData();
 
-  // Generate initial queue only once when conditions are met
+  // Generate initial queue and auto-select first track when conditions are met
   useEffect(() => {
     if (
       user &&
       !isLoading &&
       songQueue.length === 0 &&
+      !currentTrackId &&
       weatherData &&
       !hasGeneratedInitialQueue.current
     ) {
       hasGeneratedInitialQueue.current = true;
-      const weatherQueue = WeatherMusicService.generateWeatherBasedQueue(
-        weatherData.main.temp,
-        weatherData.weather[0].main.toLowerCase(),
-        "afternoon",
-        10,
-      );
-      // Call replaceQueueWithTracks directly without including it in deps
-      replaceQueueWithTracks(weatherQueue);
+      setIsAutoLoading(true);
+
+      const generateInitialPlaylist = async () => {
+        try {
+          const weatherQueue =
+            await WeatherMusicService.generateWeatherBasedQueue(
+              weatherData.main.temp,
+              weatherData.weather[0].main.toLowerCase(),
+              "afternoon",
+              10,
+            );
+
+          if (weatherQueue.length > 0) {
+            // Replace the queue with new tracks
+            await replaceQueueWithTracks(weatherQueue);
+            // Automatically select the first track
+            await updateTrack(weatherQueue[0]);
+          }
+        } catch (error) {
+          console.error("Error generating initial playlist:", error);
+        } finally {
+          setIsAutoLoading(false);
+        }
+      };
+
+      generateInitialPlaylist();
     }
 
     // Reset the flag if user logs out
     if (!user) {
       hasGeneratedInitialQueue.current = false;
+      setIsAutoLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, isLoading, songQueue.length, weatherData]); // Intentionally excluding replaceQueueWithTracks to prevent infinite loop
+  }, [user, isLoading, songQueue.length, currentTrackId, weatherData]); // Intentionally excluding replaceQueueWithTracks and updateTrack to prevent infinite loop
 
   const handleLike = async () => {
     if (!currentTrackId) return;
@@ -116,9 +138,18 @@ export function CurrentTrackCard({ className = "" }: CurrentTrackCardProps) {
     }
 
     try {
-      const newQueue = WeatherMusicService.generateDynamicDayQueue(
+      const timeOfDay = (() => {
+        const hour = new Date().getHours();
+        if (hour >= 6 && hour < 12) return "morning";
+        if (hour >= 12 && hour < 17) return "afternoon";
+        if (hour >= 17 && hour < 21) return "evening";
+        return "night";
+      })();
+
+      const newQueue = await WeatherMusicService.generateWeatherBasedQueue(
         weatherData.main.temp,
         weatherData.weather[0].main.toLowerCase(),
+        timeOfDay,
         12,
       );
 
@@ -129,6 +160,12 @@ export function CurrentTrackCard({ className = "" }: CurrentTrackCardProps) {
       }
 
       await replaceQueueWithTracks(newQueue);
+
+      // Automatically select the first track if the queue was empty before
+      if (songQueue.length === 0 && newQueue.length > 0) {
+        await updateTrack(newQueue[0]);
+      }
+
       setMessage(
         `${songQueue.length > 0 ? "Queue refreshed" : "Playlist generated"} with ${newQueue.length} weather-based tracks!`,
       );
@@ -180,6 +217,31 @@ export function CurrentTrackCard({ className = "" }: CurrentTrackCardProps) {
   }
 
   if (!trackMetadata || !currentTrackId) {
+    // Show loading state if we're auto-loading the first track
+    if (
+      isAutoLoading ||
+      (user &&
+        weatherData &&
+        songQueue.length === 0 &&
+        !hasGeneratedInitialQueue.current)
+    ) {
+      return (
+        <div
+          className={cn(LAYOUT.container.center, LAYOUT.padding.xl, className)}
+        >
+          <div className="text-center">
+            <div className={cn("mb-2", TYPOGRAPHY.body.lg, COLORS.text.muted)}>
+              Setting up your weather playlist...
+            </div>
+            <div className={cn(TYPOGRAPHY.body.sm, COLORS.text.muted)}>
+              Finding the perfect music for your weather
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Only show the manual generation UI if auto-loading has completed but no track is selected
     return (
       <div
         className={cn(LAYOUT.container.center, LAYOUT.padding.xl, className)}
@@ -224,19 +286,27 @@ export function CurrentTrackCard({ className = "" }: CurrentTrackCardProps) {
       </div>
 
       {/* Spotify Embed Player */}
-      <div className="w-full">
-        <iframe
-          key={`${currentTrackId}`}
-          src={`https://open.spotify.com/embed/track/${currentTrackId}`}
-          width="100%"
-          height="160"
-          frameBorder="0"
-          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-          allowFullScreen
-          title="Spotify Player"
-          className="rounded-lg shadow-lg"
-        />
-      </div>
+      {currentTrackId && /^[a-zA-Z0-9]{22}$/.test(currentTrackId) ? (
+        <div className="w-full">
+          <iframe
+            key={`${currentTrackId}`}
+            src={`https://open.spotify.com/embed/track/${currentTrackId}`}
+            width="100%"
+            height="160"
+            frameBorder="0"
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            allowFullScreen
+            title="Spotify Player"
+            className="rounded-lg shadow-lg"
+          />
+        </div>
+      ) : (
+        <div className="w-full py-8 text-center">
+          <div className={cn(TYPOGRAPHY.body.lg, COLORS.text.muted)}>
+            Unable to load this track. Please try another song.
+          </div>
+        </div>
+      )}
 
       {/* Queue Status */}
       {songQueue.length > 0 && (

@@ -3,7 +3,7 @@ import { COLORS, TYPOGRAPHY, ANIMATIONS, LAYOUT } from "@/lib/unifiedStyles";
 import { cn } from "@/lib/utils";
 import { useCurrentTrackContext } from "@/contexts/useCurrentTrackContext";
 import { useAuth } from "@/hooks/useAuth";
-import { QueueManager } from "@/lib/queueManager";
+import { useWeatherMusic } from "@/hooks/useWeatherMusic";
 import { Button } from "@/components/ui/button";
 
 export function QueueCard() {
@@ -19,6 +19,7 @@ export function QueueCard() {
   } = useCurrentTrackContext();
 
   const { user, isLoading: authLoading } = useAuth();
+  const { generateWeatherQueue } = useWeatherMusic();
 
   // State and ref for delayed visual loader
   const [showVisualLoader, setShowVisualLoader] = useState(false);
@@ -72,8 +73,18 @@ export function QueueCard() {
       return;
     }
 
-    const newQueue = QueueManager.generateDiverseQueue(12);
-    await replaceQueueWithTracks(newQueue); // This uses contextIsLoading internally
+    try {
+      // Generate a weather-based queue using current conditions
+      const newQueueIds = await generateWeatherQueue(12);
+
+      if (newQueueIds.length > 0) {
+        await replaceQueueWithTracks(newQueueIds);
+      } else {
+        console.warn("No tracks generated for queue");
+      }
+    } catch (error) {
+      console.error("Failed to generate weather-based queue:", error);
+    }
   };
 
   const handleClearQueue = async () => {

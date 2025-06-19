@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
-import { apiClient, TracksManager } from "@/lib";
+import { apiClient } from "@/lib";
+import { SpotifyApiService } from "@/lib/spotifyApiService";
 import { useAuth } from "./useAuth";
 import type {
   TrackMetadata,
@@ -26,7 +27,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 
 /**
  * Manages current track metadata state
- * Fetches track information from TracksManager (local tracks.json)
+ * Fetches track information from Spotify API using track IDs
  * Interacts with backend for queue management
  */
 export const useCurrentTrack = (): UseCurrentTrackReturn => {
@@ -85,9 +86,10 @@ export const useCurrentTrack = (): UseCurrentTrackReturn => {
       setCurrentTrackId(trackId);
       setIsLoading(true);
       try {
-        const localTrack = TracksManager.getTrackById(trackId);
-        if (localTrack) {
-          setTrackMetadata(localTrack);
+        // Fetch track metadata from Spotify API
+        const spotifyTrack = await SpotifyApiService.getTrackById(trackId);
+        if (spotifyTrack) {
+          setTrackMetadata(spotifyTrack);
         } else {
           setTrackMetadata({
             id: trackId,
@@ -98,7 +100,7 @@ export const useCurrentTrack = (): UseCurrentTrackReturn => {
         }
       } catch (error) {
         console.error(
-          "Failed to fetch track metadata using TracksManager:",
+          "Failed to fetch track metadata from Spotify API:",
           error,
         );
         setTrackMetadata({
@@ -155,10 +157,10 @@ export const useCurrentTrack = (): UseCurrentTrackReturn => {
         return;
       }
 
-      // Get full track metadata from TracksManager to send to backend
-      const trackToAdd = TracksManager.getTrackById(trackId);
+      // Get full track metadata from Spotify API to send to backend
+      const trackToAdd = await SpotifyApiService.getTrackById(trackId);
       if (!trackToAdd) {
-        console.error(`Track with ID ${trackId} not found in TracksManager.`);
+        console.error(`Track with ID ${trackId} not found in Spotify.`);
         // Optionally, handle this with a user notification
         return;
       }
@@ -194,29 +196,16 @@ export const useCurrentTrack = (): UseCurrentTrackReturn => {
 
       setIsLoading(true);
       try {
-        // Fetch full metadata for all track IDs to send to the backend
-        const tracksToReplaceWith: TrackMetadata[] = [];
-        for (const id of trackIds) {
-          const trackMeta = TracksManager.getTrackById(id);
-          if (trackMeta) {
-            tracksToReplaceWith.push(trackMeta);
-          } else {
-            // Handle case where a track ID might not be found, if necessary
-            // For now, we'll just skip it or add a placeholder
-            console.warn(
-              `Track ID ${id} not found in TracksManager during replace.`,
-            );
-            // Optionally, add a placeholder or skip
-            // tracksToReplaceWith.push({ id, title: "Unknown Track", artist: "Unknown Artist", albumArt: "" });
-          }
-        }
+        // Fetch full metadata for all track IDs from Spotify API
+        const tracksToReplaceWith =
+          await SpotifyApiService.getTracksByIds(trackIds);
 
         if (tracksToReplaceWith.length === 0 && trackIds.length > 0) {
           console.warn("No valid tracks found to replace the queue with.");
-          // Potentially clear the queue or leave as is, depending on desired behavior
-          // setSongQueue([]);
-          // setIsLoading(false);
-          // return;
+          // Clear the queue if no valid tracks found
+          setSongQueue([]);
+          setIsLoading(false);
+          return;
         }
 
         const response = await apiClient.post<ReplaceQueueResponse>(

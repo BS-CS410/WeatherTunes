@@ -9,6 +9,7 @@ import {
   BaseCard,
   LoadingSpinner,
   ErrorDisplay,
+  SpotifySearchCard,
 } from "@/components";
 import { useWeatherData } from "@/hooks/useWeather";
 import { useThemeManager } from "@/hooks/useThemeManager";
@@ -72,6 +73,11 @@ function MainPage() {
         {/* Next Up Scroll Area */}
         <BaseCard withPadding={false} className="">
           <QueueCard />
+        </BaseCard>
+
+        {/* Spotify Search */}
+        <BaseCard>
+          <SpotifySearchCard />
         </BaseCard>
 
         {/* 5-Day Weather Forecast */}
