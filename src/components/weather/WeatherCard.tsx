@@ -100,7 +100,7 @@ export function WeatherCard({ weatherData }: WeatherCardProps) {
         </SectionWrapper>
 
         {/* Subtle divider */}
-        <div className="absolute top-[10%] right-0 bottom-[10%] w-px bg-gradient-to-b from-transparent via-gray-300/40 to-transparent dark:via-slate-400/30"></div>
+        <div className="absolute top-[10%] right-0 bottom-[10%] w-px bg-gradient-to-b from-transparent via-gray-300/40 to-transparent dark:via-white/[0.1]"></div>
       </div>
 
       {/* Music Section - Right Grid Cell */}
@@ -108,7 +108,7 @@ export function WeatherCard({ weatherData }: WeatherCardProps) {
         <SectionWrapper scale={1.1} alignment="center" padding="1em">
           <div className="flex h-full w-full flex-col items-center justify-center">
             <div
-              className="flex-shrink-0 overflow-hidden rounded-xl bg-gray-200 dark:bg-slate-700"
+              className="flex-shrink-0 overflow-hidden rounded-xl bg-gray-200 dark:border dark:border-white/[0.08] dark:bg-black/20"
               style={{
                 width: "82%",
                 height: "82%",
@@ -137,7 +137,7 @@ export function WeatherCard({ weatherData }: WeatherCardProps) {
                 {songTitle}
               </h2>
               <p
-                className="max-w-[20em] truncate text-base text-ellipsis text-gray-600 sm:text-lg md:text-xl dark:text-gray-300"
+                className="max-w-[20em] truncate text-base text-ellipsis text-gray-600 sm:text-lg md:text-xl dark:text-gray-200"
                 style={{ lineHeight: 1.2 }}
               >
                 {artistName}

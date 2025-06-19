@@ -286,7 +286,7 @@ export function QueueCard() {
                           "relative z-10 h-28 w-28 cursor-pointer rounded-xl object-cover",
                           ANIMATIONS.transition.standard,
                           isHovered || isNextUp
-                            ? "-translate-y-2 scale-110 shadow-2xl hover:brightness-105 dark:hover:brightness-110"
+                            ? "-translate-y-2 scale-110 shadow-2xl hover:brightness-105 dark:shadow-[0_8px_32px_rgba(0,0,0,0.6)] dark:hover:brightness-110"
                             : "",
                         )}
                       />
@@ -307,7 +307,7 @@ export function QueueCard() {
                           isNextUpOrHovered
                             ? cn(
                                 COLORS.text.primary,
-                                "drop-shadow-[0_1px_4px_rgba(0,0,0,0.1)] dark:drop-shadow-[0_1px_6px_rgba(255,255,255,0.13)]",
+                                "drop-shadow-[0_1px_4px_rgba(0,0,0,0.1)] dark:drop-shadow-[0_2px_8px_rgba(0,0,0,0.4)]",
                               )
                             : COLORS.text.primary,
                         )}
@@ -322,7 +322,7 @@ export function QueueCard() {
                           isNextUpOrHovered
                             ? cn(
                                 COLORS.text.secondary,
-                                "drop-shadow-[0_1px_2px_rgba(0,0,0,0.08)] dark:drop-shadow-[0_1px_2px_rgba(255,255,255,0.10)]",
+                                "drop-shadow-[0_1px_2px_rgba(0,0,0,0.08)] dark:drop-shadow-[0_1px_3px_rgba(0,0,0,0.3)]",
                               )
                             : COLORS.text.muted,
                         )}

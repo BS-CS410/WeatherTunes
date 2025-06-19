@@ -33,7 +33,7 @@ export function Slider({
   return (
     <div className={cn("relative w-full", className)}>
       {label && (
-        <label className="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
+        <label className="mb-2 block text-sm font-medium text-gray-900 dark:text-gray-100">
           {label}
         </label>
       )}

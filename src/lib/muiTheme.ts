@@ -15,8 +15,8 @@ export const muiTheme = createTheme({
       dark: "#374151", // gray-700
     },
     background: {
-      default: "#ffffff",
-      paper: "#f8fafc", // slate-50 - matches existing card backgrounds
+      default: "transparent", // Use transparent for liquid glass effect
+      paper: "transparent", // Use transparent for liquid glass effect
     },
     text: {
       primary: "#1f2937", // gray-800 - matches existing text
@@ -115,12 +115,12 @@ export const muiDarkTheme = createTheme({
       dark: "#3b82f6", // blue-500
     },
     background: {
-      default: "#0f172a", // slate-900
-      paper: "#1e293b", // slate-800
+      default: "transparent", // Use transparent for liquid glass effect
+      paper: "transparent", // Use transparent for liquid glass effect
     },
     text: {
-      primary: "#f1f5f9", // slate-100
-      secondary: "#94a3b8", // slate-400
+      primary: "#ffffff", // white text for dark mode
+      secondary: "#d1d5db", // gray-300
     },
   },
 });

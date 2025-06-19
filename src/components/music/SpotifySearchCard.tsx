@@ -61,7 +61,7 @@ export function SpotifySearchCard({ className = "" }: SpotifySearchCardProps) {
     return (
       <div className={cn(CARD_STYLES.interactive, "p-6", className)}>
         <div className="mb-4 flex items-center gap-3">
-          <Search className="h-5 w-5 text-gray-400 dark:text-white/80" />
+          <Search className="h-5 w-5 text-gray-400 dark:text-gray-300" />
           <h3 className={cn("text-lg font-semibold", COLORS.text.primary)}>
             Spotify Search
           </h3>

@@ -50,7 +50,7 @@ export function SettingsCard({ isOpen, onClose }: SettingsCardProps) {
     <>
       {/* Backdrop - subtle overlay */}
       <div
-        className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm transition-opacity duration-300"
+        className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm transition-opacity duration-300 dark:bg-black/40"
         onClick={onClose}
       />
 
@@ -175,7 +175,7 @@ export function SettingsCard({ isOpen, onClose }: SettingsCardProps) {
               </SettingsSection>
 
               {/* Action Buttons */}
-              <div className="flex gap-3 border-t border-gray-200 pt-4 dark:border-slate-700">
+              <div className="flex gap-3 border-t border-gray-200 pt-4 dark:border-white/[0.08]">
                 <button
                   onClick={resetToDefaults}
                   className={cn(BUTTON_STYLES.secondary, "flex-1")}
@@ -192,14 +192,14 @@ export function SettingsCard({ isOpen, onClose }: SettingsCardProps) {
 
               {/* Authentication Section */}
               {user && (
-                <div className="border-t border-gray-200 pt-4 dark:border-slate-700">
+                <div className="border-t border-gray-200 pt-4 dark:border-white/[0.08]">
                   <button
                     onClick={handleLogout}
                     disabled={isLoggingOut}
                     className={cn(
                       BUTTON_STYLES.secondary,
                       "w-full border-red-300/50 text-red-700 hover:bg-red-50/50 hover:text-red-800 disabled:opacity-50",
-                      "dark:border-red-700/50 dark:text-red-400 dark:hover:bg-red-900/20 dark:hover:text-red-300",
+                      "dark:border-red-800/40 dark:text-red-300 dark:hover:border-red-700/60 dark:hover:bg-red-900/25 dark:hover:text-red-200",
                     )}
                   >
                     {isLoggingOut ? "Signing Out..." : "Sign Out of Spotify"}

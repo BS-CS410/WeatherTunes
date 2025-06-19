@@ -43,7 +43,7 @@ export function SegmentedControl({
               ? [BUTTON_STYLES.segmentedActive, "active"]
               : [
                   BUTTON_STYLES.segmented,
-                  "hover:bg-white/[0.08] dark:hover:bg-white/[0.05]",
+                  "hover:bg-white/[0.08] dark:hover:bg-black/[0.08]",
                 ],
           )}
         >

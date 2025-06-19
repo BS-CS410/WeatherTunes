@@ -27,7 +27,7 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
         {...props}
       >
         {/* Gentle Apple-style depth with very subtle white outline */}
-        <div className="pointer-events-none absolute inset-0 rounded-xl shadow-[inset_0_0.5px_0_0_rgba(255,255,255,0.15)] dark:shadow-[inset_0_0.5px_0_0_rgba(255,255,255,0.08)]" />
+        <div className="pointer-events-none absolute inset-0 rounded-xl shadow-[inset_0_0.5px_0_0_rgba(255,255,255,0.15)] dark:shadow-[inset_0_0.5px_0_0_rgba(255,255,255,0.05)]" />
         <div className="relative z-10 flex-1">{children}</div>
       </div>
     );

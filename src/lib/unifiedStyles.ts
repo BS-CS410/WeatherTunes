@@ -13,59 +13,73 @@ export const COLORS = {
   glass: {
     light:
       "bg-white/[0.06] backdrop-blur-xl backdrop-saturate-[1.6] border border-white/[0.15]",
-    dark: "dark:bg-white/[0.04] dark:backdrop-blur-xl dark:backdrop-saturate-[1.6] dark:border-white/[0.08]",
+    dark: "dark:bg-black/[0.15] dark:backdrop-blur-xl dark:backdrop-saturate-[1.4] dark:border-white/[0.06]",
     interactive:
-      "hover:bg-white/[0.08] hover:border-white/[0.2] dark:hover:bg-white/[0.06] dark:hover:border-white/[0.12]",
+      "hover:bg-white/[0.08] hover:border-white/[0.2] dark:hover:bg-black/[0.18] dark:hover:border-white/[0.08]",
     modal:
-      "bg-white/[0.08] backdrop-blur-2xl backdrop-saturate-[1.7] border border-white/[0.18] dark:bg-white/[0.05] dark:border-white/[0.1]",
+      "bg-white/[0.08] backdrop-blur-2xl backdrop-saturate-[1.7] border border-white/[0.18] dark:bg-black/[0.20] dark:border-white/[0.08]",
     // Enhanced liquid glass for prominent controls with gentle Apple-style depth
     enhanced:
-      "bg-white/[0.07] backdrop-blur-xl backdrop-saturate-[1.6] border border-white/[0.18] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.2)] dark:bg-white/[0.05] dark:border-white/[0.1] dark:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)]",
+      "bg-white/[0.07] backdrop-blur-xl backdrop-saturate-[1.6] border border-white/[0.18] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.2)] dark:bg-black/[0.18] dark:border-white/[0.08] dark:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]",
     // Segmented control style matching Apple's design with very subtle depth
     segmented:
-      "bg-white/[0.05] backdrop-blur-xl backdrop-saturate-[1.6] border border-white/[0.12] shadow-[inset_0_0.5px_0_0_rgba(255,255,255,0.15)] dark:bg-white/[0.03] dark:border-white/[0.06] dark:shadow-[inset_0_0.5px_0_0_rgba(255,255,255,0.08)]",
+      "bg-white/[0.05] backdrop-blur-xl backdrop-saturate-[1.6] border border-white/[0.12] shadow-[inset_0_0.5px_0_0_rgba(255,255,255,0.15)] dark:bg-black/[0.12] dark:border-white/[0.05] dark:shadow-[inset_0_0.5px_0_0_rgba(255,255,255,0.05)]",
     segmentedActive:
-      "bg-white/[0.85] backdrop-blur-sm border border-white/[0.3] shadow-[0_0.5px_2px_rgba(0,0,0,0.08)] dark:bg-white/[0.15] dark:border-white/[0.2] dark:shadow-[0_0.5px_2px_rgba(0,0,0,0.2)]",
+      "bg-white/[0.85] backdrop-blur-sm border border-white/[0.3] shadow-[0_0.5px_2px_rgba(0,0,0,0.08)] dark:bg-white/[0.12] dark:border-white/[0.15] dark:shadow-[0_0.5px_3px_rgba(0,0,0,0.4)]",
     // Slider track and knob styles - softer approach
     sliderTrack:
-      "bg-white/[0.1] backdrop-blur-md border border-white/[0.15] dark:bg-white/[0.06] dark:border-white/[0.08]",
+      "bg-white/[0.1] backdrop-blur-md border border-white/[0.15] dark:bg-black/[0.15] dark:border-white/[0.06]",
     sliderKnob:
-      "bg-white/[0.9] backdrop-blur-sm border border-white/[0.4] shadow-[0_1px_4px_rgba(0,0,0,0.1)] dark:bg-white/[0.8] dark:border-white/[0.3] dark:shadow-[0_1px_4px_rgba(0,0,0,0.25)]",
+      "bg-white/[0.9] backdrop-blur-sm border border-white/[0.4] shadow-[0_1px_4px_rgba(0,0,0,0.1)] dark:bg-white/[0.85] dark:border-white/[0.25] dark:shadow-[0_1px_6px_rgba(0,0,0,0.4)]",
+    // App icon hexagonal style
+    hexIcon:
+      "bg-gradient-to-br from-white/[0.12] to-white/[0.04] backdrop-blur-md border border-white/[0.15] dark:from-black/[0.25] dark:to-black/[0.15] dark:border-white/[0.08]",
+    // Sidebar/drawer styles
+    sidebar:
+      "bg-white/[0.08] backdrop-blur-xl backdrop-saturate-[1.6] border-r border-white/[0.15] dark:bg-black/[0.25] dark:border-white/[0.06]",
   },
 
   // Text colors with consistent hierarchy
   text: {
     primary: "text-gray-950 dark:text-white",
-    secondary: "text-gray-800 dark:text-gray-200",
-    muted: "text-gray-700 dark:text-gray-300",
+    secondary: "text-gray-800 dark:text-gray-100",
+    muted: "text-gray-700 dark:text-gray-200",
     interactive: "hover:text-gray-950 dark:hover:text-white",
-    weather: "text-gray-950 drop-shadow-lg dark:text-white",
-    condition: "text-gray-900 dark:text-gray-100",
+    weather:
+      "text-gray-950 drop-shadow-lg dark:text-white dark:drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]",
+    condition: "text-gray-900 dark:text-gray-50",
     onGlass: "text-gray-900 dark:text-white drop-shadow-sm",
+    onDarkGlass: "text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]",
+    subtle: "text-gray-600 dark:text-gray-300",
+    placeholder: "text-gray-500 dark:text-gray-400",
   },
 
   // Border and divider colors with gentle liquid glass styling
   border: {
     light: "border-white/12",
-    dark: "dark:border-white/06",
-    interactive: "hover:border-white/18 dark:hover:border-white/10",
-    subtle: "border-white/08 dark:border-white/04",
-    enhanced: "border-white/15 dark:border-white/08",
+    dark: "dark:border-white/05",
+    interactive: "hover:border-white/18 dark:hover:border-white/08",
+    subtle: "border-white/08 dark:border-white/03",
+    enhanced: "border-white/15 dark:border-white/06",
+    divider: "border-gray-300/40 dark:border-slate-400/20",
   },
 
   // Shadow system for gentle liquid glass depth
   shadow: {
     glass:
-      "shadow-[0_4px_20px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.15),0_1px_2px_rgba(0,0,0,0.2)]",
+      "shadow-[0_4px_20px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.25),0_1px_2px_rgba(0,0,0,0.3)]",
     glassHover:
-      "shadow-[0_6px_25px_rgba(0,0,0,0.06),0_1px_3px_rgba(0,0,0,0.08)] dark:shadow-[0_6px_25px_rgba(0,0,0,0.2),0_1px_3px_rgba(0,0,0,0.25)]",
+      "shadow-[0_6px_25px_rgba(0,0,0,0.06),0_1px_3px_rgba(0,0,0,0.08)] dark:shadow-[0_6px_25px_rgba(0,0,0,0.35),0_1px_3px_rgba(0,0,0,0.4)]",
     inset:
-      "shadow-[inset_0_0.5px_0_0_rgba(255,255,255,0.2)] dark:shadow-[inset_0_0.5px_0_0_rgba(255,255,255,0.1)]",
+      "shadow-[inset_0_0.5px_0_0_rgba(255,255,255,0.2)] dark:shadow-[inset_0_0.5px_0_0_rgba(255,255,255,0.06)]",
     // Gentle depth for controls
     control:
-      "shadow-[0_1px_2px_rgba(0,0,0,0.05),0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.2),0_2px_8px_rgba(0,0,0,0.15)]",
+      "shadow-[0_1px_2px_rgba(0,0,0,0.05),0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.3),0_2px_8px_rgba(0,0,0,0.2)]",
     controlHover:
-      "shadow-[0_1px_3px_rgba(0,0,0,0.08),0_4px_12px_rgba(0,0,0,0.06)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.25),0_4px_12px_rgba(0,0,0,0.18)]",
+      "shadow-[0_1px_3px_rgba(0,0,0,0.08),0_4px_12px_rgba(0,0,0,0.06)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.4),0_4px_12px_rgba(0,0,0,0.25)]",
+    // Dark mode specific shadows
+    darkGlow: "dark:shadow-[0_0_20px_rgba(255,255,255,0.05)]",
+    darkInner: "dark:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]",
   },
 } as const;
 

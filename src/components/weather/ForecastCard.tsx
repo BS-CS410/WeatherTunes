@@ -40,7 +40,7 @@ const ForecastDay = memo(function ForecastDay({
           TYPOGRAPHY.body.sm,
           "font-medium",
           COLORS.text.primary,
-          "transition-colors group-hover:text-gray-800 dark:group-hover:text-slate-100",
+          "transition-colors group-hover:text-gray-800 dark:group-hover:text-gray-100",
         )}
       >
         {dayName}
@@ -49,7 +49,7 @@ const ForecastDay = memo(function ForecastDay({
         className={cn(
           TYPOGRAPHY.body.xs,
           COLORS.text.muted,
-          "transition-colors group-hover:text-gray-500 dark:group-hover:text-slate-300",
+          "transition-colors group-hover:text-gray-500 dark:group-hover:text-gray-200",
         )}
       >
         {date}
@@ -70,7 +70,7 @@ const ForecastDay = memo(function ForecastDay({
         className={cn(
           TYPOGRAPHY.body.xs,
           COLORS.text.secondary,
-          "capitalize transition-colors group-hover:text-gray-600 dark:group-hover:text-slate-200",
+          "capitalize transition-colors group-hover:text-gray-600 dark:group-hover:text-gray-100",
         )}
       >
         {condition}
@@ -81,7 +81,7 @@ const ForecastDay = memo(function ForecastDay({
             TYPOGRAPHY.body.sm,
             "font-semibold",
             COLORS.text.primary,
-            "transition-colors hover:text-gray-800 dark:hover:text-slate-100",
+            "transition-colors hover:text-gray-800 dark:hover:text-gray-100",
           )}
         >
           {tempHigh}°
@@ -90,7 +90,7 @@ const ForecastDay = memo(function ForecastDay({
           className={cn(
             TYPOGRAPHY.body.xs,
             COLORS.text.muted,
-            "transition-colors hover:text-gray-400 dark:hover:text-slate-400",
+            "transition-colors hover:text-gray-400 dark:hover:text-gray-300",
           )}
         >
           {tempLow}°
