@@ -128,24 +128,14 @@ export function CurrentTrackCard({ className = "" }: CurrentTrackCardProps) {
         className,
       )}
     >
-      {/* Track Information */}
-      <div className="mb-4 w-full text-center">
-        <h3 className={cn(TYPOGRAPHY.display.md, COLORS.text.primary, "mb-1")}>
-          {trackMetadata.title}
-        </h3>
-        <p className={cn(TYPOGRAPHY.body.base, COLORS.text.secondary)}>
-          {trackMetadata.artist}
-        </p>
-      </div>
-
       {/* Spotify Embed Player */}
       {currentTrackId && /^[a-zA-Z0-9]{22}$/.test(currentTrackId) ? (
         <div className="w-full">
           <iframe
             key={`${currentTrackId}`}
-            src={`https://open.spotify.com/embed/track/${currentTrackId}`}
+            src={`https://open.spotify.com/embed/track/${currentTrackId}?utm_source=generator&theme=0`}
             width="100%"
-            height="160"
+            height="80"
             frameBorder="0"
             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
             allowFullScreen
@@ -158,16 +148,6 @@ export function CurrentTrackCard({ className = "" }: CurrentTrackCardProps) {
           <div className={cn(TYPOGRAPHY.body.lg, COLORS.text.muted)}>
             Unable to load this track. Please try another song.
           </div>
-        </div>
-      )}
-
-      {/* Queue Status */}
-      {songQueue.length > 0 && (
-        <div className="w-full text-center">
-          <p className={cn("text-xs", COLORS.text.muted)}>
-            Queue: {songQueue.length} track{songQueue.length !== 1 ? "s" : ""}{" "}
-            ready
-          </p>
         </div>
       )}
 

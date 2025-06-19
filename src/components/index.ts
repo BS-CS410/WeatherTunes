@@ -22,6 +22,7 @@ export {
 } from "./shared/SettingsComponents";
 export { ErrorBoundary, withErrorBoundary } from "./shared/ErrorBoundary";
 export { LoginPopup } from "./shared/LoginPopup";
+export { WeatherMusicCard } from "./shared/WeatherMusicCard";
 
 // === WEATHER DOMAIN ===
 // Components related to weather display, forecast, and background visuals

@@ -1,7 +1,5 @@
 import {
-  WeatherCard,
   QueueCard,
-  CurrentTrackCard,
   FavoritesCard,
   WeatherBackground,
   SettingsButton,
@@ -10,6 +8,7 @@ import {
   LoadingSpinner,
   ErrorDisplay,
   SpotifySearchCard,
+  WeatherMusicCard,
 } from "@/components";
 import { useWeatherData } from "@/hooks/useWeather";
 import { useThemeManager } from "@/hooks/useThemeManager";
@@ -59,17 +58,10 @@ function MainPage() {
           </h1>
         </header>
 
-        {/* Unified Weather and Currently Playing Display */}
+        {/* Unified Weather and Music Display */}
         <div className="transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02]">
           <BaseCard withPadding={false} enableLiquidGlass>
-            <WeatherCard weatherData={displayData} />
-          </BaseCard>
-        </div>
-
-        {/* Currently Playing Section */}
-        <div className="transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02]">
-          <BaseCard enableLiquidGlass>
-            <CurrentTrackCard />
+            <WeatherMusicCard weatherData={displayData} />
           </BaseCard>
         </div>
 
