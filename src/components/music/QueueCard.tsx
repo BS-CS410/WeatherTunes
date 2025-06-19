@@ -51,6 +51,19 @@ export function QueueCard() {
     };
   }, [contextIsLoading]);
 
+  // Auto-generate queue on page load if user is authenticated and queue is empty
+  useEffect(() => {
+    if (
+      user &&
+      songQueue.length === 0 &&
+      !contextIsLoading &&
+      !isGeneratingQueue
+    ) {
+      handleGenerateQueue();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, songQueue.length, contextIsLoading]);
+
   const handleMouseEnter = (id: string) => {
     if (hoverTimeout.current) {
       clearTimeout(hoverTimeout.current);

@@ -2,12 +2,7 @@ import { SunriseIcon, SunsetIcon } from "@/components/icons";
 import type { WeatherDisplayData } from "@/types/weather";
 import { SectionWrapper } from "../layout/SectionWrapper";
 import { useCurrentTrackContext } from "@/contexts/useCurrentTrackContext";
-import {
-  TYPOGRAPHY,
-  COLORS,
-  MUSIC_STYLES,
-  ANIMATIONS,
-} from "@/lib/unifiedStyles"; // Import unified styles
+import { TYPOGRAPHY, COLORS } from "@/lib/unifiedStyles"; // Import unified styles
 
 /**
  * STYLE CUSTOMIZATION GUIDE
@@ -104,25 +99,41 @@ export function WeatherCard({ weatherData }: WeatherCardProps) {
       </div>
 
       {/* Music Section - Right Grid Cell */}
-      <div className="relative">
+      <div className="relative flex h-full w-full items-center justify-center">
         <SectionWrapper scale={1.1} alignment="center" padding="1em">
-          <div className={MUSIC_STYLES.albumContainer}>
-            <img
-              src={albumArtUrl}
-              alt={`${songTitle} album art`}
-              className={`aspect-square w-full object-cover ${ANIMATIONS.transition.slow} group-hover/album:scale-110`}
-              loading="lazy"
-            />
-          </div>
-          <div className={MUSIC_STYLES.trackInfo}>
-            <h2 className={`${TYPOGRAPHY.music.title} ${COLORS.text.primary}`}>
-              {songTitle}
-            </h2>
-            <p
-              className={`${TYPOGRAPHY.music.artist} ${COLORS.text.secondary}`}
+          <div className="flex h-full w-full flex-col items-center justify-center">
+            <div
+              className="flex-shrink-0 overflow-hidden rounded-lg bg-gray-200 dark:bg-slate-700"
+              style={{
+                width: "82%",
+                height: "82%",
+                minWidth: 112,
+                minHeight: 112,
+                maxWidth: 320,
+                maxHeight: 320,
+              }}
             >
-              {artistName}
-            </p>
+              <img
+                src={albumArtUrl}
+                alt={`${songTitle} album art`}
+                className="h-full w-full object-cover"
+                loading="lazy"
+              />
+            </div>
+            <div className="mt-3 flex w-full flex-col items-center text-center">
+              <h2
+                className="max-w-[18em] truncate text-lg font-semibold text-ellipsis sm:text-xl md:text-2xl"
+                style={{ lineHeight: 1.2 }}
+              >
+                {songTitle}
+              </h2>
+              <p
+                className="max-w-[20em] truncate text-base text-ellipsis text-gray-600 sm:text-lg md:text-xl dark:text-gray-300"
+                style={{ lineHeight: 1.2 }}
+              >
+                {artistName}
+              </p>
+            </div>
           </div>
         </SectionWrapper>
       </div>
