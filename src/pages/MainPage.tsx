@@ -77,9 +77,7 @@ function MainPage() {
         </BaseCard>
 
         {/* Spotify Search */}
-        <BaseCard>
-          <SpotifySearchCard />
-        </BaseCard>
+        <SpotifySearchCard />
 
         {/* 5-Day Weather Forecast */}
         <ForecastCard />
