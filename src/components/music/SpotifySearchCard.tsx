@@ -4,7 +4,12 @@ import { useSpotifySearch } from "@/hooks/useSpotifySearch";
 import { useCurrentTrack } from "@/hooks/useCurrentTrack";
 import { useAuth } from "@/hooks/useAuth";
 import type { TrackMetadata } from "@/types/queue";
-import { COLORS } from "@/lib/unifiedStyles";
+import {
+  COLORS,
+  CARD_STYLES,
+  INPUT_STYLES,
+  BUTTON_STYLES,
+} from "@/lib/unifiedStyles";
 import { cn } from "@/lib/utils";
 
 interface SpotifySearchCardProps {
@@ -54,9 +59,7 @@ export function SpotifySearchCard({ className = "" }: SpotifySearchCardProps) {
 
   if (!user) {
     return (
-      <div
-        className={cn("rounded-xl bg-white/10 p-6 backdrop-blur-md", className)}
-      >
+      <div className={cn(CARD_STYLES.interactive, "p-6", className)}>
         <div className="mb-4 flex items-center gap-3">
           <Search className="h-5 w-5 text-gray-400 dark:text-white/80" />
           <h3 className={cn("text-lg font-semibold", COLORS.text.primary)}>
@@ -71,11 +74,9 @@ export function SpotifySearchCard({ className = "" }: SpotifySearchCardProps) {
   }
 
   return (
-    <div
-      className={cn("rounded-xl bg-white/10 p-6 backdrop-blur-md", className)}
-    >
+    <div className={cn(CARD_STYLES.interactive, "p-6", className)}>
       <div className="mb-4 flex items-center gap-3">
-        <Search className="h-5 w-5 text-gray-400 dark:text-white/80" />
+        <Search className={cn("h-5 w-5", COLORS.text.secondary)} />
         <h3 className={cn("text-lg font-semibold", COLORS.text.primary)}>
           Spotify Search
         </h3>
@@ -93,16 +94,18 @@ export function SpotifySearchCard({ className = "" }: SpotifySearchCardProps) {
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search for songs, artists, or albums..."
             className={cn(
-              "flex-1 rounded-lg border border-white/20 bg-white/10 px-3 py-2",
-              COLORS.text.primary,
-              "placeholder-gray-400 focus:border-white/40 focus:outline-none dark:placeholder-white/50",
+              INPUT_STYLES.base,
+              "flex-1 placeholder-gray-700 dark:placeholder-slate-300",
             )}
             disabled={isSearching}
           />
           <button
             type="submit"
             disabled={isSearching || !searchQuery.trim()}
-            className="rounded-lg bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600 disabled:bg-blue-500/50"
+            className={cn(
+              BUTTON_STYLES.liquidGlass,
+              "px-6 py-2 text-base font-semibold",
+            )}
           >
             Search
           </button>
@@ -117,7 +120,10 @@ export function SpotifySearchCard({ className = "" }: SpotifySearchCardProps) {
               key={mood}
               onClick={() => handleMoodSearch(mood)}
               disabled={isSearching}
-              className="rounded-full bg-white/10 px-3 py-1 text-sm text-gray-700 capitalize transition-colors hover:bg-white/20 disabled:bg-white/5 dark:text-white/80"
+              className={cn(
+                BUTTON_STYLES.ghost,
+                "rounded-full px-3 py-1 text-sm capitalize",
+              )}
             >
               {mood}
             </button>
@@ -154,7 +160,10 @@ export function SpotifySearchCard({ className = "" }: SpotifySearchCardProps) {
           {searchResults.map((track) => (
             <div
               key={track.id}
-              className="flex items-center gap-3 rounded-lg bg-white/5 p-2 transition-colors hover:bg-white/10"
+              className={cn(
+                CARD_STYLES.interactive,
+                "flex items-center gap-3 p-2",
+              )}
             >
               {track.albumArt ? (
                 <img
@@ -184,7 +193,10 @@ export function SpotifySearchCard({ className = "" }: SpotifySearchCardProps) {
 
               <button
                 onClick={() => handleAddToQueue(track)}
-                className="rounded-full bg-green-500 p-1.5 text-white transition-colors hover:bg-green-600"
+                className={cn(
+                  BUTTON_STYLES.icon,
+                  "rounded-full bg-green-500 p-1.5 text-white hover:bg-green-600",
+                )}
                 title="Add to queue"
               >
                 <Plus className="h-4 w-4" />

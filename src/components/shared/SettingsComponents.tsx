@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { COLORS, TYPOGRAPHY } from "@/lib/unifiedStyles";
+import { COLORS, TYPOGRAPHY, BUTTON_STYLES } from "@/lib/unifiedStyles";
 import { cn } from "@/lib/utils";
 
 interface SettingsSectionProps {
@@ -36,14 +36,14 @@ interface SettingsButtonGroupProps {
 
 export function SettingsButtonGroup({ options }: SettingsButtonGroupProps) {
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 overflow-x-visible">
       {options.map(({ value, label, isSelected, onClick }) => (
         <Button
           key={value}
-          variant={isSelected ? "default" : "outline"}
+          variant={isSelected ? undefined : "outline"}
           size="sm"
           onClick={onClick}
-          className="flex-1"
+          className={cn("flex-1", isSelected && BUTTON_STYLES.selectedGlass)}
         >
           {label}
         </Button>

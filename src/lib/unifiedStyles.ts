@@ -9,22 +9,23 @@
 
 // Color system with semantic naming
 export const COLORS = {
-  // Glass morphism backgrounds
+  // Liquid Glass backgrounds - inspired by Apple's design
   glass: {
-    light: "bg-white/40 backdrop-blur-md",
-    dark: "dark:bg-slate-900/75",
-    interactive: "hover:bg-white/50 dark:hover:bg-slate-900/60",
-    modal: "bg-white/40 backdrop-blur-md dark:bg-slate-900/75",
+    light: "bg-white/8 backdrop-blur-xl backdrop-saturate-150",
+    dark: "dark:bg-slate-900/60 dark:backdrop-blur-xl dark:backdrop-saturate-150",
+    interactive: "hover:bg-white/12 dark:hover:bg-slate-900/70",
+    modal:
+      "bg-white/15 backdrop-blur-2xl backdrop-saturate-200 dark:bg-slate-900/80",
   },
 
   // Text colors with consistent hierarchy
   text: {
-    primary: "text-gray-900 dark:text-slate-100",
-    secondary: "text-gray-700 dark:text-slate-300",
-    muted: "text-gray-600 dark:text-slate-400",
-    interactive: "hover:text-gray-900 dark:hover:text-slate-100",
-    weather: "text-gray-900 drop-shadow-lg dark:text-cyan-50",
-    condition: "text-gray-800 dark:text-cyan-100",
+    primary: "text-gray-950 dark:text-slate-100",
+    secondary: "text-gray-800 dark:text-slate-300",
+    muted: "text-gray-700 dark:text-slate-400",
+    interactive: "hover:text-gray-950 dark:hover:text-slate-100",
+    weather: "text-gray-950 drop-shadow-lg dark:text-cyan-50",
+    condition: "text-gray-900 dark:text-cyan-100",
   },
 
   // Border and divider colors
@@ -168,15 +169,14 @@ export const LAYOUT = {
 
 // === COMPONENT STYLE BUILDERS ===
 
-// Glass card variants
+// Glass card variants - Liquid Glass inspired
 export const CARD_STYLES = {
   base: [
     COLORS.glass.light,
     COLORS.glass.dark,
-    COLORS.border.light,
-    COLORS.border.dark,
     LAYOUT.rounded.lg,
-    "border shadow-lg",
+    // Liquid Glass shadow with multiple layers for depth
+    "shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)]",
     ANIMATIONS.transition.standard,
   ].join(" "),
 
@@ -184,14 +184,12 @@ export const CARD_STYLES = {
     COLORS.glass.light,
     COLORS.glass.dark,
     COLORS.glass.interactive,
-    COLORS.border.light,
-    COLORS.border.dark,
-    COLORS.border.interactive,
     LAYOUT.rounded.lg,
-    "border shadow-lg",
+    // Enhanced shadow for interactive elements
+    "shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_16px_40px_rgb(0,0,0,0.16)]",
+    "dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)] dark:hover:shadow-[0_16px_40px_rgb(0,0,0,0.6)]",
     ANIMATIONS.transition.standard,
     ANIMATIONS.hover.subtle,
-    ANIMATIONS.shadow.hover,
   ].join(" "),
 
   modal: [
@@ -199,58 +197,121 @@ export const CARD_STYLES = {
     COLORS.border.light,
     COLORS.border.dark,
     LAYOUT.rounded.lg,
-    "border shadow-xl",
+    "border shadow-[0_20px_50px_rgb(0,0,0,0.25)]",
   ].join(" "),
 } as const;
 
-// Button variants
+// Button variants - Apple-inspired, unified single source of truth
 export const BUTTON_STYLES = {
   primary: [
-    "bg-slate-600/70 text-white",
-    "hover:bg-slate-700/80",
-    "dark:bg-slate-500/60 dark:hover:bg-slate-600/70",
+    COLORS.glass.light,
+    COLORS.glass.dark,
+    "bg-blue-500/90 dark:bg-blue-500/80 text-white font-medium",
+    "hover:bg-blue-600/90 dark:hover:bg-blue-600/80 hover:backdrop-saturate-180",
+    LAYOUT.rounded.lg,
+    LAYOUT.padding.button.md,
     ANIMATIONS.transition.fast,
+    // Unified shadow
+    "shadow-[0_1px_3px_rgb(0,0,0,0.1),0_4px_14px_rgb(59,130,246,0.15)] hover:shadow-[0_2px_6px_rgb(0,0,0,0.12),0_8px_20px_rgb(59,130,246,0.2)]",
+    "dark:shadow-[0_1px_3px_rgb(0,0,0,0.3),0_4px_14px_rgb(59,130,246,0.2)] dark:hover:shadow-[0_2px_6px_rgb(0,0,0,0.4),0_8px_20px_rgb(59,130,246,0.25)]",
   ].join(" "),
 
   secondary: [
-    COLORS.border.subtle,
-    "bg-white/30 text-gray-700 backdrop-blur-sm",
-    "hover:bg-white/50 hover:text-gray-900",
-    "dark:bg-slate-800/80 dark:text-slate-300",
-    "dark:hover:bg-slate-700/80 dark:hover:text-slate-200",
-    "border",
+    COLORS.glass.light,
+    COLORS.glass.dark,
+    COLORS.text.primary,
+    "font-medium",
+    LAYOUT.rounded.lg,
+    LAYOUT.padding.button.md,
     ANIMATIONS.transition.fast,
+    "hover:bg-white/25 dark:hover:bg-gray-700/50 hover:backdrop-saturate-180",
+    // Unified shadow
+    "shadow-[0_1px_2px_rgb(0,0,0,0.05),0_2px_8px_rgb(0,0,0,0.08)] hover:shadow-[0_1px_3px_rgb(0,0,0,0.08),0_4px_12px_rgb(0,0,0,0.12)]",
+    "dark:shadow-[0_1px_2px_rgb(0,0,0,0.2),0_2px_8px_rgb(0,0,0,0.25)] dark:hover:shadow-[0_1px_3px_rgb(0,0,0,0.3),0_4px_12px_rgb(0,0,0,0.35)]",
+    // Unified border
+    COLORS.border.light,
+    COLORS.border.dark,
+    "hover:border-white/15 dark:hover:border-gray-500/40",
   ].join(" "),
 
-  // Legacy glass morphism style from original components
-  glassButton: [
-    "rounded-lg bg-white/40 font-medium text-gray-900 shadow-md backdrop-blur-md",
-    "transition-all duration-200 hover:bg-white/60 hover:shadow-lg",
-    "dark:bg-slate-900/75 dark:text-slate-100 dark:hover:bg-slate-900/90",
+  liquidGlass: [
+    COLORS.glass.light,
+    COLORS.glass.dark,
+    COLORS.text.primary,
+    "font-medium",
+    LAYOUT.rounded.lg,
     LAYOUT.padding.button.md,
+    ANIMATIONS.transition.standard,
+    "hover:bg-white/20 dark:hover:bg-gray-600/40 hover:backdrop-saturate-200",
+    // Unified shadow
+    "shadow-[0_1px_3px_rgb(0,0,0,0.08),0_4px_16px_rgb(0,0,0,0.12)] hover:shadow-[0_2px_6px_rgb(0,0,0,0.12),0_8px_24px_rgb(0,0,0,0.16)]",
+    "dark:shadow-[0_1px_3px_rgb(0,0,0,0.25),0_4px_16px_rgb(0,0,0,0.35)] dark:hover:shadow-[0_2px_6px_rgb(0,0,0,0.35),0_8px_24px_rgb(0,0,0,0.45)]",
+    // Unified border
+    COLORS.border.light,
+    COLORS.border.dark,
+    "hover:border-white/25 dark:hover:border-gray-400/40",
   ].join(" "),
 
   ghost: [
     "bg-transparent",
     COLORS.text.secondary,
     COLORS.text.interactive,
+    "font-medium",
+    LAYOUT.rounded.lg,
+    LAYOUT.padding.button.md,
     ANIMATIONS.transition.fast,
+    "hover:bg-white/8 dark:hover:bg-gray-800/30 hover:backdrop-blur-sm hover:backdrop-saturate-150",
+    "hover:shadow-[0_1px_2px_rgb(0,0,0,0.05),0_2px_8px_rgb(0,0,0,0.08)] dark:hover:shadow-[0_1px_2px_rgb(0,0,0,0.2),0_2px_8px_rgb(0,0,0,0.25)]",
+  ].join(" "),
+
+  icon: [
+    COLORS.glass.light,
+    COLORS.glass.dark,
+    COLORS.text.primary,
+    "font-medium",
+    LAYOUT.rounded.lg,
+    "p-3",
+    ANIMATIONS.transition.fast,
+    "hover:bg-white/18 dark:hover:bg-gray-600/40 hover:backdrop-saturate-180",
+    "shadow-[0_1px_2px_rgb(0,0,0,0.08),0_2px_8px_rgb(0,0,0,0.12)] hover:shadow-[0_1px_3px_rgb(0,0,0,0.12),0_4px_12px_rgb(0,0,0,0.16)]",
+    "dark:shadow-[0_1px_2px_rgb(0,0,0,0.25),0_2px_8px_rgb(0,0,0,0.3)] dark:hover:shadow-[0_1px_3px_rgb(0,0,0,0.35),0_4px_12px_rgb(0,0,0,0.4)]",
+    COLORS.border.light,
+    COLORS.border.dark,
+    "hover:border-white/20 dark:hover:border-gray-500/35",
+  ].join(" "),
+
+  // Subtle glassy selected state for button groups
+  selectedGlass: [
+    COLORS.glass.light,
+    COLORS.glass.dark,
+    "bg-white/25 dark:bg-slate-800/40 backdrop-blur-md backdrop-saturate-150",
+    COLORS.text.primary,
+    LAYOUT.rounded.lg,
+    LAYOUT.padding.button.sm,
+    "ring-2 ring-white/30 dark:ring-slate-400/30",
+    "shadow-[0_2px_8px_rgb(0,0,0,0.10)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.25)]",
+    ANIMATIONS.transition.fast,
+    COLORS.border.light,
+    COLORS.border.dark,
   ].join(" "),
 } as const;
 
-// Input field styles
+// Input field styles - Liquid Glass enhanced
 export const INPUT_STYLES = {
   base: [
     COLORS.glass.light,
     COLORS.glass.dark,
-    COLORS.border.light,
-    COLORS.border.dark,
     COLORS.text.primary,
-    "border",
     LAYOUT.rounded.base,
     LAYOUT.padding.sm,
+    // Liquid Glass input styling
+    "shadow-[inset_0_2px_4px_rgb(0,0,0,0.06)] focus:shadow-[inset_0_2px_4px_rgb(0,0,0,0.1)]",
+    "dark:shadow-[inset_0_2px_4px_rgb(0,0,0,0.2)] dark:focus:shadow-[inset_0_2px_4px_rgb(0,0,0,0.3)]",
+    "placeholder:text-gray-500 dark:placeholder:text-slate-400",
     ANIMATIONS.transition.fast,
-    "focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500",
+    "focus:bg-white/12 dark:focus:bg-slate-900/70",
+    "focus:backdrop-saturate-200",
+    "focus:outline-none focus:ring-2 focus:ring-blue-500/30",
   ].join(" "),
 } as const;
 
@@ -281,7 +342,7 @@ export const MUSIC_STYLES = {
   ].join(" "),
 } as const;
 
-// Weather component specific styles
+// Weather component specific styles - Liquid Glass enhanced
 export const WEATHER_STYLES = {
   // Main weather display
   display: [
@@ -296,22 +357,50 @@ export const WEATHER_STYLES = {
     "items-start justify-center",
   ].join(" "),
 
-  // Forecast day item
+  // Forecast day item - Liquid Glass styling
   forecastDay: [
     "group grid grid-rows-[auto_auto_3rem_2rem_auto]",
     "items-center justify-items-center",
     LAYOUT.spacing.xs,
     LAYOUT.rounded.base,
-    COLORS.border.light,
-    COLORS.border.dark,
-    "border bg-white/10 backdrop-blur-sm",
-    "dark:bg-slate-800/20",
+    // Liquid Glass background for forecast items
+    "bg-white/6 backdrop-blur-lg backdrop-saturate-150",
+    "dark:bg-slate-800/30 dark:backdrop-blur-lg dark:backdrop-saturate-150",
     LAYOUT.padding.sm,
     "text-center",
     ANIMATIONS.transition.standard,
-    ANIMATIONS.hover.standard,
-    COLORS.border.interactive,
-    "hover:bg-white/20 dark:hover:bg-slate-700/30",
+    // Enhanced hover for liquid glass
+    "hover:bg-white/10 hover:backdrop-saturate-200 hover:-translate-y-1",
+    "dark:hover:bg-slate-700/40 dark:hover:backdrop-saturate-200",
+    "shadow-[0_4px_20px_rgb(0,0,0,0.08)] hover:shadow-[0_8px_25px_rgb(0,0,0,0.12)]",
+    "dark:shadow-[0_4px_20px_rgb(0,0,0,0.2)] dark:hover:shadow-[0_8px_25px_rgb(0,0,0,0.3)]",
+  ].join(" "),
+} as const;
+
+// Liquid Glass specific component styles
+export const LIQUID_GLASS_STYLES = {
+  // Floating elements like tooltips, dropdowns
+  floating: [
+    "bg-white/12 backdrop-blur-2xl backdrop-saturate-200",
+    "dark:bg-slate-900/70 dark:backdrop-blur-2xl dark:backdrop-saturate-200",
+    "shadow-[0_20px_50px_rgb(0,0,0,0.15)] border border-white/20",
+    "dark:shadow-[0_20px_50px_rgb(0,0,0,0.4)] dark:border-white/10",
+    LAYOUT.rounded.lg,
+  ].join(" "),
+
+  // Sidebar or panel elements
+  panel: [
+    "bg-white/10 backdrop-blur-xl backdrop-saturate-150",
+    "dark:bg-slate-900/60 dark:backdrop-blur-xl dark:backdrop-saturate-150",
+    "shadow-[0_12px_40px_rgb(0,0,0,0.12)]",
+    "dark:shadow-[0_12px_40px_rgb(0,0,0,0.4)]",
+    LAYOUT.rounded.lg,
+  ].join(" "),
+
+  // Overlay backgrounds
+  overlay: [
+    "bg-white/5 backdrop-blur-3xl backdrop-saturate-180",
+    "dark:bg-slate-900/40 dark:backdrop-blur-3xl dark:backdrop-saturate-180",
   ].join(" "),
 } as const;
 
