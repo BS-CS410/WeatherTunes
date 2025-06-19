@@ -18,6 +18,7 @@ interface CurrentTrackCardProps {
 export function CurrentTrackCard({ className = "" }: CurrentTrackCardProps) {
   const [message, setMessage] = useState<string | null>(null);
   const [isAutoLoading, setIsAutoLoading] = useState(false);
+  const [isGeneratingPlaylist, setIsGeneratingPlaylist] = useState(false);
   const hasGeneratedInitialQueue = useRef(false);
   const {
     trackMetadata,
@@ -137,6 +138,10 @@ export function CurrentTrackCard({ className = "" }: CurrentTrackCardProps) {
       return;
     }
 
+    setIsGeneratingPlaylist(true);
+    console.log("Starting weather playlist generation...");
+    console.log("Weather data:", weatherData);
+
     try {
       const timeOfDay = (() => {
         const hour = new Date().getHours();
@@ -146,6 +151,13 @@ export function CurrentTrackCard({ className = "" }: CurrentTrackCardProps) {
         return "night";
       })();
 
+      console.log("Time of day:", timeOfDay);
+      console.log("Temperature:", weatherData.main.temp);
+      console.log(
+        "Weather condition:",
+        weatherData.weather[0].main.toLowerCase(),
+      );
+
       const newQueue = await WeatherMusicService.generateWeatherBasedQueue(
         weatherData.main.temp,
         weatherData.weather[0].main.toLowerCase(),
@@ -153,13 +165,22 @@ export function CurrentTrackCard({ className = "" }: CurrentTrackCardProps) {
         12,
       );
 
+      console.log("Generated queue:", newQueue);
+
       if (newQueue.length === 0) {
-        setMessage("No tracks found for current weather conditions.");
-        setTimeout(() => setMessage(null), 3000);
+        setMessage(
+          "No tracks found for current weather conditions. The music service may be temporarily unavailable.",
+        );
+        setTimeout(() => setMessage(null), 5000);
         return;
       }
 
+      console.log("Replacing queue with tracks:", newQueue);
       await replaceQueueWithTracks(newQueue);
+      console.log(
+        "Queue replacement completed, current queue length:",
+        songQueue.length,
+      );
 
       // Automatically select the first track if the queue was empty before
       if (songQueue.length === 0 && newQueue.length > 0) {
@@ -172,8 +193,21 @@ export function CurrentTrackCard({ className = "" }: CurrentTrackCardProps) {
       setTimeout(() => setMessage(null), 2000);
     } catch (error) {
       console.error("Error refreshing queue:", error);
-      setMessage("Failed to refresh queue. Please try again.");
-      setTimeout(() => setMessage(null), 3000);
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      if (
+        errorMessage.includes("401") ||
+        errorMessage.includes("Authentication")
+      ) {
+        setMessage("Authentication expired. Please log in again.");
+      } else {
+        setMessage(
+          `Failed to refresh queue: ${errorMessage}. Please try again.`,
+        );
+      }
+      setTimeout(() => setMessage(null), 5000);
+    } finally {
+      setIsGeneratingPlaylist(false);
     }
   };
 
@@ -254,12 +288,14 @@ export function CurrentTrackCard({ className = "" }: CurrentTrackCardProps) {
           </p>
           <Button
             onClick={handleRefreshQueue}
-            disabled={isLoading}
+            disabled={isLoading || isGeneratingPlaylist}
             variant="outline"
           >
-            {songQueue.length > 0
-              ? "Refresh Playlist"
-              : "Generate Weather Playlist"}
+            {isGeneratingPlaylist
+              ? "Generating..."
+              : songQueue.length > 0
+                ? "Refresh Playlist"
+                : "Generate Weather Playlist"}
           </Button>
         </div>
       </div>

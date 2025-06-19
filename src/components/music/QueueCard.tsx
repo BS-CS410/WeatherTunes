@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 
 export function QueueCard() {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [isGeneratingQueue, setIsGeneratingQueue] = useState(false);
   const hoverTimeout = useRef<NodeJS.Timeout | null>(null);
   const {
     songQueue,
@@ -70,20 +71,44 @@ export function QueueCard() {
   const handleGenerateQueue = async () => {
     if (!user) {
       console.warn("Cannot generate queue: user not authenticated");
+      alert("Please log in to generate a queue.");
       return;
     }
+
+    setIsGeneratingQueue(true);
+    console.log("Starting queue generation...");
 
     try {
       // Generate a weather-based queue using current conditions
       const newQueueIds = await generateWeatherQueue(12);
+      console.log("Generated queue IDs:", newQueueIds);
 
       if (newQueueIds.length > 0) {
+        console.log("Replacing queue with new tracks...");
         await replaceQueueWithTracks(newQueueIds);
+        console.log("Queue replacement completed");
       } else {
-        console.warn("No tracks generated for queue");
+        console.warn(
+          "No tracks generated for queue - check weather data and Spotify API",
+        );
+        alert(
+          "No tracks found for current weather conditions. Please try again or check your internet connection.",
+        );
       }
     } catch (error) {
       console.error("Failed to generate weather-based queue:", error);
+      // Show user feedback for errors
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      if (errorMessage.includes("401")) {
+        alert("Authentication expired. Please log in again.");
+      } else {
+        alert(
+          "Failed to generate queue. Please check your internet connection and try again.",
+        );
+      }
+    } finally {
+      setIsGeneratingQueue(false);
     }
   };
 
@@ -155,10 +180,10 @@ export function QueueCard() {
             variant="outline"
             size="sm"
             onClick={handleGenerateQueue}
-            disabled={contextIsLoading} // Use factual loading state for disabling
+            disabled={contextIsLoading || isGeneratingQueue}
             className="text-xs"
           >
-            Generate Queue
+            {isGeneratingQueue ? "Generating..." : "Generate Queue"}
           </Button>
           {songQueue.length > 0 && (
             <>

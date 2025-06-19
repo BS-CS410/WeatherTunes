@@ -40,7 +40,7 @@ export class SpotifyApiService {
   ): Promise<TrackMetadata[]> {
     try {
       const response = await apiClient.get<SpotifySearchResult>(
-        `/recommend/search?q=${encodeURIComponent(query)}&limit=${limit}`,
+        `/search?q=${encodeURIComponent(query)}&limit=${limit}`,
       );
 
       return response.data.tracks || [];
@@ -58,7 +58,7 @@ export class SpotifyApiService {
   ): Promise<TrackMetadata[]> {
     try {
       const response = await apiClient.post<WeatherRecommendationResponse>(
-        "/recommend/recommendations/weather",
+        "/recommendations/weather",
         request,
       );
 
@@ -124,7 +124,7 @@ export class SpotifyApiService {
   ): Promise<TrackMetadata[]> {
     try {
       const response = await apiClient.post<{ playlist: TrackMetadata[] }>(
-        "/recommend/playlist/adaptive",
+        "/playlist/adaptive",
         {
           weather_condition: weatherCondition.toLowerCase(),
           temperature,
@@ -212,7 +212,7 @@ export class SpotifyApiService {
     } = {},
   ): Promise<void> {
     try {
-      await apiClient.post("/recommend/interactions", {
+      await apiClient.post("/interactions", {
         track_id: trackId,
         interaction_type: interactionType,
         context,

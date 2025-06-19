@@ -4,7 +4,7 @@ import json
 import logging
 import time
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
@@ -20,10 +20,10 @@ class CacheManager:
     """Simple in-memory cache for Spotify API responses."""
 
     def __init__(self, ttl_seconds: int = 1800):  # 30 minutes default TTL
-        self.cache: Dict[str, Tuple[Any, float]] = {}
+        self.cache: Dict[str, Tuple[object, float]] = {}
         self.ttl = ttl_seconds
 
-    def get(self, key: str) -> Optional[Dict[str, Any]]:
+    def get(self, key: str) -> Optional[object]:
         """Get cached value if not expired."""
         if key in self.cache:
             value, timestamp = self.cache[key]
@@ -33,12 +33,11 @@ class CacheManager:
             del self.cache[key]
         return None
 
-    def set(self, key: str, value: Dict[str, Any]) -> None:
+    def set(self, key: str, value: object) -> None:
         """Set cached value with current timestamp."""
         self.cache[key] = (value, time.time())
 
     def clear_expired(self) -> None:
-        """Remove all expired entries."""
         current_time = time.time()
         expired_keys = [
             key
@@ -88,7 +87,12 @@ class AdvancedRecommendationService:
         cached_result = self.cache.get(cache_key)
         if cached_result:
             logger.info(f"Returning cached weather recommendations for {user_id}")
-            return cached_result
+            # If cache is a dict with 'tracks', return the list, else return as is
+            if isinstance(cached_result, dict) and "tracks" in cached_result:
+                return cached_result["tracks"]
+            if isinstance(cached_result, list):
+                return cached_result
+            return []
 
         try:
             sp = spotipy.Spotify(auth=access_token)
@@ -98,29 +102,45 @@ class AdvancedRecommendationService:
 
             # Generate multiple recommendation strategies and combine them
             strategies = [
-                self._get_audio_feature_recommendations,
-                self._get_genre_based_recommendations,
-                self._get_artist_seed_recommendations,
+                lambda sp, wc, t, tod, up, l: self._get_audio_feature_recommendations(
+                    sp, {"condition": wc, "temperature": t, "time_of_day": tod}, up, l
+                ),
+                lambda sp, wc, _, tod, up, l: self._get_genre_based_recommendations(
+                    sp, wc, tod, up, l
+                ),
+                lambda sp, wc, _, tod, up, l: self._get_artist_seed_recommendations(
+                    sp, wc, tod, up, l
+                ),
             ]
 
             all_recommendations = []
-            tracks_per_strategy = max(
-                1, limit * 2 // len(strategies)
-            )  # Get more to filter by mood
+            tracks_per_strategy = max(1, limit * 2 // len(strategies))
 
             for strategy in strategies:
                 try:
-                    strategy_recs = strategy(
-                        sp,
-                        weather_condition,
-                        temperature,
-                        time_of_day,
-                        user_profile,
-                        tracks_per_strategy,
-                    )
+                    if strategy == strategies[0]:
+                        strategy_recs = strategy(
+                            sp,
+                            weather_condition,
+                            temperature,
+                            time_of_day,
+                            user_profile,
+                            tracks_per_strategy,
+                        )
+                    else:
+                        strategy_recs = strategy(
+                            sp,
+                            weather_condition,
+                            0,
+                            time_of_day,
+                            user_profile,
+                            tracks_per_strategy,
+                        )
                     all_recommendations.extend(strategy_recs)
                 except Exception as e:
-                    logger.warning(f"Strategy failed: {strategy.__name__}: {e}")
+                    logger.warning(
+                        f"Strategy failed: {getattr(strategy, '__name__', str(strategy))}: {e}"
+                    )
                     continue
 
             # Remove duplicates
@@ -133,40 +153,63 @@ class AdvancedRecommendationService:
 
             # Add mood tags to tracks and filter by weather mood match
             mood_filtered_tracks = self._add_mood_tags_and_filter(
-                sp, unique_recommendations, weather_condition, temperature, time_of_day
+                sp,
+                unique_recommendations,
+                {
+                    "condition": weather_condition,
+                    "temperature": temperature,
+                    "time_of_day": time_of_day,
+                },
             )
 
             # If we don't have enough mood-matched recommendations, add fallback
             if len(mood_filtered_tracks) < limit // 2:
-                fallback_recs = self._get_fallback_recommendations(
-                    sp, weather_condition, limit - len(mood_filtered_tracks)
+                try:
+                    fallback_recs = self._get_fallback_recommendations(
+                        sp, limit - len(mood_filtered_tracks)
+                    )
+                    fallback_with_moods = self._add_mood_tags_and_filter(
+                        sp,
+                        fallback_recs,
+                        {
+                            "condition": weather_condition,
+                            "temperature": temperature,
+                            "time_of_day": time_of_day,
+                        },
+                        min_score=0.1,
+                    )
+                    mood_filtered_tracks.extend(fallback_with_moods)
+                except Exception as e:
+                    logger.warning(
+                        f"Spotify fallback failed: {e}, using hardcoded fallback"
+                    )
+                    # Use hardcoded fallback when Spotify API completely fails
+                    mood_filtered_tracks.extend(self._get_simple_fallback()[:limit])
+
+            # If we still have no tracks, use simple fallback
+            if len(mood_filtered_tracks) == 0:
+                logger.warning(
+                    "No tracks found via any method, using hardcoded fallback"
                 )
-                # Add mood tags to fallback tracks too
-                fallback_with_moods = self._add_mood_tags_and_filter(
-                    sp,
-                    fallback_recs,
-                    weather_condition,
-                    temperature,
-                    time_of_day,
-                    min_score=0.1,
-                )
-                mood_filtered_tracks.extend(fallback_with_moods)
+                mood_filtered_tracks = self._get_simple_fallback()[:limit]
 
             # Limit to requested amount
             final_tracks = mood_filtered_tracks[:limit]
 
-            # Cache the result
-            self.cache.set(cache_key, {"tracks": final_tracks})
+            # Cache the result as a list, not a dict
+            self.cache.set(cache_key, final_tracks)
 
             logger.info(
                 f"Generated {len(final_tracks)} mood-matched recommendations for {user_id}"
+            )
+            logger.info(
+                f"Final tracks: {[t.get('title', 'Unknown') for t in final_tracks]}"
             )
             return final_tracks
 
         except Exception as e:
             logger.error(f"Advanced recommendation service error: {e}")
-            # Return fallback recommendations
-            return self._get_simple_fallback(weather_condition, limit)
+            return self._get_simple_fallback()
 
     def _get_user_music_profile(
         self,
@@ -174,12 +217,10 @@ class AdvancedRecommendationService:
         user_id: str,
         user_preferences: Optional[Dict[str, Any]],
     ) -> Dict[str, Any]:
-        """Build comprehensive user music profile."""
         cache_key = f"user_profile_{user_id}"
         cached_profile = self.user_cache.get(cache_key)
-        if cached_profile:
+        if cached_profile and isinstance(cached_profile, dict):
             return cached_profile
-
         profile = {
             "top_genres": [],
             "top_artists": [],
@@ -187,79 +228,68 @@ class AdvancedRecommendationService:
             "preferred_time_periods": {},
             "explicit_preferences": user_preferences or {},
         }
-
         try:
-            # Get top artists and extract genres
-            top_artists = sp.current_user_top_artists(
-                limit=20, time_range="medium_term"
-            )
-            if top_artists and "items" in top_artists:
-                profile["top_artists"] = [
-                    {"id": artist["id"], "name": artist["name"]}
-                    for artist in top_artists["items"][:10]
-                ]
-
-                # Extract and count genres
-                genre_counts = {}
-                for artist in top_artists["items"]:
-                    for genre in artist.get("genres", []):
-                        genre_counts[genre] = genre_counts.get(genre, 0) + 1
-
-                profile["top_genres"] = sorted(
-                    genre_counts.keys(), key=lambda x: genre_counts[x], reverse=True
-                )[:10]
-
-            # Get top tracks and analyze audio features
-            top_tracks = sp.current_user_top_tracks(limit=50, time_range="medium_term")
-            if top_tracks and "items" in top_tracks:
-                track_ids = [track["id"] for track in top_tracks["items"]]
-                audio_features = sp.audio_features(track_ids)
-
-                if audio_features:
-                    # Calculate average audio features
-                    features_sum = {}
-                    valid_tracks = 0
-
-                    for features in audio_features:
-                        if features:
-                            valid_tracks += 1
-                            for key in [
-                                "valence",
-                                "energy",
-                                "danceability",
-                                "acousticness",
-                                "instrumentalness",
-                            ]:
-                                features_sum[key] = features_sum.get(
-                                    key, 0
-                                ) + features.get(key, 0)
-
-                    if valid_tracks > 0:
-                        profile["audio_features_avg"] = {
-                            key: value / valid_tracks
-                            for key, value in features_sum.items()
-                        }
-
+            self._populate_top_artists_and_genres(sp, profile)
+            self._populate_audio_features_avg(sp, profile)
         except Exception as e:
             logger.warning(f"Could not build complete user profile: {e}")
-
-        # Cache the profile
         self.user_cache.set(cache_key, profile)
         return profile
+
+    def _populate_top_artists_and_genres(
+        self, sp: spotipy.Spotify, profile: dict
+    ) -> None:
+        top_artists = sp.current_user_top_artists(limit=20, time_range="medium_term")
+        if top_artists and "items" in top_artists:
+            profile["top_artists"] = [
+                {"id": artist["id"], "name": artist["name"]}
+                for artist in top_artists["items"][:10]
+            ]
+            genre_counts = {}
+            for artist in top_artists["items"]:
+                for genre in artist.get("genres", []):
+                    genre_counts[genre] = genre_counts.get(genre, 0) + 1
+            profile["top_genres"] = sorted(
+                genre_counts.keys(), key=lambda x: genre_counts[x], reverse=True
+            )[:10]
+
+    def _populate_audio_features_avg(self, sp: spotipy.Spotify, profile: dict) -> None:
+        top_tracks = sp.current_user_top_tracks(limit=50, time_range="medium_term")
+        if top_tracks and "items" in top_tracks:
+            track_ids = [track["id"] for track in top_tracks["items"]]
+            audio_features = sp.audio_features(track_ids)
+            if audio_features:
+                features_sum = {}
+                valid_tracks = 0
+                for features in audio_features:
+                    if features:
+                        valid_tracks += 1
+                        for key in [
+                            "valence",
+                            "energy",
+                            "danceability",
+                            "acousticness",
+                            "instrumentalness",
+                        ]:
+                            features_sum[key] = features_sum.get(key, 0) + features.get(
+                                key, 0
+                            )
+                if valid_tracks > 0:
+                    profile["audio_features_avg"] = {
+                        key: value / valid_tracks for key, value in features_sum.items()
+                    }
 
     def _get_audio_feature_recommendations(
         self,
         sp: spotipy.Spotify,
-        weather_condition: str,
-        temperature: float,
-        time_of_day: str,
+        weather: dict,
         user_profile: Dict[str, Any],
         limit: int,
     ) -> List[Dict[str, Any]]:
         """Get recommendations based on audio features matching weather and user preferences."""
         # Get weather-based audio features
         weather_features = self._get_enhanced_weather_audio_features(
-            weather_condition, temperature, time_of_day
+            weather["condition"], weather["temperature"], weather["time_of_day"]
         )
 
         # Blend with user's preferred audio features
@@ -276,7 +306,9 @@ class AdvancedRecommendationService:
                 seed_genres=seed_genres, limit=limit, **blended_features
             )
 
-            return self._format_tracks(recommendations.get("tracks", []))
+            if recommendations and "tracks" in recommendations:
+                return self._format_tracks(recommendations["tracks"])
+            return []
         except Exception as e:
             logger.warning(f"Audio feature recommendations failed: {e}")
             return []
@@ -285,7 +317,6 @@ class AdvancedRecommendationService:
         self,
         sp: spotipy.Spotify,
         weather_condition: str,
-        temperature: float,
         time_of_day: str,
         user_profile: Dict[str, Any],
         limit: int,
@@ -303,7 +334,9 @@ class AdvancedRecommendationService:
                 seed_genres=combined_genres[:5], limit=limit
             )
 
-            return self._format_tracks(recommendations.get("tracks", []))
+            if recommendations and "tracks" in recommendations:
+                return self._format_tracks(recommendations["tracks"])
+            return []
         except Exception as e:
             logger.warning(f"Genre-based recommendations failed: {e}")
             return []
@@ -312,7 +345,6 @@ class AdvancedRecommendationService:
         self,
         sp: spotipy.Spotify,
         weather_condition: str,
-        temperature: float,
         time_of_day: str,
         user_profile: Dict[str, Any],
         limit: int,
@@ -324,7 +356,7 @@ class AdvancedRecommendationService:
 
         # Use audio features that match the weather
         weather_features = self._get_enhanced_weather_audio_features(
-            weather_condition, temperature, time_of_day
+            weather_condition, 0, time_of_day
         )
 
         # Take up to 5 top artists as seeds
@@ -335,7 +367,9 @@ class AdvancedRecommendationService:
                 seed_artists=seed_artists, limit=limit, **weather_features
             )
 
-            return self._format_tracks(recommendations.get("tracks", []))
+            if recommendations and "tracks" in recommendations:
+                return self._format_tracks(recommendations["tracks"])
+            return []
         except Exception as e:
             logger.warning(f"Artist seed recommendations failed: {e}")
             return []
@@ -494,25 +528,16 @@ class AdvancedRecommendationService:
     def _combine_genres(
         self, weather_genres: List[str], user_genres: List[str]
     ) -> List[str]:
-        """Combine weather-appropriate genres with user preferences."""
-        # Prioritize intersection of weather and user genres
         intersection = [g for g in weather_genres if g in user_genres]
-
-        # Add weather genres
         result = intersection + [g for g in weather_genres if g not in intersection]
-
-        # Add top user genres if we need more
         result.extend([g for g in user_genres if g not in result])
-
         return result[:10]  # Limit to 10 genres
 
     def _add_mood_tags_and_filter(
         self,
         sp: spotipy.Spotify,
         tracks: List[Dict[str, Any]],
-        weather_condition: str,
-        temperature: float,
-        time_of_day: str,
+        weather: dict,
         min_score: float = 0.3,
     ) -> List[Dict[str, Any]]:
         """Add mood tags to tracks and filter by weather mood matching."""
@@ -542,9 +567,9 @@ class AdvancedRecommendationService:
             # Filter by weather mood match using WeatherMoodService
             return WeatherMoodService.filter_tracks_by_weather(
                 tracks_with_moods,
-                weather_condition,
-                temperature,
-                time_of_day,
+                weather["condition"],
+                weather["temperature"],
+                weather["time_of_day"],
                 min_score,
             )
 
@@ -615,7 +640,7 @@ class AdvancedRecommendationService:
         return formatted
 
     def _get_fallback_recommendations(
-        self, sp: spotipy.Spotify, weather_condition: str, limit: int
+        self, sp: spotipy.Spotify, limit: int
     ) -> List[Dict[str, Any]]:
         """Get simple fallback recommendations."""
         try:
@@ -623,17 +648,86 @@ class AdvancedRecommendationService:
             recommendations = sp.recommendations(
                 seed_genres=fallback_genres[:3], limit=limit
             )
-            return self._format_tracks(recommendations.get("tracks", []))
+            if recommendations and "tracks" in recommendations:
+                return self._format_tracks(recommendations["tracks"])
+            return []
         except Exception:
             return []
 
-    def _get_simple_fallback(
-        self, weather_condition: str, limit: int
-    ) -> List[Dict[str, Any]]:
+    def _get_simple_fallback(self) -> List[Dict[str, Any]]:
         """Simple fallback when all else fails."""
-        # Return empty list - frontend will handle gracefully
-        logger.error("All recommendation strategies failed, returning empty list")
-        return []
+        logger.warning(
+            "All recommendation strategies failed, using hardcoded fallback tracks"
+        )
+
+        # Return hardcoded tracks in the correct format expected by frontend
+        return [
+            {
+                "id": "4iV5W9uYEdYUVa79Axb7Rh",
+                "title": "Never Gonna Give You Up",
+                "artist": "Rick Astley",
+                "albumArt": "",
+                "album": "Whenever You Need Somebody",
+                "preview_url": None,
+                "external_urls": {
+                    "spotify": "https://open.spotify.com/track/4iV5W9uYEdYUVa79Axb7Rh"
+                },
+                "popularity": 85,
+                "duration_ms": 213000,
+            },
+            {
+                "id": "1BxfuPKGuaTgP7aM0Bbdwr",
+                "title": "Cruel Summer",
+                "artist": "Taylor Swift",
+                "albumArt": "",
+                "album": "Lover",
+                "preview_url": None,
+                "external_urls": {
+                    "spotify": "https://open.spotify.com/track/1BxfuPKGuaTgP7aM0Bbdwr"
+                },
+                "popularity": 95,
+                "duration_ms": 178000,
+            },
+            {
+                "id": "3n3Ppam7vgaVa1iaRUc9Lp",
+                "title": "Mr. Brightside",
+                "artist": "The Killers",
+                "albumArt": "",
+                "album": "Hot Fuss",
+                "preview_url": None,
+                "external_urls": {
+                    "spotify": "https://open.spotify.com/track/3n3Ppam7vgaVa1iaRUc9Lp"
+                },
+                "popularity": 88,
+                "duration_ms": 222000,
+            },
+            {
+                "id": "0VjIjW4GlUZAMYd2vXMi3b",
+                "title": "Blinding Lights",
+                "artist": "The Weeknd",
+                "albumArt": "",
+                "album": "After Hours",
+                "preview_url": None,
+                "external_urls": {
+                    "spotify": "https://open.spotify.com/track/0VjIjW4GlUZAMYd2vXMi3b"
+                },
+                "popularity": 92,
+                "duration_ms": 200000,
+            },
+            {
+                "id": "7qiZfU4dY1lWllzX7mPBI3",
+                "title": "Shape of You",
+                "artist": "Ed Sheeran",
+                "albumArt": "",
+                "album": "÷ (Divide)",
+                "preview_url": None,
+                "external_urls": {
+                    "spotify": "https://open.spotify.com/track/7qiZfU4dY1lWllzX7mPBI3"
+                },
+                "popularity": 90,
+                "duration_ms": 233000,
+            },
+        ]
 
     def clear_cache(self) -> None:
         """Clear all cached data."""
@@ -642,9 +736,7 @@ class AdvancedRecommendationService:
 
     def get_adaptive_playlist(
         self,
-        weather_condition: str,
-        temperature: float,
-        time_of_day: str,
+        weather: dict,
         access_token: str,
         user_id: str,
         playlist_duration_minutes: int = 60,
@@ -667,9 +759,9 @@ class AdvancedRecommendationService:
         try:
             # Get a larger pool of recommendations
             recommendations = self.get_personalized_weather_recommendations(
-                weather_condition,
-                temperature,
-                time_of_day,
+                weather["condition"],
+                weather["temperature"],
+                weather["time_of_day"],
                 access_token,
                 user_id,
                 user_preferences,

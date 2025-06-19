@@ -36,8 +36,10 @@ export const useCurrentTrack = (): UseCurrentTrackReturn => {
     null,
   );
   const [isLoading, setIsLoading] = useState(false);
-  const [currentTrackId, setCurrentTrackId] = useState<string | null>(null);
   const [songQueue, setSongQueue] = useState<TrackMetadata[]>([]);
+
+  // Derive currentTrackId from trackMetadata to ensure they're always in sync
+  const currentTrackId = trackMetadata?.id || null;
 
   const fetchQueueFromBackend = useCallback(async () => {
     // Only fetch if user is authenticated
@@ -73,7 +75,6 @@ export const useCurrentTrack = (): UseCurrentTrackReturn => {
     async (trackId: string) => {
       if (!trackId) {
         setTrackMetadata(null);
-        setCurrentTrackId(null);
         return;
       }
 
@@ -83,7 +84,6 @@ export const useCurrentTrack = (): UseCurrentTrackReturn => {
         return;
       }
 
-      setCurrentTrackId(trackId);
       setIsLoading(true);
       try {
         // Fetch track metadata from Spotify API
@@ -131,17 +131,14 @@ export const useCurrentTrack = (): UseCurrentTrackReturn => {
       // Backend now sends full next_track object and queue of TrackMetadata
       if (response.data && response.data.next_track) {
         setTrackMetadata(response.data.next_track);
-        setCurrentTrackId(response.data.next_track.id);
         setSongQueue(response.data.queue || []);
       } else {
         setTrackMetadata(null);
-        setCurrentTrackId(null);
         setSongQueue(response.data?.queue || []); // Use queue if present, even if next_track is null
       }
     } catch (error) {
       console.error("Failed to set next track:", error);
       setTrackMetadata(null);
-      setCurrentTrackId(null);
       setSongQueue([]); // Clear queue on error
     } finally {
       setIsLoading(false);
@@ -249,7 +246,6 @@ export const useCurrentTrack = (): UseCurrentTrackReturn => {
         setSongQueue(response.data.queue);
         // Also clear the current playing track if the queue is cleared
         setTrackMetadata(null);
-        setCurrentTrackId(null);
       }
     } catch (error) {
       console.error("Failed to clear queue:", error);

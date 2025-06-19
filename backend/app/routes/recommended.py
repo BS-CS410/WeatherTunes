@@ -308,9 +308,10 @@ def get_adaptive_playlist() -> Tuple[Response, int]:
 
         # Generate adaptive playlist
         playlist = advanced_recommendation_service.get_adaptive_playlist(
-            weather_condition=weather_condition,
-            temperature=temperature,
-            time_of_day=time_of_day,
+            weather={
+                "condition": weather_condition,
+                "temperature": temperature,
+            },
             access_token=auth_session.tokens.access_token,
             user_id=auth_session.spotify_username,
             playlist_duration_minutes=duration_minutes,
