@@ -9,15 +9,27 @@ import {
   ErrorDisplay,
   SpotifySearchCard,
   WeatherMusicCard,
+  LoginPopup,
 } from "@/components";
 import { useWeatherData } from "@/hooks/useWeather";
 import { useThemeManager } from "@/hooks/useThemeManager";
+import { useAuth } from "@/hooks/hooks-index";
 import { LAYOUT } from "@/lib/unifiedStyles";
+import { useState, useEffect } from "react";
 
 function MainPage() {
   const { displayData, timePeriod, isLoading, error } = useWeatherData();
+  const { user } = useAuth();
+  const [showLoginPopup, setShowLoginPopup] = useState(false);
 
   useThemeManager(timePeriod);
+
+  // Show login popup if user is not authenticated
+  useEffect(() => {
+    if (!isLoading && !user) {
+      setShowLoginPopup(true);
+    }
+  }, [user, isLoading]);
 
   // Loading State
   if (isLoading) {
@@ -31,6 +43,21 @@ function MainPage() {
         title={`Error: ${displayData.condition || "Could not load weather data."}`}
         message={error?.message}
       />
+    );
+  }
+
+  // Don't render main content if user is not authenticated
+  if (!user) {
+    return (
+      <>
+        <div className="flex min-h-dvh flex-col items-center justify-center overflow-auto">
+          <WeatherBackground
+            condition={displayData.condition}
+            timePeriod={timePeriod}
+          />
+        </div>
+        <LoginPopup isOpen={showLoginPopup} />
+      </>
     );
   }
 

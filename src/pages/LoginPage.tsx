@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/hooks-index";
 
 function Login() {
-  const { user, login } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,11 +24,16 @@ function Login() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <Button
-            onClick={login}
-            className="w-full bg-[#1DB954] hover:bg-[#1ED760]"
-          >
-            Login via Spotify
+          <Button asChild className="w-full bg-[#1DB954] hover:bg-[#1ED760]">
+            <a
+              href={
+                import.meta.env.VITE_API_URL
+                  ? `${import.meta.env.VITE_API_URL}/auth/login`
+                  : "http://127.0.0.1:8000/auth/login"
+              }
+            >
+              Login via Spotify
+            </a>
           </Button>
         </CardContent>
       </Card>

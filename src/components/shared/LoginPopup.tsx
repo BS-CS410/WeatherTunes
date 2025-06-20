@@ -1,35 +1,47 @@
 import { useAuth } from "@/hooks/hooks-index";
+import { BaseCard } from "@/components/shared/BaseCard";
+import { Button } from "@/components/ui/button";
 
 interface LoginPopupProps {
   isOpen: boolean;
-  onClose: () => void;
 }
 
-export function LoginPopup({ isOpen, onClose }: LoginPopupProps) {
+export function LoginPopup({ isOpen }: LoginPopupProps) {
   const { login } = useAuth();
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/80 backdrop-blur-sm">
-      <div className="flex w-80 flex-col items-center rounded-3xl border border-white/[0.18] bg-white/[0.08] p-8 shadow-2xl backdrop-blur-2xl backdrop-saturate-[1.7] dark:border-white/[0.1] dark:bg-white/[0.05]">
-        <div className="mb-6 text-center text-lg text-gray-900 dark:text-slate-200">
-          Connect to Spotify for personalized music recommendations
-        </div>
-        <div className="flex flex-col gap-3">
-          <button
-            className="rounded-xl bg-[#1DB954] px-6 py-2 text-white transition-all duration-300 hover:scale-[1.02] hover:bg-[#1ED760]"
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+
+      {/* Popup Content */}
+      <div className="relative w-full max-w-sm">
+        <BaseCard
+          variant="modal"
+          enableLiquidGlass
+          className="text-center"
+          contentClassName="space-y-6"
+        >
+          <div className="space-y-2">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+              Login with Spotify
+            </h1>
+            <p className="text-gray-600 dark:text-gray-300">
+              Connect to Spotify for personalized music recommendations
+            </p>
+          </div>
+
+          <Button
             onClick={login}
+            size="lg"
+            variant="ghost"
+            className="w-full border border-white/30 bg-[#1DB954]/80 font-medium text-white shadow-lg backdrop-blur-md hover:bg-[#1ED760]/90"
           >
-            Login with Spotify
-          </button>
-          <button
-            className="rounded-xl bg-white/[0.7] px-4 py-2 text-gray-900 shadow-sm backdrop-blur-sm transition-all duration-300 hover:scale-[1.02] hover:bg-white/[0.8] dark:bg-white/[0.15] dark:text-slate-100 dark:hover:bg-white/[0.2]"
-            onClick={onClose}
-          >
-            Cancel
-          </button>
-        </div>
+            Login via Spotify
+          </Button>
+        </BaseCard>
       </div>
     </div>
   );
