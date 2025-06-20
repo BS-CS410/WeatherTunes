@@ -138,7 +138,7 @@ class WeatherMusicMapper {
   }
 
   /**
-   * Adjust audio features based on temperature
+   * Adjust audio features based on temperature with enhanced granularity
    */
   private static adjustForTemperature(
     features: AudioFeatures,
@@ -146,8 +146,18 @@ class WeatherMusicMapper {
   ): AudioFeatures {
     const adjusted = { ...features };
 
-    if (temperature > 25) {
-      // Hot weather - more energetic and danceable
+    // Enhanced temperature mapping with more granular ranges
+    if (temperature >= 30) {
+      // Very hot weather (30°C+) - tropical, high energy
+      adjusted.energy = Math.min(1.0, (adjusted.energy || 0.5) + 0.25);
+      adjusted.danceability = Math.min(
+        1.0,
+        (adjusted.danceability || 0.5) + 0.2,
+      );
+      adjusted.valence = Math.min(1.0, (adjusted.valence || 0.5) + 0.15);
+      adjusted.tempo = (adjusted.tempo || 100) + 20;
+    } else if (temperature >= 25) {
+      // Hot weather (25-29°C) - energetic and upbeat
       adjusted.energy = Math.min(1.0, (adjusted.energy || 0.5) + 0.2);
       adjusted.danceability = Math.min(
         1.0,
@@ -155,15 +165,49 @@ class WeatherMusicMapper {
       );
       adjusted.valence = Math.min(1.0, (adjusted.valence || 0.5) + 0.1);
       adjusted.tempo = (adjusted.tempo || 100) + 15;
-    } else if (temperature < 10) {
-      // Cold weather - more acoustic and contemplative
+    } else if (temperature >= 20) {
+      // Warm weather (20-24°C) - pleasant and moderate
+      adjusted.energy = Math.min(1.0, (adjusted.energy || 0.5) + 0.1);
+      adjusted.valence = Math.min(1.0, (adjusted.valence || 0.5) + 0.05);
+      adjusted.tempo = (adjusted.tempo || 100) + 5;
+    } else if (temperature >= 15) {
+      // Mild weather (15-19°C) - comfortable, no major adjustments
+      // Keep baseline features
+    } else if (temperature >= 10) {
+      // Cool weather (10-14°C) - slightly more relaxed
+      adjusted.energy = Math.max(0.0, (adjusted.energy || 0.5) - 0.05);
+      adjusted.acousticness = Math.min(
+        1.0,
+        (adjusted.acousticness || 0.5) + 0.05,
+      );
+      adjusted.tempo = Math.max(60, (adjusted.tempo || 100) - 5);
+    } else if (temperature >= 0) {
+      // Cold weather (0-9°C) - more contemplative and acoustic
+      adjusted.energy = Math.max(0.0, (adjusted.energy || 0.5) - 0.1);
+      adjusted.acousticness = Math.min(
+        1.0,
+        (adjusted.acousticness || 0.5) + 0.1,
+      );
+      adjusted.valence = Math.max(0.0, (adjusted.valence || 0.5) - 0.05);
+      adjusted.tempo = Math.max(60, (adjusted.tempo || 100) - 10);
+    } else if (temperature >= -10) {
+      // Very cold weather (-10 to -1°C) - intimate and warm genres
       adjusted.energy = Math.max(0.0, (adjusted.energy || 0.5) - 0.2);
       adjusted.acousticness = Math.min(
         1.0,
         (adjusted.acousticness || 0.5) + 0.2,
       );
       adjusted.valence = Math.max(0.0, (adjusted.valence || 0.5) - 0.1);
-      adjusted.tempo = Math.max(60, (adjusted.tempo || 100) - 15);
+      adjusted.tempo = Math.max(60, (adjusted.tempo || 100) - 20);
+    } else {
+      // Extremely cold weather (-10°C and below) - very mellow and introspective
+      adjusted.energy = Math.max(0.0, (adjusted.energy || 0.5) - 0.3);
+      adjusted.acousticness = Math.min(
+        1.0,
+        (adjusted.acousticness || 0.5) + 0.3,
+      );
+      adjusted.valence = Math.max(0.0, (adjusted.valence || 0.5) - 0.15);
+      adjusted.tempo = Math.max(50, (adjusted.tempo || 100) - 30);
     }
 
     return adjusted;

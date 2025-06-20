@@ -43,9 +43,19 @@ export function ErrorDisplay({
         className,
       )}
     >
-      <p className="text-2xl text-red-500">{title}</p>
+      <p className={cn("text-2xl text-red-500", COLORS.text.primary)}>
+        {title}
+      </p>
       {message && (
-        <p className={cn(TYPOGRAPHY.body.sm, "text-red-400")}>{message}</p>
+        <p
+          className={cn(
+            TYPOGRAPHY.body.sm,
+            "text-red-400",
+            COLORS.text.secondary,
+          )}
+        >
+          {message}
+        </p>
       )}
     </div>
   );

@@ -53,7 +53,8 @@ export function SettingsButtonGroup({ options }: SettingsButtonGroupProps) {
                 cn(
                   BUTTON_STYLES.liquidGlass,
                   "border-white/[0.4] bg-white/[0.2] backdrop-blur-xl backdrop-saturate-[1.8] hover:bg-white/[0.25] dark:border-white/[0.25] dark:bg-white/[0.15] dark:hover:bg-white/[0.2]",
-                  "font-semibold text-gray-900 shadow-sm dark:text-white",
+                  "font-semibold shadow-sm",
+                  COLORS.text.primary,
                 ),
             )}
           >

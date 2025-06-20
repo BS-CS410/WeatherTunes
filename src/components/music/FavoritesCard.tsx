@@ -151,7 +151,7 @@ export function FavoritesCard({ className = "" }: FavoritesCardProps) {
               likedTracks.map((trackId) => (
                 <iframe
                   key={trackId}
-                  src={`https://open.spotify.com/embed/track/${trackId}`}
+                  src={`https://open.spotify.com/embed/track/${trackId}?autoplay=1`}
                   width="280"
                   height="80"
                   allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"

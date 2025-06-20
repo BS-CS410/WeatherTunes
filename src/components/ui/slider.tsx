@@ -1,5 +1,5 @@
 import { cn } from "@/lib/lib-utils";
-import { LIQUID_GLASS_STYLES } from "@/lib/unifiedStyles";
+import { LIQUID_GLASS_STYLES, COLORS } from "@/lib/unifiedStyles";
 
 interface SliderProps {
   value: number;
@@ -33,7 +33,9 @@ export function Slider({
   return (
     <div className={cn("relative w-full", className)}>
       {label && (
-        <label className="mb-2 block text-sm font-medium text-gray-900 dark:text-gray-100">
+        <label
+          className={cn("mb-2 block text-sm font-medium", COLORS.text.primary)}
+        >
           {label}
         </label>
       )}

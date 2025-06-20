@@ -17,6 +17,20 @@ export interface WeatherRecommendationRequest {
   temperature: number;
   time_of_day?: "morning" | "afternoon" | "evening" | "night";
   limit?: number;
+  use_personalization?: boolean;
+  user_preferences?: UserMusicPreferences;
+}
+
+export interface UserMusicPreferences {
+  preferred_genres?: string[];
+  preferred_artists?: string[];
+  audio_feature_preferences?: {
+    valence?: number;
+    energy?: number;
+    danceability?: number;
+    acousticness?: number;
+  };
+  explicit_content?: boolean;
 }
 
 export interface WeatherRecommendationResponse {
@@ -97,20 +111,91 @@ export class SpotifyApiService {
   }
 
   /**
-   * Get personalized weather recommendations
+   * Get personalized weather recommendations with enhanced user preference integration
    */
   static async getPersonalizedWeatherRecommendations(
     weatherCondition: string,
     temperature: number,
     timeOfDay: "morning" | "afternoon" | "evening" | "night" = "afternoon",
     limit: number = 20,
+    userPreferences?: UserMusicPreferences,
   ): Promise<TrackMetadata[]> {
     return this.getWeatherRecommendations({
       weather_condition: weatherCondition.toLowerCase(),
       temperature,
       time_of_day: timeOfDay,
       limit,
+      use_personalization: true,
+      user_preferences: userPreferences,
     });
+  }
+
+  /**
+   * Get enhanced weather recommendations that blend weather conditions with user taste
+   */
+  static async getEnhancedWeatherRecommendations(
+    weatherCondition: string,
+    temperature: number,
+    timeOfDay: "morning" | "afternoon" | "evening" | "night" = "afternoon",
+    limit: number = 20,
+  ): Promise<TrackMetadata[]> {
+    try {
+      // Try to get user's top genres and artists for personalization
+      const userPreferences = await this.getUserMusicProfile();
+
+      return this.getWeatherRecommendations({
+        weather_condition: weatherCondition.toLowerCase(),
+        temperature,
+        time_of_day: timeOfDay,
+        limit,
+        use_personalization: true,
+        user_preferences: userPreferences,
+      });
+    } catch (error) {
+      console.warn(
+        "Failed to get user preferences, falling back to basic weather recommendations:",
+        error,
+      );
+      // Fall back to basic weather recommendations
+      return this.getWeatherRecommendations({
+        weather_condition: weatherCondition.toLowerCase(),
+        temperature,
+        time_of_day: timeOfDay,
+        limit,
+        use_personalization: false,
+      });
+    }
+  }
+
+  /**
+   * Get user's music profile for personalization
+   */
+  static async getUserMusicProfile(): Promise<
+    UserMusicPreferences | undefined
+  > {
+    try {
+      const response = await apiClient.get<{
+        top_genres: string[];
+        top_artists: Array<{ id: string; name: string }>;
+        audio_features_avg: Record<string, number>;
+      }>("/user/music-profile");
+
+      const data = response.data;
+      return {
+        preferred_genres: data.top_genres?.slice(0, 10) || [],
+        preferred_artists:
+          data.top_artists?.map((artist) => artist.name).slice(0, 10) || [],
+        audio_feature_preferences: {
+          valence: data.audio_features_avg?.valence,
+          energy: data.audio_features_avg?.energy,
+          danceability: data.audio_features_avg?.danceability,
+          acousticness: data.audio_features_avg?.acousticness,
+        },
+      };
+    } catch (error) {
+      console.warn("Failed to fetch user music profile:", error);
+      return undefined;
+    }
   }
 
   /**

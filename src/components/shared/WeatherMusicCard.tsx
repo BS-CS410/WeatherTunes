@@ -217,7 +217,7 @@ export function WeatherMusicCard({
           <div className="w-full">
             <iframe
               key={`${currentTrackId}`}
-              src={`https://open.spotify.com/embed/track/${currentTrackId}?utm_source=generator&theme=1`}
+              src={`https://open.spotify.com/embed/track/${currentTrackId}?utm_source=generator&theme=1&autoplay=1`}
               width="100%"
               height="80"
               frameBorder="0"
@@ -272,7 +272,12 @@ export function WeatherMusicCard({
 
         {/* Message Display */}
         {message && (
-          <div className="w-full rounded-lg border border-white/[0.15] bg-white/[0.07] p-2 text-center text-xs text-gray-700 backdrop-blur-xl backdrop-saturate-[1.6] dark:border-white/[0.06] dark:bg-black/[0.15] dark:text-gray-200">
+          <div
+            className={cn(
+              "w-full rounded-lg border border-white/[0.15] bg-white/[0.07] p-2 text-center text-xs backdrop-blur-xl backdrop-saturate-[1.6] dark:border-white/[0.06] dark:bg-black/[0.15]",
+              COLORS.text.muted,
+            )}
+          >
             {message}
           </div>
         )}

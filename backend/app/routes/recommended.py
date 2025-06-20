@@ -178,11 +178,14 @@ def get_weather_recommendations() -> Tuple[Response, int]:
 
         time_of_day = data.get("time_of_day", "afternoon")
         limit = min(int(data.get("limit", 20)), 50)
+        use_personalization = data.get("use_personalization", True)
+        user_preferences = data.get("user_preferences")
 
-        # Get user's preferences for personalization
-        user_preferences = user_data_service.get_user_preferences(
-            auth_session.spotify_username
-        )
+        # If personalization is enabled but no user preferences provided, get them from service
+        if use_personalization and not user_preferences:
+            user_preferences = user_data_service.get_user_preferences(
+                auth_session.spotify_username
+            )
 
         # Use advanced recommendation service for personalized weather-based recommendations
         results = (
@@ -192,7 +195,7 @@ def get_weather_recommendations() -> Tuple[Response, int]:
                 time_of_day=time_of_day,
                 access_token=auth_session.tokens.access_token,
                 user_id=auth_session.spotify_username,
-                user_preferences=user_preferences,
+                user_preferences=user_preferences if use_personalization else None,
                 limit=limit,
             )
         )

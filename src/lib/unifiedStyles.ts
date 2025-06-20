@@ -60,17 +60,23 @@ export const COLORS = {
 
   // Text colors with consistent hierarchy
   text: {
-    primary: "text-gray-950 dark:text-white",
-    secondary: "text-gray-800 dark:text-gray-100",
-    muted: "text-gray-700 dark:text-gray-200",
+    primary:
+      "text-gray-950 drop-shadow-lg dark:text-white dark:drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]",
+    secondary:
+      "text-gray-800 drop-shadow-lg dark:text-gray-100 dark:drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]",
+    muted:
+      "text-gray-700 drop-shadow-lg dark:text-gray-200 dark:drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]",
     interactive: "hover:text-gray-950 dark:hover:text-white",
     weather:
       "text-gray-950 drop-shadow-lg dark:text-white dark:drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]",
-    condition: "text-gray-900 dark:text-gray-50",
+    condition:
+      "text-gray-900 drop-shadow-lg dark:text-gray-50 dark:drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]",
     onGlass: "text-gray-900 dark:text-white drop-shadow-sm",
     onDarkGlass: "text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]",
-    subtle: "text-gray-600 dark:text-gray-300",
-    placeholder: "text-gray-500 dark:text-gray-400",
+    subtle:
+      "text-gray-600 drop-shadow-lg dark:text-gray-300 dark:drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]",
+    placeholder:
+      "text-gray-500 drop-shadow-lg dark:text-gray-400 dark:drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]",
   },
 
   // Enhanced border system for liquid glass

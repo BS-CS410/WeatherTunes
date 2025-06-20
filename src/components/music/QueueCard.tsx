@@ -12,7 +12,7 @@ export function QueueCard() {
   const hoverTimeout = useRef<NodeJS.Timeout | null>(null);
   const {
     songQueue,
-    updateTrack,
+    playTrackFromQueue,
     setNextTrack,
     clearQueue,
     replaceQueueWithTrackMetadata,
@@ -303,7 +303,7 @@ export function QueueCard() {
                     )}
                     onMouseEnter={() => song.id && handleMouseEnter(song.id)}
                     onMouseLeave={handleMouseLeave}
-                    onClick={() => song.id && updateTrack(song.id)}
+                    onClick={() => song.id && playTrackFromQueue(song.id)}
                   >
                     <div className="relative">
                       <img

@@ -48,26 +48,29 @@ export function useWeatherMusic() {
 
     try {
       console.log(
-        `Generating queue for: ${condition}, ${temperature}°C, ${timeOfDay}`,
+        `Generating enhanced queue for: ${condition}, ${temperature}°C, ${timeOfDay}`,
       );
 
-      // Use Spotify API to get weather-appropriate recommendations directly
-      const tracks =
-        await SpotifyApiService.getRecommendationsForCurrentWeather(
-          condition,
-          temperature,
-          maxTracks,
-          timeOfDay,
-        );
+      // Use enhanced Spotify API to get weather-appropriate recommendations with user preferences
+      const tracks = await SpotifyApiService.getEnhancedWeatherRecommendations(
+        condition,
+        temperature,
+        timeOfDay,
+        maxTracks,
+      );
 
-      console.log(`Generated ${tracks.length} tracks for weather conditions`);
+      console.log(
+        `Generated ${tracks.length} enhanced tracks for weather conditions`,
+      );
       return tracks;
     } catch (error) {
-      console.error("Failed to generate weather queue:", error);
+      console.error("Failed to generate enhanced weather queue:", error);
 
-      // Try to get fallback recommendations if the primary method fails
+      // Try to get fallback recommendations if the enhanced method fails
       try {
-        console.log("Attempting fallback to personalized recommendations...");
+        console.log(
+          "Attempting fallback to basic personalized recommendations...",
+        );
         const fallbackTracks =
           await SpotifyApiService.getPersonalizedWeatherRecommendations(
             condition,

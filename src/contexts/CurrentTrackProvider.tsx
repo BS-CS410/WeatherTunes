@@ -6,8 +6,7 @@ import { useAuth } from "@/hooks/hooks-utility";
 import type { TrackMetadata } from "@/types/queue-types";
 
 // Queue management constants
-const REPLENISH_THRESHOLD = 3; // Replenish queue when it falls below this number
-const TRACKS_TO_ADD = 8; // Number of tracks to add when replenishing
+const TARGET_QUEUE_SIZE = 12; // Fixed number of tracks to maintain in queue
 
 /**
  * Get current time of day for music matching
@@ -26,6 +25,7 @@ interface CurrentTrackContextType {
   isLoading: boolean;
   currentTrackId: string | null;
   updateTrack: (trackId: string) => Promise<void>;
+  playTrackFromQueue: (trackId: string) => Promise<void>;
   songQueue: TrackMetadata[];
   setNextTrack: () => Promise<void>;
   addTrackToQueue: (trackId: string) => Promise<void>;
@@ -66,7 +66,8 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
       setIsLoading(true);
       const response = await apiClient.get("http://localhost:8000/queue");
       const data = response.data as { queue?: TrackMetadata[] };
-      setSongQueue(data.queue || []);
+      // Always trim to TARGET_QUEUE_SIZE
+      setSongQueue((data.queue || []).slice(0, TARGET_QUEUE_SIZE));
     } catch (error) {
       console.error("Failed to fetch queue:", error);
       console.log(
@@ -224,12 +225,24 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
   }, [user]);
 
   /**
-   * Local queue replenishment helper function
+   * Enhanced queue replenishment helper function - maintains target queue size
    */
-  const replenishQueueLocally = useCallback(
+  const replenishQueueToTarget = useCallback(
     async (currentQueue: TrackMetadata[]): Promise<void> => {
+      const currentSize = currentQueue.length;
+      const tracksNeeded = TARGET_QUEUE_SIZE - currentSize;
+
+      if (tracksNeeded <= 0) {
+        // Always trim to TARGET_QUEUE_SIZE
+        setSongQueue(currentQueue.slice(0, TARGET_QUEUE_SIZE));
+        console.log(
+          `Queue already at target size (${currentSize}/${TARGET_QUEUE_SIZE})`,
+        );
+        return;
+      }
+
       console.log(
-        "Replenishing queue locally with weather-appropriate tracks...",
+        `Replenishing queue: ${currentSize}/${TARGET_QUEUE_SIZE} tracks, need ${tracksNeeded} more`,
       );
 
       const timeOfDay = getCurrentTimeOfDay();
@@ -241,19 +254,19 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
       const defaultTemperature = 20;
 
       try {
-        newTracks = await SpotifyApiService.getRecommendationsForCurrentWeather(
+        newTracks = await SpotifyApiService.getEnhancedWeatherRecommendations(
           defaultCondition,
           defaultTemperature,
-          TRACKS_TO_ADD,
           timeOfDay,
+          tracksNeeded,
         );
 
         console.log(
-          `Got ${newTracks.length} weather-based tracks for ${defaultCondition}`,
+          `Got ${newTracks.length} enhanced weather-based tracks for ${defaultCondition} at ${defaultTemperature}°C`,
         );
       } catch (error) {
         console.log(
-          "Weather-based recommendations failed, trying personalized...",
+          "Enhanced weather-based recommendations failed, trying basic personalized...",
         );
         try {
           newTracks =
@@ -261,24 +274,28 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
               defaultCondition,
               defaultTemperature,
               timeOfDay,
-              TRACKS_TO_ADD,
+              tracksNeeded,
             );
           console.log(`Got ${newTracks.length} personalized tracks`);
         } catch (fallbackError) {
           console.log("Personalized recommendations failed, trying search...");
           newTracks = await SpotifyApiService.searchTracks(
             "popular music 2024",
-            TRACKS_TO_ADD,
+            tracksNeeded,
           );
           console.log(`Got ${newTracks.length} search-based tracks`);
         }
       }
 
       if (newTracks.length > 0) {
-        const updatedQueue = [...currentQueue, ...newTracks];
+        // Always trim to TARGET_QUEUE_SIZE
+        const updatedQueue = [...currentQueue, ...newTracks].slice(
+          0,
+          TARGET_QUEUE_SIZE,
+        );
         setSongQueue(updatedQueue);
         console.log(
-          `Local queue replenished: added ${newTracks.length} tracks, total: ${updatedQueue.length}`,
+          `Queue replenished: ${currentSize} → ${updatedQueue.length}/${TARGET_QUEUE_SIZE} tracks`,
         );
 
         // Try to sync with backend if possible
@@ -286,13 +303,31 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
           await apiClient.post("http://localhost:8000/queue/replace", {
             tracks: updatedQueue,
           });
-          console.log("Successfully synced local queue to backend");
+          console.log("Successfully synced queue to backend");
         } catch (syncError) {
           console.log("Backend sync failed, continuing with local queue");
         }
       }
     },
     [],
+  );
+
+  /**
+   * Immediate replenishment - triggers as soon as a track is removed
+   */
+  const triggerImmediateReplenishment = useCallback(
+    async (newQueueSize: number): Promise<void> => {
+      if (!user || newQueueSize >= TARGET_QUEUE_SIZE) return;
+
+      console.log(
+        `Immediate replenishment triggered: ${newQueueSize}/${TARGET_QUEUE_SIZE} tracks`,
+      );
+
+      // Use current queue state for replenishment
+      const currentQueue = songQueue.slice(0, newQueueSize);
+      await replenishQueueToTarget(currentQueue);
+    },
+    [user, songQueue, replenishQueueToTarget],
   );
 
   const setNextTrack = useCallback(async (): Promise<void> => {
@@ -314,27 +349,24 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
         setCurrentTrackId(data.currentTrack.id);
       }
 
-      // Update queue state if provided and check for replenishment
+      // Update queue state if provided and trigger immediate replenishment
       if (data.queue !== undefined) {
         setSongQueue(data.queue);
 
-        // Check if queue needs replenishment after track change
-        if (data.queue.length <= REPLENISH_THRESHOLD) {
-          console.log(
-            `Queue low after track skip (${data.queue.length} tracks), replenishing...`,
-          );
-          // Trigger replenishment asynchronously
-          setTimeout(async () => {
-            try {
-              await replenishQueueLocally(data.queue || []);
-            } catch (error) {
-              console.error(
-                "Failed to auto-replenish queue after track skip:",
-                error,
-              );
-            }
-          }, 100);
-        }
+        // Always trigger immediate replenishment after track change
+        console.log(
+          `Track advanced, triggering immediate replenishment (${data.queue.length}/${TARGET_QUEUE_SIZE})...`,
+        );
+        setTimeout(async () => {
+          try {
+            await triggerImmediateReplenishment(data.queue?.length || 0);
+          } catch (error) {
+            console.error(
+              "Failed to auto-replenish queue after track skip:",
+              error,
+            );
+          }
+        }, 100);
       }
     } catch (error) {
       console.error("Failed to set next track:", error);
@@ -348,22 +380,20 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
         setCurrentTrackId(nextTrack.id);
         setSongQueue(remainingQueue);
 
-        // Check if local queue needs replenishment
-        if (remainingQueue.length <= REPLENISH_THRESHOLD) {
-          console.log(
-            `Local queue low (${remainingQueue.length} tracks), replenishing...`,
-          );
-          setTimeout(async () => {
-            try {
-              await replenishQueueLocally(remainingQueue);
-            } catch (error) {
-              console.error("Failed to replenish local queue:", error);
-            }
-          }, 100);
-        }
+        // Check if local queue needs immediate replenishment
+        console.log(
+          `Local queue after fallback, triggering immediate replenishment (${remainingQueue.length}/${TARGET_QUEUE_SIZE})...`,
+        );
+        setTimeout(async () => {
+          try {
+            await triggerImmediateReplenishment(remainingQueue.length);
+          } catch (error) {
+            console.error("Failed to replenish local queue:", error);
+          }
+        }, 100);
       }
     }
-  }, [user, songQueue, replenishQueueLocally]);
+  }, [user, songQueue, triggerImmediateReplenishment]);
 
   /**
    * Automatically replenish queue with weather-appropriate tracks
@@ -371,20 +401,81 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
   const replenishQueue = useCallback(async (): Promise<void> => {
     if (!user) return;
 
-    await replenishQueueLocally(songQueue);
-  }, [user, songQueue, replenishQueueLocally]);
+    await replenishQueueToTarget(songQueue);
+  }, [user, songQueue, replenishQueueToTarget]);
 
   /**
-   * Effect to check queue size and auto-replenish when needed
+   * Play a specific track from the queue, removing it from the queue
+   */
+  const playTrackFromQueue = useCallback(
+    async (trackId: string): Promise<void> => {
+      if (!user) return;
+
+      try {
+        // Find the track in the queue
+        const trackIndex = songQueue.findIndex((track) => track.id === trackId);
+        if (trackIndex === -1) {
+          console.warn(`Track ${trackId} not found in queue`);
+          return;
+        }
+
+        const selectedTrack = songQueue[trackIndex];
+
+        // Remove the track from the queue
+        const updatedQueue = songQueue.filter((track) => track.id !== trackId);
+
+        try {
+          // Try to update the queue on the backend
+          await apiClient.post("http://localhost:8000/queue/replace", {
+            tracks: updatedQueue,
+          });
+          console.log("Successfully updated queue on backend");
+        } catch (error) {
+          console.warn(
+            "Failed to update queue on backend, continuing with local update:",
+            error,
+          );
+        }
+
+        // Update local queue state
+        setSongQueue(updatedQueue);
+
+        // Set the selected track as current
+        setTrackMetadata(selectedTrack);
+        setCurrentTrackId(selectedTrack.id);
+
+        console.log(
+          `Playing track from queue: ${selectedTrack.title} by ${selectedTrack.artist}`,
+        );
+
+        // Immediately replenish queue to target size after track removal
+        console.log(
+          `Track removed from queue, triggering immediate replenishment (${updatedQueue.length}/${TARGET_QUEUE_SIZE})...`,
+        );
+        setTimeout(async () => {
+          try {
+            await triggerImmediateReplenishment(updatedQueue.length);
+          } catch (error) {
+            console.error(
+              "Failed to replenish queue after track selection:",
+              error,
+            );
+          }
+        }, 100);
+      } catch (error) {
+        console.error("Failed to play track from queue:", error);
+      }
+    },
+    [user, songQueue, triggerImmediateReplenishment],
+  );
+
+  /**
+   * Effect to maintain queue at target size - replenish whenever below target
    */
   useEffect(() => {
-    if (
-      user &&
-      songQueue.length > 0 &&
-      songQueue.length <= REPLENISH_THRESHOLD
-    ) {
+    if (user && songQueue.length > 0 && songQueue.length < TARGET_QUEUE_SIZE) {
       console.log(
-        `Queue size (${songQueue.length}) below threshold (${REPLENISH_THRESHOLD}), auto-replenishing...`,
+        `Queue size (${songQueue.length}) below target (${TARGET_QUEUE_SIZE}), auto-replenishing...`,
       );
       replenishQueue();
     }
@@ -406,6 +497,7 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
     isLoading,
     currentTrackId,
     updateTrack,
+    playTrackFromQueue,
     songQueue,
     setNextTrack,
     addTrackToQueue,

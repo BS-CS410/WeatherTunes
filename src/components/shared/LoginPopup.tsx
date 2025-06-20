@@ -1,6 +1,8 @@
 import { useAuth } from "@/hooks/hooks-index";
 import { BaseCard } from "@/components/shared/BaseCard";
 import { Button } from "@/components/ui/button";
+import { COLORS } from "@/lib/unifiedStyles";
+import { cn } from "@/lib/lib-utils";
 
 interface LoginPopupProps {
   isOpen: boolean;
@@ -25,10 +27,10 @@ export function LoginPopup({ isOpen }: LoginPopupProps) {
           contentClassName="space-y-6"
         >
           <div className="space-y-2">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            <h1 className={cn("text-2xl font-bold", COLORS.text.primary)}>
               Login with Spotify
             </h1>
-            <p className="text-gray-600 dark:text-gray-300">
+            <p className={cn(COLORS.text.secondary)}>
               Connect to Spotify for personalized music recommendations
             </p>
           </div>
