@@ -16,5 +16,17 @@ export const useCurrentTrackContext = (): CurrentTrackContextType => {
   return context;
 };
 
-// Export alias for backward compatibility
-export const useCurrentTrack = useCurrentTrackContext;
+/**
+ * Safe hook to access current track context with default fallback
+ * Returns null values if used outside the provider
+ */
+export const useCurrentTrack = (): CurrentTrackContextType | null => {
+  const context = useContext(CurrentTrackContext);
+  if (context === undefined) {
+    console.warn(
+      "useCurrentTrack used outside CurrentTrackProvider, returning null",
+    );
+    return null;
+  }
+  return context;
+};

@@ -14,6 +14,7 @@ from app.models.models import SpotifyTokens
 from app.services.user_data import user_data_service
 from app.utils.auth import (
     clear_auth_session,
+    get_auth_session,
     get_authenticated_user,
     is_user_authenticated,
     save_auth_session,
@@ -46,7 +47,7 @@ def login() -> Response:
 @auth_bp.route("/callback")
 @cross_origin(supports_credentials=True)
 def callback() -> Tuple[Response, int] | Response:
-    """Handle Spotify OAuth callback."""
+    """Handle Spotify OAuth callback and complete authentication."""
     code = request.args.get("code")
     error = request.args.get("error")
 
@@ -88,8 +89,8 @@ def callback() -> Tuple[Response, int] | Response:
 
         logger.info(f"User {spotify_username} authenticated successfully")
 
-        # Redirect to frontend auth callback
-        return redirect(f"{AppConfig.FRONTEND_URL}/auth-callback")
+        # Redirect directly to frontend home page - authentication is complete
+        return redirect(f"{AppConfig.FRONTEND_URL}/")
 
     except Exception as e:
         logger.error(f"Authentication callback error: {e}")
@@ -117,3 +118,27 @@ def session_info() -> Tuple[Response, int]:
     username = get_authenticated_user() if authenticated else None
 
     return success_response({"authenticated": authenticated, "username": username})
+
+
+@auth_bp.route("/token")
+@cross_origin(supports_credentials=True)
+def get_access_token() -> Tuple[Response, int]:
+    """Get current access token for Spotify Web Playback SDK."""
+    auth_session = get_auth_session()
+
+    if not auth_session:
+        logger.warning("Unauthorized token request")
+        return error_response("Not authenticated", 401)
+
+    try:
+        # Return the current access token
+        return success_response(
+            {
+                "access_token": auth_session.tokens.access_token,
+                "expires_at": auth_session.tokens.expires_at,
+            }
+        )
+
+    except Exception as e:
+        logger.error(f"Failed to get access token: {e}")
+        return error_response("Failed to get access token")

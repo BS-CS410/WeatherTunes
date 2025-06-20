@@ -62,6 +62,40 @@ export interface SpotifyPlayer {
   seek(position: number): Promise<void>;
   previousTrack(): Promise<void>;
   nextTrack(): Promise<void>;
+  _options: {
+    name: string;
+    getOAuthToken: (callback: (token: string) => void) => void;
+    volume?: number;
+  };
+}
+
+export interface SpotifyWebPlaybackState extends SpotifyPlaybackState {
+  duration: number;
+  position: number;
+  loading: boolean;
+}
+
+export interface SpotifyWebPlaybackError {
+  message: string;
+  type:
+    | "account_error"
+    | "authentication_error"
+    | "initialization_error"
+    | "playback_error";
+}
+
+export interface SpotifyDevice {
+  device_id: string;
+  name: string;
+  type: string;
+  volume_percent: number;
+  is_active: boolean;
+  is_private_session: boolean;
+  is_restricted: boolean;
+}
+
+export interface SpotifyPlaybackDevice extends SpotifyDevice {
+  supports_volume: boolean;
 }
 
 export interface SpotifyPlayerConstructor {

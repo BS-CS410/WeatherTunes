@@ -3,9 +3,21 @@ import * as ScrollArea from "@radix-ui/react-scroll-area";
 import { COLORS, TYPOGRAPHY, LAYOUT } from "@/lib/unifiedStyles";
 import { cn } from "@/lib/lib-utils";
 import { useAuth } from "@/hooks/hooks-index";
+import { SpotifyMiniPlayer } from "./SpotifyMiniPlayer";
+import { useCurrentTrackContext } from "@/hooks/useCurrentTrack";
+import type { TrackMetadata } from "@/types/queue-types";
 
 interface FavoritesCardProps {
   className?: string;
+}
+
+interface FavoriteTrack {
+  id: string;
+  title: string;
+  artist: string;
+  albumArt: string;
+  albumArtFallback?: string;
+  tags?: string[];
 }
 
 /**
@@ -14,9 +26,21 @@ interface FavoritesCardProps {
  */
 export function FavoritesCard({ className = "" }: FavoritesCardProps) {
   const { user } = useAuth();
-  const [likedTracks, setLikedTracks] = useState<string[]>([]);
+  const [likedTracks, setLikedTracks] = useState<FavoriteTrack[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { updateTrack } = useCurrentTrackContext();
+
+  /**
+   * Handle track selection from mini player
+   */
+  const handleTrackPlay = async (track: FavoriteTrack) => {
+    try {
+      await updateTrack(track.id);
+    } catch (error) {
+      console.error("Failed to play track:", error);
+    }
+  };
 
   useEffect(() => {
     async function fetchLikedTracks() {
@@ -37,7 +61,7 @@ export function FavoritesCard({ className = "" }: FavoritesCardProps) {
         if (!res.ok)
           throw new Error(`Error fetching liked tracks: ${res.status}`);
         const data = await res.json();
-        setLikedTracks((data.favorites || []).reverse());
+        setLikedTracks(data.favorites || []);
       } catch (e) {
         setError(e instanceof Error ? e.message : "Unknown error occurred");
       } finally {
@@ -148,16 +172,18 @@ export function FavoritesCard({ className = "" }: FavoritesCardProps) {
                 </div>
               </div>
             ) : (
-              likedTracks.map((trackId) => (
-                <iframe
-                  key={trackId}
-                  src={`https://open.spotify.com/embed/track/${trackId}?autoplay=1`}
-                  width="280"
-                  height="80"
-                  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                  loading="lazy"
-                  style={{ borderRadius: 16, flexShrink: 0, border: "none" }}
-                  title={`Spotify Track ${trackId}`}
+              likedTracks.map((track) => (
+                <SpotifyMiniPlayer
+                  key={track.id}
+                  track={{
+                    id: track.id,
+                    title: track.title,
+                    artist: track.artist,
+                    albumArt: track.albumArt,
+                    albumArtFallback: track.albumArtFallback,
+                  }}
+                  className="w-[280px] flex-shrink-0"
+                  onClick={() => handleTrackPlay(track)}
                 />
               ))
             )}

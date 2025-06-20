@@ -10,7 +10,6 @@ import { AppLayout } from "./components";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CurrentTrackProvider } from "./contexts/CurrentTrackProvider";
 import HomePage from "./pages/HomePage";
-import AuthCallbackPage from "./pages/AuthCallbackPage";
 import { ErrorBoundary } from "./components/shared/ErrorBoundary";
 
 function App() {
@@ -29,10 +28,6 @@ function App() {
                   <Routes>
                     <Route path="/" element={<HomePage />} />
                     <Route path="/login" element={<LoginPage />} />
-                    <Route
-                      path="/auth-callback"
-                      element={<AuthCallbackPage />}
-                    />
                     {/* Fallback route: redirects unknown paths to the main page */}
                     <Route path="*" element={<Navigate to="/" replace />} />
                   </Routes>

@@ -70,10 +70,11 @@ function processForecastData(
       });
     }
 
-    // Format date
+    // Format date with year to ensure uniqueness
     const formattedDate = dayData.date.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
+      year: "numeric",
     });
 
     result.push({

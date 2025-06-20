@@ -11,6 +11,7 @@ import {
   WeatherMusicCard,
   LoginPopup,
 } from "@/components";
+import { AuthStatus } from "@/components/auth/AuthStatus";
 import { useWeatherData } from "@/hooks/useWeather";
 import { useThemeManager } from "@/hooks/useThemeManager";
 import { useAuth } from "@/hooks/hooks-index";
@@ -69,6 +70,11 @@ function MainPage() {
         condition={displayData.condition}
         timePeriod={timePeriod}
       />
+
+      {/* Auth Debug Component - Remove in production */}
+      <div className="fixed top-4 right-4 z-50">
+        <AuthStatus />
+      </div>
 
       {/* Main Content Area (centered column) */}
       <div

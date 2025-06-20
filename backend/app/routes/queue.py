@@ -26,8 +26,12 @@ class TrackData(BaseModel):
 @cross_origin(supports_credentials=True)
 def get_queue() -> Tuple[Any, int]:
     """Get the current user's song queue from the session."""
+    logger.debug(f"Session ID: {session.get('_id', 'No session ID')}")
+    logger.debug(f"Session keys: {list(session.keys())}")
+
     username = get_authenticated_user()
     if not username:
+        logger.warning("Queue access denied - no authenticated user found")
         return unauthorized_response("User not authenticated")
 
     # Get queue from session

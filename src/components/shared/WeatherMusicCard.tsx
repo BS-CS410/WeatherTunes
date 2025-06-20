@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { TYPOGRAPHY, COLORS } from "@/lib/unifiedStyles";
 import { cn } from "@/lib/lib-utils";
+import { SpotifyWebPlayer } from "@/components/music/SpotifyWebPlayer";
 
 interface WeatherMusicCardProps {
   weatherData: WeatherDisplayData;
@@ -213,22 +214,12 @@ export function WeatherMusicCard({
       {/* Bottom Section - Music Player and Controls (full width) */}
       <div className="flex w-full flex-col space-y-4 px-6 pb-6">
         {/* Spotify Player (full width) */}
-        {user && currentTrackId && /^[a-zA-Z0-9]{22}$/.test(currentTrackId) ? (
+        {user && currentTrackId ? (
           <div className="w-full">
-            <iframe
-              key={`${currentTrackId}`}
-              src={`https://open.spotify.com/embed/track/${currentTrackId}?utm_source=generator&theme=1&autoplay=1`}
-              width="100%"
-              height="80"
-              frameBorder="0"
-              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-              allowFullScreen
-              title="Spotify Player"
-              className="rounded-xl shadow-lg"
-              style={{
-                background:
-                  "linear-gradient(135deg, rgba(0,0,0,0.8), rgba(0,0,0,0.6))",
-              }}
+            <SpotifyWebPlayer
+              className="w-full"
+              showQueueInfo={false}
+              autoPlay={true}
             />
           </div>
         ) : (

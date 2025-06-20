@@ -209,3 +209,163 @@ def _classify_mood_from_audio_features(audio_features: dict) -> List[str]:
         mood_tags.extend(["acoustic", "organic"])
 
     return list(set(mood_tags))
+
+
+@spotify_bp.route("/player/play", methods=["PUT"])
+@cross_origin(supports_credentials=True)
+def player_play() -> Tuple[Response, int]:
+    """Start playback on Spotify player.
+
+    Request Body:
+        device_id (str): Target device ID
+        uris (List[str], optional): Track URIs to play
+        context_uri (str, optional): Album/playlist URI for context
+        offset (dict, optional): Starting position
+
+    Returns:
+        JSON response confirming playback started
+    """
+    auth_session = get_auth_session()
+    if not auth_session:
+        return unauthorized_response("Authentication required")
+
+    try:
+        data = request.get_json() or {}
+        device_id = data.get("device_id")
+
+        if not device_id:
+            return error_response("device_id is required", 400)
+
+        sp = spotipy.Spotify(auth=auth_session.tokens.access_token)
+
+        # Start playback with optional parameters
+        kwargs = {"device_id": device_id}
+        if "uris" in data:
+            kwargs["uris"] = data["uris"]
+        if "context_uri" in data:
+            kwargs["context_uri"] = data["context_uri"]
+        if "offset" in data:
+            kwargs["offset"] = data["offset"]
+
+        sp.start_playback(**kwargs)
+
+        logger.info(f"Playback started on device {device_id}")
+        return success_response({"message": "Playback started"})
+
+    except spotipy.SpotifyException as e:
+        logger.error(f"Spotify playback error: {e}")
+        return error_response(f"Spotify playback error: {e}", 500)
+    except Exception as e:
+        logger.error(f"Error starting playback: {e}")
+        return error_response(f"Failed to start playback: {e}")
+
+
+@spotify_bp.route("/player/queue", methods=["POST"])
+@cross_origin(supports_credentials=True)
+def player_add_to_queue() -> Tuple[Response, int]:
+    """Add track to Spotify playback queue.
+
+    Request Body:
+        uri (str): Track URI to add to queue
+        device_id (str, optional): Target device ID
+
+    Returns:
+        JSON response confirming track added to queue
+    """
+    auth_session = get_auth_session()
+    if not auth_session:
+        return unauthorized_response("Authentication required")
+
+    try:
+        data = request.get_json() or {}
+        uri = data.get("uri")
+
+        if not uri:
+            return error_response("uri is required", 400)
+
+        sp = spotipy.Spotify(auth=auth_session.tokens.access_token)
+
+        # Add to queue with optional device ID
+        kwargs = {"uri": uri}
+        if "device_id" in data:
+            kwargs["device_id"] = data["device_id"]
+
+        sp.add_to_queue(**kwargs)
+
+        logger.info(f"Added track {uri} to queue")
+        return success_response({"message": "Track added to queue"})
+
+    except spotipy.SpotifyException as e:
+        logger.error(f"Spotify queue error: {e}")
+        return error_response(f"Spotify queue error: {e}", 500)
+    except Exception as e:
+        logger.error(f"Error adding to queue: {e}")
+        return error_response(f"Failed to add to queue: {e}")
+
+
+@spotify_bp.route("/player/transfer", methods=["PUT"])
+@cross_origin(supports_credentials=True)
+def player_transfer_playback() -> Tuple[Response, int]:
+    """Transfer playback to device.
+
+    Request Body:
+        device_ids (List[str]): List of device IDs (usually one)
+        play (bool, optional): Whether to start playing immediately
+
+    Returns:
+        JSON response confirming playback transferred
+    """
+    auth_session = get_auth_session()
+    if not auth_session:
+        return unauthorized_response("Authentication required")
+
+    try:
+        data = request.get_json() or {}
+        device_ids = data.get("device_ids")
+
+        if not device_ids or not isinstance(device_ids, list):
+            return error_response("device_ids must be a non-empty list", 400)
+
+        sp = spotipy.Spotify(auth=auth_session.tokens.access_token)
+
+        # Transfer playback
+        play = data.get("play", False)
+        sp.transfer_playback(device_id=device_ids[0], force_play=play)
+
+        logger.info(f"Playback transferred to devices {device_ids}")
+        return success_response({"message": "Playback transferred"})
+
+    except spotipy.SpotifyException as e:
+        logger.error(f"Spotify transfer error: {e}")
+        return error_response(f"Spotify transfer error: {e}", 500)
+    except Exception as e:
+        logger.error(f"Error transferring playback: {e}")
+        return error_response(f"Failed to transfer playback: {e}")
+
+
+@spotify_bp.route("/player/devices", methods=["GET"])
+@cross_origin(supports_credentials=True)
+def get_player_devices() -> Tuple[Response, int]:
+    """Get available Spotify playback devices.
+
+    Returns:
+        JSON response with list of available devices
+    """
+    auth_session = get_auth_session()
+    if not auth_session:
+        return unauthorized_response("Authentication required")
+
+    try:
+        sp = spotipy.Spotify(auth=auth_session.tokens.access_token)
+        devices_response = sp.devices()
+
+        return success_response(
+            {"devices": devices_response.get("devices", []) if devices_response else []}
+        )
+
+    except spotipy.SpotifyException as e:
+        logger.error(f"Spotify devices error: {e}")
+        return error_response(f"Spotify devices error: {e}", 500)
+    except Exception as e:
+        logger.error(f"Error getting devices: {e}")
+        return error_response(f"Failed to get devices: {e}")

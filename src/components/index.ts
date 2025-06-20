@@ -34,6 +34,8 @@ export { ForecastCard } from "./weather/ForecastCard";
 export { QueueCard } from "./music/QueueCard";
 export { FavoritesCard } from "./music/FavoritesCard";
 export { SpotifySearchCard } from "./music/SpotifySearchCard";
+export { SpotifyWebPlayer } from "./music/SpotifyWebPlayer";
+export { SpotifyMiniPlayer } from "./music/SpotifyMiniPlayer";
 
 // === SETTINGS DOMAIN ===
 // Settings interface and controls

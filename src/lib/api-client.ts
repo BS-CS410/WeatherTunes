@@ -2,7 +2,7 @@
 // In a larger application, you might use a library like Axios
 // and have more sophisticated error handling, interceptors, etc.
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 interface ApiClientRequestOptions extends RequestInit {
   credentials?: RequestCredentials;
@@ -38,13 +38,25 @@ async function request<T = unknown>(
     } catch {
       // Ignore if error response is not JSON
     }
-    console.error(
-      "API Error:",
-      response.status,
-      response.statusText,
-      errorData,
-    );
-    // You might want to throw a custom error object here
+
+    // Log the error with more context
+    console.error("API Error:", "–", response.status, "–", response.statusText);
+    if (errorData) {
+      console.error(errorData);
+    }
+
+    // For 401 errors, suggest re-authentication
+    if (response.status === 401) {
+      console.warn(
+        "🚨 Authentication required. Backend session may have expired.",
+      );
+      console.warn("💡 Try logging in again to restore your session.");
+
+      // Import auth service dynamically to avoid circular dependencies
+      const { authService } = await import("./auth-utils");
+      authService.forceAuthSync();
+    }
+
     throw new Error(
       `API request failed with status ${response.status}: ${response.statusText}`,
     );

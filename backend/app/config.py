@@ -27,7 +27,7 @@ class SpotifyConfig:
     """Spotify API configuration."""
 
     SCOPE: Final[str] = (
-        "user-library-read user-read-email user-read-private user-read-playback-state user-modify-playback-state user-read-currently-playing"
+        "user-library-read user-read-email user-read-private user-read-playback-state user-modify-playback-state user-read-currently-playing streaming"
     )
     CLIENT_ID: Final[str] = os.getenv("SPOTIPY_CLIENT_ID", "")
     CLIENT_SECRET: Final[str] = os.getenv("SPOTIPY_CLIENT_SECRET", "")
@@ -37,11 +37,19 @@ class SpotifyConfig:
 class AppConfig:
     """Application URLs and settings."""
 
-    FRONTEND_URL: Final[str] = "http://127.0.0.1:5173"
+    FRONTEND_URL: Final[str] = (
+        "http://127.0.0.1:5175"  # Updated to match current dev server
+    )
     CALLBACK_URL: Final[str] = f"{FRONTEND_URL}/auth-callback"
     ALLOWED_ORIGINS: Final[list[str]] = [
         "http://127.0.0.1:5173",
         "http://localhost:5173",
+        "http://127.0.0.1:5174",
+        "http://localhost:5174",
+        "http://127.0.0.1:5175",  # Added new port
+        "http://localhost:5175",
+        "http://127.0.0.1:8000",
+        "http://localhost:8000",
     ]
 
 
@@ -50,10 +58,8 @@ class Config:
 
     SECRET_KEY: str = os.getenv("FLASK_SECRET_KEY", "dev-secret-change-in-production")
     SESSION_COOKIE_SAMESITE: str = "Lax"
-    SESSION_COOKIE_SECURE: bool = not os.getenv("FLASK_DEBUG", "True").lower() in (
-        "true",
-        "1",
-        "t",
-    )
+    SESSION_COOKIE_SECURE: bool = False  # Set to False for development over HTTP
     SESSION_COOKIE_DOMAIN: str | None = None
-    SESSION_COOKIE_HTTPONLY: bool = True
+    SESSION_COOKIE_HTTPONLY: bool = False  # Allow JavaScript access for debugging
+    SESSION_PERMANENT: bool = True
+    PERMANENT_SESSION_LIFETIME: int = 86400  # 24 hours

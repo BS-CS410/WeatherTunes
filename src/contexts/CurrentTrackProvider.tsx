@@ -1,4 +1,10 @@
-import React, { createContext, useState, useEffect, useCallback } from "react";
+import React, {
+  createContext,
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+} from "react";
 import type { ReactNode } from "react";
 import { apiClient } from "@/lib/api-client";
 import { SpotifyApiService } from "@/lib/spotify-api-service";
@@ -51,6 +57,7 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
   children,
 }) => {
   const { user } = useAuth();
+  const mountedRef = useRef(true);
   const [trackMetadata, setTrackMetadata] = useState<TrackMetadata | null>(
     null,
   );
@@ -64,12 +71,18 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
 
     try {
       setIsLoading(true);
-      const response = await apiClient.get("http://localhost:8000/queue");
+      const response = await apiClient.get("/queue");
       const data = response.data as { queue?: TrackMetadata[] };
       // Always trim to TARGET_QUEUE_SIZE
       setSongQueue((data.queue || []).slice(0, TARGET_QUEUE_SIZE));
     } catch (error) {
       console.error("Failed to fetch queue:", error);
+
+      // If it's an auth error, the user needs to log in again
+      if (error instanceof Error && error.message.includes("401")) {
+        console.warn("Backend session expired, user needs to re-authenticate");
+      }
+
       console.log(
         "Starting with empty queue - queue will be populated automatically",
       );
@@ -138,12 +151,9 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
         const track = await SpotifyApiService.getTrackById(trackId);
         if (!track) return;
 
-        const response = await apiClient.post(
-          "http://localhost:8000/queue/add",
-          {
-            track,
-          },
-        );
+        const response = await apiClient.post("/queue/add", {
+          track,
+        });
 
         // Update queue if response includes new queue state
         const data = response.data as { queue?: TrackMetadata[] };
@@ -217,7 +227,7 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
     if (!user) return;
 
     try {
-      await apiClient.post("http://localhost:8000/queue/clear", {});
+      await apiClient.post("/queue/clear", {});
       setSongQueue([]);
     } catch (error) {
       console.error("Failed to clear queue:", error);
@@ -331,13 +341,13 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
   );
 
   const setNextTrack = useCallback(async (): Promise<void> => {
-    if (!user) return;
+    if (!user) {
+      console.warn("Cannot advance track: user not authenticated");
+      return;
+    }
 
     try {
-      const response = await apiClient.post(
-        "http://localhost:8000/queue/next",
-        {},
-      );
+      const response = await apiClient.post("/queue/next", {});
 
       // Update current track if response includes it
       const data = response.data as {
@@ -371,6 +381,12 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
     } catch (error) {
       console.error("Failed to set next track:", error);
 
+      // Check if it's an auth error and clear user state if needed
+      if (error instanceof Error && error.message.includes("401")) {
+        console.warn("Authentication expired, user needs to log in again");
+        // Don't clear user state here - let auth service handle it
+      }
+
       // Fallback: manually advance the queue locally
       if (songQueue.length > 0) {
         const nextTrack = songQueue[0];
@@ -401,8 +417,12 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
   const replenishQueue = useCallback(async (): Promise<void> => {
     if (!user) return;
 
-    await replenishQueueToTarget(songQueue);
-  }, [user, songQueue, replenishQueueToTarget]);
+    // Get the current queue state directly
+    setSongQueue((currentQueue) => {
+      replenishQueueToTarget(currentQueue);
+      return currentQueue; // Don't change state here, let replenishQueueToTarget handle it
+    });
+  }, [user, replenishQueueToTarget]);
 
   /**
    * Play a specific track from the queue, removing it from the queue
@@ -412,74 +432,100 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
       if (!user) return;
 
       try {
-        // Find the track in the queue
-        const trackIndex = songQueue.findIndex((track) => track.id === trackId);
-        if (trackIndex === -1) {
-          console.warn(`Track ${trackId} not found in queue`);
-          return;
-        }
-
-        const selectedTrack = songQueue[trackIndex];
-
-        // Remove the track from the queue
-        const updatedQueue = songQueue.filter((track) => track.id !== trackId);
-
-        try {
-          // Try to update the queue on the backend
-          await apiClient.post("http://localhost:8000/queue/replace", {
-            tracks: updatedQueue,
-          });
-          console.log("Successfully updated queue on backend");
-        } catch (error) {
-          console.warn(
-            "Failed to update queue on backend, continuing with local update:",
-            error,
+        // Use functional update to get current queue state
+        setSongQueue((currentQueue) => {
+          // Find the track in the queue
+          const trackIndex = currentQueue.findIndex(
+            (track) => track.id === trackId,
           );
-        }
-
-        // Update local queue state
-        setSongQueue(updatedQueue);
-
-        // Set the selected track as current
-        setTrackMetadata(selectedTrack);
-        setCurrentTrackId(selectedTrack.id);
-
-        console.log(
-          `Playing track from queue: ${selectedTrack.title} by ${selectedTrack.artist}`,
-        );
-
-        // Immediately replenish queue to target size after track removal
-        console.log(
-          `Track removed from queue, triggering immediate replenishment (${updatedQueue.length}/${TARGET_QUEUE_SIZE})...`,
-        );
-        setTimeout(async () => {
-          try {
-            await triggerImmediateReplenishment(updatedQueue.length);
-          } catch (error) {
-            console.error(
-              "Failed to replenish queue after track selection:",
-              error,
-            );
+          if (trackIndex === -1) {
+            console.warn(`Track ${trackId} not found in queue`);
+            return currentQueue;
           }
-        }, 100);
+
+          const selectedTrack = currentQueue[trackIndex];
+
+          // Remove the track from the queue
+          const updatedQueue = currentQueue.filter(
+            (track) => track.id !== trackId,
+          );
+
+          // Async operations in a separate call
+          (async () => {
+            try {
+              // Try to update the queue on the backend
+              await apiClient.post("http://localhost:8000/queue/replace", {
+                tracks: updatedQueue,
+              });
+              console.log("Successfully updated queue on backend");
+            } catch (error) {
+              console.warn(
+                "Failed to update queue on backend, continuing with local update:",
+                error,
+              );
+            }
+
+            // Set the selected track as current
+            setTrackMetadata(selectedTrack);
+            setCurrentTrackId(selectedTrack.id);
+
+            console.log(
+              `Playing track from queue: ${selectedTrack.title} by ${selectedTrack.artist}`,
+            );
+
+            // Immediately replenish queue to target size after track removal
+            console.log(
+              `Track removed from queue, triggering immediate replenishment (${updatedQueue.length}/${TARGET_QUEUE_SIZE})...`,
+            );
+            setTimeout(async () => {
+              try {
+                await triggerImmediateReplenishment(updatedQueue.length);
+              } catch (error) {
+                console.error(
+                  "Failed to replenish queue after track selection:",
+                  error,
+                );
+              }
+            }, 100);
+          })();
+
+          return updatedQueue;
+        });
       } catch (error) {
         console.error("Failed to play track from queue:", error);
       }
     },
-    [user, songQueue, triggerImmediateReplenishment],
+    [user, triggerImmediateReplenishment],
   );
 
   /**
    * Effect to maintain queue at target size - replenish whenever below target
+   * Using a ref to prevent infinite loops
    */
+  const lastQueueSizeRef = useRef<number>(0);
+
   useEffect(() => {
     if (user && songQueue.length > 0 && songQueue.length < TARGET_QUEUE_SIZE) {
-      console.log(
-        `Queue size (${songQueue.length}) below target (${TARGET_QUEUE_SIZE}), auto-replenishing...`,
-      );
-      replenishQueue();
+      // Only trigger if queue size actually changed to prevent loops
+      if (lastQueueSizeRef.current !== songQueue.length) {
+        lastQueueSizeRef.current = songQueue.length;
+        console.log(
+          `Queue size (${songQueue.length}) below target (${TARGET_QUEUE_SIZE}), auto-replenishing...`,
+        );
+
+        // Use a timeout to break the potential loop
+        const timeoutId = setTimeout(() => {
+          if (mountedRef.current) {
+            replenishQueueToTarget(songQueue);
+          }
+        }, 500);
+
+        return () => clearTimeout(timeoutId);
+      }
+    } else {
+      lastQueueSizeRef.current = songQueue.length;
     }
-  }, [user, songQueue.length, replenishQueue]);
+  }, [user, songQueue.length, songQueue, replenishQueueToTarget]);
 
   /**
    * Effect to automatically start playing the first track when queue is loaded
@@ -491,6 +537,15 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
       setNextTrack();
     }
   }, [user, songQueue.length, currentTrackId, isLoading, setNextTrack]);
+
+  /**
+   * Cleanup effect for mounted ref
+   */
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
 
   const contextValue: CurrentTrackContextType = {
     trackMetadata,

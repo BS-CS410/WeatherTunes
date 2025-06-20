@@ -3,7 +3,7 @@
  * Handles all Spotify OAuth operations and token management
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 export interface AuthUser {
   username: string;
@@ -101,32 +101,23 @@ class AuthService {
       if (result.authenticated && result.username) {
         this.setState({
           user: { username: result.username, isAuthenticated: true },
+          isLoading: false,
+          error: null,
         });
       } else {
         this.setState({
           user: null,
+          isLoading: false,
+          error: null,
         });
       }
     } catch (error) {
-      this.setState({ user: null });
-    } finally {
-      this.setState({ isLoading: false });
-    }
-  }
-
-  /**
-   * Exchange authorization code for an access token
-   */
-  async exchangeCodeForToken(code: string): Promise<void> {
-    try {
-      this.setState({ isLoading: true, error: null });
-
-      await this.apiRequest<{ message: string }>(`/auth/callback?code=${code}`);
-
-      await this.checkAuth();
-    } catch (error) {
-      this.setState({ isLoading: false, error: (error as Error).message });
-      throw error;
+      console.error("Auth check failed:", error);
+      this.setState({
+        user: null,
+        isLoading: false,
+        error: "Failed to check authentication status.",
+      });
     }
   }
 
@@ -156,11 +147,21 @@ class AuthService {
   }
 
   /**
-   * Handle auth callback - check if authentication was successful
+   * Force sync auth state with backend - useful when frontend/backend are out of sync
    */
-  async handleCallback(): Promise<boolean> {
-    await this.checkAuth();
-    return this.state.user !== null;
+  async forceAuthSync(): Promise<boolean> {
+    try {
+      console.log("🔄 Force syncing auth state with backend...");
+      await this.checkAuth();
+      return this.state.user !== null;
+    } catch (error) {
+      console.error("Failed to sync auth state:", error);
+      this.setState({
+        user: null,
+        error: "Authentication sync failed. Please log in again.",
+      });
+      return false;
+    }
   }
 }
 

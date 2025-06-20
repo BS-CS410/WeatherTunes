@@ -150,9 +150,9 @@ export function ForecastCard() {
           5-Day Forecast
         </h3>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
-          {forecast.map((day) => (
+          {forecast.map((day, index) => (
             <ForecastDay
-              key={day.date}
+              key={`${day.date}-${index}`}
               dayName={day.dayName}
               date={day.date}
               condition={day.condition}

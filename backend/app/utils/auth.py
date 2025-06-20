@@ -24,32 +24,43 @@ sp_oauth = SpotifyOAuth(
 
 def get_authenticated_user() -> Optional[str]:
     """Get the authenticated user's Spotify username."""
-    return session.get("spotify_username")
+    username = session.get("spotify_username")
+    logger.debug(f"Session keys: {list(session.keys())}")
+    logger.debug(f"Looking for spotify_username, found: {username}")
+    return username
 
 
 def is_user_authenticated() -> bool:
     """Check if user is authenticated with valid token."""
+    logger.debug(f"Checking authentication. Session keys: {list(session.keys())}")
+
     if not ("access_token" in session and "spotify_username" in session):
+        logger.debug("Missing required session keys")
         return False
 
     # Check if token is expired
     expires_at = session.get("expires_at")
     if expires_at and time.time() > expires_at:
+        logger.debug(f"Token expired at {expires_at}, current time: {time.time()}")
         # Try to refresh token
         if _refresh_token_if_needed():
             return True
         clear_auth_session()
         return False
 
+    logger.debug(f"User authenticated: {session.get('spotify_username')}")
     return True
 
 
 def save_auth_session(username: str, tokens: SpotifyTokens) -> None:
     """Save authentication session data."""
+    logger.info(f"Saving auth session for user: {username}")
     session["spotify_username"] = username
     session["access_token"] = tokens.access_token
     session["refresh_token"] = tokens.refresh_token
     session["expires_at"] = tokens.expires_at
+    logger.debug(f"Session keys after save: {list(session.keys())}")
+    logger.debug(f"Session ID: {session.get('_id', 'No session ID')}")
 
 
 def get_auth_session() -> Optional[AuthSession]:
