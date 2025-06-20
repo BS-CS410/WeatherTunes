@@ -11,7 +11,14 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "test:auth": "playwright test tests/auth-simple.spec.ts tests/session-management.spec.ts",
+    "test:auth-full": "playwright test tests/auth-error-handling.spec.ts tests/frontend-state-management.spec.ts tests/backend-resilience.spec.ts",
+    "test:player": "playwright test tests/player-edge-cases.spec.ts",
+    "test:integration": "playwright test tests/integration-comprehensive.spec.ts",
+    "test:e2e": "playwright test",
+    "test:e2e-headed": "playwright test --headed",
+    "test:e2e-ui": "playwright test --ui"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -36,6 +43,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
+    "@playwright/test": "^1.53.1",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
@@ -45,12 +53,14 @@
     "@types/react-dom": "^19.1.2",
     "@vitejs/plugin-react": "^4.4.1",
     "@vitest/ui": "^3.2.3",
+    "dotenv": "^16.5.0",
     "eslint": "^9.25.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^16.0.0",
     "jsdom": "^26.1.0",
+    "playwright": "^1.53.1",
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.12",
     "tw-animate-css": "^1.3.4",

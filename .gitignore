@@ -17,6 +17,7 @@ dist
 dist-ssr
 *.local
 .env
+.env.test
 .venv
 
 # Editor directories and files
@@ -36,3 +37,7 @@ dist-ssr
 *-new.md
 docs/**/*-old.md
 docs/**/*-new.md
+
+# Test report directories
+playwright-report
+test-results

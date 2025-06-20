@@ -16,6 +16,7 @@ from app.routes.recommended import recommended_bp
 from app.routes.spotify import spotify_bp
 from app.routes.user import user_bp
 from app.routes.weather import weather_bp
+from app.utils.cors import ensure_cors_headers
 from app.utils.logging import setup_logging  # Import setup_logging
 from flask import Flask
 from flask_cors import CORS
@@ -47,6 +48,8 @@ def create_app() -> Flask:
         app,
         supports_credentials=True,
         origins=AppConfig.ALLOWED_ORIGINS,
+        allow_headers=["Content-Type", "Authorization"],
+        methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     )
 
     # Register blueprints
@@ -71,6 +74,7 @@ def create_app() -> Flask:
         Returns:
             Health status information
         """
+        ensure_cors_headers()
         return {
             "status": "healthy",
             "service": "WeatherTunes Backend",

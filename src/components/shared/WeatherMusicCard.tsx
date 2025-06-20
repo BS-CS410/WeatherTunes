@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SunriseIcon, SunsetIcon } from "@/components/icons";
 import type { WeatherDisplayData } from "@/types/weather-types";
 import { SectionWrapper } from "../layout/SectionWrapper";
@@ -47,6 +47,17 @@ export function WeatherMusicCard({
     (isTrackLoading ? "Finding music..." : "Unknown Artist");
   const albumArtUrl =
     trackMetadata?.albumArt || "/public/placeholder-album.svg";
+
+  // Preload album art images for all tracks in the queue
+  useEffect(() => {
+    if (!songQueue || songQueue.length === 0) return;
+    songQueue.forEach((track) => {
+      if (track.albumArt) {
+        const img = new window.Image();
+        img.src = track.albumArt;
+      }
+    });
+  }, [songQueue]);
 
   const handleLike = async () => {
     if (!currentTrackId) return;
@@ -216,11 +227,7 @@ export function WeatherMusicCard({
         {/* Spotify Player (full width) */}
         {user && currentTrackId ? (
           <div className="w-full">
-            <SpotifyWebPlayer
-              className="w-full"
-              showQueueInfo={false}
-              autoPlay={true}
-            />
+            <SpotifyWebPlayer className="w-full" showQueueInfo={false} />
           </div>
         ) : (
           <div className="w-full text-center">
