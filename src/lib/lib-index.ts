@@ -11,7 +11,6 @@ export * from "./api-client";
 // Music and Spotify integration
 export * from "./music-utils";
 export * from "./spotify-api-service";
-export * from "./spotify-weather";
 
 // UI and styling utilities
 

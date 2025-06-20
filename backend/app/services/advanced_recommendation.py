@@ -11,6 +11,7 @@ from spotipy.oauth2 import SpotifyOAuth
 
 from app.config import SpotifyConfig
 from app.services.recommendation import RecommendationService
+from app.services.search_recommendation import search_recommendation_service
 from app.services.weather_mood import WeatherMoodService
 
 logger = logging.getLogger(__name__)
@@ -180,18 +181,48 @@ class AdvancedRecommendationService:
                     )
                     mood_filtered_tracks.extend(fallback_with_moods)
                 except Exception as e:
-                    logger.warning(
-                        f"Spotify fallback failed: {e}, using hardcoded fallback"
-                    )
-                    # Use hardcoded fallback when Spotify API completely fails
-                    mood_filtered_tracks.extend(self._get_simple_fallback()[:limit])
+                    logger.warning(f"Spotify fallback failed: {e}")
+                    # Try search-based recommendations as final fallback
+                    try:
+                        logger.info("Trying search-based recommendations as fallback")
+                        search_tracks = (
+                            search_recommendation_service.get_weather_recommendations(
+                                weather_condition, temperature, time_of_day, limit
+                            )
+                        )
+                        if search_tracks:
+                            mood_filtered_tracks.extend(search_tracks)
+                            logger.info(
+                                f"Search-based fallback successful: {len(search_tracks)} tracks"
+                            )
+                    except Exception as search_error:
+                        logger.error(
+                            f"Search-based fallback also failed: {search_error}"
+                        )
 
-            # If we still have no tracks, use simple fallback
+            # If we still have no tracks, try search-based recommendations as final fallback
             if len(mood_filtered_tracks) == 0:
                 logger.warning(
-                    "No tracks found via any method, using hardcoded fallback"
+                    "No tracks found via any Spotify API method, trying search-based fallback"
                 )
-                mood_filtered_tracks = self._get_simple_fallback()[:limit]
+                try:
+                    search_tracks = (
+                        search_recommendation_service.get_weather_recommendations(
+                            weather_condition, temperature, time_of_day, limit
+                        )
+                    )
+                    if search_tracks:
+                        mood_filtered_tracks = search_tracks
+                        logger.info(
+                            f"Search-based fallback successful: {len(search_tracks)} tracks"
+                        )
+                    else:
+                        raise Exception("Search-based fallback returned no tracks")
+                except Exception as e:
+                    logger.error(f"All fallback methods failed: {e}")
+                    raise Exception(
+                        "All recommendation methods failed, no tracks available"
+                    )
 
             # Limit to requested amount
             final_tracks = mood_filtered_tracks[:limit]
@@ -209,7 +240,7 @@ class AdvancedRecommendationService:
 
         except Exception as e:
             logger.error(f"Advanced recommendation service error: {e}")
-            return self._get_simple_fallback()
+            raise e  # Don't fall back to hardcoded data
 
     def _get_user_music_profile(
         self,
@@ -653,81 +684,6 @@ class AdvancedRecommendationService:
             return []
         except Exception:
             return []
-
-    def _get_simple_fallback(self) -> List[Dict[str, Any]]:
-        """Simple fallback when all else fails."""
-        logger.warning(
-            "All recommendation strategies failed, using hardcoded fallback tracks"
-        )
-
-        # Return hardcoded tracks in the correct format expected by frontend
-        return [
-            {
-                "id": "4iV5W9uYEdYUVa79Axb7Rh",
-                "title": "Never Gonna Give You Up",
-                "artist": "Rick Astley",
-                "albumArt": "",
-                "album": "Whenever You Need Somebody",
-                "preview_url": None,
-                "external_urls": {
-                    "spotify": "https://open.spotify.com/track/4iV5W9uYEdYUVa79Axb7Rh"
-                },
-                "popularity": 85,
-                "duration_ms": 213000,
-            },
-            {
-                "id": "1BxfuPKGuaTgP7aM0Bbdwr",
-                "title": "Cruel Summer",
-                "artist": "Taylor Swift",
-                "albumArt": "",
-                "album": "Lover",
-                "preview_url": None,
-                "external_urls": {
-                    "spotify": "https://open.spotify.com/track/1BxfuPKGuaTgP7aM0Bbdwr"
-                },
-                "popularity": 95,
-                "duration_ms": 178000,
-            },
-            {
-                "id": "3n3Ppam7vgaVa1iaRUc9Lp",
-                "title": "Mr. Brightside",
-                "artist": "The Killers",
-                "albumArt": "",
-                "album": "Hot Fuss",
-                "preview_url": None,
-                "external_urls": {
-                    "spotify": "https://open.spotify.com/track/3n3Ppam7vgaVa1iaRUc9Lp"
-                },
-                "popularity": 88,
-                "duration_ms": 222000,
-            },
-            {
-                "id": "0VjIjW4GlUZAMYd2vXMi3b",
-                "title": "Blinding Lights",
-                "artist": "The Weeknd",
-                "albumArt": "",
-                "album": "After Hours",
-                "preview_url": None,
-                "external_urls": {
-                    "spotify": "https://open.spotify.com/track/0VjIjW4GlUZAMYd2vXMi3b"
-                },
-                "popularity": 92,
-                "duration_ms": 200000,
-            },
-            {
-                "id": "7qiZfU4dY1lWllzX7mPBI3",
-                "title": "Shape of You",
-                "artist": "Ed Sheeran",
-                "albumArt": "",
-                "album": "÷ (Divide)",
-                "preview_url": None,
-                "external_urls": {
-                    "spotify": "https://open.spotify.com/track/7qiZfU4dY1lWllzX7mPBI3"
-                },
-                "popularity": 90,
-                "duration_ms": 233000,
-            },
-        ]
 
     def clear_cache(self) -> None:
         """Clear all cached data."""

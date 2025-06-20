@@ -217,7 +217,7 @@ export function WeatherMusicCard({
           <div className="w-full">
             <iframe
               key={`${currentTrackId}`}
-              src={`https://open.spotify.com/embed/track/${currentTrackId}?utm_source=generator&theme=0`}
+              src={`https://open.spotify.com/embed/track/${currentTrackId}?utm_source=generator&theme=1`}
               width="100%"
               height="80"
               frameBorder="0"
@@ -225,6 +225,10 @@ export function WeatherMusicCard({
               allowFullScreen
               title="Spotify Player"
               className="rounded-xl shadow-lg"
+              style={{
+                background:
+                  "linear-gradient(135deg, rgba(0,0,0,0.8), rgba(0,0,0,0.6))",
+              }}
             />
           </div>
         ) : (

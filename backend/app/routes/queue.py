@@ -99,7 +99,7 @@ def get_next_track() -> Tuple[Any, int]:
     logger.info(
         f"Next track for user {username} is {next_track_object.get('id', 'N/A')}. Remaining queue size: {len(current_queue)}"
     )
-    return success_response({"next_track": next_track_object, "queue": current_queue})
+    return success_response({"currentTrack": next_track_object, "queue": current_queue})
 
 
 @queue_bp.route("/clear", methods=["POST"])

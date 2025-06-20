@@ -1,10 +1,7 @@
 import { useMemo } from "react";
 import { useWeatherData } from "./useWeather";
 import { SpotifyApiService } from "@/lib/spotify-api-service";
-import {
-  generateWeatherQueueDynamic,
-  getWeatherRecommendationParams,
-} from "@/lib/music-utils";
+import { getWeatherRecommendationParams } from "@/lib/music-utils";
 import type { TrackMetadata } from "@/types/queue-types";
 
 /**
@@ -46,19 +43,47 @@ export function useWeatherMusic() {
    */
   const generateWeatherQueue = async (
     maxTracks: number = 12,
-  ): Promise<string[]> => {
+  ): Promise<TrackMetadata[]> => {
     const { condition, temperature, timeOfDay } = musicWeatherConditions;
 
     try {
-      // Use the new dynamic weather queue generation with advanced mapping
-      return await generateWeatherQueueDynamic(
-        condition,
-        temperature,
-        timeOfDay,
-        maxTracks,
+      console.log(
+        `Generating queue for: ${condition}, ${temperature}°C, ${timeOfDay}`,
       );
+
+      // Use Spotify API to get weather-appropriate recommendations directly
+      const tracks =
+        await SpotifyApiService.getRecommendationsForCurrentWeather(
+          condition,
+          temperature,
+          maxTracks,
+          timeOfDay,
+        );
+
+      console.log(`Generated ${tracks.length} tracks for weather conditions`);
+      return tracks;
     } catch (error) {
       console.error("Failed to generate weather queue:", error);
+
+      // Try to get fallback recommendations if the primary method fails
+      try {
+        console.log("Attempting fallback to personalized recommendations...");
+        const fallbackTracks =
+          await SpotifyApiService.getPersonalizedWeatherRecommendations(
+            condition,
+            temperature,
+            timeOfDay,
+            maxTracks,
+          );
+
+        if (fallbackTracks.length > 0) {
+          console.log(`Fallback successful: ${fallbackTracks.length} tracks`);
+          return fallbackTracks;
+        }
+      } catch (fallbackError) {
+        console.error("Fallback also failed:", fallbackError);
+      }
+
       return [];
     }
   };
