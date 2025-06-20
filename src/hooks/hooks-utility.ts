@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from "react";
-import { authService, type AuthState } from "@/lib/auth";
-import { SettingsContext } from "@/contexts/SettingsContext";
+import { authService } from "@/lib/auth-utils";
+import type { AuthState } from "@/lib/auth-utils";
+import { SettingsContext } from "@/contexts/SettingsProvider";
 
 /**
  * Custom hook for persistent settings using localStorage

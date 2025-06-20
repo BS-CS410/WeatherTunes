@@ -1,5 +1,5 @@
 import { COLORS, TYPOGRAPHY, LAYOUT } from "@/lib/unifiedStyles";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/lib-utils";
 
 interface LoadingSpinnerProps {
   message?: string;

@@ -1,5 +1,5 @@
-import type { TrackMetadata } from "@/types/queue";
-import tracksData from "./tracks.json";
+import type { TrackMetadata } from "@/types/queue-types";
+import tracksData from "./music-tracks.json";
 
 /**
  * Consolidated music utilities for track management and queue generation
@@ -184,3 +184,19 @@ export const generateMoodQueue =
   QueueManager.generateMoodQueue.bind(QueueManager);
 export const getRandomTracks = QueueManager.getRandomTracks.bind(QueueManager);
 export const validateQueue = QueueManager.validateQueue.bind(QueueManager);
+
+// Export getWeatherMood for backward compatibility
+export function getWeatherMood(weather: { main: string }): string {
+  const weatherTagMap: Record<string, string> = {
+    Clear: "upbeat",
+    Rain: "mellow",
+    Clouds: "chill",
+    Snow: "peaceful",
+    Thunderstorm: "intense",
+    Drizzle: "contemplative",
+    Mist: "mysterious",
+    Fog: "mysterious",
+  };
+
+  return weatherTagMap[weather.main] || "chill";
+}

@@ -1,4 +1,4 @@
-import type { TimePeriod } from "@/lib/utils"; // Added import for TimePeriod
+import type { TimePeriod } from "@/lib/lib-utils"; // Added import for TimePeriod
 
 export interface WeatherApiResponse {
   name: string;

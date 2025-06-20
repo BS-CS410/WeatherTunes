@@ -1,7 +1,7 @@
-import { getUserLocationAndFetch } from "./weather";
-import type { WeatherApiResponse } from "@/types/weather";
-import { kelvinToCelsius } from "./utils";
-import tracks from "./tracks.json"; // Updated import
+import { getUserLocationAndFetch } from "./weather-utils";
+import { kelvinToCelsius } from "./lib-utils";
+import type { WeatherApiResponse } from "@/types/weather-types";
+import tracks from "./music-tracks.json"; // Updated import
 
 // Define more specific types for the playlistMap
 type TimeOfDay = "morning" | "afternoon" | "evening" | "night";

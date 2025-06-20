@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { cn, getTimePeriod, formatUnixTimeToLocalString } from "../utils";
+import { cn, getTimePeriod, formatUnixTimeToLocalString } from "../lib-utils";
 
 describe("utils", () => {
   describe("cn (className utility)", () => {

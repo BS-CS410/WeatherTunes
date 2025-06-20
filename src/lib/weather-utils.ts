@@ -1,4 +1,4 @@
-import type { WeatherApiResponse, ForecastApiResponse } from "@/types/weather";
+import type { WeatherApiResponse, ForecastApiResponse } from "@/types/weather-types";
 
 // Fallback to Bellevue, WA and hope no one notices
 const FALLBACK_COORDS = {

@@ -1,19 +1,19 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { renderHook, act } from "@testing-library/react";
-import { useSpotifySearch } from "../useSpotifySearch";
-import { SpotifyApiService } from "@/lib/spotifyApiService";
-import { useAuth } from "../utility";
-import type { TrackMetadata } from "@/types/queue";
+import { useSpotifySearch } from "@/hooks/useSpotifySearch";
+import { SpotifyApiService } from "@/lib/spotify-api-service";
+import { useAuth } from "../hooks-utility";
+import type { TrackMetadata } from "@/types/queue-types";
 
 // Mock dependencies
-vi.mock("@/lib/spotifyApiService", () => ({
+vi.mock("@/lib/spotify-api-service", () => ({
   SpotifyApiService: {
     searchTracks: vi.fn(),
     getWeatherRecommendations: vi.fn(),
   },
 }));
 
-vi.mock("../utility", () => ({
+vi.mock("../hooks-utility", () => ({
   useAuth: vi.fn(),
 }));
 

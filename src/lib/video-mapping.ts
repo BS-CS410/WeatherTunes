@@ -1,5 +1,5 @@
-import type { TimePeriod } from "@/lib/utils";
-import type { WeatherType } from "@/types/weather";
+import type { TimePeriod } from "@/lib/lib-utils";
+import type { WeatherType } from "@/types/weather-types";
 
 // Video imports organized by weather type and time period
 import clearNight from "../assets/videos/clear_night.mp4";

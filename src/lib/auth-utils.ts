@@ -101,27 +101,37 @@ class AuthService {
       if (result.authenticated && result.username) {
         this.setState({
           user: { username: result.username, isAuthenticated: true },
-          isLoading: false,
-          error: null,
         });
       } else {
         this.setState({
           user: null,
-          isLoading: false,
-          error: null,
         });
       }
     } catch (error) {
-      this.setState({
-        user: null,
-        isLoading: false,
-        error: error instanceof Error ? error.message : "Auth check failed",
-      });
+      this.setState({ user: null });
+    } finally {
+      this.setState({ isLoading: false });
     }
   }
 
   /**
-   * Initiate Spotify login
+   * Exchange authorization code for an access token
+   */
+  async exchangeCodeForToken(code: string): Promise<void> {
+    try {
+      this.setState({ isLoading: true, error: null });
+
+      await this.apiRequest<{ message: string }>(`/auth/callback?code=${code}`);
+
+      await this.checkAuth();
+    } catch (error) {
+      this.setState({ isLoading: false, error: (error as Error).message });
+      throw error;
+    }
+  }
+
+  /**
+   * Redirect to Spotify for login
    */
   login(): void {
     window.location.href = `${API_BASE_URL}/auth/login`;

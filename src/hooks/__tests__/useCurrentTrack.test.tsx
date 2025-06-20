@@ -1,13 +1,15 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { renderHook, act, waitFor } from "@testing-library/react";
 import { useCurrentTrack } from "../useCurrentTrack";
-import { apiClient } from "@/lib";
-import { SpotifyApiService } from "@/lib/spotifyApiService";
-import { useAuth } from "../utility";
-import type { TrackMetadata } from "@/types/queue";
+import { apiClient } from "@/lib/api-client";
+import { SpotifyApiService } from "@/lib/spotify-api-service";
+import { useAuth } from "../hooks-utility";
+import type { TrackMetadata } from "@/types/queue-types";
+import { CurrentTrackProvider } from "@/contexts/CurrentTrackProvider";
+import type { ReactNode } from "react";
 
 // Mock dependencies
-vi.mock("@/lib", () => ({
+vi.mock("@/lib/api-client", () => ({
   apiClient: {
     get: vi.fn(),
     post: vi.fn(),
@@ -16,14 +18,14 @@ vi.mock("@/lib", () => ({
   },
 }));
 
-vi.mock("@/lib/spotifyApiService", () => ({
+vi.mock("@/lib/spotify-api-service", () => ({
   SpotifyApiService: {
     getTrackById: vi.fn(),
     getTracksByIds: vi.fn(),
   },
 }));
 
-vi.mock("../utility", () => ({
+vi.mock("../hooks-utility", () => ({
   useAuth: vi.fn(),
 }));
 
@@ -50,12 +52,19 @@ const mockQueueResponse = {
   ],
 };
 
-const createMockApiResponse = <T>(data: T) => ({
-  data,
-  status: 200,
-  statusText: "OK",
-  headers: new Headers(),
-});
+function createMockApiResponse<T>(data: T) {
+  return {
+    data,
+    status: 200,
+    statusText: "OK",
+    headers: new Headers(),
+  };
+}
+
+// Helper to wrap hooks in provider
+const wrapper = ({ children }: { children: ReactNode }) => (
+  <CurrentTrackProvider>{children}</CurrentTrackProvider>
+);
 
 describe("useCurrentTrack", () => {
   beforeEach(() => {
@@ -79,7 +88,7 @@ describe("useCurrentTrack", () => {
   });
 
   it("should initialize with empty state", () => {
-    const { result } = renderHook(() => useCurrentTrack());
+    const { result } = renderHook(() => useCurrentTrack(), { wrapper });
 
     expect(result.current.trackMetadata).toBeNull();
     expect(result.current.isLoading).toBe(true);
@@ -88,7 +97,7 @@ describe("useCurrentTrack", () => {
   });
 
   it("should fetch queue on mount when user is authenticated", async () => {
-    renderHook(() => useCurrentTrack());
+    renderHook(() => useCurrentTrack(), { wrapper });
 
     await waitFor(() => {
       expect(mockApiClient.get).toHaveBeenCalledWith(
@@ -107,13 +116,13 @@ describe("useCurrentTrack", () => {
       checkAuth: vi.fn(),
     });
 
-    renderHook(() => useCurrentTrack());
+    renderHook(() => useCurrentTrack(), { wrapper });
 
     expect(mockApiClient.get).not.toHaveBeenCalled();
   });
 
   it("should update track metadata when updateTrack is called", async () => {
-    const { result } = renderHook(() => useCurrentTrack());
+    const { result } = renderHook(() => useCurrentTrack(), { wrapper });
 
     await act(async () => {
       await result.current.updateTrack("track123");
@@ -128,7 +137,7 @@ describe("useCurrentTrack", () => {
   });
 
   it("should not refetch track if same track is already loaded", async () => {
-    const { result } = renderHook(() => useCurrentTrack());
+    const { result } = renderHook(() => useCurrentTrack(), { wrapper });
 
     // First call
     await act(async () => {
@@ -148,7 +157,7 @@ describe("useCurrentTrack", () => {
   it("should handle Spotify API failure gracefully", async () => {
     mockSpotifyApiService.getTrackById.mockResolvedValue(null);
 
-    const { result } = renderHook(() => useCurrentTrack());
+    const { result } = renderHook(() => useCurrentTrack(), { wrapper });
 
     await act(async () => {
       await result.current.updateTrack("track123");
@@ -165,7 +174,7 @@ describe("useCurrentTrack", () => {
   });
 
   it("should clear track metadata when updateTrack called with empty string", async () => {
-    const { result } = renderHook(() => useCurrentTrack());
+    const { result } = renderHook(() => useCurrentTrack(), { wrapper });
 
     // First set a track
     await act(async () => {
@@ -186,7 +195,7 @@ describe("useCurrentTrack", () => {
       createMockApiResponse({ success: true, message: "Track added to queue" }),
     );
 
-    const { result } = renderHook(() => useCurrentTrack());
+    const { result } = renderHook(() => useCurrentTrack(), { wrapper });
 
     await act(async () => {
       await result.current.addTrackToQueue("track123");
@@ -226,7 +235,7 @@ describe("useCurrentTrack", () => {
       createMockApiResponse({ success: true, message: "Queue replaced" }),
     );
 
-    const { result } = renderHook(() => useCurrentTrack());
+    const { result } = renderHook(() => useCurrentTrack(), { wrapper });
 
     await act(async () => {
       await result.current.replaceQueueWithTracks(["track1", "track2"]);
@@ -247,7 +256,7 @@ describe("useCurrentTrack", () => {
       createMockApiResponse({ success: true, message: "Queue cleared" }),
     );
 
-    const { result } = renderHook(() => useCurrentTrack());
+    const { result } = renderHook(() => useCurrentTrack(), { wrapper });
 
     await act(async () => {
       await result.current.clearQueue();
@@ -264,7 +273,7 @@ describe("useCurrentTrack", () => {
       createMockApiResponse({ success: true, currentTrack: mockTrackMetadata }),
     );
 
-    const { result } = renderHook(() => useCurrentTrack());
+    const { result } = renderHook(() => useCurrentTrack(), { wrapper });
 
     await act(async () => {
       await result.current.setNextTrack();
@@ -279,7 +288,7 @@ describe("useCurrentTrack", () => {
   it("should handle queue fetch failure", async () => {
     mockApiClient.get.mockRejectedValue(new Error("Network error"));
 
-    const { result } = renderHook(() => useCurrentTrack());
+    const { result } = renderHook(() => useCurrentTrack(), { wrapper });
 
     await waitFor(() => {
       expect(result.current.songQueue).toEqual([]);
@@ -296,7 +305,7 @@ describe("useCurrentTrack", () => {
       checkAuth: vi.fn(),
     });
 
-    const { result } = renderHook(() => useCurrentTrack());
+    const { result } = renderHook(() => useCurrentTrack(), { wrapper });
 
     await act(async () => {
       await result.current.addTrackToQueue("track123");
@@ -326,7 +335,7 @@ describe("useCurrentTrack", () => {
       createMockApiResponse({ success: true, queue: updatedQueue }),
     );
 
-    const { result } = renderHook(() => useCurrentTrack());
+    const { result } = renderHook(() => useCurrentTrack(), { wrapper });
 
     // Wait for initial queue fetch
     await waitFor(() => {

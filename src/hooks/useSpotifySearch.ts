@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
-import { SpotifyApiService } from "@/lib/spotifyApiService";
-import { useAuth } from "./utility";
-import type { TrackMetadata } from "@/types/queue";
+import { SpotifyApiService } from "@/lib/spotify-api-service";
+import { useAuth } from "./hooks-utility";
+import type { TrackMetadata } from "@/types/queue-types";
 
 interface UseSpotifySearchReturn {
   searchResults: TrackMetadata[];

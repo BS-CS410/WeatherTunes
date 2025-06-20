@@ -2,7 +2,7 @@
  * Utility functions for handling measurement units based on location
  */
 
-import type { UnitDefaults } from "@/types/units";
+import type { UnitDefaults } from "@/types/units-types";
 
 /**
  * Countries that primarily use imperial (Fahrenheit) system

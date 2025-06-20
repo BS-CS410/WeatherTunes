@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/lib-utils";
 import { LIQUID_GLASS_STYLES } from "@/lib/unifiedStyles";
 
 interface SliderProps {

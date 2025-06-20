@@ -1,13 +1,19 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import type { WeatherApiResponse, EnhancedWeatherState } from "@/types/weather";
-import { getUserLocationAndFetch, createErrorWeatherData } from "@/lib/weather";
+import type {
+  WeatherApiResponse,
+  EnhancedWeatherState,
+} from "@/types/weather-types";
+import {
+  getUserLocationAndFetch,
+  createErrorWeatherData,
+} from "@/lib/weather-utils";
 import {
   getTimePeriod,
-  type TimePeriod,
   formatUnixTimeToLocalString,
-} from "@/lib/utils";
-import { formatTemperature } from "@/lib/utils";
-import { useSettings } from "@/hooks";
+  type TimePeriod,
+} from "@/lib/lib-utils";
+import { formatTemperature } from "@/lib/lib-utils";
+import { useSettings } from "@/hooks/hooks-index";
 
 // Helper function to format weather condition for display
 function formatWeatherCondition(

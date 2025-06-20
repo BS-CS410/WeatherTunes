@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { ForecastCard } from "../weather/ForecastCard";
-import { SettingsProvider } from "../../contexts/SettingsContext";
+import { SettingsProvider } from "../../contexts/SettingsProvider";
 import { createElement, type ReactNode } from "react";
 
 // Mock the useForecastData hook

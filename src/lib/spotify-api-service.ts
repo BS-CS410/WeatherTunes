@@ -3,8 +3,8 @@
  * Handles search, recommendations, and weather-based music discovery
  */
 
-import { apiClient } from "./apiClient";
-import type { TrackMetadata } from "@/types/queue";
+import { apiClient } from "./api-client";
+import type { TrackMetadata } from "@/types/queue-types";
 
 export interface SpotifySearchResult {
   tracks: TrackMetadata[];

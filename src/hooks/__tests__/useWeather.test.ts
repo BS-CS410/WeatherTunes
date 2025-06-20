@@ -1,11 +1,12 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
 import { useWeatherData } from "../useWeather";
-import { mockWeatherData } from "../../test/testUtils";
-import { SettingsProvider } from "../../contexts/SettingsContext";
+import { mockWeatherData } from "../../test/test-utils";
+import { SettingsProvider } from "../../contexts/SettingsProvider";
 import { createElement, type ReactNode } from "react";
-import { useLocalStorage } from "../utility";
-import type { TemperatureUnit, SpeedUnit } from "../../types/units";
+import { useLocalStorage } from "../hooks-utility";
+import { getUserLocationAndFetch } from "@/lib/weather-utils";
+import type { TemperatureUnit, SpeedUnit } from "../../types/units-types";
 
 // Mock the useLocalStorage and useSettings hooks from the new utility location
 const mockSetters = {
@@ -36,7 +37,7 @@ const mockSettings = {
   isLocationLoading: false,
 };
 
-vi.mock("../utility", () => ({
+vi.mock("../hooks-utility", () => ({
   useLocalStorage: vi.fn((_key: string, defaultValue: unknown) => [
     defaultValue,
     vi.fn(),
@@ -45,7 +46,7 @@ vi.mock("../utility", () => ({
 }));
 
 // Mock the weather utility functions
-vi.mock("../../lib/weather", () => ({
+vi.mock("@/lib/weather-utils", () => ({
   getUserLocationAndFetch: vi.fn(() => Promise.resolve(mockWeatherData)),
   createErrorWeatherData: vi.fn(() => ({
     name: "Error",
@@ -66,13 +67,18 @@ vi.mock("../useLocationBasedDefaults", () => ({
   })),
 }));
 
-const mockGetUserLocationAndFetch = vi.mocked(
-  (await import("../../lib/weather")).getUserLocationAndFetch,
-);
-
 function TestWrapper({ children }: { children: ReactNode }) {
   return createElement(SettingsProvider, null, children);
 }
+
+// Ensure the API key is set for tests
+beforeAll(() => {
+  // @ts-expect-error: allow setting env for import.meta
+  import.meta.env = {
+    ...import.meta.env,
+    VITE_PUBLIC_OPENWEATHER_API_KEY: "test-key",
+  };
+});
 
 describe("useWeatherData", () => {
   beforeEach(() => {
@@ -90,7 +96,7 @@ describe("useWeatherData", () => {
   });
 
   it("should fetch weather data successfully", async () => {
-    mockGetUserLocationAndFetch.mockResolvedValueOnce(mockWeatherData);
+    vi.mocked(getUserLocationAndFetch).mockResolvedValueOnce(mockWeatherData);
 
     const { result } = renderHook(() => useWeatherData(), {
       wrapper: TestWrapper,
@@ -107,7 +113,7 @@ describe("useWeatherData", () => {
 
   it("should handle fetch errors", async () => {
     const error = new Error("Failed to fetch weather");
-    mockGetUserLocationAndFetch.mockRejectedValueOnce(error);
+    vi.mocked(getUserLocationAndFetch).mockRejectedValueOnce(error);
 
     const { result } = renderHook(() => useWeatherData(), {
       wrapper: TestWrapper,
@@ -122,7 +128,7 @@ describe("useWeatherData", () => {
   });
 
   it("should handle network errors gracefully", async () => {
-    mockGetUserLocationAndFetch.mockRejectedValueOnce(
+    vi.mocked(getUserLocationAndFetch).mockRejectedValueOnce(
       new Error("Network error"),
     );
 
@@ -154,7 +160,7 @@ describe("useWeatherData", () => {
         return [values[key] || defaultValue, vi.fn()];
       },
     );
-    mockGetUserLocationAndFetch.mockResolvedValueOnce({
+    vi.mocked(getUserLocationAndFetch).mockResolvedValueOnce({
       ...mockWeatherData,
       main: { ...mockWeatherData.main, temp: 298.15 }, // 298.15K = 25°C
     });
@@ -180,7 +186,7 @@ describe("useWeatherData", () => {
     // Use vitest's system time mocking
     vi.setSystemTime(fixedDate);
 
-    mockGetUserLocationAndFetch.mockResolvedValueOnce({
+    vi.mocked(getUserLocationAndFetch).mockResolvedValueOnce({
       ...mockWeatherData,
       sys: { ...mockWeatherData.sys, sunrise, sunset },
     });
@@ -200,7 +206,7 @@ describe("useWeatherData", () => {
   });
 
   it("should handle invalid weather data", async () => {
-    mockGetUserLocationAndFetch.mockResolvedValueOnce({
+    vi.mocked(getUserLocationAndFetch).mockResolvedValueOnce({
       ...mockWeatherData,
       weather: [],
     });

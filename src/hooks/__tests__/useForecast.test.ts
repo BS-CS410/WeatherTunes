@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
 import { useForecastData } from "../useForecast";
-import { SettingsProvider } from "../../contexts/SettingsContext";
+import { SettingsProvider } from "../../contexts/SettingsProvider";
 import { createElement, type ReactNode } from "react";
 
 // Mock the useLocalStorage and useSettings hooks from the new utility location
@@ -39,7 +39,7 @@ vi.mock("../utility", () => ({
 }));
 
 // Mock the weather utility functions
-vi.mock("../../lib/weather", () => ({
+vi.mock("../../lib/weather-utils", () => ({
   getUserLocationAndFetchForecast: vi.fn(() =>
     Promise.resolve({
       city: {
@@ -62,7 +62,7 @@ vi.mock("../useLocationBasedDefaults", () => ({
 }));
 
 const mockGetUserLocationAndFetchForecast = vi.mocked(
-  (await import("../../lib/weather")).getUserLocationAndFetchForecast,
+  (await import("../../lib/weather-utils")).getUserLocationAndFetchForecast,
 );
 
 function TestWrapper({ children }: { children: ReactNode }) {

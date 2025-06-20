@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { SettingsButton } from "../settings/SettingsButton";
-import { SettingsProvider } from "../../contexts/SettingsContext";
+import { SettingsProvider } from "../../contexts/SettingsProvider";
 import { createElement, type ReactNode } from "react";
 
 // Mock the useLocalStorage hook for settings

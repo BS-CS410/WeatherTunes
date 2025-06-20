@@ -1,9 +1,9 @@
-import type { WeatherApiResponse } from "../types/weather";
+import type { WeatherApiResponse } from "../types/weather-types";
 import type {
   SpotifyTrack,
   SpotifyPlaylist,
   SpotifyRecommendations,
-} from "../types/spotify";
+} from "../types/spotify-types";
 
 /**
  * Mock weather data for testing

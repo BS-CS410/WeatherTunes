@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useWeatherData } from "./useWeather";
-import { SpotifyApiService } from "@/lib/spotifyApiService";
-import type { TrackMetadata } from "@/types/queue";
+import { SpotifyApiService } from "@/lib/spotify-api-service";
+import type { TrackMetadata } from "@/types/queue-types";
 
 /**
  * Hook that provides weather-based music recommendations

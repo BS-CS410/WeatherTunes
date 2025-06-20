@@ -1,13 +1,13 @@
 import { createContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
-import { useLocalStorage } from "@/hooks";
+import { useLocalStorage } from "@/hooks/hooks-utility";
 import { useLocationBasedDefaults } from "@/hooks/useLocationBasedDefaults";
 import type {
   TemperatureUnit,
   TimeFormat,
   SpeedUnit,
   ThemeMode,
-} from "@/types/units";
+} from "@/types/units-types";
 
 interface Settings {
   temperatureUnit: TemperatureUnit;
@@ -32,6 +32,8 @@ interface SettingsContextType {
   } | null;
   isLocationLoading: boolean;
 }
+
+export type { SettingsContextType };
 
 const defaultSettings: Settings = {
   temperatureUnit: "F",

@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { SunriseIcon, SunsetIcon } from "@/components/icons";
-import type { WeatherDisplayData } from "@/types/weather";
+import type { WeatherDisplayData } from "@/types/weather-types";
 import { SectionWrapper } from "../layout/SectionWrapper";
-import { useCurrentTrackContext } from "@/contexts/useCurrentTrackContext";
-import { useAuth } from "@/hooks";
+import { useCurrentTrackContext } from "@/hooks/useCurrentTrack";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { TYPOGRAPHY, COLORS } from "@/lib/unifiedStyles";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/lib-utils";
 
 interface WeatherMusicCardProps {
   weatherData: WeatherDisplayData;

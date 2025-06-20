@@ -46,12 +46,7 @@
     "title": "All I Want",
     "artist": "Kodaline",
     "albumArt": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDQwMCA0MDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgICA8cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0iIzk2Q0VCNCIvPgogICAgPGNpcmNsZSBjeD0iMjAwIiBjeT0iMTYwIiByPSI1MCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjMpIi8+CiAgICA8cG9seWdvbiBwb2ludHM9IjE4MCwxNDAgMTgwLDE4MCAyMjAsMTYwIiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuNikiLz4KICAgIDx0ZXh0IHg9IjIwMCIgeT0iMjgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSI0OCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIj5BTDwvdGV4dD4KICAgIDx0ZXh0IHg9IjIwMCIgeT0iMzIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjgpIj7imaogQWxidW0gQXJ0IOKZqjwvdGV4dD4KICA8L3N2Zz4=",
-    "tags": [
-      "indie",
-      "acoustic",
-      "chill",
-      "pop"
-    ],
+    "tags": ["indie", "acoustic", "chill", "pop"],
     "albumArtFallback": "https://upload.wikimedia.org/wikipedia/en/f/f6/Kodaline_-_In_a_Perfect_World.png"
   },
   {
@@ -59,24 +54,14 @@
     "title": "Knights of Cydonia",
     "artist": "Muse",
     "albumArt": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDQwMCA0MDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgICA8cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0iI0ZGRUFBNyIvPgogICAgPGNpcmNsZSBjeD0iMjAwIiBjeT0iMTYwIiByPSI1MCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjMpIi8+CiAgICA8cG9seWdvbiBwb2ludHM9IjE4MCwxNDAgMTgwLDE4MCAyMjAsMTYwIiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuNikiLz4KICAgIDx0ZXh0IHg9IjIwMCIgeT0iMjgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSI0OCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIj5LTjwvdGV4dD4KICAgIDx0ZXh0IHg9IjIwMCIgeT0iMzIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjgpIj7imaogQWxidW0gQXJ0IOKZqjwvdGV4dD4KICA8L3N2Zz4=",
-    "tags": [
-      "intense",
-      "electronic",
-      "upbeat pop",
-      "dramatic"
-    ]
+    "tags": ["intense", "electronic", "upbeat pop", "dramatic"]
   },
   {
     "id": "1lDWb6b6ieDQ2xT7ewTC3G",
     "title": "Somebody Told Me",
     "artist": "The Killers",
     "albumArt": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDQwMCA0MDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgICA8cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0iI0REQTBERCIvPgogICAgPGNpcmNsZSBjeD0iMjAwIiBjeT0iMTYwIiByPSI1MCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjMpIi8+CiAgICA8cG9seWdvbiBwb2ludHM9IjE4MCwxNDAgMTgwLDE4MCAyMjAsMTYwIiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuNikiLz4KICAgIDx0ZXh0IHg9IjIwMCIgeT0iMjgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSI0OCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIj5TTzwvdGV4dD4KICAgIDx0ZXh0IHg9IjIwMCIgeT0iMzIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjgpIj7imaogQWxidW0gQXJ0IOKZqjwvdGV4dD4KICA8L3N2Zz4=",
-    "tags": [
-      "indie",
-      "upbeat pop",
-      "pop",
-      "happy"
-    ]
+    "tags": ["indie", "upbeat pop", "pop", "happy"]
   },
   {
     "id": "7GhIk7Il098yCjg4BQjzvb",
@@ -141,13 +126,7 @@
     "title": "Watermelon Sugar",
     "artist": "Harry Styles",
     "albumArt": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDQwMCA0MDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgICA8cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0iI0Y4QzQ3MSIvPgogICAgPGNpcmNsZSBjeD0iMjAwIiBjeT0iMTYwIiByPSI1MCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjMpIi8+CiAgICA8cG9seWdvbiBwb2ludHM9IjE4MCwxNDAgMTgwLDE4MCAyMjAsMTYwIiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuNikiLz4KICAgIDx0ZXh0IHg9IjIwMCIgeT0iMjgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSI0OCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIj5XQTwvdGV4dD4KICAgIDx0ZXh0IHg9IjIwMCIgeT0iMzIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjgpIj7imaogQWxidW0gQXJ0IOKZqjwvdGV4dD4KICA8L3N2Zz4=",
-    "tags": [
-      "dance",
-      "pop",
-      "sunny",
-      "calm pop",
-      "dreamy beats"
-    ]
+    "tags": ["dance", "pop", "sunny", "calm pop", "dreamy beats"]
   },
   {
     "id": "2WfaOiMkCvy7F5fcp2zZ8L",

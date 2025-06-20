@@ -1,17 +1,14 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { renderHook, act } from "@testing-library/react";
-import { useSettings } from "../utility";
-import {
-  SettingsProvider,
-  SettingsContext,
-} from "../../contexts/SettingsContext";
+import { useSettings } from "../hooks-utility";
+import { SettingsContext } from "../../contexts/SettingsProvider";
 import { createElement, type ReactNode } from "react";
 import type {
   TemperatureUnit,
   SpeedUnit,
   TimeFormat,
   ThemeMode,
-} from "../../types/units";
+} from "../../types/units-types";
 
 // Mock the useLocalStorage and useSettings hooks from the new utility location
 const mockSetters = {
@@ -42,7 +39,7 @@ const mockSettings = {
   isLocationLoading: false,
 };
 
-vi.mock("../utility", () => ({
+vi.mock("../hooks-utility", () => ({
   useLocalStorage: vi.fn((key: string, defaultValue: unknown) => {
     const values: Record<string, unknown> = {
       temperatureUnit: "F",
@@ -67,10 +64,6 @@ vi.mock("../useLocationBasedDefaults", () => ({
     isLoading: false,
   })),
 }));
-
-function TestWrapper({ children }: { children: ReactNode }) {
-  return createElement(SettingsProvider, null, children);
-}
 
 // Patch: inject the mock context directly to ensure setter spies are called
 function MockSettingsProvider({ children }: { children: ReactNode }) {
@@ -194,11 +187,11 @@ describe("useSettings", () => {
   });
 
   it("should throw error when used outside provider", async () => {
-    vi.unmock("../utility");
-    const { useSettings: realUseSettings } = await import("../utility");
-    expect(() => {
-      renderHook(() => realUseSettings());
-    }).toThrow("useSettings must be used within a SettingsProvider");
+    vi.unmock("../hooks-utility");
+    const { useSettings: realUseSettings } = await import("../hooks-utility");
+    expect(() => renderHook(() => realUseSettings())).toThrow(
+      "useSettings must be used within a SettingsProvider",
+    );
     // No remock here; beforeEach will remock for the next test
   });
 });

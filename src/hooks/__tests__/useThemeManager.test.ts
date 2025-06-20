@@ -1,15 +1,15 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { renderHook } from "@testing-library/react";
 import { useThemeManager } from "../useThemeManager";
-import { SettingsProvider } from "../../contexts/SettingsContext";
+import { SettingsProvider } from "../../contexts/SettingsProvider";
 import { createElement, type ReactNode } from "react";
-import type { TimePeriod } from "../../lib/utils";
+import type { TimePeriod } from "../../lib/lib-utils";
 import type {
   TemperatureUnit,
   SpeedUnit,
   TimeFormat,
   ThemeMode,
-} from "../../types/units";
+} from "../../types/units-types";
 
 // Mock the useLocalStorage and useSettings hooks from the new utility location
 const mockSetters = {
@@ -40,9 +40,9 @@ const mockSettings = {
   isLocationLoading: false,
 };
 
-const utility = await import("../utility");
+const utility = await import("../hooks-utility");
 
-vi.mock("../utility", () => ({
+vi.mock("../hooks-utility", () => ({
   useLocalStorage: vi.fn((key: string, defaultValue: unknown) => {
     const values: Record<string, unknown> = {
       temperatureUnit: "F",
@@ -97,7 +97,7 @@ describe("useThemeManager", () => {
   });
 
   it("should apply light theme when theme mode is light", async () => {
-    const { useLocalStorage } = await import("../utility");
+    const { useLocalStorage } = await import("../hooks-utility");
     const mockUseLocalStorage = vi.mocked(useLocalStorage);
 
     mockUseLocalStorage.mockImplementation(
@@ -138,7 +138,7 @@ describe("useThemeManager", () => {
 
   it("should apply dark theme for evening/night in auto mode", async () => {
     // Ensure we have auto mode for this test
-    const { useLocalStorage } = await import("../utility");
+    const { useLocalStorage } = await import("../hooks-utility");
     const mockUseLocalStorage = vi.mocked(useLocalStorage);
 
     mockUseLocalStorage.mockImplementation(
@@ -179,7 +179,7 @@ describe("useThemeManager", () => {
 
   it("should fall back to system preference when timePeriod is null in auto mode", async () => {
     // Ensure we have auto mode for this test
-    const { useLocalStorage } = await import("../utility");
+    const { useLocalStorage } = await import("../hooks-utility");
     const mockUseLocalStorage = vi.mocked(useLocalStorage);
 
     mockUseLocalStorage.mockImplementation(
