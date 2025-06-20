@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useWeatherData } from "./useWeather";
-import { FrontendSpotifyApiService } from "@/lib/spotify";
-import { getWeatherRecommendationParams } from "@/lib/music-utils";
+import { spotifyApiService } from "@/lib/spotify-client";
+import { getWeatherRecommendationParams } from "@/lib";
 import type { TrackMetadata } from "@/types/queue-types";
 
 /**
@@ -52,14 +52,15 @@ export function useWeatherMusic() {
       );
 
       // Use Spotify API to get weather-appropriate recommendations
-      const recommendations =
-        await spotifyApiService.getWeatherRecommendations({
+      const recommendations = await spotifyApiService.getWeatherRecommendations(
+        {
           weather_condition: condition,
           temperature,
           time_of_day: timeOfDay,
           limit: maxTracks,
           use_personalization: true,
-        });
+        },
+      );
       const tracks = recommendations.tracks;
 
       console.log(
@@ -112,14 +113,15 @@ export function useWeatherMusic() {
     const { condition, temperature, timeOfDay } = musicWeatherConditions;
 
     try {
-      const recommendations =
-        await spotifyApiService.getWeatherRecommendations({
+      const recommendations = await spotifyApiService.getWeatherRecommendations(
+        {
           weather_condition: condition,
           temperature,
           time_of_day: timeOfDay,
           limit,
           use_personalization: true,
-        });
+        },
+      );
       return recommendations.tracks;
     } catch (error) {
       console.error(
@@ -138,10 +140,7 @@ export function useWeatherMusic() {
     limit: number = 10,
   ): Promise<TrackMetadata[]> => {
     try {
-      const searchResult = await spotifyApiService.searchTracks(
-        query,
-        limit,
-      );
+      const searchResult = await spotifyApiService.searchTracks(query, limit);
       return searchResult.tracks;
     } catch (error) {
       console.error("Failed to search weather tracks:", error);

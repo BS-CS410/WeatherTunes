@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
-import { FrontendSpotifyApiService } from "@/lib/spotify";
-import { useAuth } from "./hooks-utility";
+import { spotifyApiService } from "@/lib/spotify-client";
+import { useAuth } from "./common";
 import type { TrackMetadata } from "@/types/queue-types";
 
 interface UseSpotifySearchReturn {
@@ -38,10 +38,7 @@ export const useSpotifySearch = (): UseSpotifySearchReturn => {
       setSearchError(null);
 
       try {
-        const searchResult = await spotifyApiService.searchTracks(
-          query,
-          limit,
-        );
+        const searchResult = await spotifyApiService.searchTracks(query, limit);
         setSearchResults(searchResult.tracks);
 
         if (searchResult.tracks.length === 0) {

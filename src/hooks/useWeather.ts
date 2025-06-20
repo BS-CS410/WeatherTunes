@@ -6,7 +6,7 @@ import type {
 import {
   getUserLocationAndFetch,
   createErrorWeatherData,
-} from "@/lib/weather-utils";
+} from "@/lib/weather-api";
 import {
   getTimePeriod,
   formatUnixTimeToLocalString,
@@ -123,11 +123,21 @@ export function useWeatherData() {
           isError: false,
           sunrise: formatUnixTimeToLocalString(
             data.sys?.sunrise,
-            settings.timeFormat,
+            "en-US", // always use a valid locale
+            {
+              hour: "numeric",
+              minute: "2-digit",
+              hour12: settings.timeFormat === "12h",
+            },
           ),
           sunset: formatUnixTimeToLocalString(
             data.sys?.sunset,
-            settings.timeFormat,
+            "en-US", // always use a valid locale
+            {
+              hour: "numeric",
+              minute: "2-digit",
+              hour12: settings.timeFormat === "12h",
+            },
           ),
         },
         timePeriod: period,
