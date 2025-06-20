@@ -33,7 +33,9 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
   children,
 }) => {
   const { user } = useAuth();
-  const [trackMetadata, setTrackMetadata] = useState<TrackMetadata | null>(null);
+  const [trackMetadata, setTrackMetadata] = useState<TrackMetadata | null>(
+    null,
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [currentTrackId, setCurrentTrackId] = useState<string | null>(null);
   const [songQueue, setSongQueue] = useState<TrackMetadata[]>([]);
@@ -41,7 +43,7 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
   // Fetch queue on mount when user is authenticated
   const fetchQueue = useCallback(async () => {
     if (!user) return;
-    
+
     try {
       setIsLoading(true);
       const response = await apiClient.get("http://localhost:8000/queue");
@@ -64,25 +66,36 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
     }
   }, [user, fetchQueue]);
 
-  const updateTrack = useCallback(async (trackId: string): Promise<void> => {
-    if (!trackId) {
-      setTrackMetadata(null);
-      setCurrentTrackId(null);
-      return;
-    }
+  const updateTrack = useCallback(
+    async (trackId: string): Promise<void> => {
+      if (!trackId) {
+        setTrackMetadata(null);
+        setCurrentTrackId(null);
+        return;
+      }
 
-    // Don't refetch if same track is already loaded
-    if (currentTrackId === trackId && trackMetadata) {
-      return;
-    }
+      // Don't refetch if same track is already loaded
+      if (currentTrackId === trackId && trackMetadata) {
+        return;
+      }
 
-    try {
-      const track = await SpotifyApiService.getTrackById(trackId);
-      if (track) {
-        setTrackMetadata(track);
-        setCurrentTrackId(trackId);
-      } else {
-        // Handle Spotify API failure gracefully
+      try {
+        const track = await SpotifyApiService.getTrackById(trackId);
+        if (track) {
+          setTrackMetadata(track);
+          setCurrentTrackId(trackId);
+        } else {
+          // Handle Spotify API failure gracefully
+          setTrackMetadata({
+            id: trackId,
+            title: "Unknown Track",
+            artist: "Unknown Artist",
+            albumArt: "",
+          });
+          setCurrentTrackId(trackId);
+        }
+      } catch (error) {
+        console.error("Failed to update track:", error);
         setTrackMetadata({
           id: trackId,
           title: "Unknown Track",
@@ -91,58 +104,62 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
         });
         setCurrentTrackId(trackId);
       }
-    } catch (error) {
-      console.error("Failed to update track:", error);
-      setTrackMetadata({
-        id: trackId,
-        title: "Unknown Track",
-        artist: "Unknown Artist",
-        albumArt: "",
-      });
-      setCurrentTrackId(trackId);
-    }
-  }, [currentTrackId, trackMetadata]);
+    },
+    [currentTrackId, trackMetadata],
+  );
 
-  const addTrackToQueue = useCallback(async (trackId: string): Promise<void> => {
-    if (!user) return;
+  const addTrackToQueue = useCallback(
+    async (trackId: string): Promise<void> => {
+      if (!user) return;
 
-    try {
-      const track = await SpotifyApiService.getTrackById(trackId);
-      if (!track) return;
+      try {
+        const track = await SpotifyApiService.getTrackById(trackId);
+        if (!track) return;
 
-      const response = await apiClient.post("http://localhost:8000/queue/add", {
-        track,
-      });
+        const response = await apiClient.post(
+          "http://localhost:8000/queue/add",
+          {
+            track,
+          },
+        );
 
-      // Update queue if response includes new queue state
-      const data = response.data as { queue?: TrackMetadata[] };
-      if (data.queue) {
-        setSongQueue(data.queue);
+        // Update queue if response includes new queue state
+        const data = response.data as { queue?: TrackMetadata[] };
+        if (data.queue) {
+          setSongQueue(data.queue);
+        }
+      } catch (error) {
+        console.error("Failed to add track to queue:", error);
       }
-    } catch (error) {
-      console.error("Failed to add track to queue:", error);
-    }
-  }, [user]);
+    },
+    [user],
+  );
 
-  const replaceQueueWithTracks = useCallback(async (trackIds: string[]): Promise<void> => {
-    if (!user) return;
+  const replaceQueueWithTracks = useCallback(
+    async (trackIds: string[]): Promise<void> => {
+      if (!user) return;
 
-    try {
-      const tracks = await SpotifyApiService.getTracksByIds(trackIds);
-      
-      const response = await apiClient.post("http://localhost:8000/queue/replace", {
-        tracks,
-      });
+      try {
+        const tracks = await SpotifyApiService.getTracksByIds(trackIds);
 
-      // Update queue if response includes new queue state
-      const data = response.data as { queue?: TrackMetadata[] };
-      if (data.queue) {
-        setSongQueue(data.queue);
+        const response = await apiClient.post(
+          "http://localhost:8000/queue/replace",
+          {
+            tracks,
+          },
+        );
+
+        // Update queue if response includes new queue state
+        const data = response.data as { queue?: TrackMetadata[] };
+        if (data.queue) {
+          setSongQueue(data.queue);
+        }
+      } catch (error) {
+        console.error("Failed to replace queue:", error);
       }
-    } catch (error) {
-      console.error("Failed to replace queue:", error);
-    }
-  }, [user]);
+    },
+    [user],
+  );
 
   const clearQueue = useCallback(async (): Promise<void> => {
     if (!user) return;
@@ -159,8 +176,11 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
     if (!user) return;
 
     try {
-      const response = await apiClient.post("http://localhost:8000/queue/next", {});
-      
+      const response = await apiClient.post(
+        "http://localhost:8000/queue/next",
+        {},
+      );
+
       // Update current track if response includes it
       const data = response.data as { currentTrack?: TrackMetadata };
       if (data.currentTrack) {

@@ -1,6 +1,21 @@
 import "@testing-library/jest-dom";
 import { beforeEach, vi } from "vitest";
 
+// Suppress React act() warnings in tests since they're just warnings
+const originalError = console.error;
+beforeEach(() => {
+  console.error = (...args: unknown[]) => {
+    if (
+      typeof args[0] === 'string' &&
+      args[0].includes('An update to') &&
+      args[0].includes('was not wrapped in act')
+    ) {
+      return;
+    }
+    originalError.call(console, ...args);
+  };
+});
+
 // Mock environment variables
 process.env.VITE_API_URL = "http://localhost:8000";
 process.env.VITE_PUBLIC_OPENWEATHER_API_KEY = "test-api-key";
