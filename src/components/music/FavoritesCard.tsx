@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import * as ScrollArea from "@radix-ui/react-scroll-area";
-import { COLORS, TYPOGRAPHY, LAYOUT } from "@/lib/unifiedStyles";
-import { cn } from "@/lib/lib-utils";
-import { useAuth } from "@/hooks/hooks-index";
+import { COLORS, TYPOGRAPHY, LAYOUT } from "@/lib/design-system";
+import { cn } from "@/lib/dom-helpers";
+import { useAuth } from "@/hooks";
 import { SpotifyMiniPlayer } from "./SpotifyMiniPlayer";
 import { useCurrentTrackContext } from "@/hooks/useCurrentTrack";
 

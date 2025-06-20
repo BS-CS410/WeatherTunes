@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useWeatherData } from "./useWeather";
-import { FrontendSpotifyApiService } from "@/lib/spotify-api-frontend";
+import { FrontendSpotifyApiService } from "@/lib/spotify";
 import { getWeatherRecommendationParams } from "@/lib/music-utils";
 import type { TrackMetadata } from "@/types/queue-types";
 
@@ -53,7 +53,7 @@ export function useWeatherMusic() {
 
       // Use Spotify API to get weather-appropriate recommendations
       const recommendations =
-        await FrontendSpotifyApiService.getWeatherRecommendations({
+        await spotifyApiService.getWeatherRecommendations({
           weather_condition: condition,
           temperature,
           time_of_day: timeOfDay,
@@ -73,7 +73,7 @@ export function useWeatherMusic() {
       try {
         console.log("Attempting fallback to basic weather recommendations...");
         const fallbackRecommendations =
-          await FrontendSpotifyApiService.getWeatherRecommendations({
+          await spotifyApiService.getWeatherRecommendations({
             weather_condition: condition,
             temperature,
             time_of_day: timeOfDay,
@@ -113,7 +113,7 @@ export function useWeatherMusic() {
 
     try {
       const recommendations =
-        await FrontendSpotifyApiService.getWeatherRecommendations({
+        await spotifyApiService.getWeatherRecommendations({
           weather_condition: condition,
           temperature,
           time_of_day: timeOfDay,
@@ -138,7 +138,7 @@ export function useWeatherMusic() {
     limit: number = 10,
   ): Promise<TrackMetadata[]> => {
     try {
-      const searchResult = await FrontendSpotifyApiService.searchTracks(
+      const searchResult = await spotifyApiService.searchTracks(
         query,
         limit,
       );

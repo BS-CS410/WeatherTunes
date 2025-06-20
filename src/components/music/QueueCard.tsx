@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from "react"; // Added useEffect
-import { COLORS, TYPOGRAPHY, ANIMATIONS, LAYOUT } from "@/lib/unifiedStyles";
-import { cn } from "@/lib/lib-utils";
+import { COLORS, TYPOGRAPHY, ANIMATIONS, LAYOUT } from "@/lib/design-system";
+import { cn } from "@/lib/dom-helpers";
 import { useCurrentTrackContext } from "@/hooks/useCurrentTrack";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/common";
 import { useWeatherMusic } from "@/hooks/useWeatherMusic";
 import { Button } from "@/components/ui/button";
 

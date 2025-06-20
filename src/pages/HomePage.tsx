@@ -14,8 +14,8 @@ import {
 import { AuthStatus } from "@/components/auth/AuthStatus";
 import { useWeatherData } from "@/hooks/useWeather";
 import { useThemeManager } from "@/hooks/useThemeManager";
-import { useAuth } from "@/hooks/hooks-index";
-import { LAYOUT, COLORS } from "@/lib/unifiedStyles";
+import { useAuth } from "@/hooks";
+import { LAYOUT, COLORS } from "@/lib/design-system";
 import { useState, useEffect } from "react";
 
 function MainPage() {

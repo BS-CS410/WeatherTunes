@@ -12,8 +12,8 @@ import React, {
 } from "react";
 import { useSpotifyPlayer } from "@/hooks/useSpotifyPlayer";
 import { useCurrentTrack } from "@/hooks/useCurrentTrack";
-import { useAuthContext } from "@/hooks/useAuthContext";
-import { authService } from "@/lib/auth-utils";
+import { useAuthContext } from "@/hooks";
+import { authService } from "@/lib/spotify-client";
 import {
   Play,
   Pause,
@@ -81,11 +81,10 @@ export const SpotifyWebPlayer: React.FC<SpotifyWebPlayerProps> = ({
           setIsInitialized(success);
           if (!success) {
             // Check if it's an auth issue
-            authService.forceAuthSync().then((isAuthenticated) => {
-              if (!isAuthenticated) {
-                setAuthError("Authentication expired. Please log in again.");
-              }
-            });
+            const user = authService.getCurrentUser();
+            if (!user) {
+              setAuthError("Authentication expired. Please log in again.");
+            }
           }
         })
         .catch((error) => {
@@ -98,7 +97,7 @@ export const SpotifyWebPlayer: React.FC<SpotifyWebPlayerProps> = ({
             error.message.includes("401")
           ) {
             setAuthError("Authentication required. Please log in again.");
-            authService.forceAuthSync();
+            // User needs to log in again
           } else {
             setAuthError("Player initialization failed. Please try again.");
           }

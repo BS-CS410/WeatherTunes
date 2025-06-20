@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect, useRef, useCallback } from "react";
-import type { TimePeriod } from "@/lib/lib-utils";
-import { getVideoSource } from "@/lib/video-mapping";
+import type { TimePeriod } from "@/lib/time-helpers";
+import { getVideoSource } from "@/lib/video-assets";
 
 interface VideoBackgroundProps {
   condition?: string;

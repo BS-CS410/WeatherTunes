@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
-import { useLocalStorage } from "@/hooks/hooks-utility";
+import { useLocalStorage } from "@/hooks";
 import { useLocationBasedDefaults } from "@/hooks/useLocationBasedDefaults";
 import type {
   TemperatureUnit,

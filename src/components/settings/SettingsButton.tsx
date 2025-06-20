@@ -2,8 +2,8 @@ import { useState } from "react";
 import { SettingsIcon } from "@/components/icons";
 import { SettingsCard } from "./SettingsCard";
 import { Button } from "@/components/ui/button";
-import { BUTTON_STYLES } from "@/lib/unifiedStyles";
-import { cn } from "@/lib/lib-utils";
+import { BUTTON_STYLES } from "@/lib/design-system";
+import { cn } from "@/lib/dom-helpers";
 
 export function SettingsButton() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

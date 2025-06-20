@@ -1,6 +1,12 @@
-// Hook exports for clean imports
-export { useAuth } from "./useAuth";
-export { useAuthContext } from "./useAuthContext";
+/**
+ * Consolidated hooks exports
+ * Centralized access to all custom hooks
+ */
+
+// Common utility hooks
+export * from "./common";
+
+// Specific feature hooks
 export { useCurrentTrack } from "./useCurrentTrack";
 export { useForecastData } from "./useForecast";
 export { useLiquidGlass } from "./useLiquidGlass";
@@ -10,4 +16,3 @@ export { useSpotifyPlayer } from "./useSpotifyPlayer";
 export { useThemeManager } from "./useThemeManager";
 export { useWeatherData, useThemeFromWeather } from "./useWeather";
 export { useWeatherMusic } from "./useWeatherMusic";
-export { useSettings } from "./useSettings";

@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { useAuth } from "../hooks-utility";
-import { authService, type AuthState } from "@/lib/auth-utils";
+import { authService, type AuthState } from "@/lib/spotify-client";
 
 // Mock the auth service
-vi.mock("@/lib/auth-utils", () => ({
+vi.mock("@/lib/auth-frontend", () => ({
   authService: {
     getState: vi.fn(),
     subscribe: vi.fn(),

@@ -11,9 +11,9 @@ import {
   getTimePeriod,
   formatUnixTimeToLocalString,
   type TimePeriod,
-} from "@/lib/lib-utils";
-import { formatTemperature } from "@/lib/lib-utils";
-import { useSettings } from "@/hooks/hooks-index";
+} from "@/lib/time-helpers";
+import { formatTemperature } from "@/lib/unit-converters";
+import { useSettings } from "@/hooks";
 
 // Helper function to format weather condition for display
 function formatWeatherCondition(

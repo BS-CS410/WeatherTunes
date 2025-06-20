@@ -3,7 +3,7 @@ import {
   LIQUID_GLASS_STYLES,
   createLiquidGlassCard,
   combineStyles,
-} from "../../lib/unifiedStyles";
+} from "@/lib/design-system";
 
 interface LiquidGlassContainerProps {
   children: React.ReactNode;

@@ -4,9 +4,9 @@ import type {
   DailyForecast,
   ForecastApiResponse,
 } from "@/types/weather-types";
-import { getUserLocationAndFetchForecast } from "@/lib/weather-utils";
-import { formatTemperature } from "@/lib/lib-utils";
-import { useSettings } from "@/hooks/hooks-index";
+import { getUserLocationAndFetchForecast } from "@/lib/weather-api";
+import { formatTemperature } from "@/lib/unit-converters";
+import { useSettings } from "@/hooks";
 
 // Helper function to process forecast data into daily forecasts
 function processForecastData(

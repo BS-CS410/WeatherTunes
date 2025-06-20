@@ -1,10 +1,10 @@
-import { cn } from "@/lib/lib-utils";
-import { useSettings, useAuth } from "@/hooks/hooks-index";
+import { cn } from "@/lib/dom-helpers";
+import { useSettings, useAuth } from "@/hooks";
 import {
   SettingsSection,
   SettingsButtonGroup,
 } from "@/components/shared/SettingsComponents";
-import { COLORS, TYPOGRAPHY, BUTTON_STYLES } from "@/lib/unifiedStyles";
+import { COLORS, TYPOGRAPHY, BUTTON_STYLES } from "@/lib/design-system";
 import { useState } from "react";
 import { BaseCard } from "@/components/shared/BaseCard";
 

@@ -3,8 +3,8 @@
  */
 
 import React from "react";
-import { useAuthContext } from "@/hooks/useAuthContext";
-import { authService } from "@/lib/auth-utils";
+import { useAuthContext } from "@/hooks";
+import { authService } from "@/lib/spotify-client";
 
 export const AuthStatus: React.FC = () => {
   const { user, isLoading } = useAuthContext();

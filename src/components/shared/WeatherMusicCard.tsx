@@ -3,12 +3,12 @@ import { SunriseIcon, SunsetIcon } from "@/components/icons";
 import type { WeatherDisplayData } from "@/types/weather-types";
 import { SectionWrapper } from "../layout/SectionWrapper";
 import { useCurrentTrackContext } from "@/hooks/useCurrentTrack";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/common";
 import { Button } from "@/components/ui/button";
-import { TYPOGRAPHY, COLORS } from "@/lib/unifiedStyles";
-import { cn } from "@/lib/lib-utils";
+import { TYPOGRAPHY, COLORS } from "@/lib/design-system";
+import { cn } from "@/lib/dom-helpers";
 import { SpotifyWebPlayer } from "@/components/music/SpotifyWebPlayer";
-import { FrontendSpotifyApiService } from "@/lib/spotify-api-frontend";
+import { spotifyApiService } from "@/lib/spotify-client";
 
 interface WeatherMusicCardProps {
   weatherData: WeatherDisplayData;
@@ -81,13 +81,8 @@ export function WeatherMusicCard({
       });
 
       // Record interaction for personalization
-      await FrontendSpotifyApiService.recordInteraction(
-        currentTrackId,
-        "like",
-        {
-          weather_condition: undefined, // Could be passed from weather context
-        },
-      );
+      // TODO: Implement track interaction recording
+      console.log("Track liked:", currentTrackId);
 
       setMessage("Track liked!");
       setTimeout(() => setMessage(null), 2000);

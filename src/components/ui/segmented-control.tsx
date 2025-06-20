@@ -1,5 +1,5 @@
-import { cn } from "@/lib/lib-utils";
-import { LIQUID_GLASS_STYLES, BUTTON_STYLES } from "@/lib/unifiedStyles";
+import { cn } from "@/lib/dom-helpers";
+import { LIQUID_GLASS_STYLES, BUTTON_STYLES } from "@/lib/design-system";
 
 interface SegmentedControlProps {
   options: {

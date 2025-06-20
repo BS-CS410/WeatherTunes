@@ -1,4 +1,4 @@
-import type { TimePeriod } from "@/lib/lib-utils";
+import type { TimePeriod } from "@/lib/time-helpers";
 import type { WeatherType } from "@/types/weather-types";
 
 // Video imports organized by weather type and time period

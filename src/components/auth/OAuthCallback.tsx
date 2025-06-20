@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { authService } from "../../lib/auth-frontend";
+import { authService } from "@/lib/spotify-client";
 
 export const OAuthCallback: React.FC = () => {
   const [status, setStatus] = useState<"processing" | "success" | "error">(

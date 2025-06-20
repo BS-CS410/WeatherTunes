@@ -9,9 +9,9 @@ import {
   COLORS,
   TYPOGRAPHY,
   ANIMATIONS,
-} from "@/lib/unifiedStyles";
+} from "@/lib/design-system";
 import { memo } from "react";
-import { cn } from "@/lib/lib-utils";
+import { cn } from "@/lib/dom-helpers";
 
 interface ForecastDayProps {
   dayName: string;

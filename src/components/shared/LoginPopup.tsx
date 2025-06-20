@@ -1,8 +1,8 @@
-import { useAuth } from "@/hooks/hooks-index";
+import { useAuth } from "@/hooks";
 import { BaseCard } from "@/components/shared/BaseCard";
 import { Button } from "@/components/ui/button";
-import { COLORS } from "@/lib/unifiedStyles";
-import { cn } from "@/lib/lib-utils";
+import { COLORS } from "@/lib/design-system";
+import { cn } from "@/lib/dom-helpers";
 
 interface LoginPopupProps {
   isOpen: boolean;

@@ -1,6 +1,6 @@
 import React from "react";
-import { CARD_STYLES, LAYOUT } from "@/lib/unifiedStyles";
-import { cn } from "@/lib/lib-utils";
+import { CARD_STYLES, LAYOUT } from "@/lib/design-system";
+import { cn } from "@/lib/dom-helpers";
 import { LiquidGlassContainer } from "@/components/liquid-glass";
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {

@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { FrontendSpotifyApiService } from "@/lib/spotify-api-frontend";
+import { FrontendSpotifyApiService } from "@/lib/spotify";
 import { useAuth } from "./hooks-utility";
 import type { TrackMetadata } from "@/types/queue-types";
 
@@ -38,7 +38,7 @@ export const useSpotifySearch = (): UseSpotifySearchReturn => {
       setSearchError(null);
 
       try {
-        const searchResult = await FrontendSpotifyApiService.searchTracks(
+        const searchResult = await spotifyApiService.searchTracks(
           query,
           limit,
         );
@@ -72,7 +72,7 @@ export const useSpotifySearch = (): UseSpotifySearchReturn => {
       setSearchError(null);
 
       try {
-        const searchResult = await FrontendSpotifyApiService.searchTracks(
+        const searchResult = await spotifyApiService.searchTracks(
           `mood:${mood}`,
           limit,
         );

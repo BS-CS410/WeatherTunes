@@ -6,8 +6,8 @@ import React, {
   useRef,
 } from "react";
 import type { ReactNode } from "react";
-import { FrontendSpotifyApiService } from "@/lib/spotify-api-frontend";
-import { useAuth } from "@/hooks/hooks-utility";
+import { spotifyApiService } from "@/lib/spotify-client";
+import { useAuth } from "@/hooks";
 import type { TrackMetadata } from "@/types/queue-types";
 
 // Queue management constants
@@ -105,7 +105,7 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
       }
 
       try {
-        const track = await FrontendSpotifyApiService.getTrackById(trackId);
+        const track = await spotifyApiService.getTrackById(trackId);
         if (track) {
           setTrackMetadata(track);
           setCurrentTrackId(trackId);
@@ -138,7 +138,7 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
       if (!user) return;
 
       try {
-        const track = await FrontendSpotifyApiService.getTrackById(trackId);
+        const track = await spotifyApiService.getTrackById(trackId);
         if (!track) return;
 
         setSongQueue((currentQueue) => {
@@ -163,7 +163,7 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
       try {
         const tracks: TrackMetadata[] = [];
         for (const trackId of trackIds.slice(0, TARGET_QUEUE_SIZE)) {
-          const track = await FrontendSpotifyApiService.getTrackById(trackId);
+          const track = await spotifyApiService.getTrackById(trackId);
           if (track) {
             tracks.push(track);
           }
@@ -231,7 +231,7 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
 
       try {
         const weatherRecommendations =
-          await FrontendSpotifyApiService.getWeatherRecommendations({
+          await spotifyApiService.getWeatherRecommendations({
             weather_condition: defaultCondition,
             temperature: defaultTemperature,
             time_of_day: timeOfDay,
@@ -246,7 +246,7 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
       } catch (error) {
         console.log("Weather-based recommendations failed, trying search...");
         try {
-          const searchResults = await FrontendSpotifyApiService.searchTracks(
+          const searchResults = await spotifyApiService.searchTracks(
             "popular music 2024",
             tracksNeeded,
           );

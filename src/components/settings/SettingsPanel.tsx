@@ -1,6 +1,6 @@
 import { UnitSelector } from "./UnitSelector.tsx";
 import { ThemeSwitcher } from "./ThemeSwitcher.tsx";
-import { useSettings } from "@/hooks/useSettings";
+import { useSettings } from "@/hooks/common";
 
 export function SettingsPanel() {
   const { settings, setTemperatureUnit, setSpeedUnit, setThemeMode } =
