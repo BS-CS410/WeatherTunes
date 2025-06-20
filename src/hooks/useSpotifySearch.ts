@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { SpotifyApiService } from "@/lib/spotify-api-service";
+import { FrontendSpotifyApiService } from "@/lib/spotify-api-frontend";
 import { useAuth } from "./hooks-utility";
 import type { TrackMetadata } from "@/types/queue-types";
 
@@ -38,10 +38,13 @@ export const useSpotifySearch = (): UseSpotifySearchReturn => {
       setSearchError(null);
 
       try {
-        const results = await SpotifyApiService.searchTracks(query, limit);
-        setSearchResults(results);
+        const searchResult = await FrontendSpotifyApiService.searchTracks(
+          query,
+          limit,
+        );
+        setSearchResults(searchResult.tracks);
 
-        if (results.length === 0) {
+        if (searchResult.tracks.length === 0) {
           setSearchError("No tracks found for your search");
         }
       } catch (error) {
@@ -69,13 +72,13 @@ export const useSpotifySearch = (): UseSpotifySearchReturn => {
       setSearchError(null);
 
       try {
-        const results = await SpotifyApiService.searchTracks(
+        const searchResult = await FrontendSpotifyApiService.searchTracks(
           `mood:${mood}`,
           limit,
         );
-        setSearchResults(results);
+        setSearchResults(searchResult.tracks);
 
-        if (results.length === 0) {
+        if (searchResult.tracks.length === 0) {
           setSearchError(`No tracks found for mood: ${mood}`);
         }
       } catch (error) {

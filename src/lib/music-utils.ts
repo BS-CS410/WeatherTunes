@@ -1,4 +1,5 @@
-import { SpotifyApiService } from "./spotify-api-service";
+import { FrontendSpotifyApiService } from "./spotify-api-frontend";
+import type { TrackMetadata } from "@/types/queue-types";
 
 /**
  * Consolidated music utilities for track management and queue generation
@@ -303,16 +304,21 @@ class QueueManager {
   ): Promise<string[]> {
     try {
       // Use Spotify API to get weather-appropriate recommendations
-      const tracks =
-        await SpotifyApiService.getRecommendationsForCurrentWeather(
-          weatherCondition,
+      const recommendations =
+        await FrontendSpotifyApiService.getWeatherRecommendations({
+          weather_condition: weatherCondition,
           temperature,
-          maxTracks,
-          timeOfDay as "morning" | "afternoon" | "evening" | "night",
-        );
+          time_of_day: timeOfDay as
+            | "morning"
+            | "afternoon"
+            | "evening"
+            | "night",
+          limit: maxTracks,
+          use_personalization: true,
+        });
 
-      if (tracks.length > 0) {
-        return tracks.map((track) => track.id);
+      if (recommendations.tracks.length > 0) {
+        return recommendations.tracks.map((track: TrackMetadata) => track.id);
       }
 
       // If no tracks found, throw error instead of falling back to hardcoded data
@@ -355,14 +361,18 @@ class QueueManager {
       // Use first tag as main genre
       const genres = tags.slice(0, 2); // Spotify only accepts a few genres
 
-      const tracks = await SpotifyApiService.getWeatherRecommendations({
-        weather_condition: genres[0] || "pop",
-        temperature: 20,
-        time_of_day: "afternoon",
-        limit: maxTracks,
-      });
+      const recommendations =
+        await FrontendSpotifyApiService.getWeatherRecommendations({
+          weather_condition: genres[0] || "pop",
+          temperature: 20,
+          time_of_day: "afternoon",
+          limit: maxTracks,
+          use_personalization: false,
+        });
 
-      const trackIds = tracks.map((track) => track.id);
+      const trackIds = recommendations.tracks.map(
+        (track: TrackMetadata) => track.id,
+      );
 
       if (trackIds.length === 0) {
         throw new Error("No Spotify recommendations found for mood");

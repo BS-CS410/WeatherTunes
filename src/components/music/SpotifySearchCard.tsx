@@ -32,7 +32,8 @@ export function SpotifySearchCard({ className = "" }: SpotifySearchCardProps) {
     searchByMood,
     clearSearchResults,
   } = useSpotifySearch();
-  const { addTrackToQueue } = useCurrentTrack();
+  const currentTrack = useCurrentTrack();
+  const addTrackToQueue = currentTrack?.addTrackToQueue;
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,6 +47,10 @@ export function SpotifySearchCard({ className = "" }: SpotifySearchCardProps) {
   };
 
   const handleAddToQueue = async (track: TrackMetadata) => {
+    if (!addTrackToQueue) {
+      console.error("Add to queue function not available");
+      return;
+    }
     try {
       await addTrackToQueue(track.id);
     } catch (error) {

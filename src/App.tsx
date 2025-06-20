@@ -11,6 +11,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { CurrentTrackProvider } from "./contexts/CurrentTrackProvider";
 import HomePage from "./pages/HomePage";
 import { ErrorBoundary } from "./components/shared/ErrorBoundary";
+import { OAuthCallback } from "./components/auth/OAuthCallback";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
                   <Routes>
                     <Route path="/" element={<HomePage />} />
                     <Route path="/login" element={<LoginPage />} />
+                    <Route path="/callback" element={<OAuthCallback />} />
                     {/* Fallback route: redirects unknown paths to the main page */}
                     <Route path="*" element={<Navigate to="/" replace />} />
                   </Routes>

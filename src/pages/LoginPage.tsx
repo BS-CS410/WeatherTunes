@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/hooks-index";
+import { authService } from "@/lib/auth-utils";
 
 function Login() {
   const { user } = useAuth();
@@ -15,6 +16,10 @@ function Login() {
     }
   }, [user, navigate]);
 
+  const handleLogin = () => {
+    authService.login();
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
       <Card className="w-full max-w-md">
@@ -24,16 +29,11 @@ function Login() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <Button asChild className="w-full bg-[#1DB954] hover:bg-[#1ED760]">
-            <a
-              href={
-                import.meta.env.VITE_API_URL
-                  ? `${import.meta.env.VITE_API_URL}/auth/login`
-                  : "http://127.0.0.1:8000/auth/login"
-              }
-            >
-              Login via Spotify
-            </a>
+          <Button
+            onClick={handleLogin}
+            className="w-full bg-[#1DB954] hover:bg-[#1ED760]"
+          >
+            Login via Spotify
           </Button>
         </CardContent>
       </Card>

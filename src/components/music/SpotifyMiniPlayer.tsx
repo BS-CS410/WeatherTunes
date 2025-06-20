@@ -44,8 +44,7 @@ export const SpotifyMiniPlayer: React.FC<SpotifyMiniPlayerProps> = ({
           await controls.play();
         }
       } else {
-        // Play new track - this would need backend integration
-        // For now, we'll call the onClick handler if provided
+        // Play new track via queue system
         onClick?.();
       }
     },

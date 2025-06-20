@@ -104,14 +104,13 @@ export function QueueCard() {
           console.log("Queue replacement completed successfully");
         } catch (queueError) {
           console.warn(
-            "Queue API failed, falling back to local queue management:",
+            "Queue replacement failed, falling back to local queue management:",
             queueError,
           );
-          // If the backend queue API fails, we can still show the tracks in the frontend
-          // The CurrentTrackProvider should handle this gracefully
+          // The CurrentTrackProvider handles this gracefully with local storage
         }
 
-        // Show success feedback regardless of backend queue status
+        // Show success feedback
         const trackText = newTracks.length === 1 ? "track" : "tracks";
         console.log(
           `✅ Successfully generated ${newTracks.length} weather-appropriate ${trackText}`,

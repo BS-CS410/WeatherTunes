@@ -6,8 +6,7 @@ import React, {
   useRef,
 } from "react";
 import type { ReactNode } from "react";
-import { apiClient } from "@/lib/api-client";
-import { SpotifyApiService } from "@/lib/spotify-api-service";
+import { FrontendSpotifyApiService } from "@/lib/spotify-api-frontend";
 import { useAuth } from "@/hooks/hooks-utility";
 import type { TrackMetadata } from "@/types/queue-types";
 
@@ -52,6 +51,7 @@ interface CurrentTrackProviderProps {
 /**
  * Provides current track metadata state across components
  * Manages Spotify track information for display synchronization
+ * Frontend-only implementation with local storage persistence
  */
 export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
   children,
@@ -65,41 +65,31 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
   const [currentTrackId, setCurrentTrackId] = useState<string | null>(null);
   const [songQueue, setSongQueue] = useState<TrackMetadata[]>([]);
 
-  // Fetch queue on mount when user is authenticated
-  const fetchQueue = useCallback(async () => {
-    if (!user) return;
-
-    try {
-      setIsLoading(true);
-      const response = await apiClient.get("/queue");
-      const data = response.data as { queue?: TrackMetadata[] };
-      // Always trim to TARGET_QUEUE_SIZE
-      setSongQueue((data.queue || []).slice(0, TARGET_QUEUE_SIZE));
-    } catch (error) {
-      console.error("Failed to fetch queue:", error);
-
-      // If it's an auth error, the user needs to log in again
-      if (error instanceof Error && error.message.includes("401")) {
-        console.warn("Backend session expired, user needs to re-authenticate");
-      }
-
-      console.log(
-        "Starting with empty queue - queue will be populated automatically",
-      );
-      setSongQueue([]);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [user]);
-
+  // Load queue from localStorage on mount
   useEffect(() => {
     if (user) {
-      fetchQueue();
+      const savedQueue = localStorage.getItem("music_queue");
+      if (savedQueue) {
+        try {
+          const parsedQueue = JSON.parse(savedQueue) as TrackMetadata[];
+          setSongQueue(parsedQueue.slice(0, TARGET_QUEUE_SIZE));
+        } catch (error) {
+          console.error("Failed to parse saved queue:", error);
+          setSongQueue([]);
+        }
+      }
     } else {
-      setIsLoading(false);
       setSongQueue([]);
     }
-  }, [user, fetchQueue]);
+    setIsLoading(false);
+  }, [user]);
+
+  // Save queue to localStorage whenever it changes
+  useEffect(() => {
+    if (user && songQueue.length > 0) {
+      localStorage.setItem("music_queue", JSON.stringify(songQueue));
+    }
+  }, [user, songQueue]);
 
   const updateTrack = useCallback(
     async (trackId: string): Promise<void> => {
@@ -115,7 +105,7 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
       }
 
       try {
-        const track = await SpotifyApiService.getTrackById(trackId);
+        const track = await FrontendSpotifyApiService.getTrackById(trackId);
         if (track) {
           setTrackMetadata(track);
           setCurrentTrackId(trackId);
@@ -148,18 +138,17 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
       if (!user) return;
 
       try {
-        const track = await SpotifyApiService.getTrackById(trackId);
+        const track = await FrontendSpotifyApiService.getTrackById(trackId);
         if (!track) return;
 
-        const response = await apiClient.post("/queue/add", {
-          track,
+        setSongQueue((currentQueue) => {
+          // Avoid duplicates
+          if (currentQueue.some((t) => t.id === trackId)) {
+            return currentQueue;
+          }
+          const newQueue = [...currentQueue, track].slice(0, TARGET_QUEUE_SIZE);
+          return newQueue;
         });
-
-        // Update queue if response includes new queue state
-        const data = response.data as { queue?: TrackMetadata[] };
-        if (data.queue) {
-          setSongQueue(data.queue);
-        }
       } catch (error) {
         console.error("Failed to add track to queue:", error);
       }
@@ -172,20 +161,14 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
       if (!user) return;
 
       try {
-        const tracks = await SpotifyApiService.getTracksByIds(trackIds);
-
-        const response = await apiClient.post(
-          "http://localhost:8000/queue/replace",
-          {
-            tracks,
-          },
-        );
-
-        // Update queue if response includes new queue state
-        const data = response.data as { queue?: TrackMetadata[] };
-        if (data.queue) {
-          setSongQueue(data.queue);
+        const tracks: TrackMetadata[] = [];
+        for (const trackId of trackIds.slice(0, TARGET_QUEUE_SIZE)) {
+          const track = await FrontendSpotifyApiService.getTrackById(trackId);
+          if (track) {
+            tracks.push(track);
+          }
         }
+        setSongQueue(tracks);
       } catch (error) {
         console.error("Failed to replace queue:", error);
       }
@@ -198,26 +181,10 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
       if (!user) return;
 
       try {
-        const response = await apiClient.post(
-          "http://localhost:8000/queue/replace",
-          {
-            tracks,
-          },
-        );
-
-        // Update queue if response includes new queue state
-        const data = response.data as { queue?: TrackMetadata[] };
-        if (data.queue) {
-          setSongQueue(data.queue);
-        }
+        setSongQueue(tracks.slice(0, TARGET_QUEUE_SIZE));
       } catch (error) {
         console.error("Failed to replace queue with track metadata:", error);
-
-        // Fallback: update local queue state even if backend fails
-        console.log("Falling back to local queue management");
-        setSongQueue(tracks);
-
-        // Don't throw the error, let the operation continue
+        setSongQueue(tracks.slice(0, TARGET_QUEUE_SIZE));
       }
     },
     [user],
@@ -227,8 +194,8 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
     if (!user) return;
 
     try {
-      await apiClient.post("/queue/clear", {});
       setSongQueue([]);
+      localStorage.removeItem("music_queue");
     } catch (error) {
       console.error("Failed to clear queue:", error);
     }
@@ -258,42 +225,35 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
       const timeOfDay = getCurrentTimeOfDay();
       let newTracks: TrackMetadata[] = [];
 
-      // Get current weather conditions
-      // Default values if not available
+      // Get current weather conditions (default values for now)
       const defaultCondition = "clear sky";
       const defaultTemperature = 20;
 
       try {
-        newTracks = await SpotifyApiService.getEnhancedWeatherRecommendations(
-          defaultCondition,
-          defaultTemperature,
-          timeOfDay,
-          tracksNeeded,
-        );
+        const weatherRecommendations =
+          await FrontendSpotifyApiService.getWeatherRecommendations({
+            weather_condition: defaultCondition,
+            temperature: defaultTemperature,
+            time_of_day: timeOfDay,
+            limit: tracksNeeded,
+            use_personalization: true,
+          });
 
+        newTracks = weatherRecommendations.tracks;
         console.log(
-          `Got ${newTracks.length} enhanced weather-based tracks for ${defaultCondition} at ${defaultTemperature}°C`,
+          `Got ${newTracks.length} weather-based tracks for ${defaultCondition} at ${defaultTemperature}°C`,
         );
       } catch (error) {
-        console.log(
-          "Enhanced weather-based recommendations failed, trying basic personalized...",
-        );
+        console.log("Weather-based recommendations failed, trying search...");
         try {
-          newTracks =
-            await SpotifyApiService.getPersonalizedWeatherRecommendations(
-              defaultCondition,
-              defaultTemperature,
-              timeOfDay,
-              tracksNeeded,
-            );
-          console.log(`Got ${newTracks.length} personalized tracks`);
-        } catch (fallbackError) {
-          console.log("Personalized recommendations failed, trying search...");
-          newTracks = await SpotifyApiService.searchTracks(
+          const searchResults = await FrontendSpotifyApiService.searchTracks(
             "popular music 2024",
             tracksNeeded,
           );
+          newTracks = searchResults.tracks;
           console.log(`Got ${newTracks.length} search-based tracks`);
+        } catch (searchError) {
+          console.error("Failed to get any tracks:", searchError);
         }
       }
 
@@ -307,16 +267,6 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
         console.log(
           `Queue replenished: ${currentSize} → ${updatedQueue.length}/${TARGET_QUEUE_SIZE} tracks`,
         );
-
-        // Try to sync with backend if possible
-        try {
-          await apiClient.post("http://localhost:8000/queue/replace", {
-            tracks: updatedQueue,
-          });
-          console.log("Successfully synced queue to backend");
-        } catch (syncError) {
-          console.log("Backend sync failed, continuing with local queue");
-        }
       }
     },
     [],
@@ -347,47 +297,6 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
     }
 
     try {
-      const response = await apiClient.post("/queue/next", {});
-
-      // Update current track if response includes it
-      const data = response.data as {
-        currentTrack?: TrackMetadata;
-        queue?: TrackMetadata[];
-      };
-      if (data.currentTrack) {
-        setTrackMetadata(data.currentTrack);
-        setCurrentTrackId(data.currentTrack.id);
-      }
-
-      // Update queue state if provided and trigger immediate replenishment
-      if (data.queue !== undefined) {
-        setSongQueue(data.queue);
-
-        // Always trigger immediate replenishment after track change
-        console.log(
-          `Track advanced, triggering immediate replenishment (${data.queue.length}/${TARGET_QUEUE_SIZE})...`,
-        );
-        setTimeout(async () => {
-          try {
-            await triggerImmediateReplenishment(data.queue?.length || 0);
-          } catch (error) {
-            console.error(
-              "Failed to auto-replenish queue after track skip:",
-              error,
-            );
-          }
-        }, 100);
-      }
-    } catch (error) {
-      console.error("Failed to set next track:", error);
-
-      // Check if it's an auth error and clear user state if needed
-      if (error instanceof Error && error.message.includes("401")) {
-        console.warn("Authentication expired, user needs to log in again");
-        // Don't clear user state here - let auth service handle it
-      }
-
-      // Fallback: manually advance the queue locally
       if (songQueue.length > 0) {
         const nextTrack = songQueue[0];
         const remainingQueue = songQueue.slice(1);
@@ -398,16 +307,18 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
 
         // Check if local queue needs immediate replenishment
         console.log(
-          `Local queue after fallback, triggering immediate replenishment (${remainingQueue.length}/${TARGET_QUEUE_SIZE})...`,
+          `Track advanced, triggering immediate replenishment (${remainingQueue.length}/${TARGET_QUEUE_SIZE})...`,
         );
         setTimeout(async () => {
           try {
             await triggerImmediateReplenishment(remainingQueue.length);
           } catch (error) {
-            console.error("Failed to replenish local queue:", error);
+            console.error("Failed to replenish queue after track skip:", error);
           }
         }, 100);
       }
+    } catch (error) {
+      console.error("Failed to set next track:", error);
     }
   }, [user, songQueue, triggerImmediateReplenishment]);
 
@@ -450,44 +361,28 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
             (track) => track.id !== trackId,
           );
 
-          // Async operations in a separate call
-          (async () => {
+          // Set the selected track as current
+          setTrackMetadata(selectedTrack);
+          setCurrentTrackId(selectedTrack.id);
+
+          console.log(
+            `Playing track from queue: ${selectedTrack.title} by ${selectedTrack.artist}`,
+          );
+
+          // Immediately replenish queue to target size after track removal
+          console.log(
+            `Track removed from queue, triggering immediate replenishment (${updatedQueue.length}/${TARGET_QUEUE_SIZE})...`,
+          );
+          setTimeout(async () => {
             try {
-              // Try to update the queue on the backend
-              await apiClient.post("http://localhost:8000/queue/replace", {
-                tracks: updatedQueue,
-              });
-              console.log("Successfully updated queue on backend");
+              await triggerImmediateReplenishment(updatedQueue.length);
             } catch (error) {
-              console.warn(
-                "Failed to update queue on backend, continuing with local update:",
+              console.error(
+                "Failed to replenish queue after track selection:",
                 error,
               );
             }
-
-            // Set the selected track as current
-            setTrackMetadata(selectedTrack);
-            setCurrentTrackId(selectedTrack.id);
-
-            console.log(
-              `Playing track from queue: ${selectedTrack.title} by ${selectedTrack.artist}`,
-            );
-
-            // Immediately replenish queue to target size after track removal
-            console.log(
-              `Track removed from queue, triggering immediate replenishment (${updatedQueue.length}/${TARGET_QUEUE_SIZE})...`,
-            );
-            setTimeout(async () => {
-              try {
-                await triggerImmediateReplenishment(updatedQueue.length);
-              } catch (error) {
-                console.error(
-                  "Failed to replenish queue after track selection:",
-                  error,
-                );
-              }
-            }, 100);
-          })();
+          }, 100);
 
           return updatedQueue;
         });

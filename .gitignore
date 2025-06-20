@@ -7,10 +7,6 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# Python cache
-**/__pycache__/
-*.pyc
-
 # Dependency directories
 node_modules
 dist
@@ -18,7 +14,9 @@ dist-ssr
 *.local
 .env
 .env.test
-.venv
+
+# TypeScript
+tsconfig.tsbuildinfo
 
 # Editor directories and files
 .vscode/*

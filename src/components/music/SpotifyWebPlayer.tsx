@@ -146,11 +146,8 @@ export const SpotifyWebPlayer: React.FC<SpotifyWebPlayerProps> = ({
 
         // Check if we need to play a new track
         if (state.currentTrack?.id !== currentTrackId) {
-          // Note: We need to get the Spotify URI from the backend
-          // For now, we'll handle this through the queue system
-          console.log(
-            "Track changed externally, needs to be handled by queue system",
-          );
+          // Track changes are handled through the queue system
+          console.log("Track changed externally, handled by queue system");
         }
       }
     } else {

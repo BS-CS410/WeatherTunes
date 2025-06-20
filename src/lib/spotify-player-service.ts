@@ -7,7 +7,7 @@ import type {
   SpotifyPlayer,
   SpotifyWebPlaybackState,
 } from "@/types/spotify-types";
-import { apiClient } from "./api-client";
+import { authService } from "./auth-frontend";
 
 type PlayerEventCallback = (data: unknown) => void;
 
@@ -201,42 +201,31 @@ export class SpotifyPlayerService {
   }
 
   /**
-   * Refresh access token from backend
+   * Get a valid access token, refreshing if necessary
+   */
+  private async getValidAccessToken(): Promise<string | null> {
+    if (!this.accessToken) {
+      await this.refreshAccessToken();
+    }
+    return this.accessToken;
+  }
+
+  /**
+   * Refresh access token from frontend auth service
    */
   private async refreshAccessToken(): Promise<void> {
     try {
-      console.log("🔑 Requesting access token from backend...");
-      const response = await apiClient.get<{ access_token: string }>(
-        "/auth/token",
-      );
-      this.accessToken = response.data.access_token;
-      console.log("✅ Access token received successfully");
+      console.log("🔑 Requesting access token from auth service...");
+      const token = await authService.getAccessToken();
+      if (token) {
+        this.accessToken = token;
+        console.log("✅ Access token received successfully");
+      } else {
+        console.error("❌ No access token available");
+        this.accessToken = null;
+      }
     } catch (error) {
       console.error("❌ Failed to refresh access token:", error);
-
-      if (error && typeof error === "object") {
-        const errorObj = error as {
-          response?: { status: number; data: unknown };
-          request?: unknown;
-          message?: string;
-        };
-
-        if (errorObj.response) {
-          console.error("Response status:", errorObj.response.status);
-          console.error("Response data:", errorObj.response.data);
-
-          if (errorObj.response.status === 401) {
-            console.error(
-              "🚨 User not authenticated - redirect to login required",
-            );
-          }
-        } else if (errorObj.request) {
-          console.error("Request failed - network or server error");
-        } else {
-          console.error("Error message:", errorObj.message);
-        }
-      }
-
       this.accessToken = null;
     }
   }
@@ -251,10 +240,33 @@ export class SpotifyPlayerService {
     }
 
     try {
-      await apiClient.put("/spotify/player/play", {
-        device_id: this.deviceId,
-        uris: [trackUri],
-      });
+      // Use direct Spotify Web API call instead of backend proxy
+      const token = await this.getValidAccessToken();
+      if (!token) {
+        console.error("No valid access token available");
+        return false;
+      }
+
+      const response = await fetch(
+        "https://api.spotify.com/v1/me/player/play",
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            device_id: this.deviceId,
+            uris: [trackUri],
+          }),
+        },
+      );
+
+      if (!response.ok) {
+        console.error(`Spotify API error: ${response.status}`);
+        return false;
+      }
+
       return true;
     } catch (error) {
       console.error("Failed to play track:", error);
@@ -272,10 +284,33 @@ export class SpotifyPlayerService {
     }
 
     try {
-      await apiClient.put("/spotify/player/play", {
-        device_id: this.deviceId,
-        uris: trackUris,
-      });
+      // Use direct Spotify Web API call instead of backend proxy
+      const token = await this.getValidAccessToken();
+      if (!token) {
+        console.error("No valid access token available");
+        return false;
+      }
+
+      const response = await fetch(
+        "https://api.spotify.com/v1/me/player/play",
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            device_id: this.deviceId,
+            uris: trackUris,
+          }),
+        },
+      );
+
+      if (!response.ok) {
+        console.error(`Spotify API error: ${response.status}`);
+        return false;
+      }
+
       return true;
     } catch (error) {
       console.error("Failed to play tracks:", error);
@@ -293,10 +328,29 @@ export class SpotifyPlayerService {
     }
 
     try {
-      await apiClient.post("/spotify/player/queue", {
-        uri: trackUri,
-        device_id: this.deviceId,
-      });
+      // Use direct Spotify Web API call instead of backend proxy
+      const token = await this.getValidAccessToken();
+      if (!token) {
+        console.error("No valid access token available");
+        return false;
+      }
+
+      const response = await fetch(
+        `https://api.spotify.com/v1/me/player/queue?uri=${encodeURIComponent(trackUri)}&device_id=${this.deviceId}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      if (!response.ok) {
+        console.error(`Spotify API error: ${response.status}`);
+        return false;
+      }
+
       return true;
     } catch (error) {
       console.error("Failed to add track to queue:", error);
@@ -314,10 +368,30 @@ export class SpotifyPlayerService {
     }
 
     try {
-      await apiClient.put("/spotify/player/transfer", {
-        device_ids: [this.deviceId],
-        play: false,
+      // Use direct Spotify Web API call instead of backend proxy
+      const token = await this.getValidAccessToken();
+      if (!token) {
+        console.error("No valid access token available");
+        return false;
+      }
+
+      const response = await fetch("https://api.spotify.com/v1/me/player", {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          device_ids: [this.deviceId],
+          play: false,
+        }),
       });
+
+      if (!response.ok) {
+        console.error(`Spotify API error: ${response.status}`);
+        return false;
+      }
+
       return true;
     } catch (error) {
       console.error("Failed to transfer playback:", error);
@@ -502,10 +576,8 @@ export class SpotifyPlayerService {
   async checkAuthentication(): Promise<boolean> {
     try {
       console.log("🔐 Checking authentication status...");
-      const response = await apiClient.get<{ authenticated: boolean }>(
-        "/auth/session",
-      );
-      const isAuthenticated = response.data.authenticated;
+      const token = await authService.getAccessToken();
+      const isAuthenticated = !!token;
       console.log(
         `Authentication status: ${isAuthenticated ? "✅ Authenticated" : "❌ Not authenticated"}`,
       );

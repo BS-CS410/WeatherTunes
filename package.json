@@ -12,13 +12,9 @@
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "test:auth": "playwright test tests/auth-simple.spec.ts tests/session-management.spec.ts",
-    "test:auth-full": "playwright test tests/auth-error-handling.spec.ts tests/frontend-state-management.spec.ts tests/backend-resilience.spec.ts",
-    "test:player": "playwright test tests/player-edge-cases.spec.ts",
-    "test:integration": "playwright test tests/integration-comprehensive.spec.ts",
-    "test:e2e": "playwright test",
-    "test:e2e-headed": "playwright test --headed",
-    "test:e2e-ui": "playwright test --ui"
+    "test:e2e": "playwright test tests/frontend-auth.spec.ts tests/frontend-integration.spec.ts",
+    "test:e2e-headed": "playwright test tests/frontend-auth.spec.ts tests/frontend-integration.spec.ts --headed",
+    "test:e2e-ui": "playwright test tests/frontend-auth.spec.ts tests/frontend-integration.spec.ts --ui"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

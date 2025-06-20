@@ -5,7 +5,6 @@ import { cn } from "@/lib/lib-utils";
 import { useAuth } from "@/hooks/hooks-index";
 import { SpotifyMiniPlayer } from "./SpotifyMiniPlayer";
 import { useCurrentTrackContext } from "@/hooks/useCurrentTrack";
-import type { TrackMetadata } from "@/types/queue-types";
 
 interface FavoritesCardProps {
   className?: string;
@@ -52,16 +51,44 @@ export function FavoritesCard({ className = "" }: FavoritesCardProps) {
       }
 
       try {
+        // Get user's saved tracks from Spotify
+        const token = localStorage.getItem("spotify_access_token");
+        if (!token) {
+          throw new Error("No access token available");
+        }
+
         const res = await fetch(
-          `${import.meta.env.VITE_API_URL || "http://127.0.0.1:8000"}/liked`,
+          "https://api.spotify.com/v1/me/tracks?limit=50",
           {
-            credentials: "include",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           },
         );
-        if (!res.ok)
+
+        if (!res.ok) {
           throw new Error(`Error fetching liked tracks: ${res.status}`);
+        }
+
         const data = await res.json();
-        setLikedTracks(data.favorites || []);
+        const tracks = data.items.map(
+          (item: {
+            track: {
+              id: string;
+              name: string;
+              artists: { name: string }[];
+              album: { images: { url: string }[] };
+            };
+          }) => ({
+            id: item.track.id,
+            title: item.track.name,
+            artist: item.track.artists[0]?.name || "Unknown Artist",
+            albumArt: item.track.album.images[0]?.url || "",
+            albumArtFallback: item.track.album.images[1]?.url || "",
+          }),
+        );
+
+        setLikedTracks(tracks);
       } catch (e) {
         setError(e instanceof Error ? e.message : "Unknown error occurred");
       } finally {

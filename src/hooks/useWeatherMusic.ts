@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useWeatherData } from "./useWeather";
-import { SpotifyApiService } from "@/lib/spotify-api-service";
+import { FrontendSpotifyApiService } from "@/lib/spotify-api-frontend";
 import { getWeatherRecommendationParams } from "@/lib/music-utils";
 import type { TrackMetadata } from "@/types/queue-types";
 
@@ -51,13 +51,16 @@ export function useWeatherMusic() {
         `Generating enhanced queue for: ${condition}, ${temperature}°C, ${timeOfDay}`,
       );
 
-      // Use enhanced Spotify API to get weather-appropriate recommendations with user preferences
-      const tracks = await SpotifyApiService.getEnhancedWeatherRecommendations(
-        condition,
-        temperature,
-        timeOfDay,
-        maxTracks,
-      );
+      // Use Spotify API to get weather-appropriate recommendations
+      const recommendations =
+        await FrontendSpotifyApiService.getWeatherRecommendations({
+          weather_condition: condition,
+          temperature,
+          time_of_day: timeOfDay,
+          limit: maxTracks,
+          use_personalization: true,
+        });
+      const tracks = recommendations.tracks;
 
       console.log(
         `Generated ${tracks.length} enhanced tracks for weather conditions`,
@@ -66,22 +69,23 @@ export function useWeatherMusic() {
     } catch (error) {
       console.error("Failed to generate enhanced weather queue:", error);
 
-      // Try to get fallback recommendations if the enhanced method fails
+      // Try to get fallback recommendations if the main method fails
       try {
-        console.log(
-          "Attempting fallback to basic personalized recommendations...",
-        );
-        const fallbackTracks =
-          await SpotifyApiService.getPersonalizedWeatherRecommendations(
-            condition,
+        console.log("Attempting fallback to basic weather recommendations...");
+        const fallbackRecommendations =
+          await FrontendSpotifyApiService.getWeatherRecommendations({
+            weather_condition: condition,
             temperature,
-            timeOfDay,
-            maxTracks,
-          );
+            time_of_day: timeOfDay,
+            limit: maxTracks,
+            use_personalization: false,
+          });
 
-        if (fallbackTracks.length > 0) {
-          console.log(`Fallback successful: ${fallbackTracks.length} tracks`);
-          return fallbackTracks;
+        if (fallbackRecommendations.tracks.length > 0) {
+          console.log(
+            `Fallback successful: ${fallbackRecommendations.tracks.length} tracks`,
+          );
+          return fallbackRecommendations.tracks;
         }
       } catch (fallbackError) {
         console.error("Fallback also failed:", fallbackError);
@@ -108,12 +112,15 @@ export function useWeatherMusic() {
     const { condition, temperature, timeOfDay } = musicWeatherConditions;
 
     try {
-      return await SpotifyApiService.getPersonalizedWeatherRecommendations(
-        condition,
-        temperature,
-        timeOfDay,
-        limit,
-      );
+      const recommendations =
+        await FrontendSpotifyApiService.getWeatherRecommendations({
+          weather_condition: condition,
+          temperature,
+          time_of_day: timeOfDay,
+          limit,
+          use_personalization: true,
+        });
+      return recommendations.tracks;
     } catch (error) {
       console.error(
         "Failed to get personalized weather recommendations:",
@@ -131,7 +138,11 @@ export function useWeatherMusic() {
     limit: number = 10,
   ): Promise<TrackMetadata[]> => {
     try {
-      return await SpotifyApiService.searchTracks(query, limit);
+      const searchResult = await FrontendSpotifyApiService.searchTracks(
+        query,
+        limit,
+      );
+      return searchResult.tracks;
     } catch (error) {
       console.error("Failed to search weather tracks:", error);
       return [];

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { TYPOGRAPHY, COLORS } from "@/lib/unifiedStyles";
 import { cn } from "@/lib/lib-utils";
 import { SpotifyWebPlayer } from "@/components/music/SpotifyWebPlayer";
+import { FrontendSpotifyApiService } from "@/lib/spotify-api-frontend";
 
 interface WeatherMusicCardProps {
   weatherData: WeatherDisplayData;
@@ -69,23 +70,24 @@ export function WeatherMusicCard({
     }
 
     try {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://127.0.0.1:8000"}/liked`,
+      // Add to user's Spotify library
+      await fetch("https://api.spotify.com/v1/me/tracks", {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("spotify_access_token")}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ids: [currentTrackId] }),
+      });
+
+      // Record interaction for personalization
+      await FrontendSpotifyApiService.recordInteraction(
+        currentTrackId,
+        "like",
         {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify({ track_id: currentTrackId }),
+          weather_condition: undefined, // Could be passed from weather context
         },
       );
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        setMessage(`Error: ${errorData.error || "Failed to like track"}`);
-        return;
-      }
 
       setMessage("Track liked!");
       setTimeout(() => setMessage(null), 2000);

@@ -16,9 +16,9 @@ beforeEach(() => {
   };
 });
 
-// Mock environment variables
-process.env.VITE_API_URL = "http://localhost:8000";
+// Mock environment variables (frontend-only)
 process.env.VITE_PUBLIC_OPENWEATHER_API_KEY = "test-api-key";
+process.env.VITE_SPOTIFY_CLIENT_ID = "test-spotify-client-id";
 
 // Mock weather service functions
 vi.mock("../lib/weather", () => ({
@@ -54,17 +54,6 @@ vi.mock("../lib/apiClient", () => ({
     post: vi.fn(),
     put: vi.fn(),
     delete: vi.fn(),
-  },
-}));
-
-// Mock Spotify API service
-vi.mock("../lib/spotifyApiService", () => ({
-  SpotifyApiService: {
-    getTrackById: vi.fn(),
-    getTracksByIds: vi.fn(),
-    searchTracks: vi.fn(),
-    getRecommendations: vi.fn(),
-    getCurrentTrack: vi.fn(),
   },
 }));
 
