@@ -7,6 +7,7 @@ import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
 from app.config import SpotifyConfig
+from app.services.weather_music_mapping import WeatherMusicMapper
 
 logger = logging.getLogger(__name__)
 
@@ -182,7 +183,7 @@ class RecommendationService:
         user_preferences: Optional[Dict[str, Any]] = None,
         limit: int = 20,
     ) -> List[Dict[str, Any]]:
-        """Get music recommendations based on weather conditions.
+        """Get music recommendations based on weather conditions using enhanced mapping.
 
         Args:
             weather_condition: Weather condition (sunny, rainy, cloudy, etc.)
@@ -198,13 +199,20 @@ class RecommendationService:
         try:
             sp = spotipy.Spotify(auth=access_token)
 
-            # Map weather conditions to Spotify audio features
-            weather_audio_features = self._get_weather_audio_features(
+            # Use enhanced weather mapping for audio features
+            weather_audio_features = WeatherMusicMapper.get_spotify_audio_features(
                 weather_condition, temperature, time_of_day
             )
 
-            # Get seed genres from user preferences or use defaults
-            seed_genres = self._get_seed_genres(user_preferences, sp)
+            # Get seed genres using enhanced mapping
+            seed_genres = WeatherMusicMapper.get_seed_genres(
+                weather_condition, user_preferences, limit=5
+            )
+
+            logger.info(
+                f"Using enhanced mapping for {weather_condition}: "
+                f"features={weather_audio_features}, genres={seed_genres}"
+            )
 
             # Get recommendations from Spotify
             recommendations = sp.recommendations(

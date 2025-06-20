@@ -11,8 +11,7 @@
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
-    "noEmit": false,
-    "emitDeclarationOnly": true,
+    "noEmit": true,
     "jsx": "react-jsx",
     /* Linting */
     "strict": true,
@@ -24,8 +23,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    },
-    "composite": true
+    }
   },
   "include": ["src"]
 }

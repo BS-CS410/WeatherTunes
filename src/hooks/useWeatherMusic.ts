@@ -1,11 +1,15 @@
 import { useMemo } from "react";
 import { useWeatherData } from "./useWeather";
 import { SpotifyApiService } from "@/lib/spotify-api-service";
+import {
+  generateWeatherQueueDynamic,
+  getWeatherRecommendationParams,
+} from "@/lib/music-utils";
 import type { TrackMetadata } from "@/types/queue-types";
 
 /**
  * Hook that provides weather-based music recommendations
- * Combines current weather data with Spotify music suggestions
+ * Combines current weather data with Spotify music suggestions using advanced weather mapping
  */
 export function useWeatherMusic() {
   const weatherState = useWeatherData();
@@ -19,14 +23,14 @@ export function useWeatherMusic() {
     ) {
       // Default conditions if weather is unavailable
       return {
-        condition: "clear",
+        condition: "clear sky",
         temperature: 20,
         timeOfDay: getCurrentTimeOfDay(),
       };
     }
 
     const weatherData = weatherState.rawResponse;
-    const condition = extractConditionFromWeather(weatherData.weather[0].main);
+    const condition = extractConditionFromWeather(weatherData.weather[0]);
     const temperature = weatherData.main.temp;
     const timeOfDay = getCurrentTimeOfDay();
 
@@ -38,7 +42,7 @@ export function useWeatherMusic() {
   }, [weatherState]);
 
   /**
-   * Generate weather-based track queue
+   * Generate weather-based track queue using enhanced mapping system
    */
   const generateWeatherQueue = async (
     maxTracks: number = 12,
@@ -46,18 +50,25 @@ export function useWeatherMusic() {
     const { condition, temperature, timeOfDay } = musicWeatherConditions;
 
     try {
-      const tracks =
-        await SpotifyApiService.getRecommendationsForCurrentWeather(
-          condition,
-          temperature,
-          maxTracks,
-          timeOfDay,
-        );
-      return tracks.map((track) => track.id);
+      // Use the new dynamic weather queue generation with advanced mapping
+      return await generateWeatherQueueDynamic(
+        condition,
+        temperature,
+        timeOfDay,
+        maxTracks,
+      );
     } catch (error) {
       console.error("Failed to generate weather queue:", error);
       return [];
     }
+  };
+
+  /**
+   * Get recommendation parameters for current weather (for debugging/info)
+   */
+  const getWeatherMusicParams = () => {
+    const { condition, temperature, timeOfDay } = musicWeatherConditions;
+    return getWeatherRecommendationParams(condition, temperature, timeOfDay);
   };
 
   /**
@@ -107,6 +118,7 @@ export function useWeatherMusic() {
     generateWeatherQueue,
     getPersonalizedRecommendations,
     searchWeatherTracks,
+    getWeatherMusicParams,
 
     // Weather state
     isWeatherLoading: weatherState.isLoading,
@@ -133,18 +145,50 @@ function getCurrentTimeOfDay(): "morning" | "afternoon" | "evening" | "night" {
 /**
  * Extract condition from weather API response for music matching
  */
-function extractConditionFromWeather(weatherMain: string): string {
+function extractConditionFromWeather(weather: {
+  main: string;
+  description: string;
+}): string {
+  // Use description for more specific condition matching
+  const description = weather.description.toLowerCase();
+
+  // Map specific descriptions to our weather conditions
   const conditionMap: Record<string, string> = {
-    Clear: "clear",
+    "clear sky": "clear sky",
+    "few clouds": "clear sky",
+    "scattered clouds": "broken clouds",
+    "broken clouds": "broken clouds",
+    "overcast clouds": "cloudy",
+    "shower rain": "rain",
+    "heavy intensity rain": "rain",
+    "light rain": "drizzle",
+    "moderate rain": "rain",
+    thunderstorm: "thunderstorm",
+    snow: "snow",
+    "light snow": "snow",
+    "heavy snow": "snow",
+    mist: "mist",
+    fog: "fog",
+    haze: "fog",
+  };
+
+  // Try exact description match first
+  if (conditionMap[description]) {
+    return conditionMap[description];
+  }
+
+  // Fallback to main condition
+  const mainConditionMap: Record<string, string> = {
+    Clear: "clear sky",
     Clouds: "cloudy",
-    Rain: "rainy",
+    Rain: "rain",
     Drizzle: "drizzle",
     Thunderstorm: "thunderstorm",
     Snow: "snow",
     Mist: "mist",
     Fog: "fog",
-    Haze: "haze",
+    Haze: "fog",
   };
 
-  return conditionMap[weatherMain] || weatherMain.toLowerCase();
+  return mainConditionMap[weather.main] || weather.main.toLowerCase();
 }

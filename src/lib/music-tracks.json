@@ -219,6 +219,9 @@
   },
   {
     "id": "5QO79kh1waicV47BqGRL3g",
+    "title": "Apocalypse",
+    "artist": "Cigarettes After Sex",
+    "albumArt": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDQwMCA0MDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgICA8cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0iI0Q1QTZCRCIvPgogICAgPGNpcmNsZSBjeD0iMjAwIiBjeT0iMTYwIiByPSI1MCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjMpIi8+CiAgICA8cG9seWdvbiBwb2ludHM9IjE4MCwxNDAgMTgwLDE4MCAyMjAsMTYwIiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuNikiLz4KICAgIDx0ZXh0IHg9IjIwMCIgeT0iMjgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSI0OCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIj5DSTwvdGV4dD4KICAgIDx0ZXh0IHg9IjIwMCIgeT0iMzIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjgpIj7imaogQWxidW0gQXJ0IOKZqjwvdGV4dD4KICA8L3N2Zz4=",
     "tags": [
       "indie",
       "cloudy",
@@ -226,80 +229,13 @@
       "slow lo-fi",
       "cloudy day indie",
       "nighttime lo-fi"
-    ],
-    "title": "Cigarettes After Sex",
-    "artist": "Apocalypse",
-    "albumArt": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDQwMCA0MDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgICA8cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0iI0Q1QTZCRCIvPgogICAgPGNpcmNsZSBjeD0iMjAwIiBjeT0iMTYwIiByPSI1MCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjMpIi8+CiAgICA8cG9seWdvbiBwb2ludHM9IjE4MCwxNDAgMTgwLDE4MCAyMjAsMTYwIiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuNikiLz4KICAgIDx0ZXh0IHg9IjIwMCIgeT0iMjgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSI0OCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIj5DSTwvdGV4dD4KICAgIDx0ZXh0IHg9IjIwMCIgeT0iMzIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjgpIj7imaogQWxidW0gQXJ0IOKZqjwvdGV4dD4KICA8L3N2Zz4="
-  },
-  {
-    "id": "3iH0Z7HboVnbXwQDoKweUE",
-    "tags": [
-      "intense",
-      "storm",
-      "electronic",
-      "dramatic indie",
-      "stormy vibes"
-    ],
-    "title": "Take On Me",
-    "artist": "a-ha",
-    "albumArt": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDQwMCA0MDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgICA8cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0iI0FFRDZGMSIvPgogICAgPGNpcmNsZSBjeD0iMjAwIiBjeT0iMTYwIiByPSI1MCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjMpIi8+CiAgICA8cG9seWdvbiBwb2ludHM9IjE4MCwxNDAgMTgwLDE4MCAyMjAsMTYwIiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuNikiLz4KICAgIDx0ZXh0IHg9IjIwMCIgeT0iMjgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSI0OCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIj5UQTwvdGV4dD4KICAgIDx0ZXh0IHg9IjIwMCIgeT0iMzIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjgpIj7imaogQWxidW0gQXJ0IOKZqjwvdGV4dD4KICA8L3N2Zz4="
-  },
-  {
-    "id": "1AhDOtG9vPSOmsWgNW0BEY",
-    "tags": [
-      "pop",
-      "happy",
-      "sunny",
-      "sunset pop",
-      "beach chill",
-      "late night summer vibes"
-    ],
-    "title": "Flowers",
-    "artist": "Miley Cyrus",
-    "albumArt": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDQwMCA0MDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgICA8cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0iI0E5REZCRiIvPgogICAgPGNpcmNsZSBjeD0iMjAwIiBjeT0iMTYwIiByPSI1MCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjMpIi8+CiAgICA8cG9seWdvbiBwb2ludHM9IjE4MCwxNDAgMTgwLDE4MCAyMjAsMTYwIiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuNikiLz4KICAgIDx0ZXh0IHg9IjIwMCIgeT0iMjgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSI0OCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIj5GTDwvdGV4dD4KICAgIDx0ZXh0IHg9IjIwMCIgeT0iMzIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjgpIj7imaogQWxidW0gQXJ0IOKZqjwvdGV4dD4KICA8L3N2Zz4="
-  },
-  {
-    "id": "6I9VzXrHxO9rA9A5euc8Ak",
-    "tags": [
-      "pop",
-      "happy",
-      "sunny",
-      "fresh pop",
-      "upbeat pop",
-      "feel good hits"
-    ],
-    "title": "Cruel Summer",
-    "artist": "Taylor Swift",
-    "albumArt": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDQwMCA0MDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgICA8cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0iI0Y5RTc5RiIvPgogICAgPGNpcmNsZSBjeD0iMjAwIiBjeT0iMTYwIiByPSI1MCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjMpIi8+CiAgICA8cG9seWdvbiBwb2ludHM9IjE4MCwxNDAgMTgwLDE4MCAyMjAsMTYwIiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuNikiLz4KICAgIDx0ZXh0IHg9IjIwMCIgeT0iMjgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSI0OCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIj5DUjwvdGV4dD4KICAgIDx0ZXh0IHg9IjIwMCIgeT0iMzIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjgpIj7imaogQWxidW0gQXJ0IOKZqjwvdGV4dD4KICA8L3N2Zz4="
-  },
-  {
-    "id": "3dYD57lRAUcMHufyqn9GcI",
-    "tags": [
-      "relax",
-      "chill",
-      "rainy",
-      "rainy night jazz",
-      "soft rain indie",
-      "sleepy lofi"
-    ],
-    "title": "Autumn Leaves",
-    "artist": "Nat King Cole",
-    "albumArt": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDQwMCA0MDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgICA8cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0iI0QyQjRERSIvPgogICAgPGNpcmNsZSBjeD0iMjAwIiBjeT0iMTYwIiByPSI1MCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjMpIi8+CiAgICA8cG9seWdvbiBwb2ludHM9IjE4MCwxNDAgMTgwLDE4MCAyMjAsMTYwIiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuNikiLz4KICAgIDx0ZXh0IHg9IjIwMCIgeT0iMjgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSI0OCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIj5BVTwvdGV4dD4KICAgIDx0ZXh0IHg9IjIwMCIgeT0iMzIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjgpIj7imaogQWxidW0gQXJ0IOKZqjwvdGV4dD4KICA8L3N2Zz4=",
-    "albumArtFallback": "https://upload.wikimedia.org/wikipedia/en/e/e3/Nat_King_Cole_Trio_1940s.jpg"
+    ]
   },
   {
     "id": "4KkLzvDW36GNQ0NLyzgOTo",
-    "tags": [
-      "pop",
-      "dance",
-      "sunny",
-      "summer acoustic",
-      "tropical morning",
-      "party hits",
-      "summer dance"
-    ],
     "title": "Blinding Lights",
     "artist": "The Weeknd",
-    "albumArt": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDQwMCA0MDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgICA8cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0iI0FFRDZGMSIvPgogICAgPGNpcmNsZSBjeD0iMjAwIiBjeT0iMTYwIiByPSI1MCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjMpIi8+CiAgICA8cG9seWdvbiBwb2ludHM9IjE4MCwxNDAgMTgwLDE4MCAyMjAsMTYwIiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuNikiLz4KICAgIDx0ZXh0IHg9IjIwMCIgeT0iMjgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSI0OCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIj5CTDwvdGV4dD4KICAgIDx0ZXh0IHg9IjIwMCIgeT0iMzIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjgpIj7imaogQWxidW0gQXJ0IOKZqjwvdGV4dD4KICA8L3N2Zz4="
+    "albumArt": "",
+    "tags": ["summer dance"]
   }
 ]
