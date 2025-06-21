@@ -6,6 +6,7 @@ import {
 } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import { SettingsProvider } from "./contexts/SettingsProvider";
+import { AuthProvider } from "./contexts/AuthProvider";
 import { AppLayout } from "./components";
 import HomePage from "./pages/HomePage";
 import { ErrorBoundary } from "./components/shared/ErrorBoundary";
@@ -15,23 +16,25 @@ function App() {
   return (
     <Router>
       <ErrorBoundary>
-        <SettingsProvider>
-          <AppLayout
-            maxWidth="lg"
-            className="min-height-full relative mx-auto flex w-full flex-1 flex-col"
-          >
-            {/* Page Content */}
-            <main>
-              <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/callback" element={<OAuthCallback />} />
-                {/* Fallback route: redirects unknown paths to the main page */}
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </main>
-          </AppLayout>
-        </SettingsProvider>
+        <AuthProvider>
+          <SettingsProvider>
+            <AppLayout
+              maxWidth="lg"
+              className="min-height-full relative mx-auto flex w-full flex-1 flex-col"
+            >
+              {/* Page Content */}
+              <main>
+                <Routes>
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/callback" element={<OAuthCallback />} />
+                  {/* Fallback route: redirects unknown paths to the main page */}
+                  <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+              </main>
+            </AppLayout>
+          </SettingsProvider>
+        </AuthProvider>
       </ErrorBoundary>
     </Router>
   );

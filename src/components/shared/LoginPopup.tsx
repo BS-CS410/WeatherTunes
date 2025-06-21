@@ -1,4 +1,4 @@
-import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
+import { useAuth } from "@/hooks/useAuth";
 import { BaseCard } from "@/components/shared/BaseCard";
 import { Button } from "@/components/ui/button";
 import { COLORS } from "@/lib/design-system";
@@ -10,7 +10,7 @@ interface LoginPopupProps {
 }
 
 export function LoginPopup({ isOpen }: LoginPopupProps) {
-  const { login } = useSpotifyAuth();
+  const { login } = useAuth();
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   if (!isOpen) return null;

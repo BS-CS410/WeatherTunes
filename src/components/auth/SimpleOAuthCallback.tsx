@@ -6,7 +6,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 
-export function OAuthCallback() {
+export function SimpleOAuthCallback() {
   const [status, setStatus] = useState<"processing" | "success" | "error">(
     "processing",
   );
@@ -25,15 +25,13 @@ export function OAuthCallback() {
           }, 1000);
         } else {
           setStatus("error");
-          setErrorMsg("Authentication unsuccessful. Please try again.");
+          setErrorMsg("Authentication failed. Please try again.");
         }
       } catch (error) {
         console.error("Callback error:", error);
         setStatus("error");
         setErrorMsg(
-          error instanceof Error
-            ? error.message
-            : "Authentication unsuccessful",
+          error instanceof Error ? error.message : "Authentication failed",
         );
       }
     };

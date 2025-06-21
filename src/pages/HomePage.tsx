@@ -13,7 +13,7 @@ import {
 } from "@/components";
 import { useWeatherData } from "@/hooks/useWeather";
 import { useThemeManager } from "@/hooks/useThemeManager";
-import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
+import { useAuth } from "@/hooks/useAuth";
 import { LAYOUT, COLORS } from "@/lib/design-system";
 import { useState, useEffect } from "react";
 
@@ -25,17 +25,18 @@ function MainPage() {
     error: authError,
     login,
     logout,
-  } = useSpotifyAuth();
+    isAuthenticated,
+  } = useAuth();
   const [showLoginPopup, setShowLoginPopup] = useState(false);
 
   useThemeManager(timePeriod);
 
   // Show login popup if user is not authenticated
   useEffect(() => {
-    if (!isLoading && !user) {
+    if (!isLoading && !isAuthenticated) {
       setShowLoginPopup(true);
     }
-  }, [user, isLoading]);
+  }, [isAuthenticated, isLoading]);
 
   // Loading State
   if (isLoading) {

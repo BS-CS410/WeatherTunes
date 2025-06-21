@@ -24,6 +24,11 @@ export { ErrorBoundary, withErrorBoundary } from "./shared/ErrorBoundary";
 export { LoginPopup } from "./shared/LoginPopup";
 export { WeatherMusicCard } from "./shared/WeatherMusicCard";
 
+// === AUTH DOMAIN ===
+// Authentication components and flows
+export { OAuthCallback } from "./auth/OAuthCallback";
+export { SimpleLogin } from "./auth/SimpleLogin";
+
 // === WEATHER DOMAIN ===
 // Components related to weather display, forecast, and background visuals
 export { WeatherBackground } from "./weather/WeatherBackground";

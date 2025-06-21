@@ -7,7 +7,7 @@
 export * from "./common";
 
 // Auth hooks
-export { useSpotifyAuth } from "./useSpotifyAuth";
+export { useAuth } from "./useAuth";
 
 // Specific feature hooks
 export { useForecastData } from "./useForecast";

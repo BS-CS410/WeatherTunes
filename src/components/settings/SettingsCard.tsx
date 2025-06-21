@@ -1,6 +1,6 @@
 import { cn } from "@/lib/dom-helpers";
 import { useSettings } from "@/hooks";
-import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
+import { useAuth } from "@/hooks/useAuth";
 import {
   SettingsSection,
   SettingsButtonGroup,
@@ -24,7 +24,7 @@ export function SettingsCard({ isOpen, onClose }: SettingsCardProps) {
     resetToDefaults,
   } = useSettings();
 
-  const { user, logout } = useSpotifyAuth();
+  const { user, logout } = useAuth();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = async () => {

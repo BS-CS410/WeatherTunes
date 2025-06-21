@@ -32,11 +32,12 @@ let refreshPromise: Promise<SpotifyTokens | null> | null = null;
  */
 function generateCodeVerifier(): string {
   const generateRandomString = (length: number): string => {
-    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const possible =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     const values = crypto.getRandomValues(new Uint8Array(length));
     return values.reduce((acc, x) => acc + possible[x % possible.length], "");
   };
-  
+
   return generateRandomString(64);
 }
 
@@ -47,14 +48,14 @@ async function generateCodeChallenge(codeVerifier: string): Promise<string> {
   const sha256 = async (plain: string): Promise<ArrayBuffer> => {
     const encoder = new TextEncoder();
     const data = encoder.encode(plain);
-    return window.crypto.subtle.digest('SHA-256', data);
+    return window.crypto.subtle.digest("SHA-256", data);
   };
 
   const base64encode = (input: ArrayBuffer): string => {
     return btoa(String.fromCharCode(...new Uint8Array(input)))
-      .replace(/=/g, '')
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_');
+      .replace(/=/g, "")
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_");
   };
 
   const hashed = await sha256(codeVerifier);
@@ -80,10 +81,10 @@ export async function startSpotifyLogin(): Promise<void> {
     // Build authorization URL (exact parameters from Spotify docs)
     const authUrl = new URL("https://accounts.spotify.com/authorize");
     const params = {
-      response_type: 'code',
+      response_type: "code",
       client_id: CLIENT_ID,
       scope: SCOPES,
-      code_challenge_method: 'S256',
+      code_challenge_method: "S256",
       code_challenge: codeChallenge,
       redirect_uri: REDIRECT_URI,
     };
@@ -104,8 +105,8 @@ export async function startSpotifyLogin(): Promise<void> {
  */
 export async function handleSpotifyCallback(): Promise<SpotifyTokens | null> {
   const urlParams = new URLSearchParams(window.location.search);
-  const code = urlParams.get('code');
-  const error = urlParams.get('error');
+  const code = urlParams.get("code");
+  const error = urlParams.get("error");
 
   if (error) {
     throw new Error(`OAuth error: ${error}`);
@@ -117,19 +118,21 @@ export async function handleSpotifyCallback(): Promise<SpotifyTokens | null> {
 
   const codeVerifier = localStorage.getItem(CODE_VERIFIER_KEY);
   if (!codeVerifier) {
-    throw new Error("Code verifier not found. Please restart the login process.");
+    throw new Error(
+      "Code verifier not found. Please restart the login process.",
+    );
   }
 
   try {
     // Exchange code for tokens (exact implementation from Spotify docs)
     const response = await fetch("https://accounts.spotify.com/api/token", {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        "Content-Type": "application/x-www-form-urlencoded",
       },
       body: new URLSearchParams({
         client_id: CLIENT_ID,
-        grant_type: 'authorization_code',
+        grant_type: "authorization_code",
         code,
         redirect_uri: REDIRECT_URI,
         code_verifier: codeVerifier,
@@ -138,14 +141,14 @@ export async function handleSpotifyCallback(): Promise<SpotifyTokens | null> {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.error_description || 'Token exchange failed');
+      throw new Error(errorData.error_description || "Token exchange failed");
     }
 
     const data = await response.json();
     const tokens: SpotifyTokens = {
       access_token: data.access_token,
       refresh_token: data.refresh_token,
-      expires_at: Date.now() + (data.expires_in * 1000),
+      expires_at: Date.now() + data.expires_in * 1000,
     };
 
     // Store tokens and cleanup
@@ -162,10 +165,12 @@ export async function handleSpotifyCallback(): Promise<SpotifyTokens | null> {
 /**
  * Get current user profile
  */
-export async function getCurrentUser(accessToken: string): Promise<SpotifyUser> {
+export async function getCurrentUser(
+  accessToken: string,
+): Promise<SpotifyUser> {
   const response = await fetch("https://api.spotify.com/v1/me", {
     headers: {
-      'Authorization': `Bearer ${accessToken}`,
+      Authorization: `Bearer ${accessToken}`,
     },
   });
 
@@ -196,7 +201,7 @@ export async function getValidAccessToken(): Promise<string | null> {
 
   // Start refresh process
   refreshPromise = refreshAccessToken(tokens.refresh_token);
-  
+
   try {
     const newTokens = await refreshPromise;
     refreshPromise = null;
@@ -212,14 +217,16 @@ export async function getValidAccessToken(): Promise<string | null> {
 /**
  * Refresh access token
  */
-async function refreshAccessToken(refreshToken: string): Promise<SpotifyTokens | null> {
+async function refreshAccessToken(
+  refreshToken: string,
+): Promise<SpotifyTokens | null> {
   const response = await fetch("https://accounts.spotify.com/api/token", {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
+      "Content-Type": "application/x-www-form-urlencoded",
     },
     body: new URLSearchParams({
-      grant_type: 'refresh_token',
+      grant_type: "refresh_token",
       refresh_token: refreshToken,
       client_id: CLIENT_ID,
     }),
@@ -233,7 +240,7 @@ async function refreshAccessToken(refreshToken: string): Promise<SpotifyTokens |
   const tokens: SpotifyTokens = {
     access_token: data.access_token,
     refresh_token: data.refresh_token || refreshToken, // Use new refresh token if provided
-    expires_at: Date.now() + (data.expires_in * 1000),
+    expires_at: Date.now() + data.expires_in * 1000,
   };
 
   storeTokens(tokens);
@@ -259,16 +266,16 @@ export function getStoredTokens(): SpotifyTokens | null {
   try {
     const stored = localStorage.getItem(TOKENS_KEY);
     if (!stored) return null;
-    
+
     const tokens = JSON.parse(stored);
-    
+
     // Validate token structure
     if (!tokens.access_token || !tokens.refresh_token || !tokens.expires_at) {
       console.warn("Invalid token structure found, clearing storage");
       clearTokens();
       return null;
     }
-    
+
     return tokens;
   } catch (error) {
     console.error("Failed to parse stored tokens:", error);

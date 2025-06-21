@@ -3,7 +3,7 @@
  * Makes direct API calls to Spotify using functional auth
  */
 
-import { getValidAccessToken } from "./spotify-auth";
+import { getValidAccessToken } from "./spotify-auth-new";
 import type {
   SpotifySearchResult,
   WeatherRecommendationRequest,

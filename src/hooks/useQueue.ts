@@ -5,7 +5,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { queueManager } from "@/lib/queue-manager";
 import type { TrackMetadata } from "@/types/queue-types";
-import { useSpotifyAuth } from "./useSpotifyAuth";
+import { useAuth } from "./useAuth";
 import { useWeatherQueue } from "./useWeatherQueue";
 
 interface UseQueueReturn {
@@ -26,7 +26,7 @@ interface UseQueueReturn {
  * Hook for queue management - single source of truth
  */
 export function useQueue(): UseQueueReturn {
-  const { user } = useSpotifyAuth();
+  const { user } = useAuth();
   const { replaceQueueWithWeatherTracks } = useWeatherQueue();
   const [currentTrack, setCurrentTrack] = useState<TrackMetadata | null>(null);
   const [upcomingTracks, setUpcomingTracks] = useState<TrackMetadata[]>([]);

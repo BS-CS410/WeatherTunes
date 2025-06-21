@@ -3,7 +3,7 @@ import { SunriseIcon, SunsetIcon } from "@/components/icons";
 import type { WeatherDisplayData } from "@/types/weather-types";
 import { SectionWrapper } from "../layout/SectionWrapper";
 import { useQueue } from "@/hooks/useQueue";
-import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { TYPOGRAPHY, COLORS } from "@/lib/design-system";
 import { cn } from "@/lib/dom-helpers";
@@ -25,7 +25,7 @@ export function WeatherMusicCard({
 }: WeatherMusicCardProps) {
   const [message, setMessage] = useState<string | null>(null);
   const { currentTrack, upcomingTracks, isLoading, playNext } = useQueue();
-  const { user } = useSpotifyAuth();
+  const { user } = useAuth();
 
   const {
     location = "Loading...",

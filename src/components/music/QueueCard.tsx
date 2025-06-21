@@ -6,14 +6,14 @@ import { useState, useRef } from "react";
 import { COLORS, TYPOGRAPHY, ANIMATIONS, LAYOUT } from "@/lib/design-system";
 import { cn } from "@/lib/dom-helpers";
 import { useQueue } from "@/hooks/useQueue";
-import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 
 export function QueueCard() {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const hoverTimeout = useRef<NodeJS.Timeout | null>(null);
 
-  const { user, isLoading: authLoading } = useSpotifyAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const { upcomingTracks, isLoading, playNext, playTrack, clearQueue } =
     useQueue();
 

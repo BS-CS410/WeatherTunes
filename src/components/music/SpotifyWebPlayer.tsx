@@ -6,7 +6,7 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useSpotifyPlayer } from "@/hooks/useSpotifyPlayer";
 import { useQueue } from "@/hooks/useQueue";
-import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
+import { useAuth } from "@/hooks/useAuth";
 import {
   Play,
   Pause,
@@ -29,7 +29,7 @@ export const SpotifyWebPlayer: React.FC<SpotifyWebPlayerProps> = ({
   showQueueInfo = true,
 }) => {
   const { state, controls, initialize } = useSpotifyPlayer();
-  const { user, login } = useSpotifyAuth();
+  const { user, login } = useAuth();
 
   // Get queue data directly
   const { currentTrack, upcomingTracks, playNext } = useQueue();
@@ -69,7 +69,7 @@ export const SpotifyWebPlayer: React.FC<SpotifyWebPlayerProps> = ({
         .then((success) => {
           setIsInitialized(success);
           if (!success) {
-            // User check is already handled by useSpotifyAuth hook
+            // User check is already handled by useAuth hook
             if (!user) {
               setAuthError("Authentication expired. Please log in again.");
             }

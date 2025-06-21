@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { spotifyApi } from "@/lib/spotify-api";
-import { useSpotifyAuth } from "./useSpotifyAuth";
+import { useAuth } from "./useAuth";
 import type { TrackMetadata } from "@/types/queue-types";
 
 interface UseSpotifySearchReturn {
@@ -17,7 +17,7 @@ interface UseSpotifySearchReturn {
  * Provides both text search and mood-based search functionality
  */
 export const useSpotifySearch = (): UseSpotifySearchReturn => {
-  const { user } = useSpotifyAuth();
+  const { user } = useAuth();
   const [searchResults, setSearchResults] = useState<TrackMetadata[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);

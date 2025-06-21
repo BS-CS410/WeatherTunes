@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Search, Music, Plus, Loader2 } from "lucide-react";
 import { useSpotifySearch } from "@/hooks/useSpotifySearch";
 import { useQueue } from "@/hooks/useQueue";
-import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
+import { useAuth } from "@/hooks/useAuth";
 import type { TrackMetadata } from "@/types/queue-types";
 import {
   COLORS,
@@ -22,7 +22,7 @@ interface SpotifySearchCardProps {
  * Uses the new queue system for better performance
  */
 export function SpotifySearchCard({ className = "" }: SpotifySearchCardProps) {
-  const { user } = useSpotifyAuth();
+  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const {
     searchResults,

@@ -1,39 +1,26 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
+import { useAuth } from "@/hooks/useAuth";
+import { SimpleLogin } from "@/components/auth/SimpleLogin";
 
 function Login() {
-  const { user, login } = useSpotifyAuth();
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
     // Redirect to main page if already authenticated
-    if (user) {
+    if (isAuthenticated) {
       navigate("/");
     }
-  }, [user, navigate]);
+  }, [isAuthenticated, navigate]);
 
-  return (
-    <div className="flex min-h-screen items-center justify-center px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-center text-2xl font-bold">
-            Login with Spotify
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Button
-            onClick={login}
-            className="w-full bg-[#1DB954] hover:bg-[#1ED760]"
-          >
-            Login via Spotify
-          </Button>
-        </CardContent>
-      </Card>
-    </div>
-  );
+  // Show login component if not authenticated
+  if (!isAuthenticated) {
+    return <SimpleLogin />;
+  }
+
+  // Return null while redirecting
+  return null;
 }
 
 export default Login;
