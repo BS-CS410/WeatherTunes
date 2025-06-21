@@ -1,5 +1,4 @@
 import { cn } from "@/lib/dom-helpers";
-import { LIQUID_GLASS_STYLES, BUTTON_STYLES } from "@/lib/design-system";
 
 interface SegmentedControlProps {
   options: {
@@ -24,7 +23,11 @@ export function SegmentedControl({
   return (
     <div
       className={cn(
-        LIQUID_GLASS_STYLES.segmentedControl,
+        // Inlined segmentedControl styles - preserving exact visual appearance
+        "border border-white/[0.08] bg-black/[0.03] dark:border-white/[0.06] dark:bg-white/[0.03]",
+        "flex rounded-xl p-1.5 shadow-[0_2px_8px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.1)]",
+        "relative gap-1 overflow-hidden backdrop-blur-xl backdrop-saturate-[2.0]",
+        "before:pointer-events-none before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-br before:from-white/5 before:to-transparent",
         "segmented-control-container",
         className,
       )}
@@ -40,10 +43,22 @@ export function SegmentedControl({
           className={cn(
             "segmented-control-item",
             value === option.value
-              ? [BUTTON_STYLES.segmentedActive, "active"]
-              : [
-                  BUTTON_STYLES.segmented,
+              ? // Active state - inlined segmentedActive styles
+                [
+                  "border border-white/[0.2] bg-white/[0.85] backdrop-blur-xl backdrop-saturate-[2.0]",
+                  "dark:border-white/[0.12] dark:bg-white/[0.08]",
+                  "rounded-lg px-5 py-2.5 font-semibold text-gray-900 dark:text-gray-100",
+                  "transition-all duration-200 ease-out",
+                  "shadow-[0_2px_8px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.1)]",
+                  "relative transform-gpu overflow-hidden",
+                  "active",
+                ]
+              : // Inactive state - inlined segmented styles
+                [
+                  "border-0 bg-transparent text-gray-700 dark:text-gray-300",
+                  "rounded-lg px-5 py-2.5 font-medium transition-all duration-150",
                   "hover:bg-white/[0.08] dark:hover:bg-black/[0.08]",
+                  "relative overflow-hidden",
                 ],
           )}
         >

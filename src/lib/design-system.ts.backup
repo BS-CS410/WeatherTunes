@@ -7,12 +7,10 @@
 const GLASS_BASE = "backdrop-blur-xl backdrop-saturate-[1.8] border";
 const GLASS_LIGHT = "bg-white/[0.05] border-white/[0.12]";
 const GLASS_DARK = "dark:bg-black/[0.12] dark:border-white/[0.04]";
-const GLASS_HOVER =
-  "hover:bg-white/[0.08] hover:border-white/[0.18] hover:backdrop-saturate-[2.0] dark:hover:bg-black/[0.15] dark:hover:border-white/[0.06]";
+const GLASS_HOVER = "hover:bg-white/[0.08] hover:border-white/[0.18] hover:backdrop-saturate-[2.0] dark:hover:bg-black/[0.15] dark:hover:border-white/[0.06]";
 
 // Chromatic aberration effect
-const CHROMATIC_SHADOW =
-  "shadow-[inset_0_0_20px_rgba(255,255,255,0.05),inset_1px_0_0_rgba(255,0,0,0.02),inset_-1px_0_0_rgba(0,255,0,0.02),inset_0_1px_0_rgba(0,0,255,0.02)] dark:shadow-[inset_0_0_20px_rgba(255,255,255,0.02),inset_1px_0_0_rgba(255,0,0,0.01),inset_-1px_0_0_rgba(0,255,0,0.01),inset_0_1px_0_rgba(0,0,255,0.01)]";
+const CHROMATIC_SHADOW = "shadow-[inset_0_0_20px_rgba(255,255,255,0.05),inset_1px_0_0_rgba(255,0,0,0.02),inset_-1px_0_0_rgba(0,255,0,0.02),inset_0_1px_0_rgba(0,0,255,0.02)] dark:shadow-[inset_0_0_20px_rgba(255,255,255,0.02),inset_1px_0_0_rgba(255,0,0,0.01),inset_-1px_0_0_rgba(0,255,0,0.01),inset_0_1px_0_rgba(0,0,255,0.01)]";
 
 export const COLORS = {
   glass: {
@@ -22,35 +20,25 @@ export const COLORS = {
     modal: `${GLASS_BASE} bg-white/[0.06] backdrop-blur-2xl backdrop-saturate-[2.2] border-white/[0.15] dark:bg-black/[0.18] dark:border-white/[0.06]`,
     enhanced: `${GLASS_BASE} ${GLASS_LIGHT} ${GLASS_DARK} shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25),inset_0_0_20px_rgba(255,255,255,0.05)] dark:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08),inset_0_0_20px_rgba(255,255,255,0.02)]`,
     segmented: `${GLASS_BASE} bg-white/[0.03] border-white/[0.08] shadow-[inset_0_0.5px_0_0_rgba(255,255,255,0.2)] dark:bg-black/[0.08] dark:border-white/[0.03] dark:shadow-[inset_0_0.5px_0_0_rgba(255,255,255,0.06)]`,
-    segmentedActive:
-      "bg-white/[0.90] backdrop-blur-sm border border-white/[0.35] shadow-[0_0.5px_3px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.4)] dark:bg-white/[0.15] dark:border-white/[0.18] dark:shadow-[0_0.5px_4px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.1)]",
+    segmentedActive: "bg-white/[0.90] backdrop-blur-sm border border-white/[0.35] shadow-[0_0.5px_3px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.4)] dark:bg-white/[0.15] dark:border-white/[0.18] dark:shadow-[0_0.5px_4px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.1)]",
     sliderTrack: `backdrop-blur-lg backdrop-saturate-[1.6] bg-white/[0.08] border border-white/[0.12] dark:bg-black/[0.12] dark:border-white/[0.04]`,
-    sliderKnob:
-      "bg-white/[0.95] backdrop-blur-sm border border-white/[0.5] shadow-[0_2px_8px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,255,255,0.6)] dark:bg-white/[0.90] dark:border-white/[0.3] dark:shadow-[0_2px_12px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.3)]",
-    hexIcon:
-      "bg-gradient-to-br from-white/[0.08] to-white/[0.02] backdrop-blur-lg backdrop-saturate-[1.8] border border-white/[0.12] dark:from-black/[0.20] dark:to-black/[0.12] dark:border-white/[0.06]",
+    sliderKnob: "bg-white/[0.95] backdrop-blur-sm border border-white/[0.5] shadow-[0_2px_8px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,255,255,0.6)] dark:bg-white/[0.90] dark:border-white/[0.3] dark:shadow-[0_2px_12px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.3)]",
+    hexIcon: "bg-gradient-to-br from-white/[0.08] to-white/[0.02] backdrop-blur-lg backdrop-saturate-[1.8] border border-white/[0.12] dark:from-black/[0.20] dark:to-black/[0.12] dark:border-white/[0.06]",
     sidebar: `${GLASS_BASE} bg-white/[0.06] border-r border-white/[0.12] dark:bg-black/[0.20] dark:border-white/[0.04]`,
     floating: `${GLASS_BASE} bg-white/[0.08] backdrop-blur-2xl backdrop-saturate-[2.4] border-white/[0.25] shadow-[0_20px_50px_rgba(0,0,0,0.15),0_1px_3px_rgba(0,0,0,0.1)] dark:bg-black/[0.25] dark:border-white/[0.15] dark:shadow-[0_20px_50px_rgba(0,0,0,0.4)]`,
     chromatic: `${GLASS_BASE} ${GLASS_LIGHT} ${GLASS_DARK} ${CHROMATIC_SHADOW}`,
   },
   text: {
-    primary:
-      "text-gray-950 drop-shadow-lg dark:text-white dark:drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]",
-    secondary:
-      "text-gray-800 drop-shadow-lg dark:text-gray-100 dark:drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]",
-    muted:
-      "text-gray-700 drop-shadow-lg dark:text-gray-200 dark:drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]",
+    primary: "text-gray-950 drop-shadow-lg dark:text-white dark:drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]",
+    secondary: "text-gray-800 drop-shadow-lg dark:text-gray-100 dark:drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]",
+    muted: "text-gray-700 drop-shadow-lg dark:text-gray-200 dark:drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]",
     interactive: "hover:text-gray-950 dark:hover:text-white",
-    weather:
-      "text-gray-950 drop-shadow-lg dark:text-white dark:drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]",
-    condition:
-      "text-gray-900 drop-shadow-lg dark:text-gray-50 dark:drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]",
+    weather: "text-gray-950 drop-shadow-lg dark:text-white dark:drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]",
+    condition: "text-gray-900 drop-shadow-lg dark:text-gray-50 dark:drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]",
     onGlass: "text-gray-900 dark:text-white drop-shadow-sm",
     onDarkGlass: "text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]",
-    subtle:
-      "text-gray-600 drop-shadow-lg dark:text-gray-300 dark:drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]",
-    placeholder:
-      "text-gray-500 drop-shadow-lg dark:text-gray-400 dark:drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]",
+    subtle: "text-gray-600 drop-shadow-lg dark:text-gray-300 dark:drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]",
+    placeholder: "text-gray-500 drop-shadow-lg dark:text-gray-400 dark:drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]",
   },
   border: {
     light: "border-white/10",
@@ -59,29 +47,19 @@ export const COLORS = {
     subtle: "border-white/06 dark:border-white/02",
     enhanced: "border-white/15 dark:border-white/06",
     divider: "border-gray-300/30 dark:border-slate-400/15",
-    liquidEdge:
-      "border-white/[0.15] shadow-[inset_0_0_1px_rgba(255,255,255,0.3)]",
+    liquidEdge: "border-white/[0.15] shadow-[inset_0_0_1px_rgba(255,255,255,0.3)]",
     liquidGlow: "border-white/[0.20] shadow-[0_0_10px_rgba(255,255,255,0.1)]",
   },
   shadow: {
-    glass:
-      "shadow-[0_8px_32px_rgba(0,0,0,0.06),0_1px_3px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3),0_1px_3px_rgba(0,0,0,0.4)]",
-    glassHover:
-      "shadow-[0_12px_40px_rgba(0,0,0,0.08),0_2px_4px_rgba(0,0,0,0.1)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.4),0_2px_4px_rgba(0,0,0,0.5)]",
-    liquidGlass:
-      "shadow-[0_8px_32px_rgba(0,0,0,0.06),0_1px_3px_rgba(0,0,0,0.08),inset_0_0_0_1px_rgba(255,255,255,0.1)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3),0_1px_3px_rgba(0,0,0,0.4),inset_0_0_0_1px_rgba(255,255,255,0.05)]",
-    liquidHover:
-      "shadow-[0_16px_48px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.12),inset_0_0_0_1px_rgba(255,255,255,0.15)] dark:shadow-[0_16px_48px_rgba(0,0,0,0.5),0_2px_4px_rgba(0,0,0,0.6),inset_0_0_0_1px_rgba(255,255,255,0.08)]",
-    displacement:
-      "shadow-[0_0_20px_rgba(255,255,255,0.1),inset_0_0_20px_rgba(255,255,255,0.05)]",
-    displacementHover:
-      "shadow-[0_0_30px_rgba(255,255,255,0.15),inset_0_0_30px_rgba(255,255,255,0.08)]",
-    inset:
-      "shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25)] dark:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]",
-    control:
-      "shadow-[0_2px_8px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.3),0_4px_16px_rgba(0,0,0,0.2)]",
-    controlHover:
-      "shadow-[0_4px_12px_rgba(0,0,0,0.1),0_8px_24px_rgba(0,0,0,0.06)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.4),0_8px_24px_rgba(0,0,0,0.25)]",
+    glass: "shadow-[0_8px_32px_rgba(0,0,0,0.06),0_1px_3px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3),0_1px_3px_rgba(0,0,0,0.4)]",
+    glassHover: "shadow-[0_12px_40px_rgba(0,0,0,0.08),0_2px_4px_rgba(0,0,0,0.1)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.4),0_2px_4px_rgba(0,0,0,0.5)]",
+    liquidGlass: "shadow-[0_8px_32px_rgba(0,0,0,0.06),0_1px_3px_rgba(0,0,0,0.08),inset_0_0_0_1px_rgba(255,255,255,0.1)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3),0_1px_3px_rgba(0,0,0,0.4),inset_0_0_0_1px_rgba(255,255,255,0.05)]",
+    liquidHover: "shadow-[0_16px_48px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.12),inset_0_0_0_1px_rgba(255,255,255,0.15)] dark:shadow-[0_16px_48px_rgba(0,0,0,0.5),0_2px_4px_rgba(0,0,0,0.6),inset_0_0_0_1px_rgba(255,255,255,0.08)]",
+    displacement: "shadow-[0_0_20px_rgba(255,255,255,0.1),inset_0_0_20px_rgba(255,255,255,0.05)]",
+    displacementHover: "shadow-[0_0_30px_rgba(255,255,255,0.15),inset_0_0_30px_rgba(255,255,255,0.08)]",
+    inset: "shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25)] dark:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]",
+    control: "shadow-[0_2px_8px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.3),0_4px_16px_rgba(0,0,0,0.2)]",
+    controlHover: "shadow-[0_4px_12px_rgba(0,0,0,0.1),0_8px_24px_rgba(0,0,0,0.06)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.4),0_8px_24px_rgba(0,0,0,0.25)]",
     darkGlow: "dark:shadow-[0_0_20px_rgba(255,255,255,0.05)]",
     darkInner: "dark:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]",
   },
@@ -92,20 +70,16 @@ export const ANIMATIONS = {
     fast: "transition-all duration-200 ease-out",
     standard: "transition-all duration-300 cubic-bezier(0.4, 0, 0.2, 1)",
     slow: "transition-all duration-500 cubic-bezier(0.175, 0.885, 0.32, 1.275)",
-    liquid:
-      "transition-all duration-400 cubic-bezier(0.175, 0.885, 0.32, 1.275)",
-    spring:
-      "transition-all duration-600 cubic-bezier(0.68, -0.55, 0.265, 1.55)",
+    liquid: "transition-all duration-400 cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+    spring: "transition-all duration-600 cubic-bezier(0.68, -0.55, 0.265, 1.55)",
     elastic: "transition-all duration-800 cubic-bezier(0.68, -0.6, 0.32, 1.6)",
   },
   hover: {
     subtle: "hover:-translate-y-1 hover:scale-[1.02]",
     standard: "hover:-translate-y-2 hover:scale-105",
     enhanced: "hover:-translate-y-3 hover:scale-110",
-    liquid:
-      "hover:-translate-y-1 hover:scale-[1.01] hover:backdrop-saturate-[2.2]",
-    liquidGlass:
-      "hover:-translate-y-2 hover:scale-[1.03] hover:backdrop-saturate-[2.4] hover:backdrop-blur-2xl",
+    liquid: "hover:-translate-y-1 hover:scale-[1.01] hover:backdrop-saturate-[2.2]",
+    liquidGlass: "hover:-translate-y-2 hover:scale-[1.03] hover:backdrop-saturate-[2.4] hover:backdrop-blur-2xl",
     elastic: "hover:-translate-y-2 hover:scale-[1.05] hover:rotate-1",
   },
   groupHover: {
@@ -113,8 +87,7 @@ export const ANIMATIONS = {
     standard: "group-hover:-translate-y-2 group-hover:scale-105",
     enhanced: "group-hover:-translate-y-3 group-hover:scale-110",
     liquid: "group-hover:-translate-y-1 group-hover:scale-[1.01]",
-    liquidGlass:
-      "group-hover:-translate-y-2 group-hover:scale-[1.03] group-hover:backdrop-saturate-[2.4]",
+    liquidGlass: "group-hover:-translate-y-2 group-hover:scale-[1.03] group-hover:backdrop-saturate-[2.4]",
   },
   shadow: {
     base: "drop-shadow-lg",
@@ -154,11 +127,9 @@ export const TYPOGRAPHY = {
     xs: "text-xs",
   },
   weather: {
-    location:
-      "font-inter-tight text-[1em] leading-[1.2] font-semibold tracking-wider uppercase",
+    location: "font-inter-tight text-[1em] leading-[1.2] font-semibold tracking-wider uppercase",
     temperature: "font-inter-tight text-[5em] leading-[0.85] font-bold",
-    condition:
-      "font-inter-tight text-[1.3em] leading-[1.1] font-extralight tracking-tighter lowercase",
+    condition: "font-inter-tight text-[1.3em] leading-[1.1] font-extralight tracking-tighter lowercase",
     time: "font-inter-tight leading-none font-light tracking-wider whitespace-nowrap",
   },
   music: {
@@ -175,31 +146,18 @@ export const LAYOUT = {
     grid: "grid",
   },
   spacing: {
-    xs: "gap-1",
-    sm: "gap-2",
-    md: "gap-4",
-    lg: "gap-6",
-    xl: "gap-8",
+    xs: "gap-1", sm: "gap-2", md: "gap-4", lg: "gap-6", xl: "gap-8",
     spaceY: { sm: "space-y-2", md: "space-y-4", lg: "space-y-6" },
     spaceX: { sm: "space-x-2", md: "space-x-4", lg: "space-x-6" },
     micro: "gap-[2px]",
   },
   padding: {
-    none: "p-0",
-    xs: "p-2",
-    sm: "p-3",
-    md: "p-4",
-    lg: "p-6",
-    xl: "p-8",
+    none: "p-0", xs: "p-2", sm: "p-3", md: "p-4", lg: "p-6", xl: "p-8",
     button: { sm: "px-4 py-2", md: "px-6 py-3", lg: "px-8 py-4" },
     section: { sm: "px-2 py-4", md: "px-4 pb-4 pl-2", lg: "p-8" },
   },
   rounded: {
-    sm: "rounded-lg",
-    base: "rounded-xl",
-    lg: "rounded-2xl",
-    xl: "rounded-3xl",
-    full: "rounded-full",
+    sm: "rounded-lg", base: "rounded-xl", lg: "rounded-2xl", xl: "rounded-3xl", full: "rounded-full",
   },
 } as const;
 

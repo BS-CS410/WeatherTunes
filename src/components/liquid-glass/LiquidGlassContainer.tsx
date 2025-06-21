@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import {
   LIQUID_GLASS_STYLES,
-  createLiquidGlassCard,
+  COLORS,
   combineStyles,
 } from "@/lib/design-system";
 
@@ -18,8 +18,7 @@ interface LiquidGlassContainerProps {
 }
 
 /**
- * Advanced Liquid Glass Container inspired by Apple's design
- * Implements mouse tracking, elastic deformation, and visual effects
+ * Simplified Liquid Glass Container - preserving visual effects with cleaner architecture
  */
 export const LiquidGlassContainer: React.FC<LiquidGlassContainerProps> = ({
   children,
@@ -34,8 +33,8 @@ export const LiquidGlassContainer: React.FC<LiquidGlassContainerProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
-  const [isActive, setIsActive] = useState(false);
 
+  // Simplified mouse tracking with preserved visual effects
   useEffect(() => {
     const container = containerRef.current;
     if (!container || !mouseResponsive) return;
@@ -48,9 +47,10 @@ export const LiquidGlassContainer: React.FC<LiquidGlassContainerProps> = ({
       container.style.setProperty("--mouse-x", `${x}%`);
       container.style.setProperty("--mouse-y", `${y}%`);
 
+      // Elastic deformation for specific variant
       if (variant === "elastic") {
-        const elasticX = (x - 50) * (elasticity || 0.15) * 0.1;
-        const elasticY = (y - 50) * (elasticity || 0.15) * 0.1;
+        const elasticX = (x - 50) * elasticity * 0.1;
+        const elasticY = (y - 50) * elasticity * 0.1;
         container.style.setProperty("--elastic-x", elasticX.toString());
         container.style.setProperty("--elastic-y", elasticY.toString());
       }
@@ -64,79 +64,42 @@ export const LiquidGlassContainer: React.FC<LiquidGlassContainerProps> = ({
       setIsHovered(false);
     };
 
-    const handleMouseEnter = () => {
-      setIsHovered(true);
-    };
-
     container.addEventListener("mousemove", handleMouseMove);
     container.addEventListener("mouseleave", handleMouseLeave);
-    container.addEventListener("mouseenter", handleMouseEnter);
+    container.addEventListener("mouseenter", () => setIsHovered(true));
 
     return () => {
       container.removeEventListener("mousemove", handleMouseMove);
       container.removeEventListener("mouseleave", handleMouseLeave);
-      container.removeEventListener("mouseenter", handleMouseEnter);
+      container.removeEventListener("mouseenter", () => setIsHovered(true));
     };
   }, [mouseResponsive, variant, elasticity]);
 
-  // Build styles based on variant and options
-  const getContainerStyles = () => {
+  // Simplified style builder with preserved effects
+  const getVariantStyle = () => {
+    const baseStyle = mouseResponsive
+      ? LIQUID_GLASS_STYLES.mouseResponsive
+      : "";
+
     switch (variant) {
       case "chromatic":
-        return combineStyles(
-          LIQUID_GLASS_STYLES.chromaticGlass,
-          mouseResponsive ? LIQUID_GLASS_STYLES.mouseResponsive : "",
-          className,
-        );
-
+        return combineStyles(LIQUID_GLASS_STYLES.chromaticGlass, baseStyle);
       case "floating":
-        return combineStyles(
-          LIQUID_GLASS_STYLES.floating,
-          mouseResponsive ? LIQUID_GLASS_STYLES.mouseResponsive : "",
-          className,
-        );
-
+        return combineStyles(LIQUID_GLASS_STYLES.floating, baseStyle);
       case "elastic":
-        return combineStyles(
-          LIQUID_GLASS_STYLES.elasticContainer,
-          mouseResponsive ? LIQUID_GLASS_STYLES.mouseResponsive : "",
-          className,
-        );
-
+        return combineStyles(LIQUID_GLASS_STYLES.elasticContainer, baseStyle);
       case "interactive":
-        return combineStyles(
-          LIQUID_GLASS_STYLES.interactiveGlass,
-          mouseResponsive ? LIQUID_GLASS_STYLES.mouseResponsive : "",
-          className,
-        );
-
+        return combineStyles(LIQUID_GLASS_STYLES.interactiveGlass, baseStyle);
       default:
-        return (
-          createLiquidGlassCard("enhanced", {
-            mouseResponsive,
-            chromatic: false,
-            elastic: false,
-            floating: false,
-          }) +
-          " " +
-          className
-        );
+        return combineStyles(COLORS.glass.enhanced, baseStyle);
     }
   };
 
-  const handleMouseDown = () => {
-    setIsActive(true);
-  };
-
-  const handleMouseUp = () => {
-    setIsActive(false);
-  };
-
   const containerStyles = combineStyles(
-    getContainerStyles(),
+    getVariantStyle(),
     isHovered ? "liquid-glass-hover" : "",
-    isActive ? "scale-95" : "",
     onClick ? "cursor-pointer" : "",
+    className,
   );
 
   const dynamicStyle: React.CSSProperties = {
@@ -146,10 +109,8 @@ export const LiquidGlassContainer: React.FC<LiquidGlassContainerProps> = ({
     "--aberration-intensity": chromaticIntensity,
     "--mouse-x": "50%",
     "--mouse-y": "50%",
-    "--mouse-from-center": "0",
     "--elastic-x": "0",
     "--elastic-y": "0",
-    "--elastic-intensity": elasticity,
   } as React.CSSProperties;
 
   return (
@@ -158,8 +119,6 @@ export const LiquidGlassContainer: React.FC<LiquidGlassContainerProps> = ({
       className={containerStyles}
       style={dynamicStyle}
       onClick={onClick}
-      onMouseDown={handleMouseDown}
-      onMouseUp={handleMouseUp}
     >
       {children}
     </div>

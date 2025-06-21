@@ -12,7 +12,7 @@ export { useSpotifyAuth } from "./useSpotifyAuth";
 // Specific feature hooks
 export { useCurrentTrack } from "./useCurrentTrack";
 export { useForecastData } from "./useForecast";
-export { useLiquidGlass } from "./useLiquidGlass";
+
 export { useLocationBasedDefaults } from "./useLocationBasedDefaults";
 export { useSpotifySearch } from "./useSpotifySearch";
 export { useSpotifyPlayer } from "./useSpotifyPlayer";
