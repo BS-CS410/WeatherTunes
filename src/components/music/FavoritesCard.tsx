@@ -5,6 +5,7 @@ import { cn } from "@/lib/dom-helpers";
 import { useAuth } from "@/hooks/useAuth";
 import { SpotifyMiniPlayer } from "./SpotifyMiniPlayer";
 import { useQueue } from "@/hooks/useQueue";
+import { spotifyApi } from "@/lib/spotify-api";
 
 interface FavoritesCardProps {
   className?: string;
@@ -51,46 +52,14 @@ export function FavoritesCard({ className = "" }: FavoritesCardProps) {
       }
 
       try {
-        // Get user's saved tracks from Spotify
-        const token = localStorage.getItem("spotify_access_token");
-        if (!token) {
-          throw new Error("No access token available");
-        }
-
-        const res = await fetch(
-          "https://api.spotify.com/v1/me/tracks?limit=50",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          },
-        );
-
-        if (!res.ok) {
-          throw new Error(`Error fetching liked tracks: ${res.status}`);
-        }
-
-        const data = await res.json();
-        const tracks = data.items.map(
-          (item: {
-            track: {
-              id: string;
-              name: string;
-              artists: { name: string }[];
-              album: { images: { url: string }[] };
-            };
-          }) => ({
-            id: item.track.id,
-            title: item.track.name,
-            artist: item.track.artists[0]?.name || "Unknown Artist",
-            albumArt: item.track.album.images[0]?.url || "",
-            albumArtFallback: item.track.album.images[1]?.url || "",
-          }),
-        );
-
+        // Get user's saved tracks from central API client
+        const tracks = await spotifyApi.getUserSavedTracks(50);
         setLikedTracks(tracks);
-      } catch (e) {
-        setError(e instanceof Error ? e.message : "Unknown error occurred");
+      } catch (error) {
+        console.error("Error fetching liked tracks:", error);
+        setError(
+          error instanceof Error ? error.message : "Unknown error occurred",
+        );
       } finally {
         setLoading(false);
       }

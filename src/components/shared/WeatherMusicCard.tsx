@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { TYPOGRAPHY, COLORS } from "@/lib/design-system";
 import { cn } from "@/lib/dom-helpers";
 import { SpotifyWebPlayer } from "@/components/music/SpotifyWebPlayer";
+import { spotifyApi } from "@/lib/spotify-api";
 
 interface WeatherMusicCardProps {
   weatherData: WeatherDisplayData;
@@ -67,15 +68,8 @@ export function WeatherMusicCard({
     }
 
     try {
-      // Add to user's Spotify library
-      await fetch("https://api.spotify.com/v1/me/tracks", {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("spotify_access_token")}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ ids: [currentTrack.id] }),
-      });
+      // Add to user's Spotify library using central API client
+      await spotifyApi.saveTracksForUser([currentTrack.id]);
 
       // Record interaction for personalization
       // TODO: Implement track interaction recording
