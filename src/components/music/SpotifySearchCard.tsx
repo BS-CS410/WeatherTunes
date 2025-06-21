@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Search, Music, Plus, Loader2 } from "lucide-react";
 import { useSpotifySearch } from "@/hooks/useSpotifySearch";
-import { useCurrentTrack } from "@/hooks/useCurrentTrack";
+import { useQueue } from "@/hooks/useQueue";
 import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
 import type { TrackMetadata } from "@/types/queue-types";
 import {
@@ -19,7 +19,7 @@ interface SpotifySearchCardProps {
 
 /**
  * Component for searching Spotify tracks and adding them to queue
- * Demonstrates the new live Spotify API integration
+ * Uses the new queue system for better performance
  */
 export function SpotifySearchCard({ className = "" }: SpotifySearchCardProps) {
   const { user } = useSpotifyAuth();
@@ -32,8 +32,7 @@ export function SpotifySearchCard({ className = "" }: SpotifySearchCardProps) {
     searchByMood,
     clearSearchResults,
   } = useSpotifySearch();
-  const currentTrack = useCurrentTrack();
-  const addTrackToQueue = currentTrack?.addTrackToQueue;
+  const { addToQueue } = useQueue();
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,12 +46,12 @@ export function SpotifySearchCard({ className = "" }: SpotifySearchCardProps) {
   };
 
   const handleAddToQueue = async (track: TrackMetadata) => {
-    if (!addTrackToQueue) {
+    if (!addToQueue) {
       console.error("Add to queue function not available");
       return;
     }
     try {
-      await addTrackToQueue(track.id);
+      await addToQueue([track]);
     } catch (error) {
       console.error("Failed to add track to queue:", error);
     }

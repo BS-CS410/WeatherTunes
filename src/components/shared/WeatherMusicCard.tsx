@@ -24,7 +24,7 @@ export function WeatherMusicCard({
   className = "",
 }: WeatherMusicCardProps) {
   const [message, setMessage] = useState<string | null>(null);
-  const { trackMetadata, currentTrackId, songQueue, setNextTrack, isLoading } =
+  const { trackMetadata, currentTrackId, songQueue, playNext, isLoading } =
     useCurrentTrackContext();
   const { user } = useSpotifyAuth();
 
@@ -96,7 +96,7 @@ export function WeatherMusicCard({
       setTimeout(() => setMessage(null), 3000);
       return;
     }
-    await setNextTrack();
+    await playNext();
   };
 
   return (

@@ -2,10 +2,9 @@
  * Simplified current track provider using the new queue system
  */
 
-import React, { createContext, useState, useCallback, useEffect } from "react";
+import React, { createContext, useState, useCallback } from "react";
 import type { ReactNode } from "react";
 import { useQueue } from "@/hooks/useQueue";
-import { useWeatherQueue } from "@/hooks/useWeatherQueue";
 import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
 import type { TrackMetadata } from "@/types/queue-types";
 
@@ -34,33 +33,7 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
 }) => {
   const { user } = useSpotifyAuth();
   const { currentTrack, upcomingTracks, isLoading, playNext } = useQueue();
-  const { replaceQueueWithWeatherTracks } = useWeatherQueue();
   const [isUpdating, setIsUpdating] = useState(false);
-  const [hasInitialized, setHasInitialized] = useState(false);
-
-  // Auto-generate queue when user logs in and no queue exists
-  useEffect(() => {
-    if (user && !hasInitialized && upcomingTracks.length === 0 && !isLoading) {
-      setHasInitialized(true);
-      console.log("Auto-generating initial queue for user...");
-      replaceQueueWithWeatherTracks(15).catch((error) => {
-        console.error("Failed to auto-generate queue:", error);
-      });
-    }
-  }, [
-    user,
-    hasInitialized,
-    upcomingTracks.length,
-    isLoading,
-    replaceQueueWithWeatherTracks,
-  ]);
-
-  // Reset initialization when user logs out
-  useEffect(() => {
-    if (!user) {
-      setHasInitialized(false);
-    }
-  }, [user]);
 
   // Sync current track state
   const trackMetadata = currentTrack;

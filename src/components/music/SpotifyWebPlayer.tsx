@@ -40,9 +40,9 @@ export const SpotifyWebPlayer: React.FC<SpotifyWebPlayerProps> = ({
   // Safe destructuring with fallbacks
   const currentTrackContext = useCurrentTrack();
   const trackMetadata = currentTrackContext?.trackMetadata || null;
-  const setNextTrack = useMemo(
-    () => currentTrackContext?.setNextTrack || (async () => {}),
-    [currentTrackContext?.setNextTrack],
+  const playNext = useMemo(
+    () => currentTrackContext?.playNext || (async () => {}),
+    [currentTrackContext?.playNext],
   );
   const currentTrackId = currentTrackContext?.currentTrackId || null;
   const songQueue = currentTrackContext?.songQueue || [];
@@ -58,7 +58,7 @@ export const SpotifyWebPlayer: React.FC<SpotifyWebPlayerProps> = ({
   const handleNextTrack = useCallback(async () => {
     try {
       // Use CurrentTrackProvider's queue management
-      await setNextTrack();
+      await playNext();
 
       // If that fails, try player's next track
       if (!(await controls.nextTrack())) {
@@ -67,7 +67,7 @@ export const SpotifyWebPlayer: React.FC<SpotifyWebPlayerProps> = ({
     } catch (error) {
       console.error("Error advancing to next track:", error);
     }
-  }, [setNextTrack, controls]);
+  }, [playNext, controls]);
 
   /**
    * Initialize player on mount

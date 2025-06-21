@@ -14,15 +14,10 @@ export function QueueCard() {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const hoverTimeout = useRef<NodeJS.Timeout | null>(null);
-  
+
   const { user, isLoading: authLoading } = useSpotifyAuth();
-  const { 
-    upcomingTracks, 
-    isLoading, 
-    playNext, 
-    playTrack, 
-    clearQueue
-  } = useQueue();
+  const { upcomingTracks, isLoading, playNext, playTrack, clearQueue } =
+    useQueue();
   const { replaceQueueWithWeatherTracks } = useWeatherQueue();
 
   const handleMouseEnter = (id: string) => {
@@ -111,7 +106,9 @@ export function QueueCard() {
   return (
     <div className="relative">
       {/* Header with controls */}
-      <div className={cn("flex items-center justify-between", LAYOUT.padding.lg)}>
+      <div
+        className={cn("flex items-center justify-between", LAYOUT.padding.lg)}
+      >
         <h2 className={cn(TYPOGRAPHY.display.xl, COLORS.text.primary)}>
           Up Next:
         </h2>
@@ -170,7 +167,8 @@ export function QueueCard() {
               {upcomingTracks.map((track, idx) => {
                 const isHovered = hoveredId === track.id;
                 const isNextUp = idx === 0 && hoveredId === null;
-                const isNextUpOrHovered = isNextUp || (hoveredId === track.id && idx === 0);
+                const isNextUpOrHovered =
+                  isNextUp || (hoveredId === track.id && idx === 0);
 
                 return (
                   <div
@@ -185,7 +183,11 @@ export function QueueCard() {
                   >
                     <div className="relative">
                       <img
-                        src={track.albumArt || track.albumArtFallback || "/placeholder-album.svg"}
+                        src={
+                          track.albumArt ||
+                          track.albumArtFallback ||
+                          "/placeholder-album.svg"
+                        }
                         alt={track.title}
                         onError={(e) => {
                           if (

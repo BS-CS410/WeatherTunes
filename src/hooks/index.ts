@@ -19,3 +19,5 @@ export { useSpotifyPlayer } from "./useSpotifyPlayer";
 export { useThemeManager } from "./useThemeManager";
 export { useWeatherData, useThemeFromWeather } from "./useWeather";
 export { useWeatherMusic } from "./useWeatherMusic";
+export { useQueue } from "./useQueue";
+export { useWeatherQueue } from "./useWeatherQueue";
