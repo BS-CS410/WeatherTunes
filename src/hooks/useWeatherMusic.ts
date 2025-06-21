@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useWeatherData } from "./useWeather";
-import { spotifyApiService } from "@/lib/spotify-client";
+import { spotifyApi } from "@/lib/spotify-api";
 import { getWeatherRecommendationParams } from "@/lib";
 import type { TrackMetadata } from "@/types/queue-types";
 
@@ -52,21 +52,23 @@ export function useWeatherMusic() {
       );
 
       // Use Spotify API to get weather-appropriate recommendations
-      const recommendations = await spotifyApiService.getWeatherRecommendations(
-        {
-          weather_condition: condition,
-          temperature,
-          time_of_day: timeOfDay,
-          limit: maxTracks,
-          use_personalization: true,
-        },
-      );
+      const recommendations = await spotifyApi.getWeatherRecommendations({
+        weather_condition: condition,
+        temperature,
+        time_of_day: timeOfDay,
+        limit: maxTracks,
+      });
       const tracks = recommendations.tracks;
 
       console.log(
         `Generated ${tracks.length} enhanced tracks for weather conditions`,
       );
-      return tracks;
+
+      // Filter out duplicates before returning
+      const uniqueTracks = Array.from(
+        new Set(tracks.map((t: TrackMetadata) => t.id)),
+      ).map((id) => tracks.find((t: TrackMetadata) => t.id === id)!);
+      return uniqueTracks;
     } catch (error) {
       console.error("Failed to generate enhanced weather queue:", error);
 
@@ -74,19 +76,24 @@ export function useWeatherMusic() {
       try {
         console.log("Attempting fallback to basic weather recommendations...");
         const fallbackRecommendations =
-          await spotifyApiService.getWeatherRecommendations({
+          await spotifyApi.getWeatherRecommendations({
             weather_condition: condition,
             temperature,
             time_of_day: timeOfDay,
             limit: maxTracks,
-            use_personalization: false,
           });
 
         if (fallbackRecommendations.tracks.length > 0) {
           console.log(
             `Fallback successful: ${fallbackRecommendations.tracks.length} tracks`,
           );
-          return fallbackRecommendations.tracks;
+          // Filter out duplicates before returning
+          const uniqueFallbackTracks = Array.from(
+            new Set(fallbackRecommendations.tracks.map((t) => t.id)),
+          ).map(
+            (id) => fallbackRecommendations.tracks.find((t) => t.id === id)!,
+          );
+          return uniqueFallbackTracks;
         }
       } catch (fallbackError) {
         console.error("Fallback also failed:", fallbackError);
@@ -113,16 +120,18 @@ export function useWeatherMusic() {
     const { condition, temperature, timeOfDay } = musicWeatherConditions;
 
     try {
-      const recommendations = await spotifyApiService.getWeatherRecommendations(
-        {
-          weather_condition: condition,
-          temperature,
-          time_of_day: timeOfDay,
-          limit,
-          use_personalization: true,
-        },
-      );
-      return recommendations.tracks;
+      const recommendations = await spotifyApi.getWeatherRecommendations({
+        weather_condition: condition,
+        temperature,
+        time_of_day: timeOfDay,
+        limit,
+      });
+      const tracks = recommendations.tracks;
+      // Filter out duplicates before returning
+      const uniqueTracks = Array.from(
+        new Set(tracks.map((t: TrackMetadata) => t.id)),
+      ).map((id) => tracks.find((t: TrackMetadata) => t.id === id)!);
+      return uniqueTracks;
     } catch (error) {
       console.error(
         "Failed to get personalized weather recommendations:",
@@ -140,7 +149,7 @@ export function useWeatherMusic() {
     limit: number = 10,
   ): Promise<TrackMetadata[]> => {
     try {
-      const searchResult = await spotifyApiService.searchTracks(query, limit);
+      const searchResult = await spotifyApi.searchTracks(query, limit);
       return searchResult.tracks;
     } catch (error) {
       console.error("Failed to search weather tracks:", error);

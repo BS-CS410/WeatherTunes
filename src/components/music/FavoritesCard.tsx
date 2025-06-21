@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import * as ScrollArea from "@radix-ui/react-scroll-area";
 import { COLORS, TYPOGRAPHY, LAYOUT } from "@/lib/design-system";
 import { cn } from "@/lib/dom-helpers";
-import { useAuth } from "@/hooks";
+import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
 import { SpotifyMiniPlayer } from "./SpotifyMiniPlayer";
 import { useCurrentTrackContext } from "@/hooks/useCurrentTrack";
 
@@ -24,7 +24,7 @@ interface FavoriteTrack {
  * Uses unified styling system for consistent appearance
  */
 export function FavoritesCard({ className = "" }: FavoritesCardProps) {
-  const { user } = useAuth();
+  const { user } = useSpotifyAuth();
   const [likedTracks, setLikedTracks] = useState<FavoriteTrack[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

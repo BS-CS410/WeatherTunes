@@ -1,4 +1,4 @@
-import { spotifyApiService } from "./spotify-client";
+import { spotifyApi } from "./spotify-api";
 import type { TrackMetadata } from "@/types/queue-types";
 
 /**
@@ -304,19 +304,12 @@ class QueueManager {
   ): Promise<string[]> {
     try {
       // Use Spotify API to get weather-appropriate recommendations
-      const recommendations = await spotifyApiService.getWeatherRecommendations(
-        {
-          weather_condition: weatherCondition,
-          temperature,
-          time_of_day: timeOfDay as
-            | "morning"
-            | "afternoon"
-            | "evening"
-            | "night",
-          limit: maxTracks,
-          use_personalization: true,
-        },
-      );
+      const recommendations = await spotifyApi.getWeatherRecommendations({
+        weather_condition: weatherCondition,
+        temperature,
+        time_of_day: timeOfDay as "morning" | "afternoon" | "evening" | "night",
+        limit: maxTracks,
+      });
 
       if (recommendations.tracks.length > 0) {
         return recommendations.tracks.map((track: TrackMetadata) => track.id);
@@ -362,15 +355,12 @@ class QueueManager {
       // Use first tag as main genre
       const genres = tags.slice(0, 2); // Spotify only accepts a few genres
 
-      const recommendations = await spotifyApiService.getWeatherRecommendations(
-        {
-          weather_condition: genres[0] || "pop",
-          temperature: 20,
-          time_of_day: "afternoon",
-          limit: maxTracks,
-          use_personalization: false,
-        },
-      );
+      const recommendations = await spotifyApi.getWeatherRecommendations({
+        weather_condition: genres[0] || "pop",
+        temperature: 20,
+        time_of_day: "afternoon",
+        limit: maxTracks,
+      });
 
       const trackIds = recommendations.tracks.map(
         (track: TrackMetadata) => track.id,

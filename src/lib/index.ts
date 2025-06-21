@@ -19,7 +19,9 @@ export * from "./weather-api";
 
 // Music and Spotify integration
 export * from "./music-recommendations";
-export * from "./spotify-client";
+export * from "./spotify-auth";
+export * from "./spotify-api";
+export * from "./spotify-types";
 
 // Video asset mapping
 export * from "./video-assets";

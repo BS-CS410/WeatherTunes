@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Search, Music, Plus, Loader2 } from "lucide-react";
 import { useSpotifySearch } from "@/hooks/useSpotifySearch";
 import { useCurrentTrack } from "@/hooks/useCurrentTrack";
-import { useAuth } from "@/hooks";
+import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
 import type { TrackMetadata } from "@/types/queue-types";
 import {
   COLORS,
@@ -22,7 +22,7 @@ interface SpotifySearchCardProps {
  * Demonstrates the new live Spotify API integration
  */
 export function SpotifySearchCard({ className = "" }: SpotifySearchCardProps) {
-  const { user } = useAuth();
+  const { user } = useSpotifyAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const {
     searchResults,
@@ -171,9 +171,9 @@ export function SpotifySearchCard({ className = "" }: SpotifySearchCardProps) {
             >
               Found {searchResults.length} tracks:
             </h4>
-            {searchResults.map((track) => (
+            {searchResults.map((track, idx) => (
               <div
-                key={track.id}
+                key={`${track.id}-${idx}`}
                 className={cn(
                   CARD_STYLES.interactive,
                   "flex items-center gap-3 p-2",

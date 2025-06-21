@@ -9,6 +9,9 @@ if lsof -i :5173 | grep LISTEN; then
   lsof -ti :5173 | xargs kill -9
 fi
 
+# Note: No backend server needed! Using Spotify Authorization Code + PKCE flow
+echo "✨ Using frontend-only authentication (no backend required)"
+
 # Start the development server
 echo "🚀 Starting Vite dev server..."
 npm run dev

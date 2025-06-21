@@ -1,8 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { authService } from "@/lib/spotify-client";
-import type { AuthState } from "@/lib/spotify-client";
 import { SettingsContext } from "@/contexts/SettingsProvider";
-import { AuthContext } from "@/contexts/auth-context";
 
 /**
  * Consolidated hooks utility file
@@ -35,54 +32,6 @@ export function useLocalStorage<T>(key: string, defaultValue: T) {
   };
 
   return [value, setStoredValue] as const;
-}
-
-// === AUTHENTICATION HOOKS ===
-
-/**
- * React hook for authentication state management
- * Provides reactive access to auth status throughout the application
- */
-export function useAuth() {
-  const [authState, setAuthState] = useState<AuthState>({
-    user: authService.getCurrentUser(),
-    isLoading: false,
-    error: null,
-  });
-
-  useEffect(() => {
-    // Check if user is authenticated on mount
-    const currentUser = authService.getCurrentUser();
-    setAuthState({
-      user: currentUser,
-      isLoading: false,
-      error: null,
-    });
-  }, []);
-
-  return {
-    ...authState,
-    login: () => authService.login(),
-    logout: () => authService.logout(),
-    checkAuth: () => {
-      const currentUser = authService.getCurrentUser();
-      setAuthState((prev) => ({
-        ...prev,
-        user: currentUser,
-      }));
-    },
-  };
-}
-
-/**
- * Hook for using auth context (alternative to direct auth service)
- */
-export function useAuthContext(): AuthState {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuthContext must be used within an AuthProvider");
-  }
-  return context;
 }
 
 // === SETTINGS HOOKS ===

@@ -6,8 +6,8 @@ import React, {
   useRef,
 } from "react";
 import type { ReactNode } from "react";
-import { spotifyApiService } from "@/lib/spotify-client";
-import { useAuth } from "@/hooks";
+import { spotifyApi } from "@/lib/spotify-api";
+import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
 import type { TrackMetadata } from "@/types/queue-types";
 
 // Queue management constants
@@ -56,7 +56,7 @@ interface CurrentTrackProviderProps {
 export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
   children,
 }) => {
-  const { user } = useAuth();
+  const { user } = useSpotifyAuth();
   const mountedRef = useRef(true);
   const [trackMetadata, setTrackMetadata] = useState<TrackMetadata | null>(
     null,
@@ -105,7 +105,7 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
       }
 
       try {
-        const track = await spotifyApiService.getTrackById(trackId);
+        const track = await spotifyApi.getTrackById(trackId);
         if (track) {
           setTrackMetadata(track);
           setCurrentTrackId(trackId);
@@ -138,7 +138,7 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
       if (!user) return;
 
       try {
-        const track = await spotifyApiService.getTrackById(trackId);
+        const track = await spotifyApi.getTrackById(trackId);
         if (!track) return;
 
         setSongQueue((currentQueue) => {
@@ -163,7 +163,7 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
       try {
         const tracks: TrackMetadata[] = [];
         for (const trackId of trackIds.slice(0, TARGET_QUEUE_SIZE)) {
-          const track = await spotifyApiService.getTrackById(trackId);
+          const track = await spotifyApi.getTrackById(trackId);
           if (track) {
             tracks.push(track);
           }
@@ -231,22 +231,31 @@ export const CurrentTrackProvider: React.FC<CurrentTrackProviderProps> = ({
 
       try {
         const weatherRecommendations =
-          await spotifyApiService.getWeatherRecommendations({
+          await spotifyApi.getWeatherRecommendations({
             weather_condition: defaultCondition,
             temperature: defaultTemperature,
             time_of_day: timeOfDay,
             limit: tracksNeeded,
-            use_personalization: true,
           });
 
         newTracks = weatherRecommendations.tracks;
+
+        // Deduplicate tracks before adding to the queue
+        const uniqueTracks = Array.from(
+          new Set(newTracks.map((t) => t.id)),
+        ).map((id) => newTracks.find((t) => t.id === id)!);
+
         console.log(
-          `Got ${newTracks.length} weather-based tracks for ${defaultCondition} at ${defaultTemperature}°C`,
+          `Got ${uniqueTracks.length} weather-based tracks for ${defaultCondition} at ${defaultTemperature}°C`,
         );
+
+        if (uniqueTracks.length > 0) {
+          setSongQueue((prevQueue) => [...prevQueue, ...uniqueTracks]);
+        }
       } catch (error) {
         console.log("Weather-based recommendations failed, trying search...");
         try {
-          const searchResults = await spotifyApiService.searchTracks(
+          const searchResults = await spotifyApi.searchTracks(
             "popular music 2024",
             tracksNeeded,
           );

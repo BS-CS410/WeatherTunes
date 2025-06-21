@@ -2,11 +2,10 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useAuth } from "@/hooks";
-import { authService } from "@/lib/spotify-client";
+import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
 
 function Login() {
-  const { user } = useAuth();
+  const { user, login } = useSpotifyAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -15,10 +14,6 @@ function Login() {
       navigate("/");
     }
   }, [user, navigate]);
-
-  const handleLogin = () => {
-    authService.login();
-  };
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
@@ -30,7 +25,7 @@ function Login() {
         </CardHeader>
         <CardContent>
           <Button
-            onClick={handleLogin}
+            onClick={login}
             className="w-full bg-[#1DB954] hover:bg-[#1ED760]"
           >
             Login via Spotify

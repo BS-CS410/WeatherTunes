@@ -3,12 +3,11 @@ import { SunriseIcon, SunsetIcon } from "@/components/icons";
 import type { WeatherDisplayData } from "@/types/weather-types";
 import { SectionWrapper } from "../layout/SectionWrapper";
 import { useCurrentTrackContext } from "@/hooks/useCurrentTrack";
-import { useAuth } from "@/hooks/common";
+import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
 import { Button } from "@/components/ui/button";
 import { TYPOGRAPHY, COLORS } from "@/lib/design-system";
 import { cn } from "@/lib/dom-helpers";
 import { SpotifyWebPlayer } from "@/components/music/SpotifyWebPlayer";
-import { spotifyApiService } from "@/lib/spotify-client";
 
 interface WeatherMusicCardProps {
   weatherData: WeatherDisplayData;
@@ -27,7 +26,7 @@ export function WeatherMusicCard({
   const [message, setMessage] = useState<string | null>(null);
   const { trackMetadata, currentTrackId, songQueue, setNextTrack, isLoading } =
     useCurrentTrackContext();
-  const { user } = useAuth();
+  const { user } = useSpotifyAuth();
 
   const {
     location = "Loading...",
@@ -46,8 +45,7 @@ export function WeatherMusicCard({
   const artistName =
     trackMetadata?.artist ||
     (isTrackLoading ? "Finding music..." : "Unknown Artist");
-  const albumArtUrl =
-    trackMetadata?.albumArt || "/public/placeholder-album.svg";
+  const albumArtUrl = trackMetadata?.albumArt || "/placeholder-album.svg";
 
   // Preload album art images for all tracks in the queue
   useEffect(() => {
@@ -196,7 +194,7 @@ export function WeatherMusicCard({
                   loading="lazy"
                   onError={(e) => {
                     (e.currentTarget as HTMLImageElement).src =
-                      "/public/placeholder-album.svg";
+                      "/placeholder-album.svg";
                   }}
                 />
               </div>

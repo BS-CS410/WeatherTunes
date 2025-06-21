@@ -1,15 +1,17 @@
-import { useAuth } from "@/hooks";
+import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
 import { BaseCard } from "@/components/shared/BaseCard";
 import { Button } from "@/components/ui/button";
 import { COLORS } from "@/lib/design-system";
 import { cn } from "@/lib/dom-helpers";
+import { useState } from "react";
 
 interface LoginPopupProps {
   isOpen: boolean;
 }
 
 export function LoginPopup({ isOpen }: LoginPopupProps) {
-  const { login } = useAuth();
+  const { login } = useSpotifyAuth();
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   if (!isOpen) return null;
 
@@ -36,10 +38,15 @@ export function LoginPopup({ isOpen }: LoginPopupProps) {
           </div>
 
           <Button
-            onClick={login}
+            onClick={() => {
+              if (isLoggingIn) return;
+              setIsLoggingIn(true);
+              login();
+            }}
             size="lg"
             variant="ghost"
             className="w-full border border-white/30 bg-[#1DB954]/80 font-medium text-white shadow-lg backdrop-blur-md hover:bg-[#1ED760]/90"
+            disabled={isLoggingIn}
           >
             Login via Spotify
           </Button>

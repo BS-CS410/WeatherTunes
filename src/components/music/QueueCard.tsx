@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react"; // Added useEffect
 import { COLORS, TYPOGRAPHY, ANIMATIONS, LAYOUT } from "@/lib/design-system";
 import { cn } from "@/lib/dom-helpers";
 import { useCurrentTrackContext } from "@/hooks/useCurrentTrack";
-import { useAuth } from "@/hooks/common";
+import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
 import { useWeatherMusic } from "@/hooks/useWeatherMusic";
 import { Button } from "@/components/ui/button";
 
@@ -19,7 +19,7 @@ export function QueueCard() {
     isLoading: contextIsLoading, // Renamed from isLoading
   } = useCurrentTrackContext();
 
-  const { user, isLoading: authLoading } = useAuth();
+  const { user, isLoading: authLoading } = useSpotifyAuth();
   const { generateWeatherQueue } = useWeatherMusic();
 
   // State and ref for delayed visual loader
@@ -295,7 +295,7 @@ export function QueueCard() {
 
                 return (
                   <div
-                    key={song.id}
+                    key={`${song.id}-${idx}`}
                     className={cn(
                       "group flex min-w-[120px] flex-col items-center",
                       ANIMATIONS.transition.standard,

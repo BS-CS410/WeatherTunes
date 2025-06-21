@@ -6,6 +6,9 @@
 // Common utility hooks
 export * from "./common";
 
+// Auth hooks
+export { useSpotifyAuth } from "./useSpotifyAuth";
+
 // Specific feature hooks
 export { useCurrentTrack } from "./useCurrentTrack";
 export { useForecastData } from "./useForecast";

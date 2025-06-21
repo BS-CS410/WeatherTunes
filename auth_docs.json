@@ -1,0 +1,146 @@
+{
+  "modules": [
+    {
+      "title": "Getting Started",
+      "source_url": "https://developer.spotify.com/documentation/web-api/tutorials/getting-started",
+      "purpose": "Fetch public artist metadata using Client Credentials flow",
+      "tasks": [
+        "Obtain client_id and client_secret from Spotify Developer Dashboard",
+        "Request access token using POST to /api/token with grant_type=client_credentials",
+        "Store access_token and expires_in",
+        "Make GET request to https://api.spotify.com/v1/artists/{artist_id} with Authorization header"
+      ],
+      "key_steps": {
+        "token_request": "curl -X POST https://accounts.spotify.com/api/token -d grant_type=client_credentials&client_id=...&client_secret=...",
+        "api_call": "curl https://api.spotify.com/v1/artists/{id} -H 'Authorization: Bearer {access_token}'"
+      },
+      "limitations": "Client Credentials flow cannot access user-specific data"
+    },
+    {
+      "title": "Authorization Concepts",
+      "source_url": "https://developer.spotify.com/documentation/web-api/concepts/authorization",
+      "purpose": "Understand supported OAuth flows and their tradeoffs",
+      "tasks": [
+        "Enumerate client-side vs server-side OAuth flows",
+        "List required combos of user access, client_secret storage, and refresh token availability"
+      ],
+      "definitions": {
+        "Authorization Code": {
+          "user_access": true,
+          "requires_secret": true,
+          "refresh": true
+        },
+        "Authorization Code + PKCE": {
+          "user_access": true,
+          "requires_secret": false,
+          "refresh": true
+        },
+        "Client Credentials": {
+          "user_access": false,
+          "requires_secret": true,
+          "refresh": false
+        },
+        "Implicit Grant": { "deprecated": true }
+      }
+    },
+    {
+      "title": "Authorization Code + PKCE Flow",
+      "source_url": "https://developer.spotify.com/documentation/web-api/tutorials/code-pkce-flow",
+      "purpose": "Implement secure OAuth flow in browser or mobile without exposing client_secret",
+      "tasks": [
+        "Generate code_verifier (43–128 char random string)",
+        "Compute code_challenge via SHA-256 + base64url",
+        "Redirect user to /authorize with client_id, code_challenge, code_challenge_method=S256, scope, redirect_uri, state",
+        "On callback, parse ?code and ?state",
+        "Exchange code for access_token, refresh_token using code_verifier via POST to /api/token",
+        "Store access_token, refresh_token securely client-side"
+      ],
+      "snippets": {
+        "generate_verifier": "crypto.getRandomValues(...)",
+        "compute_challenge": "window.crypto.subtle.digest('SHA-256',...) => base64url",
+        "authorization_redirect": "GET https://accounts.spotify.com/authorize?response_type=code&client_id=...&code_challenge=...&code_challenge_method=S256&redirect_uri=...",
+        "token_exchange": "POST https://accounts.spotify.com/api/token with body { grant_type:'authorization_code', code, redirect_uri, client_id, code_verifier }"
+      }
+    },
+    {
+      "title": "Access Token",
+      "source_url": "https://developer.spotify.com/documentation/web-api/concepts/access-token",
+      "purpose": "Explain token format, expiration, and usage in API calls",
+      "tasks": [
+        "Include 'Authorization: Bearer <token>' in all API calls",
+        "Track token expiry (3600 seconds)",
+        "Implement refresh token exchange when expired"
+      ],
+      "definitions": {
+        "access_token": "Bearer token string valid for 3600 seconds",
+        "expires_in": "seconds until expiry",
+        "refresh_token": "token to request new access_token (for auth & PKCE flows)"
+      },
+      "snippets": {
+        "curl_example": "curl 'https://api.spotify.com/v1/tracks/{id}' -H 'Authorization: Bearer <token>'",
+        "js_example": "fetch('https://api.spotify.com/v1/me', { headers: { Authorization: 'Bearer ' + accessToken } })"
+      }
+    },
+    {
+      "title": "API Calls",
+      "source_url": "https://developer.spotify.com/documentation/web-api/concepts/api-calls",
+      "purpose": "Define HTTP standards, status codes, pagination, conditional requests",
+      "tasks": [
+        "Use base URL https://api.spotify.com/v1",
+        "Support GET, POST, PUT, DELETE verbs",
+        "Interpret status codes: 200,201,204,400–404,429,5xx",
+        "Handle Authentication Error and Regular Error JSON formats",
+        "Use ETag + If-None-Match to support caching",
+        "Implement pagination via offset & limit"
+      ],
+      "definitions": {
+        "Authentication Error": "{ error, error_description } per RFC 6749",
+        "Regular Error": "{ error: { status, message } }"
+      },
+      "snippets": {
+        "conditional": "Include 'If-None-Match' header",
+        "pagination_example": "?offset=20&limit=10"
+      }
+    },
+    {
+      "title": "Redirect URIs",
+      "source_url": "https://developer.spotify.com/documentation/web-api/concepts/redirect_uri",
+      "purpose": "Validate and secure callback endpoints",
+      "tasks": [
+        "Use exact string match with registered redirect URIs",
+        "Enforce HTTPS except for loopback IPs",
+        "Disallow 'localhost', allow IP literals with optional dynamic port for loopback"
+      ],
+      "requirements": [
+        "HTTPS URI or loopback IP literal (127.0.0.1 or [::1])",
+        "Match registrations exactly including slash, case",
+        "Dynamic ports permitted only for loopback"
+      ],
+      "examples": [
+        "https://example.com/callback",
+        "http://127.0.0.1:8000/callback",
+        "http://[::1]:8000/callback"
+      ]
+    },
+    {
+      "title": "Spotify URIs & IDs",
+      "source_url": "https://developer.spotify.com/documentation/web-api/concepts/spotify-uris-ids",
+      "purpose": "Normalize entity references across URIs, URLs, and IDs",
+      "tasks": [
+        "Support parsing spotify:track:{ID}, spotify:artist:{ID}, etc.",
+        "Extract ID portion for API calls",
+        "Convert URLs (open.spotify.com) to IDs",
+        "Use IDs in API requests; URIs for linking"
+      ],
+      "definitions": {
+        "Spotify URI": "spotify:entity:ID",
+        "Spotify ID": "base-62 string, e.g. 6rqhFgbbKwnb9MLmUQDhG6",
+        "Spotify URL": "https://open.spotify.com/track/ID"
+      },
+      "examples": {
+        "URI_example": "spotify:track:6rqhFgbbKwnb9MLmUQDhG6",
+        "URL_example": "http://open.spotify.com/track/6rqhFgbbKwnb9MLmUQDhG6"
+      }
+    }
+  ]
+}

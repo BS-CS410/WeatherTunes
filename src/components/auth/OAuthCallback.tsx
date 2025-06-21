@@ -4,57 +4,50 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { authService } from "@/lib/spotify-client";
+import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
 
 export const OAuthCallback: React.FC = () => {
   const [status, setStatus] = useState<"processing" | "success" | "error">(
     "processing",
   );
-  const [error, setError] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const { handleCallback } = useSpotifyAuth();
 
   useEffect(() => {
-    const handleCallback = async () => {
+    const processCallback = async () => {
       try {
-        const urlParams = new URLSearchParams(window.location.search);
-        const code = urlParams.get("code");
-        const error = urlParams.get("error");
-
-        if (error) {
-          setStatus("error");
-          setError(`OAuth error: ${error}`);
-          return;
-        }
-
-        if (!code) {
-          setStatus("error");
-          setError("No authorization code received");
-          return;
-        }
-
-        const success = await authService.handleCallback(code);
-
+        const success = await handleCallback();
         if (success) {
           setStatus("success");
-          // Redirect to home page after a short delay
           setTimeout(() => {
             window.location.href = "/";
           }, 1500);
         } else {
           setStatus("error");
-          setError("Failed to complete authentication");
+          setErrorMsg(
+            "Authentication failed. Please try logging in again. If the problem persists, clear your browser storage and retry.",
+          );
         }
       } catch (error) {
-        console.error("Callback handling failed:", error);
         setStatus("error");
-        setError("Authentication failed. Please try again.");
+        if (
+          error instanceof Error &&
+          error.message &&
+          error.message.includes("Code verifier not found")
+        ) {
+          setErrorMsg(
+            "Code verifier not found. This can happen if the login flow was interrupted or the browser storage was cleared. Please return to the login page and try again.",
+          );
+        } else {
+          setErrorMsg("Authentication failed. Please try again.");
+        }
       }
     };
-
-    handleCallback();
-  }, []);
+    processCallback();
+  }, [handleCallback]);
 
   const handleRetry = () => {
-    authService.login();
+    window.location.href = "/login";
   };
 
   return (
@@ -71,7 +64,6 @@ export const OAuthCallback: React.FC = () => {
             </p>
           </div>
         )}
-
         {status === "success" && (
           <div className="text-center">
             <div className="mb-4 text-green-500">
@@ -93,7 +85,6 @@ export const OAuthCallback: React.FC = () => {
             <p className="text-gray-600">Redirecting you to WeatherTunes...</p>
           </div>
         )}
-
         {status === "error" && (
           <div className="text-center">
             <div className="mb-4 text-red-500">
@@ -112,7 +103,10 @@ export const OAuthCallback: React.FC = () => {
             <h2 className="mb-2 text-xl font-semibold">
               Authentication Failed
             </h2>
-            <p className="mb-4 text-gray-600">{error}</p>
+            <p className="mb-4 text-gray-600">
+              {errorMsg ||
+                "There was a problem completing your login. Please try again."}
+            </p>
             <button
               onClick={handleRetry}
               className="rounded bg-green-500 px-6 py-2 text-white transition-colors hover:bg-green-600"

@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
-import { spotifyApiService } from "@/lib/spotify-client";
-import { useAuth } from "./common";
+import { spotifyApi } from "@/lib/spotify-api";
+import { useSpotifyAuth } from "./useSpotifyAuth";
 import type { TrackMetadata } from "@/types/queue-types";
 
 interface UseSpotifySearchReturn {
@@ -17,7 +17,7 @@ interface UseSpotifySearchReturn {
  * Provides both text search and mood-based search functionality
  */
 export const useSpotifySearch = (): UseSpotifySearchReturn => {
-  const { user } = useAuth();
+  const { user } = useSpotifyAuth();
   const [searchResults, setSearchResults] = useState<TrackMetadata[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
@@ -38,7 +38,7 @@ export const useSpotifySearch = (): UseSpotifySearchReturn => {
       setSearchError(null);
 
       try {
-        const searchResult = await spotifyApiService.searchTracks(query, limit);
+        const searchResult = await spotifyApi.searchTracks(query, limit);
         setSearchResults(searchResult.tracks);
 
         if (searchResult.tracks.length === 0) {
@@ -69,7 +69,7 @@ export const useSpotifySearch = (): UseSpotifySearchReturn => {
       setSearchError(null);
 
       try {
-        const searchResult = await spotifyApiService.searchTracks(
+        const searchResult = await spotifyApi.searchTracks(
           `mood:${mood}`,
           limit,
         );

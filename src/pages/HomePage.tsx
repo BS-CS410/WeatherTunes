@@ -14,13 +14,13 @@ import {
 import { AuthStatus } from "@/components/auth/AuthStatus";
 import { useWeatherData } from "@/hooks/useWeather";
 import { useThemeManager } from "@/hooks/useThemeManager";
-import { useAuth } from "@/hooks";
+import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
 import { LAYOUT, COLORS } from "@/lib/design-system";
 import { useState, useEffect } from "react";
 
 function MainPage() {
   const { displayData, timePeriod, isLoading, error } = useWeatherData();
-  const { user } = useAuth();
+  const { user } = useSpotifyAuth();
   const [showLoginPopup, setShowLoginPopup] = useState(false);
 
   useThemeManager(timePeriod);
