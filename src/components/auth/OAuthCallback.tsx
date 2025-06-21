@@ -25,7 +25,7 @@ export const OAuthCallback: React.FC = () => {
         } else {
           setStatus("error");
           setErrorMsg(
-            "Authentication failed. Please try logging in again. If the problem persists, clear your browser storage and retry.",
+            "Authentication could not be completed. Please try logging in again. If the problem persists, clear your browser storage and retry.",
           );
         }
       } catch (error) {
@@ -39,7 +39,7 @@ export const OAuthCallback: React.FC = () => {
             "Code verifier not found. This can happen if the login flow was interrupted or the browser storage was cleared. Please return to the login page and try again.",
           );
         } else {
-          setErrorMsg("Authentication failed. Please try again.");
+          setErrorMsg("Authentication could not be completed. Please try again.");
         }
       }
     };
@@ -101,7 +101,7 @@ export const OAuthCallback: React.FC = () => {
               </svg>
             </div>
             <h2 className="mb-2 text-xl font-semibold">
-              Authentication Failed
+              Authentication Error
             </h2>
             <p className="mb-4 text-gray-600">
               {errorMsg ||
