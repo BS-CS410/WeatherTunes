@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { SunriseIcon, SunsetIcon } from "@/components/icons";
 import type { WeatherDisplayData } from "@/types/weather-types";
 import { SectionWrapper } from "../layout/SectionWrapper";
-import { useCurrentTrackContext } from "@/hooks/useCurrentTrack";
+import { useQueue } from "@/hooks/useQueue";
 import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
 import { Button } from "@/components/ui/button";
 import { TYPOGRAPHY, COLORS } from "@/lib/design-system";
@@ -24,8 +24,7 @@ export function WeatherMusicCard({
   className = "",
 }: WeatherMusicCardProps) {
   const [message, setMessage] = useState<string | null>(null);
-  const { trackMetadata, currentTrackId, songQueue, playNext, isLoading } =
-    useCurrentTrackContext();
+  const { currentTrack, upcomingTracks, isLoading, playNext } = useQueue();
   const { user } = useSpotifyAuth();
 
   const {
@@ -38,28 +37,28 @@ export function WeatherMusicCard({
   } = weatherData || {};
 
   // Use track metadata from context or fallback to placeholders
-  const isTrackLoading = isLoading || !trackMetadata;
+  const isTrackLoading = isLoading || !currentTrack;
   const songTitle =
-    trackMetadata?.title ||
+    currentTrack?.title ||
     (isTrackLoading ? "Loading track..." : "Unknown Track");
   const artistName =
-    trackMetadata?.artist ||
+    currentTrack?.artist ||
     (isTrackLoading ? "Finding music..." : "Unknown Artist");
-  const albumArtUrl = trackMetadata?.albumArt || "/placeholder-album.svg";
+  const albumArtUrl = currentTrack?.albumArt || "/placeholder-album.svg";
 
   // Preload album art images for all tracks in the queue
   useEffect(() => {
-    if (!songQueue || songQueue.length === 0) return;
-    songQueue.forEach((track) => {
+    if (!upcomingTracks || upcomingTracks.length === 0) return;
+    upcomingTracks.forEach((track) => {
       if (track.albumArt) {
         const img = new window.Image();
         img.src = track.albumArt;
       }
     });
-  }, [songQueue]);
+  }, [upcomingTracks]);
 
   const handleLike = async () => {
-    if (!currentTrackId) return;
+    if (!currentTrack?.id) return;
 
     if (!user) {
       setMessage("Please log in to like tracks");
@@ -75,12 +74,12 @@ export function WeatherMusicCard({
           Authorization: `Bearer ${localStorage.getItem("spotify_access_token")}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ ids: [currentTrackId] }),
+        body: JSON.stringify({ ids: [currentTrack.id] }),
       });
 
       // Record interaction for personalization
       // TODO: Implement track interaction recording
-      console.log("Track liked:", currentTrackId);
+      console.log("Track liked:", currentTrack.id);
 
       setMessage("Track liked!");
       setTimeout(() => setMessage(null), 2000);
@@ -220,7 +219,7 @@ export function WeatherMusicCard({
       {/* Bottom Section - Music Player and Controls (full width) */}
       <div className="flex w-full flex-col space-y-4 px-6 pb-6">
         {/* Spotify Player (full width) */}
-        {user && currentTrackId ? (
+        {user && currentTrack ? (
           <div className="w-full">
             <SpotifyWebPlayer className="w-full" showQueueInfo={false} />
           </div>
@@ -245,7 +244,7 @@ export function WeatherMusicCard({
 
           <Button
             onClick={handleNext}
-            disabled={isLoading || songQueue.length === 0 || !user}
+            disabled={isLoading || upcomingTracks.length === 0 || !user}
             variant="outline"
             className="flex-1"
           >
@@ -254,11 +253,11 @@ export function WeatherMusicCard({
         </div>
 
         {/* Queue Status */}
-        {songQueue.length > 0 && (
+        {upcomingTracks.length > 0 && (
           <div className="w-full text-center">
             <p className={cn("text-xs", COLORS.text.muted)}>
-              Queue: {songQueue.length} track{songQueue.length !== 1 ? "s" : ""}{" "}
-              ready
+              Queue: {upcomingTracks.length} track
+              {upcomingTracks.length !== 1 ? "s" : ""} ready
             </p>
           </div>
         )}

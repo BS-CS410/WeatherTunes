@@ -4,7 +4,7 @@ import { COLORS, TYPOGRAPHY, LAYOUT } from "@/lib/design-system";
 import { cn } from "@/lib/dom-helpers";
 import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
 import { SpotifyMiniPlayer } from "./SpotifyMiniPlayer";
-import { useCurrentTrackContext } from "@/hooks/useCurrentTrack";
+import { useQueue } from "@/hooks/useQueue";
 
 interface FavoritesCardProps {
   className?: string;
@@ -28,14 +28,14 @@ export function FavoritesCard({ className = "" }: FavoritesCardProps) {
   const [likedTracks, setLikedTracks] = useState<FavoriteTrack[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { updateTrack } = useCurrentTrackContext();
+  const { playTrack } = useQueue();
 
   /**
    * Handle track selection from mini player
    */
   const handleTrackPlay = async (track: FavoriteTrack) => {
     try {
-      await updateTrack(track.id);
+      await playTrack(track.id);
     } catch (error) {
       console.error("Failed to play track:", error);
     }

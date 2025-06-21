@@ -85,12 +85,11 @@ class SpotifyAuth {
       console.error("Spotify CLIENT_ID or REDIRECT_URI is missing.");
       return;
     }
-    // Only set code verifier if not already present
-    let codeVerifier = localStorage.getItem("spotify_code_verifier");
-    if (!codeVerifier) {
-      codeVerifier = this.generateCodeVerifier();
-      localStorage.setItem("spotify_code_verifier", codeVerifier);
-    }
+
+    // Always generate a fresh code verifier for each login attempt
+    const codeVerifier = this.generateCodeVerifier();
+    localStorage.setItem("spotify_code_verifier", codeVerifier);
+
     const codeChallenge = await this.generateCodeChallenge(codeVerifier);
 
     // Build authorization URL
@@ -127,7 +126,10 @@ class SpotifyAuth {
 
       const codeVerifier = localStorage.getItem("spotify_code_verifier");
       if (!codeVerifier) {
-        throw new Error("Code verifier not found");
+        // Try to provide a more helpful error message
+        throw new Error(
+          "Code verifier not found. This may happen if the login flow was interrupted or browser storage was cleared. Please try logging in again.",
+        );
       }
 
       this.setState({ ...this.state, isLoading: true });
@@ -155,6 +157,7 @@ class SpotifyAuth {
    * Logout user
    */
   logout(): void {
+    console.log("Logging out user...");
     this.clearTokens();
     this.setState({ user: null, isLoading: false, error: null });
   }

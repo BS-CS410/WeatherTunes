@@ -2,10 +2,11 @@
  * Modern queue hook - simple interface to queue manager
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { queueManager } from "@/lib/queue-manager";
 import type { TrackMetadata } from "@/types/queue-types";
 import { useSpotifyAuth } from "./useSpotifyAuth";
+import { useWeatherQueue } from "./useWeatherQueue";
 
 interface UseQueueReturn {
   // State
@@ -26,9 +27,15 @@ interface UseQueueReturn {
  */
 export function useQueue(): UseQueueReturn {
   const { user } = useSpotifyAuth();
+  const { replaceQueueWithWeatherTracks } = useWeatherQueue();
   const [currentTrack, setCurrentTrack] = useState<TrackMetadata | null>(null);
   const [upcomingTracks, setUpcomingTracks] = useState<TrackMetadata[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [hasAutoInitialized, setHasAutoInitialized] = useState(false);
+
+  // Use ref to store the replaceQueueWithWeatherTracks function to avoid dependency issues
+  const replaceQueueRef = useRef(replaceQueueWithWeatherTracks);
+  replaceQueueRef.current = replaceQueueWithWeatherTracks;
 
   // Subscribe to queue state changes
   useEffect(() => {
@@ -58,8 +65,34 @@ export function useQueue(): UseQueueReturn {
   useEffect(() => {
     if (!user) {
       queueManager.clearQueue();
+      setHasAutoInitialized(false);
     }
   }, [user]);
+
+  // Auto-initialize queue when user logs in and queue is empty
+  useEffect(() => {
+    if (
+      user &&
+      !hasAutoInitialized &&
+      upcomingTracks.length === 0 &&
+      !isLoading
+    ) {
+      setHasAutoInitialized(true);
+      console.log("Auto-initializing queue with weather-based tracks...");
+
+      // Use ref to avoid dependency cycle
+      const initializeQueue = async () => {
+        try {
+          await replaceQueueRef.current(15);
+        } catch (error) {
+          console.error("Failed to auto-initialize queue:", error);
+          setHasAutoInitialized(false); // Reset to allow retry
+        }
+      };
+
+      initializeQueue();
+    }
+  }, [user, hasAutoInitialized, upcomingTracks.length, isLoading]);
 
   const replaceQueue = useCallback(
     async (tracks: TrackMetadata[]) => {

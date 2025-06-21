@@ -11,7 +11,6 @@ import {
   WeatherMusicCard,
   LoginPopup,
 } from "@/components";
-import { AuthStatus } from "@/components/auth/AuthStatus";
 import { useWeatherData } from "@/hooks/useWeather";
 import { useThemeManager } from "@/hooks/useThemeManager";
 import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
@@ -20,7 +19,13 @@ import { useState, useEffect } from "react";
 
 function MainPage() {
   const { displayData, timePeriod, isLoading, error } = useWeatherData();
-  const { user } = useSpotifyAuth();
+  const {
+    user,
+    isLoading: authLoading,
+    error: authError,
+    login,
+    logout,
+  } = useSpotifyAuth();
   const [showLoginPopup, setShowLoginPopup] = useState(false);
 
   useThemeManager(timePeriod);
@@ -73,7 +78,41 @@ function MainPage() {
 
       {/* Auth Debug Component - Remove in production */}
       <div className="fixed top-4 right-4 z-50">
-        <AuthStatus />
+        {authLoading ? (
+          <div>Loading auth status...</div>
+        ) : (
+          <div className="rounded-lg bg-gray-100 p-4 text-sm text-black">
+            <h3 className="mb-2 font-semibold">Auth Status</h3>
+            <div className="space-y-1">
+              <div>
+                Status:{" "}
+                {user
+                  ? `✅ ${user.display_name || user.id}`
+                  : "❌ Not authenticated"}
+              </div>
+              {authError && (
+                <div className="text-red-600">Error: {authError}</div>
+              )}
+            </div>
+            <div className="mt-3 space-x-2">
+              {!user ? (
+                <button
+                  onClick={login}
+                  className="rounded bg-blue-500 px-3 py-1 text-white hover:bg-blue-600"
+                >
+                  Login with Spotify
+                </button>
+              ) : (
+                <button
+                  onClick={logout}
+                  className="rounded bg-red-500 px-3 py-1 text-white hover:bg-red-600"
+                >
+                  Logout
+                </button>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Main Content Area (centered column) */}

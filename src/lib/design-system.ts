@@ -870,8 +870,8 @@ export const createLiquidGlassButton = (
     elastic?: boolean;
     displacement?: boolean;
   } = {},
-) => {
-  let styles = BUTTON_STYLES[variant];
+): string => {
+  let styles: string = BUTTON_STYLES[variant];
 
   if (options.mouseResponsive) {
     styles = createMouseResponsiveGlass(styles);
@@ -901,8 +901,8 @@ export const createLiquidGlassCard = (
     elastic?: boolean;
     floating?: boolean;
   } = {},
-) => {
-  let styles = CARD_STYLES[variant];
+): string => {
+  let styles: string = CARD_STYLES[variant];
 
   if (options.floating) {
     styles = combineStyles(styles, LIQUID_GLASS_STYLES.floating);

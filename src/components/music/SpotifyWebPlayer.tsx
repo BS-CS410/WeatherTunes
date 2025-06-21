@@ -3,15 +3,9 @@
  * Custom playback interface with full controls and queue integration
  */
 
-import React, {
-  useEffect,
-  useState,
-  useCallback,
-  useMemo,
-  useRef,
-} from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useSpotifyPlayer } from "@/hooks/useSpotifyPlayer";
-import { useCurrentTrack } from "@/hooks/useCurrentTrack";
+import { useQueue } from "@/hooks/useQueue";
 import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
 import {
   Play,
@@ -37,15 +31,11 @@ export const SpotifyWebPlayer: React.FC<SpotifyWebPlayerProps> = ({
   const { state, controls, initialize } = useSpotifyPlayer();
   const { user, login } = useSpotifyAuth();
 
-  // Safe destructuring with fallbacks
-  const currentTrackContext = useCurrentTrack();
-  const trackMetadata = currentTrackContext?.trackMetadata || null;
-  const playNext = useMemo(
-    () => currentTrackContext?.playNext || (async () => {}),
-    [currentTrackContext?.playNext],
-  );
-  const currentTrackId = currentTrackContext?.currentTrackId || null;
-  const songQueue = currentTrackContext?.songQueue || [];
+  // Get queue data directly
+  const { currentTrack, upcomingTracks, playNext } = useQueue();
+  const trackMetadata = currentTrack;
+  const currentTrackId = currentTrack?.id || null;
+  const songQueue = upcomingTracks;
 
   const [isInitialized, setIsInitialized] = useState(false);
   const [userVolume, setUserVolume] = useState(50);

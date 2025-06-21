@@ -10,7 +10,6 @@ export * from "./common";
 export { useSpotifyAuth } from "./useSpotifyAuth";
 
 // Specific feature hooks
-export { useCurrentTrack } from "./useCurrentTrack";
 export { useForecastData } from "./useForecast";
 
 export { useLocationBasedDefaults } from "./useLocationBasedDefaults";
@@ -18,6 +17,5 @@ export { useSpotifySearch } from "./useSpotifySearch";
 export { useSpotifyPlayer } from "./useSpotifyPlayer";
 export { useThemeManager } from "./useThemeManager";
 export { useWeatherData, useThemeFromWeather } from "./useWeather";
-export { useWeatherMusic } from "./useWeatherMusic";
 export { useQueue } from "./useQueue";
 export { useWeatherQueue } from "./useWeatherQueue";

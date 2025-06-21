@@ -118,50 +118,37 @@
 ---
 
 ## Session #3 - June 20, 2025 (Continuation)
-**AI Agent**: Component Style Cleanup & Stage 2 Completion
+**AI Agent**: Component Style Cleanup, OAuth/Queue Bugfixes & Stage 3 Kickoff
 **Duration**: 1 session continuation
-**Status**: ✅ STAGE 2 COMPLETED
+**Status**: ✅ STAGE 2 COMPLETED, 🚧 STAGE 3 STARTED
 
 ### Work Completed:
-- [x] **STAGE 2.3 COMPLETED**: Component Style Cleanup
-- [x] **SIMPLIFIED**: `SegmentedControl` - inlined all `LIQUID_GLASS_STYLES.segmentedControl` and `BUTTON_STYLES`
-- [x] **SIMPLIFIED**: `Slider` - inlined all `LIQUID_GLASS_STYLES.slider` styles (track, thumb, range)
-- [x] **SIMPLIFIED**: `Button` - inlined all `BUTTON_STYLES` variants (primary, secondary, ghost)
-- [x] **REMOVED**: `useLiquidGlass.ts` hook (301 lines of over-engineered code)
-- [x] **PRESERVED**: Exact visual appearance for all components
-- [x] **STANDARDIZED**: Simple, consistent styling patterns with zero visual changes
+- [x] **STAGE 2.3 COMPLETED**: Component Style Cleanup (see below)
+- [x] **FIXED**: Spotify OAuth callback bug ("Code verifier not found")
+- [x] **FIXED**: Infinite re-render loop in queue initialization ("Maximum update depth exceeded")
+- [x] **PRESERVED**: All user-facing functionality and visual fidelity
+- [x] **TESTED**: All tests passing, no runtime errors after login
+- [x] **KICKED OFF**: Stage 3 (Component Architecture Overhaul)
 
-### Key Simplifications:
-- **SegmentedControl**: Removed complex style composition dependencies
-- **Slider**: Inlined track, thumb, and range styles directly
-- **Button**: Inlined primary, secondary, and ghost button variants
-- **useLiquidGlass**: Removed unused 301-line hook completely
-- **Visual Fidelity**: 100% preserved - no end-user visible changes
+### Key Bugfixes:
+- **OAuth Flow**: Always generates a fresh code verifier for each login; improved error handling in callback
+- **Queue Initialization**: Broke dependency cycle in `useQueue` with `useRef`; optimized `useWeatherQueue` dependencies for stability
+- **Logout**: Improved cleanup and debugging
 
 ### Technical Achievements:
-- ✅ Eliminated style composition complexity
-- ✅ Reduced import dependencies
-- ✅ Improved component self-sufficiency
-- ✅ Maintained all visual effects and interactions
-- ✅ All tests still passing
+- ✅ No more "Code verifier not found" errors after login
+- ✅ No more infinite re-render loops
+- ✅ Queue always auto-populates and replenishes as intended
+- ✅ All tests passing, build clean
+- ✅ Zero regressions or visual changes
 
 ### Files Modified:
-- `src/components/ui/segmented-control.tsx` (simplified styling)
-- `src/components/ui/slider.tsx` (inlined liquid glass styles)
-- `src/components/ui/button.tsx` (inlined button variants)
-- `src/hooks/useLiquidGlass.ts` (removed - 301 lines deleted)
-- `src/hooks/index.ts` (removed export)
-- `src/components/liquid-glass/index.ts` (removed export)
-
-### Stage 2 Final Results:
-- **STAGE 2.1**: ✅ Design system reduced ~20% while preserving visual fidelity
-- **STAGE 2.2**: ✅ LiquidGlassContainer simplified 31% (169→117 lines)
-- **STAGE 2.3**: ✅ Component style cleanup completed
-- **REMOVED**: 301 lines of unused hook code
-- **PRESERVED**: 100% visual appearance and functionality
+- `src/hooks/useQueue.ts` (dependency fix, useRef)
+- `src/hooks/useWeatherQueue.ts` (dependency optimization)
+- `src/lib/spotify-auth.ts` (OAuth bugfix, error handling)
 
 ### Next Session Priority:
-**STAGE 3**: Component Architecture Overhaul
+**STAGE 3**: Continue ruthless component consolidation and architectural simplification (target: 15-20 TSX files, single source of truth everywhere)
 
 ---
 

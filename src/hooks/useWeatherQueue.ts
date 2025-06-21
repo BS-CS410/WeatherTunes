@@ -19,12 +19,13 @@ interface UseWeatherQueueReturn {
 export function useWeatherQueue(): UseWeatherQueueReturn {
   const weatherState = useWeatherData();
 
+  // Extract stable values to avoid unnecessary re-renders
+  const condition = weatherState.displayData?.condition || "clear sky";
+  const temperature = weatherState.rawResponse?.main.temp || 20;
+
   const generateWeatherQueue = useCallback(
     async (count = 15): Promise<TrackMetadata[]> => {
       try {
-        // Extract weather conditions
-        const condition = weatherState.displayData?.condition || "clear sky";
-        const temperature = weatherState.rawResponse?.main.temp || 20;
         const timeOfDay = getCurrentTimeOfDay();
 
         console.log(
@@ -63,7 +64,7 @@ export function useWeatherQueue(): UseWeatherQueueReturn {
         return [];
       }
     },
-    [weatherState],
+    [condition, temperature], // Only depend on specific values, not entire weatherState
   );
 
   const replaceQueueWithWeatherTracks = useCallback(

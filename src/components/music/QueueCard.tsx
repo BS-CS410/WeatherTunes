@@ -6,24 +6,16 @@ import { useState, useRef } from "react";
 import { COLORS, TYPOGRAPHY, ANIMATIONS, LAYOUT } from "@/lib/design-system";
 import { cn } from "@/lib/dom-helpers";
 import { useQueue } from "@/hooks/useQueue";
-import { useWeatherQueue } from "@/hooks/useWeatherQueue";
 import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
 import { Button } from "@/components/ui/button";
 
 export function QueueCard() {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const [isGenerating, setIsGenerating] = useState(false);
   const hoverTimeout = useRef<NodeJS.Timeout | null>(null);
-  
+
   const { user, isLoading: authLoading } = useSpotifyAuth();
-  const { 
-    upcomingTracks, 
-    isLoading, 
-    playNext, 
-    playTrack, 
-    clearQueue
-  } = useQueue();
-  const { replaceQueueWithWeatherTracks } = useWeatherQueue();
+  const { upcomingTracks, isLoading, playNext, playTrack, clearQueue } =
+    useQueue();
 
   const handleMouseEnter = (id: string) => {
     if (hoverTimeout.current) {
@@ -40,23 +32,6 @@ export function QueueCard() {
     hoverTimeout.current = setTimeout(() => {
       setHoveredId(null);
     }, 80);
-  };
-
-  const handleGenerateQueue = async () => {
-    if (!user) {
-      alert("Please log in to generate a queue.");
-      return;
-    }
-
-    setIsGenerating(true);
-    try {
-      await replaceQueueWithWeatherTracks(15);
-    } catch (error) {
-      console.error("Failed to generate queue:", error);
-      alert("Failed to generate queue. Please try again.");
-    } finally {
-      setIsGenerating(false);
-    }
   };
 
   const handlePlayTrack = async (trackId: string) => {
@@ -111,43 +86,34 @@ export function QueueCard() {
   return (
     <div className="relative">
       {/* Header with controls */}
-      <div className={cn("flex items-center justify-between", LAYOUT.padding.lg)}>
+      <div
+        className={cn("flex items-center justify-between", LAYOUT.padding.lg)}
+      >
         <h2 className={cn(TYPOGRAPHY.display.xl, COLORS.text.primary)}>
           Up Next:
         </h2>
-        <div className={cn("flex", LAYOUT.spacing.sm)}>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleGenerateQueue}
-            disabled={isLoading || isGenerating}
-            className="text-xs"
-          >
-            {isGenerating ? "Generating..." : "Generate Queue"}
-          </Button>
-          {upcomingTracks.length > 0 && (
-            <>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleSkipTrack}
-                disabled={isLoading}
-                className="text-xs"
-              >
-                Skip
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleClearQueue}
-                disabled={isLoading}
-                className="text-xs"
-              >
-                Clear
-              </Button>
-            </>
-          )}
-        </div>
+        {upcomingTracks.length > 0 && (
+          <div className={cn("flex", LAYOUT.spacing.sm)}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleSkipTrack}
+              disabled={isLoading}
+              className="text-xs"
+            >
+              Skip
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleClearQueue}
+              disabled={isLoading}
+              className="text-xs"
+            >
+              Clear
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Queue display area */}
@@ -161,7 +127,7 @@ export function QueueCard() {
         ) : upcomingTracks.length === 0 ? (
           <div className="flex items-center justify-center px-6 py-8">
             <p className={cn(TYPOGRAPHY.body.base, COLORS.text.muted)}>
-              Queue is empty. Generate a new queue to get started!
+              Your queue is being prepared with music for the current weather...
             </p>
           </div>
         ) : (
@@ -170,7 +136,8 @@ export function QueueCard() {
               {upcomingTracks.map((track, idx) => {
                 const isHovered = hoveredId === track.id;
                 const isNextUp = idx === 0 && hoveredId === null;
-                const isNextUpOrHovered = isNextUp || (hoveredId === track.id && idx === 0);
+                const isNextUpOrHovered =
+                  isNextUp || (hoveredId === track.id && idx === 0);
 
                 return (
                   <div
@@ -185,7 +152,11 @@ export function QueueCard() {
                   >
                     <div className="relative">
                       <img
-                        src={track.albumArt || track.albumArtFallback || "/placeholder-album.svg"}
+                        src={
+                          track.albumArt ||
+                          track.albumArtFallback ||
+                          "/placeholder-album.svg"
+                        }
                         alt={track.title}
                         onError={(e) => {
                           if (
