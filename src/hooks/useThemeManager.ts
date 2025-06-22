@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useSettings } from "@/hooks";
-import type { TimePeriod } from "@/lib/time-helpers";
+import type { TimePeriod } from "@/lib";
 
 /**
  * Hook that manages theme application based on settings and time period

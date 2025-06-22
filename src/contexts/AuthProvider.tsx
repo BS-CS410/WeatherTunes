@@ -3,19 +3,19 @@
  * Single source of truth for auth state using React Context
  */
 
-import * as React from 'react';
-import { useState, useEffect, useCallback, useMemo } from 'react';
-import { useServices } from '../hooks/useServices';
-import { AuthContext } from './AuthContext';
-import type { User } from '@/services/AuthService';
+import * as React from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { useServices } from "../hooks/useServices";
+import type { User } from "@/services/AuthService";
 
-interface AuthState {
+// === AUTH CONTEXT TYPES ===
+export interface AuthState {
   user: User | null;
   isLoading: boolean;
   error: string | null;
 }
 
-interface AuthContextValue extends AuthState {
+export interface AuthContextValue extends AuthState {
   login: () => Promise<void>;
   logout: () => void;
   handleCallback: () => Promise<boolean>;
@@ -23,11 +23,16 @@ interface AuthContextValue extends AuthState {
   isAuthenticated: boolean;
 }
 
+// === CONTEXT CREATION ===
+export const AuthContext = React.createContext<AuthContextValue | null>(null);
+
 type AuthProviderProps = {
   children: React.ReactNode;
 };
 
-export function AuthProvider({ children }: AuthProviderProps): React.ReactElement {
+export function AuthProvider({
+  children,
+}: AuthProviderProps): React.ReactElement {
   const { auth } = useServices();
   const [state, setState] = useState<AuthState>({
     user: null,
@@ -41,16 +46,16 @@ export function AuthProvider({ children }: AuthProviderProps): React.ReactElemen
       const isAuth = await auth.isAuthenticated();
       if (isAuth) {
         const user = await auth.getUser();
-        setState(prev => ({ ...prev, user, isLoading: false, error: null }));
+        setState((prev) => ({ ...prev, user, isLoading: false, error: null }));
       } else {
-        setState(prev => ({ ...prev, isLoading: false, error: null }));
+        setState((prev) => ({ ...prev, isLoading: false, error: null }));
       }
     } catch (error) {
-      console.error('Auth check failed:', error);
-      setState(prev => ({
+      console.error("Auth check failed:", error);
+      setState((prev) => ({
         ...prev,
         isLoading: false,
-        error: 'Failed to check authentication status',
+        error: "Failed to check authentication status",
       }));
     }
   }, [auth]);
@@ -61,43 +66,46 @@ export function AuthProvider({ children }: AuthProviderProps): React.ReactElemen
   }, [checkAuth]);
 
   const login = useCallback(async () => {
-    setState(prev => ({ ...prev, isLoading: true, error: null }));
+    setState((prev) => ({ ...prev, isLoading: true, error: null }));
     try {
       await auth.initiateLogin();
     } catch (error) {
-      console.error('Login failed:', error);
-      setState(prev => ({
+      console.error("Login failed:", error);
+      setState((prev) => ({
         ...prev,
         isLoading: false,
-        error: error instanceof Error ? error.message : 'Failed to start login process',
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to start login process",
       }));
     }
   }, [auth]);
 
   const handleCallback = useCallback(async (): Promise<boolean> => {
-    setState(prev => ({ ...prev, isLoading: true, error: null }));
+    setState((prev) => ({ ...prev, isLoading: true, error: null }));
     try {
       // Extract the code from the URL query parameters
       const params = new URLSearchParams(window.location.search);
-      const code = params.get('code');
-      const state = params.get('state');
-      const error = params.get('error');
+      const code = params.get("code");
+      const state = params.get("state");
+      const error = params.get("error");
 
       if (error) {
         throw new Error(error);
       }
 
       if (!code || !state) {
-        throw new Error('Missing required authentication parameters');
+        throw new Error("Missing required authentication parameters");
       }
 
       await auth.handleCallback({ code, state });
       const user = await auth.getUser();
-      
+
       // Clear the URL parameters after successful authentication
       window.history.replaceState({}, document.title, window.location.pathname);
-      
-      setState(prev => ({
+
+      setState((prev) => ({
         ...prev,
         user,
         isLoading: false,
@@ -105,11 +113,14 @@ export function AuthProvider({ children }: AuthProviderProps): React.ReactElemen
       }));
       return true;
     } catch (error) {
-      console.error('Callback handling failed:', error);
-      setState(prev => ({
+      console.error("Callback handling failed:", error);
+      setState((prev) => ({
         ...prev,
         isLoading: false,
-        error: error instanceof Error ? error.message : 'Failed to complete login process',
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to complete login process",
       }));
       return false;
     }
@@ -128,23 +139,22 @@ export function AuthProvider({ children }: AuthProviderProps): React.ReactElemen
     try {
       return await auth.getAccessToken();
     } catch (error) {
-      console.error('Failed to get access token:', error);
+      console.error("Failed to get access token:", error);
       return null;
     }
   }, [auth]);
 
-  const value = useMemo<AuthContextValue>(() => ({
-    ...state,
-    login,
-    logout,
-    handleCallback,
-    getAccessToken,
-    isAuthenticated: !!state.user,
-  }), [state, login, logout, handleCallback, getAccessToken]);
-
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo<AuthContextValue>(
+    () => ({
+      ...state,
+      login,
+      logout,
+      handleCallback,
+      getAccessToken,
+      isAuthenticated: !!state.user,
+    }),
+    [state, login, logout, handleCallback, getAccessToken],
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

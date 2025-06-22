@@ -39,26 +39,37 @@ Object.defineProperty(global, 'crypto', {
   },
 });
 
-// Minimal, spy-compatible localStorage mock for tests
-const store: Record<string, string> = {};
+// Prototype-based, spy-compatible localStorage mock for tests
+class LocalStorageMock {
+  private store: Record<string, string> = {};
+
+  getItem(key: string): string | null {
+    return this.store[key] || null;
+  }
+
+  setItem = vi.fn((key: string, value: string) => {
+    this.store[key] = value;
+  });
+
+  removeItem(key: string): void {
+    delete this.store[key];
+  }
+
+  clear(): void {
+    Object.keys(this.store).forEach(key => delete this.store[key]);
+  }
+
+  key(index: number): string | null {
+    return Object.keys(this.store)[index] || null;
+  }
+
+  get length(): number {
+    return Object.keys(this.store).length;
+  }
+}
 
 Object.defineProperty(window, 'localStorage', {
-  value: {
-    getItem: (key: string) => store[key] || null,
-    setItem: vi.fn((key: string, value: string) => {
-      store[key] = value;
-    }),
-    removeItem: (key: string) => {
-      delete store[key];
-    },
-    clear: () => {
-      Object.keys(store).forEach(key => delete store[key]);
-    },
-    key: (index: number) => Object.keys(store)[index] || null,
-    get length() {
-      return Object.keys(store).length;
-    },
-  },
+  value: new LocalStorageMock(),
   writable: true,
 });
 

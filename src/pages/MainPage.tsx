@@ -1,9 +1,18 @@
-import { ErrorDisplay, WeatherBackground, WeatherMusicCard, ForecastCard, QueueCard, FavoritesCard, SpotifySearchCard, SettingsButton } from '@/components';
-import { LoadingSpinner } from '@/components/shared/StatusComponents';
-import { useWeatherData } from '@/hooks/useWeatherData';
-import { useThemeManager } from '@/hooks/useThemeManager';
-import { useAuth } from '@/hooks/useAuth';
-import { LAYOUT, COLORS } from '@/lib/design-system';
+import {
+  ErrorDisplay,
+  WeatherBackground,
+  WeatherMusicCard,
+  ForecastCard,
+  QueueCard,
+  FavoritesCard,
+  SpotifySearchCard,
+  SettingsButton,
+} from "@/components";
+import { LoadingSpinner } from "@/components/shared/StatusComponents";
+import { useWeatherData } from "@/hooks/useWeatherData";
+import { useThemeManager } from "@/hooks/useThemeManager";
+import { useAuth } from "@/hooks/useAuth";
+import { LAYOUT, COLORS } from "@/lib";
 
 function MainPage() {
   const weatherState = useWeatherData();
@@ -11,7 +20,7 @@ function MainPage() {
   const { displayData, timePeriod, isLoading, error } = weatherState;
 
   // Set theme based on time of day
-  useThemeManager(timePeriod || 'day');
+  useThemeManager(timePeriod || "day");
 
   // Loading State
   if (isLoading || authLoading) {
@@ -26,7 +35,7 @@ function MainPage() {
   if (error) {
     return (
       <ErrorDisplay
-        title={error.message || 'Could not load weather data.'}
+        title={error.message || "Could not load weather data."}
         message="Please try again later or check your connection."
       />
     );
@@ -112,15 +121,19 @@ function MainPage() {
 
         {/* Bottom Padding */}
         <div className="h-16" />
-        
+
         {/* Footer */}
         <div className="w-full pb-2 text-center">
-          <span className={`-mb-6 block text-lg font-semibold tracking-wide ${COLORS.text.primary}`}>
+          <span
+            className={`-mb-6 block text-lg font-semibold tracking-wide ${COLORS.text.primary}`}
+          >
             Blaze your glory<sup className="text-xs">™</sup>
           </span>
         </div>
-        
-        <footer className={`w-full pb-4 text-center text-xs ${COLORS.text.primary}`}>
+
+        <footer
+          className={`w-full pb-4 text-center text-xs ${COLORS.text.primary}`}
+        >
           © {new Date().getFullYear()} Team Meow Ltd. All rights reserved.
         </footer>
       </div>

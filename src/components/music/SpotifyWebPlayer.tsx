@@ -4,9 +4,8 @@
  */
 
 import React, { useEffect, useState, useCallback, useRef } from "react";
-import { useSpotifyPlayer } from "@/hooks/useSpotifyPlayer";
+import { useSpotifyPlayer, useSpotifyQueue } from "@/hooks/spotify";
 import { useAuth } from "@/hooks/useAuth";
-import { useSpotifyQueue } from "@/hooks/useSpotifyQueue";
 import {
   Play,
   Pause,
@@ -276,12 +275,26 @@ export const SpotifyWebPlayer: React.FC<SpotifyWebPlayerProps> = ({
     );
   }
 
-  const displayTrack = state.currentTrack || {
-    name: trackMetadata?.title || "Unknown Track",
-    artists: [trackMetadata?.artist || "Unknown Artist"],
-    album: "Unknown Album",
-    image: trackMetadata?.albumArt || "",
-  };
+  const displayTrack = state.currentTrack
+    ? {
+        name: state.currentTrack.title,
+        artists: [state.currentTrack.artist],
+        album: state.currentTrack.album,
+        image: state.currentTrack.albumArt,
+      }
+    : trackMetadata
+      ? {
+          name: trackMetadata.title,
+          artists: [trackMetadata.artist],
+          album: trackMetadata.album,
+          image: trackMetadata.albumArt,
+        }
+      : {
+          name: "Unknown Track",
+          artists: ["Unknown Artist"],
+          album: "Unknown Album",
+          image: "",
+        };
 
   const progressPercent =
     state.duration > 0 ? (state.position / state.duration) * 100 : 0;

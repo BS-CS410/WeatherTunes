@@ -4,9 +4,9 @@
  */
 
 import { useState, useRef } from "react";
-import { COLORS, TYPOGRAPHY, ANIMATIONS, LAYOUT } from "@/lib/design-system";
-import { cn } from "@/lib/dom-helpers";
-import { useSpotifyQueue } from "@/hooks/useSpotifyQueue";
+import { COLORS, TYPOGRAPHY, ANIMATIONS, LAYOUT } from "@/lib";
+import { cn } from "@/lib";
+import { useSpotifyQueue } from "@/hooks/spotify";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import type { TrackMetadata } from "@/types/queue-types";

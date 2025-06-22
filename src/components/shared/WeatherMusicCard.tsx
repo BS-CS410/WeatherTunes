@@ -3,11 +3,10 @@ import { SunriseIcon, SunsetIcon } from "@/components/icons";
 import type { WeatherDisplayData } from "@/types/weather-types";
 import { SectionWrapper } from "../layout/SectionWrapper";
 import { useAuth } from "@/hooks/useAuth";
-import { useSpotifyLikes } from "@/hooks/useSpotifyLikes";
-import { useSpotifyQueue } from "@/hooks/useSpotifyQueue";
+import { useSpotifyLikes, useSpotifyQueue } from "@/hooks/spotify";
 import { Button } from "@/components/ui/button";
-import { TYPOGRAPHY, COLORS } from "@/lib/design-system";
-import { cn } from "@/lib/dom-helpers";
+import { TYPOGRAPHY, COLORS } from "@/lib";
+import { cn } from "@/lib";
 import { SpotifyWebPlayer } from "@/components/music/SpotifyWebPlayer";
 
 interface WeatherMusicCardProps {
@@ -25,7 +24,8 @@ export function WeatherMusicCard({
   className = "",
 }: WeatherMusicCardProps) {
   const [message, setMessage] = useState<string | null>(null);
-  const { currentTrack, upcomingTracks, isLoading, playNext } = useSpotifyQueue();
+  const { currentTrack, upcomingTracks, isLoading, playNext } =
+    useSpotifyQueue();
   const { user } = useAuth();
   const { likeTrack, isLoading: isLiking } = useSpotifyLikes();
 
@@ -63,11 +63,11 @@ export function WeatherMusicCard({
     if (!currentTrack || isLiking) return;
     try {
       await likeTrack(currentTrack.id);
-      setMessage('Track liked!');
+      setMessage("Track liked!");
       setTimeout(() => setMessage(null), 2000);
     } catch (error) {
-      console.error('Failed to like track:', error);
-      setMessage('Failed to like track');
+      console.error("Failed to like track:", error);
+      setMessage("Failed to like track");
       setTimeout(() => setMessage(null), 3000);
     }
   };
@@ -221,8 +221,8 @@ export function WeatherMusicCard({
             size="icon"
             onClick={handleLikeClick}
             disabled={isLiking}
-            className="group-hover:opacity-100 opacity-70"
-            aria-label={isLiking ? 'Liking...' : 'Like track'}
+            className="opacity-70 group-hover:opacity-100"
+            aria-label={isLiking ? "Liking..." : "Like track"}
           >
             ♡ Like
           </Button>

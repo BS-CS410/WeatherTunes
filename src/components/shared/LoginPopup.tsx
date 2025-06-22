@@ -1,8 +1,8 @@
 import { useAuth } from "@/hooks/useAuth";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { COLORS } from "@/lib/design-system";
-import { cn } from "@/lib/dom-helpers";
+import { COLORS } from "@/lib";
+import { cn } from "@/lib";
 import { useState } from "react";
 
 interface LoginPopupProps {

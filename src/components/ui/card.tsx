@@ -1,11 +1,11 @@
 import React from "react";
-import { CARD_STYLES, LAYOUT } from "@/lib/design-system";
-import { cn } from "@/lib/dom-helpers";
+import { CARD_STYLES, LAYOUT } from "@/lib";
+import { cn } from "@/lib";
 import { LiquidGlassContainer } from "@/components/liquid-glass";
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
-  variant?: keyof typeof CARD_STYLES;
+  variant?: keyof typeof CARD_STYLES | "modal";
   className?: string;
   contentClassName?: string;
   withPadding?: boolean;
@@ -33,9 +33,15 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ) => {
     // Use overflow-visible for interactive and base variants to prevent clipping
     const overflowClass =
-      variant === "interactive" || variant === "base"
+      variant === "interactive" || variant === "base" || variant === "modal"
         ? "overflow-visible"
         : "overflow-hidden";
+
+    // Handle modal variant
+    const cardStyles =
+      variant === "modal"
+        ? "backdrop-blur-xl backdrop-saturate-[2.2] bg-white/[0.06] border border-white/[0.15] dark:bg-black/[0.18] dark:border-white/[0.06] rounded-lg"
+        : CARD_STYLES[variant as keyof typeof CARD_STYLES];
 
     const cardContent = (
       <div
@@ -43,7 +49,7 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
         className={cn(
           "relative flex flex-col",
           overflowClass,
-          CARD_STYLES[variant],
+          cardStyles,
           className,
         )}
         {...props}

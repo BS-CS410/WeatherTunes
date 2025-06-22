@@ -1,11 +1,10 @@
 import { useState } from "react";
 import * as ScrollArea from "@radix-ui/react-scroll-area";
-import { COLORS, TYPOGRAPHY, LAYOUT } from "@/lib/design-system";
-import { cn } from "@/lib/dom-helpers";
+import { COLORS, TYPOGRAPHY, LAYOUT } from "@/lib";
+import { cn } from "@/lib";
 import { useAuth } from "@/hooks/useAuth";
 import { SpotifyMiniPlayer } from "./SpotifyMiniPlayer";
-import { useSpotifyLikedTracks } from "@/hooks/useSpotifyLikedTracks";
-import { useSpotifyQueue } from "@/hooks/useSpotifyQueue";
+import { useSpotifyLikedTracks, useSpotifyQueue } from "@/hooks/spotify";
 import type { TrackMetadata } from "@/types/queue-types";
 
 interface FavoritesCardProps {
@@ -18,7 +17,11 @@ interface FavoritesCardProps {
  */
 export function FavoritesCard({ className = "" }: FavoritesCardProps) {
   const { user } = useAuth();
-  const { tracks: likedTracks, isLoading: loading, error } = useSpotifyLikedTracks(50);
+  const {
+    tracks: likedTracks,
+    isLoading: loading,
+    error,
+  } = useSpotifyLikedTracks(50);
   const { playTrack } = useSpotifyQueue();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -27,14 +30,17 @@ export function FavoritesCard({ className = "" }: FavoritesCardProps) {
       await playTrack(track.id);
       setErrorMessage(null);
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to play track';
+      const message =
+        err instanceof Error ? err.message : "Failed to play track";
       setErrorMessage(message);
     }
   };
 
   if (loading) {
     return (
-      <div className={cn(LAYOUT.container.center, LAYOUT.padding.xl, className)}>
+      <div
+        className={cn(LAYOUT.container.center, LAYOUT.padding.xl, className)}
+      >
         <p className={cn(TYPOGRAPHY.body.lg, COLORS.text.muted)}>
           Loading your liked tracks...
         </p>
@@ -44,14 +50,14 @@ export function FavoritesCard({ className = "" }: FavoritesCardProps) {
 
   if (error) {
     return (
-      <div className={cn(LAYOUT.container.center, LAYOUT.padding.xl, className)}>
+      <div
+        className={cn(LAYOUT.container.center, LAYOUT.padding.xl, className)}
+      >
         <div className="text-center">
-          <p className={cn(TYPOGRAPHY.body.lg, "text-red-500 mb-2")}>
+          <p className={cn(TYPOGRAPHY.body.lg, "mb-2 text-red-500")}>
             Failed to load liked tracks
           </p>
-          <p className={cn(TYPOGRAPHY.body.sm, COLORS.text.muted)}>
-            {error.message}
-          </p>
+          <p className={cn(TYPOGRAPHY.body.sm, COLORS.text.muted)}>{error}</p>
         </div>
       </div>
     );
@@ -59,7 +65,9 @@ export function FavoritesCard({ className = "" }: FavoritesCardProps) {
 
   if (!likedTracks?.length) {
     return (
-      <div className={cn(LAYOUT.container.center, LAYOUT.padding.xl, className)}>
+      <div
+        className={cn(LAYOUT.container.center, LAYOUT.padding.xl, className)}
+      >
         <p className={cn(TYPOGRAPHY.body.lg, COLORS.text.muted)}>
           No liked tracks found. Start by liking some songs on Spotify!
         </p>
@@ -69,7 +77,9 @@ export function FavoritesCard({ className = "" }: FavoritesCardProps) {
 
   if (!user) {
     return (
-      <div className={cn(LAYOUT.container.center, LAYOUT.padding.xl, className)}>
+      <div
+        className={cn(LAYOUT.container.center, LAYOUT.padding.xl, className)}
+      >
         <div className="text-center">
           <p className={cn(TYPOGRAPHY.body.lg, COLORS.text.muted, "mb-4")}>
             Please log into Spotify to view your liked tracks.
@@ -91,7 +101,7 @@ export function FavoritesCard({ className = "" }: FavoritesCardProps) {
   return (
     <div className={cn("relative w-full", className)}>
       {errorMessage && (
-        <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">
+        <div className="mb-4 rounded-md bg-red-100 p-3 text-red-700">
           <p className="text-sm">{errorMessage}</p>
         </div>
       )}

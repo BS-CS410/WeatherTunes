@@ -1,16 +1,15 @@
 import React, { useState } from "react";
 import { Search, Music, Plus, Loader2 } from "lucide-react";
-import { useSpotifySearch } from "@/hooks/useSpotifySearch";
+import { useSpotifySearch, useSpotifyQueue } from "@/hooks/spotify";
 import { useAuth } from "@/hooks/useAuth";
-import { useSpotifyQueue } from "@/hooks/useSpotifyQueue";
 import type { TrackMetadata } from "@/types/queue-types";
 import {
   COLORS,
   CARD_STYLES,
   INPUT_STYLES,
   BUTTON_STYLES,
-} from "@/lib/design-system";
-import { cn } from "@/lib/dom-helpers";
+} from "@/lib";
+import { cn } from "@/lib";
 import { LiquidGlassContainer } from "@/components/liquid-glass";
 
 interface SpotifySearchCardProps {

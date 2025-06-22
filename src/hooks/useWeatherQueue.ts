@@ -4,8 +4,7 @@
 
 import { useWeatherData } from "./useWeatherData";
 import { useCallback } from "react";
-import { useSpotifyQueue } from "./useSpotifyQueue";
-import { useSpotifyService } from "./useSpotifyService";
+import { useSpotifyQueue, useSpotifyService } from "./spotify";
 import type { TrackMetadata } from "@/types/queue-types";
 import type { Track, RecommendationTrack } from "@/types/spotify-api-types";
 import { getVideoForCondition } from "@/data/video-assets";
@@ -19,30 +18,34 @@ function getTempoForTemperature(temperature: number): number {
 // Helper function to get genres based on weather and time of day
 function getGenresForWeather(condition: string, timeOfDay: string): string[] {
   const conditionLower = condition.toLowerCase();
-  const isDaytime = ['morning', 'afternoon'].includes(timeOfDay);
-  
-  if (conditionLower.includes('rain') || conditionLower.includes('drizzle')) {
-    return isDaytime ? ['chill', 'acoustic', 'piano'] : ['rainy-day', 'ambient', 'sleep'];
+  const isDaytime = ["morning", "afternoon"].includes(timeOfDay);
+
+  if (conditionLower.includes("rain") || conditionLower.includes("drizzle")) {
+    return isDaytime
+      ? ["chill", "acoustic", "piano"]
+      : ["rainy-day", "ambient", "sleep"];
   }
-  
-  if (conditionLower.includes('snow') || conditionLower.includes('sleet')) {
-    return ['winter', 'christmas', 'holidays'];
+
+  if (conditionLower.includes("snow") || conditionLower.includes("sleet")) {
+    return ["winter", "christmas", "holidays"];
   }
-  
-  if (conditionLower.includes('sun') || conditionLower.includes('clear')) {
-    return isDaytime ? ['pop', 'indie-pop', 'summer'] : ['chill', 'indie', 'acoustic'];
+
+  if (conditionLower.includes("sun") || conditionLower.includes("clear")) {
+    return isDaytime
+      ? ["pop", "indie-pop", "summer"]
+      : ["chill", "indie", "acoustic"];
   }
-  
-  if (conditionLower.includes('cloud') || conditionLower.includes('overcast')) {
-    return ['indie', 'alternative', 'indie-pop'];
+
+  if (conditionLower.includes("cloud") || conditionLower.includes("overcast")) {
+    return ["indie", "alternative", "indie-pop"];
   }
-  
-  if (conditionLower.includes('thunder') || conditionLower.includes('storm')) {
-    return ['rock', 'alternative', 'hard-rock'];
+
+  if (conditionLower.includes("thunder") || conditionLower.includes("storm")) {
+    return ["rock", "alternative", "hard-rock"];
   }
-  
+
   // Default genres
-  return ['pop', 'indie', 'chill'];
+  return ["pop", "indie", "chill"];
 }
 
 interface UseWeatherQueueReturn {
@@ -75,7 +78,7 @@ export function useWeatherQueue(): UseWeatherQueueReturn {
         try {
           const seedGenres = getGenresForWeather(condition, timeOfDay);
           const targetTempo = getTempoForTemperature(temperature);
-          
+
           // Get recommendations using available seeds
           const recommendations = await spotifyService.getRecommendations({
             seed_genres: seedGenres.slice(0, 5), // Max 5 seed genres
@@ -89,23 +92,25 @@ export function useWeatherQueue(): UseWeatherQueueReturn {
           if (recommendations.tracks && recommendations.tracks.length > 0) {
             console.log(
               `Generated ${recommendations.tracks.length} weather-based tracks`,
-              { seedGenres, targetTempo }
+              { seedGenres, targetTempo },
             );
-            return recommendations.tracks.map((track: RecommendationTrack | Track) => {
-              const videoAsset = getVideoForCondition(condition);
-              return {
-                id: track.id,
-                title: track.name,
-                artist: track.artists[0]?.name || 'Unknown Artist',
-                album: track.album?.name || 'Unknown Album',
-                albumArt: track.album?.images?.[0]?.url || '',
-                duration: track.duration_ms,
-                uri: track.uri,
-                externalUrl: track.external_urls?.spotify || '',
-                videoUrl: videoAsset.path,
-                videoClass: videoAsset.className || '',
-              };
-            });
+            return recommendations.tracks.map(
+              (track: RecommendationTrack | Track) => {
+                const videoAsset = getVideoForCondition(condition);
+                return {
+                  id: track.id,
+                  title: track.name,
+                  artist: track.artists[0]?.name || "Unknown Artist",
+                  album: track.album?.name || "Unknown Album",
+                  albumArt: track.album?.images?.[0]?.url || "",
+                  duration: track.duration_ms,
+                  uri: track.uri,
+                  externalUrl: track.external_urls?.spotify || "",
+                  videoUrl: videoAsset.path,
+                  videoClass: videoAsset.className || "",
+                };
+              },
+            );
           }
         } catch (weatherError) {
           console.warn("Weather recommendations failed:", weatherError);
@@ -113,29 +118,32 @@ export function useWeatherQueue(): UseWeatherQueueReturn {
 
         // Fallback to search-based tracks
         const searchTerms = getSearchTermsForWeather(condition, timeOfDay);
-        const searchResults = await spotifyService.searchTracks(searchTerms, count);
+        const searchResults = await spotifyService.searchTracks(
+          searchTerms,
+          count,
+        );
 
         console.log(
           `Fallback: Generated ${searchResults.tracks?.items?.length || 0} search-based tracks`,
-          { searchTerms }
+          { searchTerms },
         );
-        
+
         if (!searchResults.tracks?.items) {
           return [];
         }
-        
+
         const videoAsset = getVideoForCondition(condition);
         return searchResults.tracks.items.map((track: Track) => ({
           id: track.id,
           title: track.name,
-          artist: track.artists[0]?.name || 'Unknown Artist',
-          album: track.album?.name || 'Unknown Album',
-          albumArt: track.album?.images?.[0]?.url || '',
+          artist: track.artists[0]?.name || "Unknown Artist",
+          album: track.album?.name || "Unknown Album",
+          albumArt: track.album?.images?.[0]?.url || "",
           duration: track.duration_ms,
           uri: track.uri,
-          externalUrl: track.external_urls?.spotify || '',
+          externalUrl: track.external_urls?.spotify || "",
           videoUrl: videoAsset.path,
-          videoClass: videoAsset.className || '',
+          videoClass: videoAsset.className || "",
         }));
       } catch (error) {
         console.error("Failed to generate weather queue:", error);

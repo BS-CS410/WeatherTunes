@@ -1,5 +1,5 @@
-import { COLORS, TYPOGRAPHY, LAYOUT } from "@/lib/design-system";
-import { cn } from "@/lib/dom-helpers";
+import { COLORS, TYPOGRAPHY, LAYOUT } from "@/lib";
+import { cn } from "@/lib";
 
 interface LoadingSpinnerProps {
   message?: string;

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { getDefaultUnitsForCountry } from "@/lib/unit-converters";
-import type { UnitDefaults } from "@/types/units-types";
+import { getDefaultUnitsForCountry, type UnitDefaults } from "@/lib";
 
 type LocationBasedDefaults = UnitDefaults;
 

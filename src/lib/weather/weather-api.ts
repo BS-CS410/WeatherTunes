@@ -1,4 +1,7 @@
-import type { WeatherApiResponse, ForecastApiResponse } from "@/types/weather-types";
+import type {
+  WeatherApiResponse,
+  ForecastApiResponse,
+} from "@/types/weather-types";
 
 // Fallback to Bellevue, WA and hope no one notices
 const FALLBACK_COORDS = {
@@ -50,17 +53,7 @@ export function getUserLocationAndFetch(
   });
 }
 
-// Create error state for weather data
-export function createErrorWeatherData(): WeatherApiResponse {
-  return {
-    name: "Error",
-    main: { temp: 0, humidity: 0, pressure: 0 },
-    weather: [{ main: "Unable to load", description: "Error", id: 0 }],
-    sys: { sunrise: 0, sunset: 0, country: undefined },
-  };
-}
-
-// Fetch 5-day weather forecast from OpenWeatherMap API
+// Fetch forecast data from OpenWeatherMap API
 export async function fetchForecastByCoords(
   lat: number,
   lon: number,
@@ -73,7 +66,7 @@ export async function fetchForecastByCoords(
   return res.json();
 }
 
-// Request user's location and fetch forecast data
+// Get user location and fetch forecast
 export function getUserLocationAndFetchForecast(
   apiKey: string,
 ): Promise<ForecastApiResponse> {
@@ -100,4 +93,52 @@ export function getUserLocationAndFetchForecast(
       { timeout: GEOLOCATION_TIMEOUT },
     );
   });
+}
+
+// Weather condition mapping utilities
+export const WEATHER_ICONS: Record<string, string> = {
+  "01d": "☀️", // clear sky day
+  "01n": "🌙", // clear sky night
+  "02d": "⛅", // few clouds day
+  "02n": "☁️", // few clouds night
+  "03d": "☁️", // scattered clouds
+  "03n": "☁️", // scattered clouds
+  "04d": "☁️", // broken clouds
+  "04n": "☁️", // broken clouds
+  "09d": "🌧️", // shower rain
+  "09n": "🌧️", // shower rain
+  "10d": "🌦️", // rain day
+  "10n": "🌧️", // rain night
+  "11d": "⛈️", // thunderstorm
+  "11n": "⛈️", // thunderstorm
+  "13d": "❄️", // snow
+  "13n": "❄️", // snow
+  "50d": "🌫️", // mist
+  "50n": "🌫️", // mist
+};
+
+export function getWeatherIcon(iconCode: string): string {
+  return WEATHER_ICONS[iconCode] || "🌤️";
+}
+
+export function getWeatherCondition(weatherMain: string): string {
+  const conditions: Record<string, string> = {
+    Clear: "clear",
+    Clouds: "cloudy",
+    Rain: "rain",
+    Drizzle: "rain",
+    Thunderstorm: "stormy",
+    Snow: "snow",
+    Mist: "fog",
+    Smoke: "fog",
+    Haze: "fog",
+    Dust: "fog",
+    Fog: "fog",
+    Sand: "fog",
+    Ash: "fog",
+    Squall: "stormy",
+    Tornado: "stormy",
+  };
+
+  return conditions[weatherMain]?.toLowerCase() || "clear";
 }

@@ -1,27 +1,49 @@
 /**
- * Consolidated library exports
+ * Comprehensive Library Exports - Refactored and Consolidated
  * Centralized access to all utility functions and services
+ *
+ * Architecture:
+ * - /core: Core utilities (DOM, crypto, validation, arrays, strings, units, time)
+ * - /design: Design system and theming (components, Material-UI)
+ * - /weather: Weather-related APIs and utilities
+ * - /music: Music/Spotify integration (auth, API, recommendations)
+ * - /config: Configuration and setup (React Query, etc.)
  */
 
-// DOM and styling utilities
-export * from "./dom-helpers";
-export * from "./design-system";
-export * from "./material-ui-theme";
+// === CORE UTILITIES ===
+export * from "./core";
 
-// Time and date utilities
-export * from "./time-helpers";
+// === DESIGN SYSTEM ===
+export * from "./design";
 
-// Unit conversion utilities
-export * from "./unit-converters";
+// === WEATHER UTILITIES ===
+export * from "./weather";
 
-// Weather utilities
-export * from "./weather-api";
+// === MUSIC UTILITIES ===
+export * from "./music";
 
-// Music and Spotify integration
-export * from "./music-recommendations";
-export * from "./spotify-auth";
-export * from "./spotify-api";
-export * from "./spotify-types";
+// === CONFIGURATION ===
+export * from "./config";
 
-// Video asset mapping
+// === LEGACY COMPATIBILITY ===
+// Re-export commonly used utilities at the root level for backwards compatibility
+export { cn, debounce } from "./core";
+export {
+  COLORS,
+  TYPOGRAPHY,
+  BUTTON_STYLES,
+  CARD_STYLES,
+  LAYOUT,
+  ANIMATIONS,
+  WEATHER_STYLES,
+  LIQUID_GLASS_STYLES,
+  createLiquidGlassButton,
+  createLiquidGlassCard,
+  createErrorWeatherData,
+} from "./design";
+export { fetchWeatherByCoords, getUserLocationAndFetch } from "./weather";
+export { spotifyApi, startSpotifyLogin, getValidAccessToken } from "./music";
+export { queryClient } from "./config";
+
+// Video asset mapping (from data directory)
 export * from "@/data/video-assets";

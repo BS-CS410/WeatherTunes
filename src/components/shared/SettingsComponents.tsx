@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { COLORS, TYPOGRAPHY, BUTTON_STYLES } from "@/lib/design-system";
-import { cn } from "@/lib/dom-helpers";
+import { COLORS, TYPOGRAPHY, BUTTON_STYLES } from "@/lib";
+import { cn } from "@/lib";
 
 interface SettingsSectionProps {
   label: string;

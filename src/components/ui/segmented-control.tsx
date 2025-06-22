@@ -1,4 +1,4 @@
-import { cn } from "@/lib/dom-helpers";
+import { cn } from "@/lib";
 
 interface SegmentedControlProps {
   options: {

@@ -1,11 +1,11 @@
-import { cn } from "@/lib/dom-helpers";
+import { cn } from "@/lib";
 import { useSettings } from "@/hooks";
 import { useAuth } from "@/hooks/useAuth";
 import {
   SettingsSection,
   SettingsButtonGroup,
 } from "@/components/shared/SettingsComponents";
-import { COLORS, TYPOGRAPHY, BUTTON_STYLES } from "@/lib/design-system";
+import { COLORS, TYPOGRAPHY, BUTTON_STYLES } from "@/lib";
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 

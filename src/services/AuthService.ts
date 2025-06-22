@@ -1,4 +1,4 @@
-import { generateRandomString, generateCodeChallenge } from '../lib/crypto-utils';
+import { generateRandomString, generateCodeChallenge } from "../lib/core";
 
 type TokenResponse = {
   access_token: string;
@@ -19,8 +19,8 @@ export type User = {
   images?: Array<{ url: string }>;
 };
 
-const TOKEN_STORAGE_KEY = 'spotify_auth_tokens';
-const CODE_VERIFIER_KEY = 'spotify_code_verifier';
+const TOKEN_STORAGE_KEY = "spotify_auth_tokens";
+const CODE_VERIFIER_KEY = "spotify_code_verifier";
 
 export class AuthService {
   private clientId: string;
@@ -32,12 +32,12 @@ export class AuthService {
     this.clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
     this.redirectUri = `${window.location.origin}/callback`;
     this.scopes = [
-      'user-read-private',
-      'user-read-email',
-      'user-read-playback-state',
-      'user-modify-playback-state',
-      'streaming',
-      'user-library-read',
+      "user-read-private",
+      "user-read-email",
+      "user-read-playback-state",
+      "user-modify-playback-state",
+      "streaming",
+      "user-library-read",
     ];
   }
 
@@ -48,17 +48,17 @@ export class AuthService {
   async startLogin(): Promise<void> {
     const codeVerifier = generateRandomString(64);
     const codeChallenge = await generateCodeChallenge(codeVerifier);
-    
+
     // Store code verifier for the callback
     localStorage.setItem(CODE_VERIFIER_KEY, codeVerifier);
 
     const params = new URLSearchParams({
       client_id: this.clientId,
-      response_type: 'code',
+      response_type: "code",
       redirect_uri: this.redirectUri,
-      code_challenge_method: 'S256',
+      code_challenge_method: "S256",
       code_challenge: codeChallenge,
-      scope: this.scopes.join(' '),
+      scope: this.scopes.join(" "),
     });
 
     window.location.href = `https://accounts.spotify.com/authorize?${params.toString()}`;
@@ -68,9 +68,9 @@ export class AuthService {
     // The state parameter is not used but kept for future validation if needed
     const { code } = params;
     const codeVerifier = localStorage.getItem(CODE_VERIFIER_KEY);
-    
+
     if (!codeVerifier) {
-      throw new Error('No code verifier found in local storage');
+      throw new Error("No code verifier found in local storage");
     }
 
     // Exchange the authorization code for an access token
@@ -79,30 +79,33 @@ export class AuthService {
 
   async handleCallbackFromUrl(): Promise<void> {
     const params = new URLSearchParams(window.location.search);
-    const code = params.get('code');
-    const state = params.get('state');
-    const error = params.get('error');
+    const code = params.get("code");
+    const state = params.get("state");
+    const error = params.get("error");
 
     if (error) {
       throw new Error(`Spotify auth error: ${error}`);
     }
 
     if (!code || !state) {
-      throw new Error('Missing required authentication parameters');
+      throw new Error("Missing required authentication parameters");
     }
-    
+
     return this.handleCallback({ code, state });
   }
 
-  async exchangeCodeForToken(code: string, codeVerifier: string): Promise<TokenData> {
-    const response = await fetch('https://accounts.spotify.com/api/token', {
-      method: 'POST',
+  async exchangeCodeForToken(
+    code: string,
+    codeVerifier: string,
+  ): Promise<TokenData> {
+    const response = await fetch("https://accounts.spotify.com/api/token", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        "Content-Type": "application/x-www-form-urlencoded",
       },
       body: new URLSearchParams({
         client_id: this.clientId,
-        grant_type: 'authorization_code',
+        grant_type: "authorization_code",
         code,
         redirect_uri: this.redirectUri,
         code_verifier: codeVerifier,
@@ -111,7 +114,9 @@ export class AuthService {
 
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
-      throw new Error(error.error_description || 'Failed to authenticate with Spotify');
+      throw new Error(
+        error.error_description || "Failed to authenticate with Spotify",
+      );
     }
 
     const data: TokenResponse = await response.json();
@@ -129,17 +134,18 @@ export class AuthService {
   async getAccessToken(): Promise<string> {
     const tokens = this.getTokens();
     if (!tokens) {
-      throw new Error('Not authenticated');
+      throw new Error("Not authenticated");
     }
 
     // If token is expired or about to expire, refresh it
-    if (Date.now() >= tokens.expiresAt - 60000) { // Refresh if less than 1 minute until expiration
+    if (Date.now() >= tokens.expiresAt - 60000) {
+      // Refresh if less than 1 minute until expiration
       try {
         const newTokens = await this.refreshTokens(tokens.refreshToken);
         return newTokens.accessToken;
       } catch (error) {
-        console.error('Failed to refresh token:', error);
-        throw new Error('Failed to refresh access token');
+        console.error("Failed to refresh token:", error);
+        throw new Error("Failed to refresh access token");
       }
     }
 
@@ -148,13 +154,14 @@ export class AuthService {
 
   async getAccessTokenSafe(): Promise<string | null> {
     const tokens = this.getStoredTokens();
-    
+
     if (!tokens) {
       return null;
     }
 
     // If token is still valid, return it
-    if (Date.now() < tokens.expiresAt - 60000) { // 1 minute buffer
+    if (Date.now() < tokens.expiresAt - 60000) {
+      // 1 minute buffer
       return tokens.accessToken;
     }
 
@@ -165,17 +172,17 @@ export class AuthService {
   async getUser(): Promise<User> {
     const tokens = this.getTokens();
     if (!tokens) {
-      throw new Error('Not authenticated');
+      throw new Error("Not authenticated");
     }
 
-    const response = await fetch('https://api.spotify.com/v1/me', {
+    const response = await fetch("https://api.spotify.com/v1/me", {
       headers: {
-        'Authorization': `Bearer ${tokens.accessToken}`,
+        Authorization: `Bearer ${tokens.accessToken}`,
       },
     });
 
     if (!response.ok) {
-      throw new Error('Failed to fetch user data');
+      throw new Error("Failed to fetch user data");
     }
 
     return response.json();
@@ -186,27 +193,27 @@ export class AuthService {
     if (this.refreshPromise) {
       const result = await this.refreshPromise;
       if (!result) {
-        throw new Error('Failed to refresh token');
+        throw new Error("Failed to refresh token");
       }
       return result;
     }
 
     const refreshPromise = (async () => {
-      const response = await fetch('https://accounts.spotify.com/api/token', {
-        method: 'POST',
+      const response = await fetch("https://accounts.spotify.com/api/token", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Authorization': `Basic ${btoa(`${this.clientId}:`)}`,
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization: `Basic ${btoa(`${this.clientId}:`)}`,
         },
         body: new URLSearchParams({
-          grant_type: 'refresh_token',
+          grant_type: "refresh_token",
           refresh_token: refreshToken,
           client_id: this.clientId,
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to refresh token');
+        throw new Error("Failed to refresh token");
       }
 
       const data: TokenResponse = await response.json();
@@ -237,7 +244,7 @@ export class AuthService {
     try {
       return JSON.parse(tokenString);
     } catch (error) {
-      console.error('Failed to parse stored tokens', error);
+      console.error("Failed to parse stored tokens", error);
       return null;
     }
   }
@@ -261,7 +268,7 @@ export class AuthService {
       const result = await this.refreshAccessToken(refreshToken);
       return result?.accessToken || null;
     } catch (error) {
-      console.error('Failed to refresh token:', error);
+      console.error("Failed to refresh token:", error);
       return null;
     }
   }
@@ -280,7 +287,7 @@ export class AuthService {
       localStorage.removeItem(TOKEN_STORAGE_KEY);
       localStorage.removeItem(CODE_VERIFIER_KEY);
     } catch (error) {
-      console.error('Failed to clear tokens:', error);
+      console.error("Failed to clear tokens:", error);
     }
   }
 }

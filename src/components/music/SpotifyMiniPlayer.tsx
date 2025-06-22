@@ -4,10 +4,10 @@
  * Uses the new Spotify Web Playback SDK and service architecture
  */
 
-import React, { useCallback } from 'react';
-import { Play, Pause } from 'lucide-react';
-import type { TrackMetadata } from '@/types/queue-types';
-import { useSpotifyPlayback } from '@/hooks/useSpotifyPlayback';
+import React, { useCallback } from "react";
+import { Play, Pause } from "lucide-react";
+import type { TrackMetadata } from "@/types/queue-types";
+import { useSpotifyPlayback } from "@/hooks/spotify";
 
 interface SpotifyMiniPlayerProps {
   track: TrackMetadata;

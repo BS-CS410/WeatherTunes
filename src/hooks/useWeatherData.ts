@@ -3,16 +3,13 @@ import type {
   WeatherApiResponse,
   EnhancedWeatherState,
 } from "@/types/weather-types";
-import {
-  getUserLocationAndFetch,
-  createErrorWeatherData,
-} from "@/lib/weather-api";
+import { getUserLocationAndFetch, createErrorWeatherData } from "@/lib";
 import {
   getTimePeriod,
   formatUnixTimeToLocalString,
   type TimePeriod,
-} from "@/lib/time-helpers";
-import { formatTemperature } from "@/lib/unit-converters";
+} from "@/lib";
+import { formatTemperature } from "@/lib";
 import { useSettings } from "@/hooks";
 
 // Helper function to format weather condition for display
@@ -65,26 +62,26 @@ export function useWeatherData() {
   const processWeatherData = useCallback(
     (data: WeatherApiResponse | null, error?: Error) => {
       if (error || !data) {
-        const errorData = createErrorWeatherData();
+        const errorMessage = error?.message || "Failed to fetch weather data";
+        const errorData = createErrorWeatherData(errorMessage);
         setWeatherState({
           displayData: {
-            location: errorData.name,
+            location: errorData.location,
             temperature: "--",
-            condition: errorData.weather[0].main,
+            condition: errorData.condition,
             unit: `°${settings.temperatureUnit}`,
             isError: true,
           },
           timePeriod: getTimePeriod(new Date()),
           isLoading: false,
           error: error || new Error("Failed to fetch weather data"),
-          rawResponse: errorData,
+          rawResponse: null,
         });
         return;
       }
 
       // Validate essential data fields
       if (!data.weather?.length) {
-        const errorData = createErrorWeatherData();
         setWeatherState({
           displayData: {
             location: data.name || "Unknown",
@@ -96,13 +93,13 @@ export function useWeatherData() {
           timePeriod: getTimePeriod(new Date()),
           isLoading: false,
           error: new Error("Invalid weather data format"),
-          rawResponse: errorData,
+          rawResponse: null,
         });
         return;
       }
 
       const now = new Date();
-      const period = getTimePeriod(now, data.sys?.sunrise, data.sys?.sunset);
+      const period = getTimePeriod(now);
 
       // Process successful data
       setWeatherState({

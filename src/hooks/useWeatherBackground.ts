@@ -1,17 +1,17 @@
-import { useState, useEffect, useCallback } from 'react';
-import { WeatherService } from '@/services/WeatherService';
-import type { TimePeriod } from '@/lib/time-helpers';
+import { useState, useEffect, useCallback } from "react";
+import { WeatherService } from "@/services/WeatherService";
+import type { TimePeriod } from "@/lib";
 
 interface UseWeatherBackgroundProps {
   condition?: string;
   timePeriod?: TimePeriod | null;
 }
 
-export function useWeatherBackground({ 
-  condition, 
-  timePeriod 
+export function useWeatherBackground({
+  condition,
+  timePeriod,
 }: UseWeatherBackgroundProps = {}) {
-  const [currentSrc, setCurrentSrc] = useState<string>('');
+  const [currentSrc, setCurrentSrc] = useState<string>("");
   const [isTransitioning, setIsTransitioning] = useState(false);
   const weatherService = WeatherService.getInstance();
 
@@ -23,7 +23,7 @@ export function useWeatherBackground({
   // Handle video source changes with smooth transitions
   useEffect(() => {
     const newSrc = getVideoSource();
-    
+
     // If source hasn't changed, do nothing
     if (newSrc === currentSrc) return;
 
@@ -35,7 +35,7 @@ export function useWeatherBackground({
 
     // Otherwise, trigger a transition
     setIsTransitioning(true);
-    
+
     const timer = setTimeout(() => {
       setCurrentSrc(newSrc);
       setIsTransitioning(false);
@@ -53,24 +53,27 @@ export function useWeatherBackground({
   }, []);
 
   // Setup video event listeners for optimization
-  const setupVideo = useCallback((video: HTMLVideoElement | null) => {
-    if (!video) return () => {};
+  const setupVideo = useCallback(
+    (video: HTMLVideoElement | null) => {
+      if (!video) return () => {};
 
-    const timeUpdateHandler = () => handleTimeUpdate(video);
-    const loadedDataHandler = () => {
-      if (video.paused) {
-        video.play().catch(console.error);
-      }
-    };
+      const timeUpdateHandler = () => handleTimeUpdate(video);
+      const loadedDataHandler = () => {
+        if (video.paused) {
+          video.play().catch(console.error);
+        }
+      };
 
-    video.addEventListener('timeupdate', timeUpdateHandler);
-    video.addEventListener('loadeddata', loadedDataHandler);
+      video.addEventListener("timeupdate", timeUpdateHandler);
+      video.addEventListener("loadeddata", loadedDataHandler);
 
-    return () => {
-      video.removeEventListener('timeupdate', timeUpdateHandler);
-      video.removeEventListener('loadeddata', loadedDataHandler);
-    };
-  }, [handleTimeUpdate]);
+      return () => {
+        video.removeEventListener("timeupdate", timeUpdateHandler);
+        video.removeEventListener("loadeddata", loadedDataHandler);
+      };
+    },
+    [handleTimeUpdate],
+  );
 
   return {
     currentSrc,

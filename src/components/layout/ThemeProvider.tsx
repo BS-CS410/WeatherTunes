@@ -1,7 +1,7 @@
 import { ThemeProvider as MuiThemeProvider } from "@mui/material/styles";
 import { CssBaseline } from "@mui/material";
 import { type ReactNode } from "react";
-import { muiTheme, muiDarkTheme } from "@/lib/material-ui-theme";
+import { muiTheme, muiDarkTheme } from "@/lib";
 import { useSettings } from "@/hooks";
 
 interface ThemeProviderProps {

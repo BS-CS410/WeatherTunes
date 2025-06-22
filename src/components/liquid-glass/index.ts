@@ -10,4 +10,4 @@ export {
   createLiquidGlassCard,
   combineStyles,
   conditionalStyle,
-} from "@/lib/design-system";
+} from "@/lib";

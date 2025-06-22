@@ -1,5 +1,5 @@
 /**
- * Unified Spotify types for authentication and API
+ * Spotify types for authentication and API
  * Single source of truth for all Spotify-related interfaces
  */
 

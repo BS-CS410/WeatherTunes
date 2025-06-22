@@ -1,6 +1,6 @@
-import { useRef, useEffect } from 'react';
-import { useWeatherBackground } from '@/hooks/useWeatherBackground';
-import type { TimePeriod } from '@/lib/time-helpers';
+import { useRef, useEffect } from "react";
+import { useWeatherBackground } from "@/hooks/useWeatherBackground";
+import type { TimePeriod } from "@/lib";
 
 interface VideoBackgroundProps {
   condition?: string;

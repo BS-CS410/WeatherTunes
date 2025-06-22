@@ -1,0 +1,348 @@
+/**
+ * Spotify API client - Functional implementation
+ * Makes direct API calls to Spotify using functional auth
+ */
+
+import { getValidAccessToken } from "./spotify-auth";
+import type {
+  SpotifySearchResult,
+  WeatherRecommendationRequest,
+  WeatherRecommendationResponse,
+  TrackMetadata,
+} from "./spotify-types";
+
+// Spotify API response types (minimal)
+interface SpotifyTrack {
+  id: string;
+  name: string;
+  artists: Array<{ name: string }>;
+  album: {
+    name: string;
+    images: Array<{ url: string }>;
+  };
+  duration_ms: number;
+  preview_url: string | null;
+  external_urls: { spotify: string };
+  uri: string;
+  popularity: number;
+  explicit: boolean;
+}
+
+interface SpotifyAudioFeatures {
+  id: string;
+  danceability: number;
+  energy: number;
+  key: number;
+  loudness: number;
+  mode: number;
+  speechiness: number;
+  acousticness: number;
+  instrumentalness: number;
+  liveness: number;
+  valence: number;
+  tempo: number;
+  duration_ms: number;
+  time_signature: number;
+}
+
+/**
+ * Spotify API client
+ */
+class SpotifyApi {
+  private baseUrl = "https://api.spotify.com/v1";
+
+  /**
+   * Search for tracks
+   */
+  async searchTracks(query: string, limit = 20): Promise<SpotifySearchResult> {
+    const token = await getValidAccessToken();
+    if (!token) throw new Error("Not authenticated");
+
+    const response = await fetch(
+      `${this.baseUrl}/search?${new URLSearchParams({
+        q: query,
+        type: "track",
+        limit: limit.toString(),
+      })}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error(`Search failed: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    const tracks = data.tracks.items.map(this.transformTrack);
+
+    return {
+      tracks,
+      query,
+      count: tracks.length,
+    };
+  }
+
+  /**
+   * Get track by ID
+   */
+  async getTrack(id: string): Promise<TrackMetadata> {
+    const token = await getValidAccessToken();
+    if (!token) throw new Error("Not authenticated");
+
+    const response = await fetch(`${this.baseUrl}/tracks/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Get track failed: ${response.statusText}`);
+    }
+
+    const track = await response.json();
+    return this.transformTrack(track);
+  }
+
+  /**
+   * Get multiple tracks by IDs
+   */
+  async getTracks(ids: string[]): Promise<TrackMetadata[]> {
+    const token = await getValidAccessToken();
+    if (!token) throw new Error("Not authenticated");
+
+    // Spotify API allows max 50 IDs per request
+    const chunks = this.chunkArray(ids, 50);
+    const results: TrackMetadata[] = [];
+
+    for (const chunk of chunks) {
+      const response = await fetch(
+        `${this.baseUrl}/tracks?${new URLSearchParams({
+          ids: chunk.join(","),
+        })}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`Get tracks failed: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      const tracks = data.tracks.map(this.transformTrack);
+      results.push(...tracks);
+    }
+
+    return results;
+  }
+
+  /**
+   * Get audio features for tracks
+   */
+  async getAudioFeatures(
+    ids: string[],
+  ): Promise<Record<string, SpotifyAudioFeatures>> {
+    const token = await getValidAccessToken();
+    if (!token) throw new Error("Not authenticated");
+
+    const response = await fetch(
+      `${this.baseUrl}/audio-features?${new URLSearchParams({
+        ids: ids.join(","),
+      })}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error(`Get audio features failed: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    const features: Record<string, SpotifyAudioFeatures> = {};
+
+    data.audio_features.forEach((feature: SpotifyAudioFeatures | null) => {
+      if (feature) {
+        features[feature.id] = feature;
+      }
+    });
+
+    return features;
+  }
+
+  /**
+   * Get recommendations based on weather
+   */
+  async getWeatherRecommendations(
+    request: WeatherRecommendationRequest,
+  ): Promise<WeatherRecommendationResponse> {
+    const token = await getValidAccessToken();
+    if (!token) throw new Error("Not authenticated");
+
+    // Map weather conditions to seed genres and audio features
+    const seedMapping = this.getWeatherSeedMapping(request.weather_condition);
+
+    const params = new URLSearchParams({
+      limit: (request.limit || 20).toString(),
+      seed_genres: seedMapping.genres.slice(0, 3).join(","), // Max 3 genres
+      ...seedMapping.audioFeatures,
+    });
+
+    const response = await fetch(`${this.baseUrl}/recommendations?${params}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Get recommendations failed: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    const tracks = data.tracks.map(this.transformTrack);
+
+    return {
+      tracks,
+      weather_condition: request.weather_condition,
+      temperature: request.temperature,
+      time_of_day: request.time_of_day || "day",
+      count: tracks.length,
+    };
+  }
+
+  /**
+   * Search for tracks by genre and audio features
+   */
+  async searchByGenreAndFeatures(
+    genre: string,
+    audioFeatures: Record<string, number>,
+    limit = 20,
+  ): Promise<SpotifySearchResult> {
+    const token = await getValidAccessToken();
+    if (!token) throw new Error("Not authenticated");
+
+    const params = new URLSearchParams({
+      limit: limit.toString(),
+      seed_genres: genre,
+      ...Object.fromEntries(
+        Object.entries(audioFeatures).map(([key, value]) => [
+          key,
+          value.toString(),
+        ]),
+      ),
+    });
+
+    const response = await fetch(`${this.baseUrl}/recommendations?${params}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Search by genre failed: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    const tracks = data.tracks.map(this.transformTrack);
+
+    return {
+      tracks,
+      query: `genre:${genre}`,
+      count: tracks.length,
+    };
+  }
+
+  /**
+   * Transform Spotify track to our TrackMetadata format
+   */
+  private transformTrack(track: SpotifyTrack): TrackMetadata {
+    return {
+      id: track.id,
+      title: track.name,
+      artist: track.artists.map((a) => a.name).join(", "),
+      album: track.album.name,
+      albumArt: track.album.images[0]?.url || "",
+      duration: track.duration_ms,
+      previewUrl: track.preview_url || undefined,
+      externalUrl: track.external_urls.spotify,
+      uri: track.uri,
+    };
+  }
+
+  /**
+   * Get weather-based seed mapping
+   */
+  private getWeatherSeedMapping(weatherCondition: string) {
+    const mappings: Record<
+      string,
+      { genres: string[]; audioFeatures: Record<string, string> }
+    > = {
+      clear: {
+        genres: ["pop", "indie-pop", "funk", "disco"],
+        audioFeatures: {
+          target_valence: "0.8",
+          target_energy: "0.7",
+          target_danceability: "0.7",
+        },
+      },
+      cloudy: {
+        genres: ["indie", "alternative", "chill", "ambient"],
+        audioFeatures: {
+          target_valence: "0.5",
+          target_energy: "0.5",
+          target_acousticness: "0.6",
+        },
+      },
+      rain: {
+        genres: ["jazz", "blues", "lo-fi", "indie"],
+        audioFeatures: {
+          target_valence: "0.3",
+          target_energy: "0.4",
+          target_acousticness: "0.7",
+        },
+      },
+      snow: {
+        genres: ["classical", "ambient", "folk", "acoustic"],
+        audioFeatures: {
+          target_valence: "0.4",
+          target_energy: "0.3",
+          target_acousticness: "0.8",
+        },
+      },
+      stormy: {
+        genres: ["rock", "metal", "electronic", "industrial"],
+        audioFeatures: {
+          target_valence: "0.2",
+          target_energy: "0.9",
+          target_loudness: "-5",
+        },
+      },
+    };
+
+    return mappings[weatherCondition] || mappings.clear;
+  }
+
+  /**
+   * Utility to chunk array
+   */
+  private chunkArray<T>(array: T[], size: number): T[][] {
+    const chunks: T[][] = [];
+    for (let i = 0; i < array.length; i += size) {
+      chunks.push(array.slice(i, i + size));
+    }
+    return chunks;
+  }
+}
+
+// Export singleton instance
+export const spotifyApi = new SpotifyApi();
+
+// Export class for testing
+export { SpotifyApi };
