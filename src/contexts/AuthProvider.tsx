@@ -1,22 +1,16 @@
 /**
- * Simple Spotify Auth Context - React Integration
+ * AuthProvider - Manages authentication state using the AuthService
  * Single source of truth for auth state using React Context
  */
 
-import { createContext, useState, useEffect, useCallback } from "react";
-import type { ReactNode } from "react";
-import {
-  startSpotifyLogin,
-  handleSpotifyCallback,
-  getCurrentUser,
-  getValidAccessToken,
-  clearTokens,
-  isAuthenticated,
-} from "@/lib/spotify-auth";
-import type { SpotifyUser } from "@/lib/spotify-types";
+import * as React from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useServices } from '../hooks/useServices';
+import { AuthContext } from './AuthContext';
+import type { User } from '@/services/AuthService';
 
 interface AuthState {
-  user: SpotifyUser | null;
+  user: User | null;
   isLoading: boolean;
   error: string | null;
 }
@@ -29,115 +23,128 @@ interface AuthContextValue extends AuthState {
   isAuthenticated: boolean;
 }
 
-export const AuthContext = createContext<AuthContextValue | null>(null);
-export type { AuthContextValue };
+type AuthProviderProps = {
+  children: React.ReactNode;
+};
 
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
-export function AuthProvider({ children }: AuthProviderProps) {
+export function AuthProvider({ children }: AuthProviderProps): React.ReactElement {
+  const { auth } = useServices();
   const [state, setState] = useState<AuthState>({
     user: null,
     isLoading: true,
     error: null,
   });
 
+  // Check if user is authenticated
+  const checkAuth = useCallback(async () => {
+    try {
+      const isAuth = await auth.isAuthenticated();
+      if (isAuth) {
+        const user = await auth.getUser();
+        setState(prev => ({ ...prev, user, isLoading: false, error: null }));
+      } else {
+        setState(prev => ({ ...prev, isLoading: false, error: null }));
+      }
+    } catch (error) {
+      console.error('Auth check failed:', error);
+      setState(prev => ({
+        ...prev,
+        isLoading: false,
+        error: 'Failed to check authentication status',
+      }));
+    }
+  }, [auth]);
+
   // Initialize auth state on mount
   useEffect(() => {
-    const initializeAuth = async () => {
-      try {
-        if (isAuthenticated()) {
-          const accessToken = await getValidAccessToken();
-          if (accessToken) {
-            const user = await getCurrentUser(accessToken);
-            setState({ user, isLoading: false, error: null });
-            return;
-          }
-        }
-
-        // No valid auth
-        setState({ user: null, isLoading: false, error: null });
-      } catch (error) {
-        console.error("Auth initialization failed:", error);
-        clearTokens();
-        setState({
-          user: null,
-          isLoading: false,
-          error:
-            error instanceof Error ? error.message : "Authentication failed",
-        });
-      }
-    };
-
-    initializeAuth();
-  }, []);
+    checkAuth();
+  }, [checkAuth]);
 
   const login = useCallback(async () => {
+    setState(prev => ({ ...prev, isLoading: true, error: null }));
     try {
-      setState((prev) => ({ ...prev, isLoading: true, error: null }));
-      await startSpotifyLogin();
-      // Redirect happens in startSpotifyLogin, so this won't execute
+      await auth.initiateLogin();
     } catch (error) {
-      setState({
-        user: null,
+      console.error('Login failed:', error);
+      setState(prev => ({
+        ...prev,
         isLoading: false,
-        error: error instanceof Error ? error.message : "Login failed",
-      });
+        error: error instanceof Error ? error.message : 'Failed to start login process',
+      }));
     }
-  }, []);
+  }, [auth]);
 
-  const logout = useCallback(() => {
-    clearTokens();
-    setState({ user: null, isLoading: false, error: null });
-  }, []);
-
-  const handleCallback = useCallback(async () => {
+  const handleCallback = useCallback(async (): Promise<boolean> => {
+    setState(prev => ({ ...prev, isLoading: true, error: null }));
     try {
-      setState((prev) => ({ ...prev, isLoading: true, error: null }));
+      // Extract the code from the URL query parameters
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get('code');
+      const state = params.get('state');
+      const error = params.get('error');
 
-      const tokens = await handleSpotifyCallback();
-      if (!tokens) {
-        throw new Error("No tokens received");
+      if (error) {
+        throw new Error(error);
       }
 
-      const user = await getCurrentUser(tokens.access_token);
-      setState({ user, isLoading: false, error: null });
+      if (!code || !state) {
+        throw new Error('Missing required authentication parameters');
+      }
+
+      await auth.handleCallback({ code, state });
+      const user = await auth.getUser();
+      
+      // Clear the URL parameters after successful authentication
+      window.history.replaceState({}, document.title, window.location.pathname);
+      
+      setState(prev => ({
+        ...prev,
+        user,
+        isLoading: false,
+        error: null,
+      }));
       return true;
     } catch (error) {
-      console.error("Callback handling failed:", error);
-      setState({
-        user: null,
+      console.error('Callback handling failed:', error);
+      setState(prev => ({
+        ...prev,
         isLoading: false,
-        error: error instanceof Error ? error.message : "Authentication failed",
-      });
+        error: error instanceof Error ? error.message : 'Failed to complete login process',
+      }));
       return false;
     }
-  }, []);
+  }, [auth]);
 
-  const getAccessToken = useCallback(async () => {
+  const logout = useCallback(() => {
+    auth.logout();
+    setState({
+      user: null,
+      isLoading: false,
+      error: null,
+    });
+  }, [auth]);
+
+  const getAccessToken = useCallback(async (): Promise<string | null> => {
     try {
-      return await getValidAccessToken();
+      return await auth.getAccessToken();
     } catch (error) {
-      console.error("Failed to get access token:", error);
-      setState((prev) => ({
-        ...prev,
-        error: "Session expired. Please log in again.",
-      }));
+      console.error('Failed to get access token:', error);
       return null;
     }
-  }, []);
+  }, [auth]);
 
-  const contextValue: AuthContextValue = {
+  const value = useMemo<AuthContextValue>(() => ({
     ...state,
     login,
     logout,
     handleCallback,
     getAccessToken,
     isAuthenticated: !!state.user,
-  };
+  }), [state, login, logout, handleCallback, getAccessToken]);
 
   return (
-    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
   );
 }

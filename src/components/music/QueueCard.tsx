@@ -1,13 +1,15 @@
 /**
- * Modern QueueCard component using the new queue system
+ * QueueCard component for displaying and managing the music queue
+ * Uses the new Spotify Web Playback SDK and service architecture
  */
 
 import { useState, useRef } from "react";
 import { COLORS, TYPOGRAPHY, ANIMATIONS, LAYOUT } from "@/lib/design-system";
 import { cn } from "@/lib/dom-helpers";
-import { useQueue } from "@/hooks/useQueue";
+import { useSpotifyQueue } from "@/hooks/useSpotifyQueue";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
+import type { TrackMetadata } from "@/types/queue-types";
 
 export function QueueCard() {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
@@ -15,7 +17,7 @@ export function QueueCard() {
 
   const { user, isLoading: authLoading } = useAuth();
   const { upcomingTracks, isLoading, playNext, playTrack, clearQueue } =
-    useQueue();
+    useSpotifyQueue();
 
   const handleMouseEnter = (id: string) => {
     if (hoverTimeout.current) {
@@ -133,7 +135,7 @@ export function QueueCard() {
         ) : (
           <div className="scrollbar-thin scrollbar-track-black/10 scrollbar-thumb-slate-600/60 hover:scrollbar-thumb-slate-600/80 relative z-0 overflow-x-auto px-6">
             <div className="flex min-w-max flex-row gap-2 px-2 py-4">
-              {upcomingTracks.map((track, idx) => {
+              {upcomingTracks.map((track: TrackMetadata, idx: number) => {
                 const isHovered = hoveredId === track.id;
                 const isNextUp = idx === 0 && hoveredId === null;
                 const isNextUpOrHovered =

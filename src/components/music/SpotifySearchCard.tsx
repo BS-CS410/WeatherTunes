@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Search, Music, Plus, Loader2 } from "lucide-react";
 import { useSpotifySearch } from "@/hooks/useSpotifySearch";
-import { useQueue } from "@/hooks/useQueue";
 import { useAuth } from "@/hooks/useAuth";
+import { useSpotifyQueue } from "@/hooks/useSpotifyQueue";
 import type { TrackMetadata } from "@/types/queue-types";
 import {
   COLORS,
@@ -32,7 +32,7 @@ export function SpotifySearchCard({ className = "" }: SpotifySearchCardProps) {
     searchByMood,
     clearSearchResults,
   } = useSpotifySearch();
-  const { addToQueue } = useQueue();
+  const { addToQueue } = useSpotifyQueue();
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();

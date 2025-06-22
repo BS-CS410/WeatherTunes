@@ -187,6 +187,9 @@ export function useWeatherData() {
   return weatherState;
 }
 
+// Export useWeather as an alias for useWeatherData for backward compatibility
+export const useWeather = useWeatherData;
+
 /**
  * Hook for managing theme based on weather time period
  * Separated for single responsibility and optional usage

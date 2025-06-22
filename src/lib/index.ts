@@ -24,4 +24,4 @@ export * from "./spotify-api";
 export * from "./spotify-types";
 
 // Video asset mapping
-export * from "./video-assets";
+export * from "@/data/video-assets";

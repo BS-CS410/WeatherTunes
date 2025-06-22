@@ -10,12 +10,9 @@ export * from "./common";
 export { useAuth } from "./useAuth";
 
 // Specific feature hooks
-export { useForecastData } from "./useForecast";
-
 export { useLocationBasedDefaults } from "./useLocationBasedDefaults";
 export { useSpotifySearch } from "./useSpotifySearch";
 export { useSpotifyPlayer } from "./useSpotifyPlayer";
 export { useThemeManager } from "./useThemeManager";
-export { useWeatherData, useThemeFromWeather } from "./useWeather";
-export { useQueue } from "./useQueue";
+export { useWeatherData, useThemeFromWeather } from "./useWeatherData";
 export { useWeatherQueue } from "./useWeatherQueue";

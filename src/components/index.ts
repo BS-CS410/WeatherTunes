@@ -31,7 +31,7 @@ export { SimpleLogin } from "./auth/SimpleLogin";
 // === WEATHER DOMAIN ===
 // Components related to weather display, forecast, and background visuals
 export { WeatherBackground } from "./weather/WeatherBackground";
-export { ForecastCard } from "./weather/ForecastCard";
+export { default as ForecastCard } from "./weather/ForecastCard";
 
 // === MUSIC DOMAIN ===
 // Components for music playback, queue management, and audio controls

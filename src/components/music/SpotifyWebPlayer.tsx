@@ -5,8 +5,8 @@
 
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useSpotifyPlayer } from "@/hooks/useSpotifyPlayer";
-import { useQueue } from "@/hooks/useQueue";
 import { useAuth } from "@/hooks/useAuth";
+import { useSpotifyQueue } from "@/hooks/useSpotifyQueue";
 import {
   Play,
   Pause,
@@ -31,8 +31,8 @@ export const SpotifyWebPlayer: React.FC<SpotifyWebPlayerProps> = ({
   const { state, controls, initialize } = useSpotifyPlayer();
   const { user, login } = useAuth();
 
-  // Get queue data directly
-  const { currentTrack, upcomingTracks, playNext } = useQueue();
+  // Get queue data from Spotify queue hook
+  const { currentTrack, upcomingTracks, playNext } = useSpotifyQueue();
   const trackMetadata = currentTrack;
   const currentTrackId = currentTrack?.id || null;
   const songQueue = upcomingTracks;

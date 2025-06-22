@@ -232,8 +232,13 @@ class SpotifyApi {
       id: track.id,
       title: track.name,
       artist: track.artists[0]?.name || "Unknown Artist",
+      album: track.album?.name || "Unknown Album",
       albumArt: track.album?.images?.[0]?.url || "",
       albumArtFallback: track.album?.images?.[1]?.url,
+      duration: track.duration_ms,
+      previewUrl: track.preview_url || undefined,
+      externalUrl: track.external_urls.spotify,
+      uri: track.uri,
       tags: [track.album?.name || "Unknown Album"],
     };
   }

@@ -1,23 +1,15 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import * as ScrollArea from "@radix-ui/react-scroll-area";
 import { COLORS, TYPOGRAPHY, LAYOUT } from "@/lib/design-system";
 import { cn } from "@/lib/dom-helpers";
 import { useAuth } from "@/hooks/useAuth";
 import { SpotifyMiniPlayer } from "./SpotifyMiniPlayer";
-import { useQueue } from "@/hooks/useQueue";
-import { spotifyApi } from "@/lib/spotify-api";
+import { useSpotifyLikedTracks } from "@/hooks/useSpotifyLikedTracks";
+import { useSpotifyQueue } from "@/hooks/useSpotifyQueue";
+import type { TrackMetadata } from "@/types/queue-types";
 
 interface FavoritesCardProps {
   className?: string;
-}
-
-interface FavoriteTrack {
-  id: string;
-  title: string;
-  artist: string;
-  albumArt: string;
-  albumArtFallback?: string;
-  tags?: string[];
 }
 
 /**
@@ -26,115 +18,83 @@ interface FavoriteTrack {
  */
 export function FavoritesCard({ className = "" }: FavoritesCardProps) {
   const { user } = useAuth();
-  const [likedTracks, setLikedTracks] = useState<FavoriteTrack[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const { playTrack } = useQueue();
+  const { tracks: likedTracks, isLoading: loading, error } = useSpotifyLikedTracks(50);
+  const { playTrack } = useSpotifyQueue();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  /**
-   * Handle track selection from mini player
-   */
-  const handleTrackPlay = async (track: FavoriteTrack) => {
+  const handleTrackPlay = async (track: TrackMetadata) => {
     try {
       await playTrack(track.id);
-    } catch (error) {
-      console.error("Failed to play track:", error);
+      setErrorMessage(null);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to play track';
+      setErrorMessage(message);
     }
   };
 
-  useEffect(() => {
-    async function fetchLikedTracks() {
-      // Only fetch if user is authenticated
-      if (!user) {
-        setLikedTracks([]);
-        setLoading(false);
-        return;
-      }
-
-      try {
-        // Get user's saved tracks from central API client
-        const tracks = await spotifyApi.getUserSavedTracks(50);
-        setLikedTracks(tracks);
-      } catch (error) {
-        console.error("Error fetching liked tracks:", error);
-        setError(
-          error instanceof Error ? error.message : "Unknown error occurred",
-        );
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchLikedTracks();
-  }, [user]); // Add user dependency
-
-  // Show login prompt when not authenticated
-  if (!user) {
+  if (loading) {
     return (
-      <div
-        className={cn(LAYOUT.container.center, LAYOUT.padding.xl, className)}
-      >
+      <div className={cn(LAYOUT.container.center, LAYOUT.padding.xl, className)}>
+        <p className={cn(TYPOGRAPHY.body.lg, COLORS.text.muted)}>
+          Loading your liked tracks...
+        </p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={cn(LAYOUT.container.center, LAYOUT.padding.xl, className)}>
         <div className="text-center">
-          <p className={cn(TYPOGRAPHY.body.lg, COLORS.text.muted)}>
-            Please log into Spotify to view your liked tracks.
+          <p className={cn(TYPOGRAPHY.body.lg, "text-red-500 mb-2")}>
+            Failed to load liked tracks
+          </p>
+          <p className={cn(TYPOGRAPHY.body.sm, COLORS.text.muted)}>
+            {error.message}
           </p>
         </div>
       </div>
     );
   }
 
-  if (loading) {
+  if (!likedTracks?.length) {
     return (
-      <div
-        className={cn(LAYOUT.container.center, LAYOUT.padding.xl, className)}
-      >
-        <div className="text-center">
-          <div className={cn("mb-2", TYPOGRAPHY.body.lg, COLORS.text.muted)}>
-            Loading liked tracks...
-          </div>
-          <div className={cn(TYPOGRAPHY.body.sm, COLORS.text.muted)}>
-            Fetching your favorites
-          </div>
-        </div>
+      <div className={cn(LAYOUT.container.center, LAYOUT.padding.xl, className)}>
+        <p className={cn(TYPOGRAPHY.body.lg, COLORS.text.muted)}>
+          No liked tracks found. Start by liking some songs on Spotify!
+        </p>
       </div>
     );
   }
 
-  if (error) {
-    if (error.includes("401")) {
-      return (
-        <div
-          className={cn(LAYOUT.container.center, LAYOUT.padding.xl, className)}
-        >
-          <div className="text-center">
-            <p className={cn(TYPOGRAPHY.body.lg, COLORS.text.muted)}>
-              Please log into Spotify to view your liked tracks.
-            </p>
-            <button
-              onClick={() => (window.location.href = "/login")}
-              className={cn(
-                "mt-4 rounded-xl bg-[#1DB954] text-white transition-all duration-300 hover:scale-[1.02] hover:bg-[#1ED760]",
-                LAYOUT.padding.button.md,
-              )}
-            >
-              Login to Spotify
-            </button>
-          </div>
-        </div>
-      );
-    }
+  if (!user) {
     return (
-      <div
-        className={cn(LAYOUT.container.center, LAYOUT.padding.xl, className)}
-      >
-        <p className="text-center text-red-500">
-          Error loading liked tracks: {error}
-        </p>
+      <div className={cn(LAYOUT.container.center, LAYOUT.padding.xl, className)}>
+        <div className="text-center">
+          <p className={cn(TYPOGRAPHY.body.lg, COLORS.text.muted, "mb-4")}>
+            Please log into Spotify to view your liked tracks.
+          </p>
+          <button
+            onClick={() => (window.location.href = "/login")}
+            className={cn(
+              "rounded-xl bg-[#1DB954] text-white transition-all duration-300 hover:scale-[1.02] hover:bg-[#1ED760]",
+              LAYOUT.padding.button.md,
+            )}
+          >
+            Login to Spotify
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
     <div className={cn("relative w-full", className)}>
+      {errorMessage && (
+        <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">
+          <p className="text-sm">{errorMessage}</p>
+        </div>
+      )}
       <div className={LAYOUT.padding.section.md}>
         <h3 className={cn(TYPOGRAPHY.display.xl, COLORS.text.primary)}>
           liked tracks:
@@ -175,8 +135,14 @@ export function FavoritesCard({ className = "" }: FavoritesCardProps) {
                     id: track.id,
                     title: track.title,
                     artist: track.artist,
+                    album: track.album,
                     albumArt: track.albumArt,
                     albumArtFallback: track.albumArtFallback,
+                    duration: track.duration,
+                    previewUrl: track.previewUrl,
+                    externalUrl: track.externalUrl,
+                    uri: track.uri,
+                    tags: track.tags,
                   }}
                   className="w-[280px] flex-shrink-0"
                   onClick={() => handleTrackPlay(track)}

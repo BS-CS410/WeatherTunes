@@ -1,12 +1,13 @@
 /**
  * Spotify Mini Player Component
  * Compact player for favorites and search results
+ * Uses the new Spotify Web Playback SDK and service architecture
  */
 
-import React, { useCallback } from "react";
-import { useSpotifyPlayer } from "@/hooks/useSpotifyPlayer";
-import { Play, Pause } from "lucide-react";
-import type { TrackMetadata } from "@/types/queue-types";
+import React, { useCallback } from 'react';
+import { Play, Pause } from 'lucide-react';
+import type { TrackMetadata } from '@/types/queue-types';
+import { useSpotifyPlayback } from '@/hooks/useSpotifyPlayback';
 
 interface SpotifyMiniPlayerProps {
   track: TrackMetadata;
@@ -24,7 +25,7 @@ export const SpotifyMiniPlayer: React.FC<SpotifyMiniPlayerProps> = ({
   size = "md",
   onClick,
 }) => {
-  const { state, controls } = useSpotifyPlayer();
+  const { state, controls } = useSpotifyPlayback();
 
   const isCurrentTrack = state.currentTrack?.id === track.id;
   const isPlaying = isCurrentTrack && state.isPlaying;
@@ -38,17 +39,15 @@ export const SpotifyMiniPlayer: React.FC<SpotifyMiniPlayerProps> = ({
 
       if (isCurrentTrack) {
         // Toggle current track
-        if (isPlaying) {
-          await controls.pause();
-        } else {
-          await controls.play();
-        }
+        await controls.togglePlay();
       } else {
-        // Play new track via queue system
+        // Play new track directly
+        await controls.playTrack(track.id);
+        // Call the onClick handler if provided (e.g., for queue management)
         onClick?.();
       }
     },
-    [isCurrentTrack, isPlaying, controls, onClick],
+    [isCurrentTrack, controls, track.id, onClick],
   );
 
   const imageSize = size === "sm" ? "w-12 h-12" : "w-16 h-16";

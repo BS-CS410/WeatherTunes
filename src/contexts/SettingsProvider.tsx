@@ -1,20 +1,14 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState, useCallback } from "react";
 import type { ReactNode } from "react";
-import { useLocalStorage } from "@/hooks/common";
 import { useLocationBasedDefaults } from "@/hooks/useLocationBasedDefaults";
+import { SettingsService } from "@/services/SettingsService";
 import type {
   TemperatureUnit,
   TimeFormat,
   SpeedUnit,
   ThemeMode,
 } from "@/types/units-types";
-
-interface Settings {
-  temperatureUnit: TemperatureUnit;
-  timeFormat: TimeFormat;
-  speedUnit: SpeedUnit;
-  themeMode: ThemeMode;
-}
+import type { Settings, LocationDefaults } from "@/services/SettingsService";
 
 interface SettingsContextType {
   settings: Settings;
@@ -26,25 +20,13 @@ interface SettingsContextType {
   toggleTimeFormat: () => void;
   resetToDefaults: () => void;
   // Location-based defaults info for debugging
-  locationDefaults: {
-    temperatureUnit: TemperatureUnit;
-    speedUnit: SpeedUnit;
-  } | null;
+  locationDefaults: LocationDefaults | null;
   isLocationLoading: boolean;
 }
 
 export type { SettingsContextType };
 
-const defaultSettings: Settings = {
-  temperatureUnit: "F",
-  timeFormat: "12h",
-  speedUnit: "mph",
-  themeMode: "auto",
-};
-
-const SettingsContext = createContext<SettingsContextType | undefined>(
-  undefined,
-);
+const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
 
 export { SettingsContext };
 
@@ -53,79 +35,84 @@ interface SettingsProviderProps {
 }
 
 export function SettingsProvider({ children }: SettingsProviderProps) {
-  const { locationDefaults, isLoading: locationLoading } =
-    useLocationBasedDefaults();
+  const { locationDefaults, isLoading: locationLoading } = useLocationBasedDefaults();
+  const [settings, setSettings] = useState<Settings>(() => SettingsService.getInstance().getSettings());
   const [defaultsInitialized, setDefaultsInitialized] = useState(false);
+  const settingsService = SettingsService.getInstance();
 
-  // Determine the actual defaults to use
-  const actualDefaults = locationDefaults || defaultSettings;
+  // Update settings state when they change in localStorage
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setSettings(settingsService.getSettings());
+    };
 
-  const [temperatureUnit, setTemperatureUnit] =
-    useLocalStorage<TemperatureUnit>(
-      "temperatureUnit",
-      actualDefaults.temperatureUnit,
-    );
-  const [timeFormat, setTimeFormat] = useLocalStorage<TimeFormat>(
-    "timeFormat",
-    defaultSettings.timeFormat,
-  );
-  const [speedUnit, setSpeedUnit] = useLocalStorage<SpeedUnit>(
-    "speedUnit",
-    actualDefaults.speedUnit,
-  );
-  const [themeMode, setThemeMode] = useLocalStorage<ThemeMode>(
-    "themeMode",
-    defaultSettings.themeMode,
-  );
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [settingsService]);
 
   // Update defaults when location is determined (only if not already set)
   useEffect(() => {
     if (!locationLoading && locationDefaults && !defaultsInitialized) {
       // Only update if the user hasn't explicitly set their preferences
-      const hasExistingPrefs =
-        localStorage.getItem("temperatureUnit") ||
-        localStorage.getItem("speedUnit");
+      const hasExistingPrefs = 
+        localStorage.getItem('temperatureUnit') ||
+        localStorage.getItem('speedUnit');
 
       if (!hasExistingPrefs) {
-        setTemperatureUnit(locationDefaults.temperatureUnit);
-        setSpeedUnit(locationDefaults.speedUnit);
+        settingsService.setTemperatureUnit(locationDefaults.temperatureUnit);
+        settingsService.setSpeedUnit(locationDefaults.speedUnit);
+        setSettings(settingsService.getSettings());
       }
 
       setDefaultsInitialized(true);
     }
-  }, [
-    locationLoading,
-    locationDefaults,
-    defaultsInitialized,
-    setTemperatureUnit,
-    setSpeedUnit,
-  ]);
+  }, [locationLoading, locationDefaults, defaultsInitialized, settingsService]);
 
-  const settings: Settings = {
-    temperatureUnit,
-    timeFormat,
-    speedUnit,
-    themeMode,
-  };
+  const setTemperatureUnit = useCallback((unit: TemperatureUnit) => {
+    settingsService.setTemperatureUnit(unit);
+    setSettings(prev => ({ ...prev, temperatureUnit: unit }));
+  }, [settingsService]);
 
-  const toggleTemperatureUnit = () => {
-    // Cycle through F -> C -> K -> F
-    setTemperatureUnit(
-      temperatureUnit === "F" ? "C" : temperatureUnit === "C" ? "K" : "F",
-    );
-  };
+  const setTimeFormat = useCallback((format: TimeFormat) => {
+    settingsService.setTimeFormat(format);
+    setSettings(prev => ({ ...prev, timeFormat: format }));
+  }, [settingsService]);
 
-  const toggleTimeFormat = () => {
-    setTimeFormat(timeFormat === "12h" ? "24h" : "12h");
-  };
+  const setSpeedUnit = useCallback((unit: SpeedUnit) => {
+    settingsService.setSpeedUnit(unit);
+    setSettings(prev => ({ ...prev, speedUnit: unit }));
+  }, [settingsService]);
 
-  const resetToDefaults = () => {
-    const defaultsToUse = locationDefaults || defaultSettings;
-    setTemperatureUnit(defaultsToUse.temperatureUnit);
-    setTimeFormat(defaultSettings.timeFormat);
-    setSpeedUnit(defaultsToUse.speedUnit);
-    setThemeMode(defaultSettings.themeMode);
-  };
+  const setThemeMode = useCallback((mode: ThemeMode) => {
+    settingsService.setThemeMode(mode);
+    setSettings(prev => ({ ...prev, themeMode: mode }));
+  }, [settingsService]);
+
+  const toggleTemperatureUnit = useCallback(() => {
+    const newUnit = settingsService.toggleTemperatureUnit();
+    setSettings(prev => ({ ...prev, temperatureUnit: newUnit }));
+  }, [settingsService]);
+
+  const toggleTimeFormat = useCallback(() => {
+    const newFormat = settingsService.toggleTimeFormat();
+    setSettings(prev => ({ ...prev, timeFormat: newFormat }));
+  }, [settingsService]);
+
+  const resetToDefaults = useCallback(() => {
+    const defaults = locationDefaults || {
+      temperatureUnit: 'F',
+      speedUnit: 'mph',
+    };
+    
+    settingsService.resetToDefaults({
+      temperatureUnit: defaults.temperatureUnit,
+      speedUnit: defaults.speedUnit,
+      timeFormat: '12h',
+      themeMode: 'auto',
+    });
+    
+    setSettings(settingsService.getSettings());
+  }, [locationDefaults, settingsService]);
 
   return (
     <SettingsContext.Provider

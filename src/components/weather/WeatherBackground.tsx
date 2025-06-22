@@ -1,6 +1,6 @@
-import { useMemo, useState, useEffect, useRef, useCallback } from "react";
-import type { TimePeriod } from "@/lib/time-helpers";
-import { getVideoSource } from "@/lib/video-assets";
+import { useRef, useEffect } from 'react';
+import { useWeatherBackground } from '@/hooks/useWeatherBackground';
+import type { TimePeriod } from '@/lib/time-helpers';
 
 interface VideoBackgroundProps {
   condition?: string;
@@ -15,68 +15,23 @@ export function WeatherBackground({
   condition,
   timePeriod,
 }: VideoBackgroundProps) {
-  const videoSrc = useMemo(
-    () => getVideoSource(condition, timePeriod),
-    [condition, timePeriod],
-  );
-
-  const [currentSrc, setCurrentSrc] = useState(videoSrc);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [fade, setFade] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const { currentSrc, isTransitioning, setupVideo } = useWeatherBackground({
+    condition,
+    timePeriod,
+  });
 
-  // Handle video source changes with smooth transitions
+  // Setup video element with event listeners
   useEffect(() => {
-    if (videoSrc === currentSrc) return;
-
-    setIsTransitioning(true);
-    setFade(true);
-
-    const timer = setTimeout(() => {
-      setCurrentSrc(videoSrc);
-      setFade(false);
-      setIsTransitioning(false);
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [videoSrc, currentSrc]);
-
-  // Optimize video playback performance
-  const handleTimeUpdate = useCallback(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    // Preload near end to ensure smooth loop
-    if (video.duration - video.currentTime < 2) {
-      video.load();
-    }
-  }, []);
-
-  // Setup video event listeners for optimization
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    video.addEventListener("timeupdate", handleTimeUpdate);
-    video.addEventListener("loadeddata", () => {
-      if (video.paused) {
-        video.play().catch(console.error);
-      }
-    });
-
-    return () => {
-      video.removeEventListener("timeupdate", handleTimeUpdate);
-    };
-  }, [handleTimeUpdate]);
+    return setupVideo(videoRef.current);
+  }, [setupVideo]);
 
   return (
     <div className="fixed inset-0 -z-10">
       <video
         ref={videoRef}
         key={currentSrc}
-        className={`h-full w-full object-cover transition-opacity duration-500 ${
-          fade ? "opacity-0" : "opacity-100"
-        }`}
+        className="h-full w-full object-cover"
         autoPlay
         loop
         muted

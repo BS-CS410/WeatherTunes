@@ -1,4 +1,4 @@
-import { useForecastData } from "@/hooks/useForecast";
+import { useWeatherForecast } from "@/hooks/useWeatherForecast";
 import { Card } from "@/components/ui/card";
 import {
   LoadingSpinner,
@@ -104,67 +104,54 @@ const ForecastDay = memo(function ForecastDay({
  * Optimized 5-day weather forecast component
  * Uses shared components and proper memoization for performance
  */
-export function ForecastCard() {
-  const { forecast, isLoading, error } = useForecastData();
+export default function ForecastCard() {
+  const { forecast, isLoading, error } = useWeatherForecast();
 
   if (isLoading) {
     return (
-      <Card>
-        <LoadingSpinner message="Loading forecast..." className="py-8" />
+      <Card className="p-6">
+        <div className="flex h-48 items-center justify-center">
+          <LoadingSpinner />
+        </div>
       </Card>
     );
   }
 
-  if (error) {
+  if (error || !forecast || forecast.length === 0) {
     return (
-      <Card>
+      <Card className="p-6">
         <ErrorDisplay
-          title="Could not load forecast"
-          message={error.message}
-          className="py-8"
+          title="Forecast Unavailable"
+          message={error || 'No forecast data available'}
+          className="h-48"
         />
       </Card>
     );
   }
 
-  if (!forecast.length) {
-    return (
-      <Card>
-        <div className="py-8 text-center">
-          <p className={cn(COLORS.text.muted)}>No forecast data available</p>
-        </div>
-      </Card>
-    );
-  }
-
   return (
-    <Card enableLiquidGlass>
-      <div className="space-y-4">
-        <h3
-          className={cn(
-            TYPOGRAPHY.body.lg,
-            "font-semibold",
-            COLORS.text.primary,
-          )}
-        >
+    <Card className="p-6">
+      <div className="mb-4 flex items-center justify-between">
+        <h2 className={cn(TYPOGRAPHY.display.md, COLORS.text.primary)}>
           5-Day Forecast
-        </h3>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
-          {forecast.map((day, index) => (
-            <ForecastDay
-              key={`${day.date}-${index}`}
-              dayName={day.dayName}
-              date={day.date}
-              condition={day.condition}
-              tempHigh={day.tempHigh}
-              tempLow={day.tempLow}
-              icon={day.icon}
-            />
-          ))}
+        </h2>
+        <div className="text-sm text-gray-500 dark:text-gray-400">
+          Updated {new Date().toLocaleTimeString()}
         </div>
+      </div>
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
+        {forecast.map((day, index) => (
+          <ForecastDay
+            key={`${day.dayName}-${index}`}
+            dayName={day.dayName}
+            date={day.date}
+            condition={day.condition}
+            tempHigh={day.tempHigh}
+            tempLow={day.tempLow}
+            icon={day.icon}
+          />
+        ))}
       </div>
     </Card>
   );
 }
-
-export default ForecastCard;

@@ -2,13 +2,13 @@ import { useState, useEffect } from "react";
 import { SunriseIcon, SunsetIcon } from "@/components/icons";
 import type { WeatherDisplayData } from "@/types/weather-types";
 import { SectionWrapper } from "../layout/SectionWrapper";
-import { useQueue } from "@/hooks/useQueue";
 import { useAuth } from "@/hooks/useAuth";
+import { useSpotifyLikes } from "@/hooks/useSpotifyLikes";
+import { useSpotifyQueue } from "@/hooks/useSpotifyQueue";
 import { Button } from "@/components/ui/button";
 import { TYPOGRAPHY, COLORS } from "@/lib/design-system";
 import { cn } from "@/lib/dom-helpers";
 import { SpotifyWebPlayer } from "@/components/music/SpotifyWebPlayer";
-import { spotifyApi } from "@/lib/spotify-api";
 
 interface WeatherMusicCardProps {
   weatherData: WeatherDisplayData;
@@ -25,8 +25,9 @@ export function WeatherMusicCard({
   className = "",
 }: WeatherMusicCardProps) {
   const [message, setMessage] = useState<string | null>(null);
-  const { currentTrack, upcomingTracks, isLoading, playNext } = useQueue();
+  const { currentTrack, upcomingTracks, isLoading, playNext } = useSpotifyQueue();
   const { user } = useAuth();
+  const { likeTrack, isLoading: isLiking } = useSpotifyLikes();
 
   const {
     location = "Loading...",
@@ -58,27 +59,15 @@ export function WeatherMusicCard({
     });
   }, [upcomingTracks]);
 
-  const handleLike = async () => {
-    if (!currentTrack?.id) return;
-
-    if (!user) {
-      setMessage("Please log in to like tracks");
-      setTimeout(() => setMessage(null), 3000);
-      return;
-    }
-
+  const handleLikeClick = async () => {
+    if (!currentTrack || isLiking) return;
     try {
-      // Add to user's Spotify library using central API client
-      await spotifyApi.saveTracksForUser([currentTrack.id]);
-
-      // Record interaction for personalization
-      // TODO: Implement track interaction recording
-      console.log("Track liked:", currentTrack.id);
-
-      setMessage("Track liked!");
+      await likeTrack(currentTrack.id);
+      setMessage('Track liked!');
       setTimeout(() => setMessage(null), 2000);
-    } catch {
-      setMessage("Network error while liking track");
+    } catch (error) {
+      console.error('Failed to like track:', error);
+      setMessage('Failed to like track');
       setTimeout(() => setMessage(null), 3000);
     }
   };
@@ -228,10 +217,12 @@ export function WeatherMusicCard({
         {/* Control Buttons (full width) */}
         <div className="flex w-full gap-2">
           <Button
-            onClick={handleLike}
-            disabled={isLoading || !user}
-            variant="outline"
-            className="flex-1"
+            variant="ghost"
+            size="icon"
+            onClick={handleLikeClick}
+            disabled={isLiking}
+            className="group-hover:opacity-100 opacity-70"
+            aria-label={isLiking ? 'Liking...' : 'Like track'}
           >
             ♡ Like
           </Button>

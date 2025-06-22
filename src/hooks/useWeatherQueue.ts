@@ -2,11 +2,48 @@
  * Weather-aware queue generation using the new queue system
  */
 
-import { queueManager } from "@/lib/queue-manager";
-import { useWeatherData } from "./useWeather";
+import { useWeatherData } from "./useWeatherData";
 import { useCallback } from "react";
-import { spotifyApi } from "@/lib/spotify-api";
+import { useSpotifyQueue } from "./useSpotifyQueue";
+import { useSpotifyService } from "./useSpotifyService";
 import type { TrackMetadata } from "@/types/queue-types";
+import type { Track, RecommendationTrack } from "@/types/spotify-api-types";
+import { getVideoForCondition } from "@/data/video-assets";
+
+// Helper function to get tempo based on temperature
+function getTempoForTemperature(temperature: number): number {
+  // Warmer temperatures get higher tempo (BPM)
+  return Math.min(Math.max(60, Math.round(temperature * 2)), 180);
+}
+
+// Helper function to get genres based on weather and time of day
+function getGenresForWeather(condition: string, timeOfDay: string): string[] {
+  const conditionLower = condition.toLowerCase();
+  const isDaytime = ['morning', 'afternoon'].includes(timeOfDay);
+  
+  if (conditionLower.includes('rain') || conditionLower.includes('drizzle')) {
+    return isDaytime ? ['chill', 'acoustic', 'piano'] : ['rainy-day', 'ambient', 'sleep'];
+  }
+  
+  if (conditionLower.includes('snow') || conditionLower.includes('sleet')) {
+    return ['winter', 'christmas', 'holidays'];
+  }
+  
+  if (conditionLower.includes('sun') || conditionLower.includes('clear')) {
+    return isDaytime ? ['pop', 'indie-pop', 'summer'] : ['chill', 'indie', 'acoustic'];
+  }
+  
+  if (conditionLower.includes('cloud') || conditionLower.includes('overcast')) {
+    return ['indie', 'alternative', 'indie-pop'];
+  }
+  
+  if (conditionLower.includes('thunder') || conditionLower.includes('storm')) {
+    return ['rock', 'alternative', 'hard-rock'];
+  }
+  
+  // Default genres
+  return ['pop', 'indie', 'chill'];
+}
 
 interface UseWeatherQueueReturn {
   generateWeatherQueue: (count?: number) => Promise<TrackMetadata[]>;
@@ -18,6 +55,8 @@ interface UseWeatherQueueReturn {
  */
 export function useWeatherQueue(): UseWeatherQueueReturn {
   const weatherState = useWeatherData();
+  const { replaceQueue } = useSpotifyQueue();
+  const spotifyService = useSpotifyService();
 
   // Extract stable values to avoid unnecessary re-renders
   const condition = weatherState.displayData?.condition || "clear sky";
@@ -34,18 +73,39 @@ export function useWeatherQueue(): UseWeatherQueueReturn {
 
         // Try weather-based recommendations first
         try {
-          const recommendations = await spotifyApi.getWeatherRecommendations({
-            weather_condition: condition,
-            temperature,
-            time_of_day: timeOfDay,
+          const seedGenres = getGenresForWeather(condition, timeOfDay);
+          const targetTempo = getTempoForTemperature(temperature);
+          
+          // Get recommendations using available seeds
+          const recommendations = await spotifyService.getRecommendations({
+            seed_genres: seedGenres.slice(0, 5), // Max 5 seed genres
+            target_tempo: targetTempo,
             limit: count,
+            min_energy: 0.3,
+            max_energy: 0.9,
+            target_valence: 0.7, // More positive mood
           });
 
-          if (recommendations.tracks.length > 0) {
+          if (recommendations.tracks && recommendations.tracks.length > 0) {
             console.log(
               `Generated ${recommendations.tracks.length} weather-based tracks`,
+              { seedGenres, targetTempo }
             );
-            return recommendations.tracks;
+            return recommendations.tracks.map((track: RecommendationTrack | Track) => {
+              const videoAsset = getVideoForCondition(condition);
+              return {
+                id: track.id,
+                title: track.name,
+                artist: track.artists[0]?.name || 'Unknown Artist',
+                album: track.album?.name || 'Unknown Album',
+                albumArt: track.album?.images?.[0]?.url || '',
+                duration: track.duration_ms,
+                uri: track.uri,
+                externalUrl: track.external_urls?.spotify || '',
+                videoUrl: videoAsset.path,
+                videoClass: videoAsset.className || '',
+              };
+            });
           }
         } catch (weatherError) {
           console.warn("Weather recommendations failed:", weatherError);
@@ -53,28 +113,46 @@ export function useWeatherQueue(): UseWeatherQueueReturn {
 
         // Fallback to search-based tracks
         const searchTerms = getSearchTermsForWeather(condition, timeOfDay);
-        const searchResults = await spotifyApi.searchTracks(searchTerms, count);
+        const searchResults = await spotifyService.searchTracks(searchTerms, count);
 
         console.log(
-          `Fallback: Generated ${searchResults.tracks.length} search-based tracks`,
+          `Fallback: Generated ${searchResults.tracks?.items?.length || 0} search-based tracks`,
+          { searchTerms }
         );
-        return searchResults.tracks;
+        
+        if (!searchResults.tracks?.items) {
+          return [];
+        }
+        
+        const videoAsset = getVideoForCondition(condition);
+        return searchResults.tracks.items.map((track: Track) => ({
+          id: track.id,
+          title: track.name,
+          artist: track.artists[0]?.name || 'Unknown Artist',
+          album: track.album?.name || 'Unknown Album',
+          albumArt: track.album?.images?.[0]?.url || '',
+          duration: track.duration_ms,
+          uri: track.uri,
+          externalUrl: track.external_urls?.spotify || '',
+          videoUrl: videoAsset.path,
+          videoClass: videoAsset.className || '',
+        }));
       } catch (error) {
         console.error("Failed to generate weather queue:", error);
         return [];
       }
     },
-    [condition, temperature], // Only depend on specific values, not entire weatherState
+    [condition, temperature, spotifyService],
   );
 
   const replaceQueueWithWeatherTracks = useCallback(
     async (count = 15): Promise<void> => {
       const tracks = await generateWeatherQueue(count);
       if (tracks.length > 0) {
-        await queueManager.replaceQueue(tracks);
+        await replaceQueue(tracks);
       }
     },
-    [generateWeatherQueue],
+    [generateWeatherQueue, replaceQueue],
   );
 
   return {
