@@ -7,6 +7,8 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
   variant?: keyof typeof CARD_STYLES;
   className?: string;
+  contentClassName?: string;
+  withPadding?: boolean;
   enableLiquidGlass?: boolean;
 }
 
@@ -22,6 +24,8 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
       children,
       variant = "base",
       className = "",
+      contentClassName = "",
+      withPadding = true,
       enableLiquidGlass = false,
       ...props
     },
@@ -46,7 +50,15 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
       >
         {/* Gentle Apple-style depth with very subtle white outline */}
         <div className="pointer-events-none absolute inset-0 rounded-xl shadow-[inset_0_0.5px_0_0_rgba(255,255,255,0.15)] dark:shadow-[inset_0_0.5px_0_0_rgba(255,255,255,0.05)]" />
-        <div className="relative z-10 flex-1">{children}</div>
+        <div className="relative z-10 flex-1">
+          {contentClassName || !withPadding ? (
+            <CardContent className={contentClassName} withPadding={withPadding}>
+              {children}
+            </CardContent>
+          ) : (
+            children
+          )}
+        </div>
       </div>
     );
 

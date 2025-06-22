@@ -7,7 +7,7 @@ import {
 } from "@/components/shared/SettingsComponents";
 import { COLORS, TYPOGRAPHY, BUTTON_STYLES } from "@/lib/design-system";
 import { useState } from "react";
-import { BaseCard } from "@/components/shared/BaseCard";
+import { Card } from "@/components/ui/card";
 
 interface SettingsCardProps {
   isOpen: boolean;
@@ -59,7 +59,7 @@ export function SettingsCard({ isOpen, onClose }: SettingsCardProps) {
         {/* Main Settings Panel */}
         <div className="flex h-full flex-col p-6">
           <div className="transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02]">
-            <BaseCard
+            <Card
               enableLiquidGlass
               className="flex h-full min-h-0 flex-col shadow-2xl"
               contentClassName="flex flex-col h-full min-h-0 p-0"
@@ -258,7 +258,7 @@ export function SettingsCard({ isOpen, onClose }: SettingsCardProps) {
                   )}
                 </div>
               </div>
-            </BaseCard>
+            </Card>
           </div>
         </div>
       </div>

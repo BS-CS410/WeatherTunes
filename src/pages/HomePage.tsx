@@ -4,7 +4,7 @@ import {
   WeatherBackground,
   SettingsButton,
   ForecastCard,
-  BaseCard,
+  Card,
   LoadingSpinner,
   ErrorDisplay,
   SpotifySearchCard,
@@ -135,16 +135,16 @@ function MainPage() {
 
         {/* Unified Weather and Music Display */}
         <div className="transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02]">
-          <BaseCard withPadding={false} enableLiquidGlass>
+          <Card withPadding={false} enableLiquidGlass>
             <WeatherMusicCard weatherData={displayData} />
-          </BaseCard>
+          </Card>
         </div>
 
         {/* Next Up Scroll Area */}
         <div className="transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02]">
-          <BaseCard withPadding={false} className="" enableLiquidGlass>
+          <Card withPadding={false} className="" enableLiquidGlass>
             <QueueCard />
-          </BaseCard>
+          </Card>
         </div>
 
         {/* Spotify Search */}
@@ -159,9 +159,9 @@ function MainPage() {
 
         {/* Favorites List */}
         <div className="transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02]">
-          <BaseCard className="w-full" contentClassName="p-4" enableLiquidGlass>
+          <Card className="w-full" contentClassName="p-4" enableLiquidGlass>
             <FavoritesCard />
-          </BaseCard>
+          </Card>
         </div>
 
         {/* Bottom Padding */}

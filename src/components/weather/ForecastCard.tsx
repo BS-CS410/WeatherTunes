@@ -1,5 +1,5 @@
 import { useForecastData } from "@/hooks/useForecast";
-import { BaseCard } from "@/components/shared/BaseCard";
+import { Card } from "@/components/ui/card";
 import {
   LoadingSpinner,
   ErrorDisplay,
@@ -109,36 +109,36 @@ export function ForecastCard() {
 
   if (isLoading) {
     return (
-      <BaseCard>
+      <Card>
         <LoadingSpinner message="Loading forecast..." className="py-8" />
-      </BaseCard>
+      </Card>
     );
   }
 
   if (error) {
     return (
-      <BaseCard>
+      <Card>
         <ErrorDisplay
           title="Could not load forecast"
           message={error.message}
           className="py-8"
         />
-      </BaseCard>
+      </Card>
     );
   }
 
   if (!forecast.length) {
     return (
-      <BaseCard>
+      <Card>
         <div className="py-8 text-center">
           <p className={cn(COLORS.text.muted)}>No forecast data available</p>
         </div>
-      </BaseCard>
+      </Card>
     );
   }
 
   return (
-    <BaseCard enableLiquidGlass>
+    <Card enableLiquidGlass>
       <div className="space-y-4">
         <h3
           className={cn(
@@ -163,7 +163,7 @@ export function ForecastCard() {
           ))}
         </div>
       </div>
-    </BaseCard>
+    </Card>
   );
 }
 

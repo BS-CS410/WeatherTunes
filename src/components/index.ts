@@ -14,7 +14,6 @@ export * from "./ui/slider";
 
 // === SHARED COMPONENTS ===
 // Reusable components used across multiple domains
-export { BaseCard } from "./shared/BaseCard";
 export { LoadingSpinner, ErrorDisplay } from "./shared/StatusComponents";
 export {
   SettingsSection,

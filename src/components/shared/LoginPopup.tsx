@@ -1,5 +1,5 @@
 import { useAuth } from "@/hooks/useAuth";
-import { BaseCard } from "@/components/shared/BaseCard";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { COLORS } from "@/lib/design-system";
 import { cn } from "@/lib/dom-helpers";
@@ -22,7 +22,7 @@ export function LoginPopup({ isOpen }: LoginPopupProps) {
 
       {/* Popup Content */}
       <div className="relative w-full max-w-sm">
-        <BaseCard
+        <Card
           variant="modal"
           enableLiquidGlass
           className="text-center"
@@ -50,7 +50,7 @@ export function LoginPopup({ isOpen }: LoginPopupProps) {
           >
             Login via Spotify
           </Button>
-        </BaseCard>
+        </Card>
       </div>
     </div>
   );
