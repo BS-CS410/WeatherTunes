@@ -1,28 +1,24 @@
-import { LocalStorage } from './storage';
+import { LocalStorage } from "./storage";
 import type {
   TemperatureUnit,
   TimeFormat,
-  SpeedUnit,
   ThemeMode,
-} from '@/types/units-types';
+} from "@/types/units-types";
 
 const SETTINGS_KEYS = {
-  TEMPERATURE_UNIT: 'temperatureUnit',
-  TIME_FORMAT: 'timeFormat',
-  SPEED_UNIT: 'speedUnit',
-  THEME_MODE: 'themeMode',
+  TEMPERATURE_UNIT: "temperatureUnit",
+  TIME_FORMAT: "timeFormat",
+  THEME_MODE: "themeMode",
 } as const;
 
 export interface Settings {
   temperatureUnit: TemperatureUnit;
   timeFormat: TimeFormat;
-  speedUnit: SpeedUnit;
   themeMode: ThemeMode;
 }
 
 export interface LocationDefaults {
   temperatureUnit: TemperatureUnit;
-  speedUnit: SpeedUnit;
 }
 
 export class SettingsService {
@@ -33,10 +29,9 @@ export class SettingsService {
   private constructor() {
     this.localStorage = LocalStorage.getInstance();
     this.defaultSettings = {
-      temperatureUnit: 'F',
-      timeFormat: '12h',
-      speedUnit: 'mph',
-      themeMode: 'auto',
+      temperatureUnit: "metric",
+      timeFormat: "12h",
+      themeMode: "auto",
     };
   }
 
@@ -57,10 +52,6 @@ export class SettingsService {
         SETTINGS_KEYS.TIME_FORMAT,
         this.defaultSettings.timeFormat,
       ),
-      speedUnit: this.getSetting<SpeedUnit>(
-        SETTINGS_KEYS.SPEED_UNIT,
-        this.defaultSettings.speedUnit,
-      ),
       themeMode: this.getSetting<ThemeMode>(
         SETTINGS_KEYS.THEME_MODE,
         this.defaultSettings.themeMode,
@@ -77,7 +68,7 @@ export class SettingsService {
 
   public resetToDefaults(defaults?: Partial<Settings>): Settings {
     const settings = { ...this.defaultSettings, ...defaults };
-    
+
     // Update all settings to their default values
     Object.entries(settings).forEach(([key, value]) => {
       this.updateSetting(key as keyof Settings, value);
@@ -113,17 +104,6 @@ export class SettingsService {
     this.updateSetting(SETTINGS_KEYS.TIME_FORMAT, format);
   }
 
-  public getSpeedUnit(): SpeedUnit {
-    return this.getSetting(
-      SETTINGS_KEYS.SPEED_UNIT,
-      this.defaultSettings.speedUnit,
-    );
-  }
-
-  public setSpeedUnit(unit: SpeedUnit): void {
-    this.updateSetting(SETTINGS_KEYS.SPEED_UNIT, unit);
-  }
-
   public getThemeMode(): ThemeMode {
     return this.getSetting(
       SETTINGS_KEYS.THEME_MODE,
@@ -138,14 +118,19 @@ export class SettingsService {
   // Helper methods for toggling
   public toggleTemperatureUnit(): TemperatureUnit {
     const current = this.getTemperatureUnit();
-    const next = current === 'F' ? 'C' : current === 'C' ? 'K' : 'F';
+    const next =
+      current === "imperial"
+        ? "metric"
+        : current === "metric"
+          ? "standard"
+          : "imperial";
     this.setTemperatureUnit(next);
     return next;
   }
 
   public toggleTimeFormat(): TimeFormat {
     const current = this.getTimeFormat();
-    const next = current === '12h' ? '24h' : '12h';
+    const next = current === "12h" ? "24h" : "12h";
     this.setTimeFormat(next);
     return next;
   }

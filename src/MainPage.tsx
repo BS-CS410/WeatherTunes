@@ -5,9 +5,10 @@ import {
   QueueCard,
   FavoritesCard,
   SpotifySearchCard,
-  SettingsButton,
+  SettingsCard,
 } from "@/components";
-import { WeatherBackground } from "@/components";
+import { SettingsButton } from "@/components/settings/SettingsButton";
+import { WeatherBackground } from "@/components/weather/WeatherBackground";
 import { LoadingSpinner } from "@/components/shared/StatusComponents";
 import { useWeatherData } from "@/hooks/useWeatherData";
 import { useThemeManager } from "@/hooks/useThemeManager";
@@ -61,6 +62,11 @@ function MainPage() {
           timePeriod={timePeriod}
         />
 
+        {/* Settings Button - Always visible */}
+        <div className="absolute top-6 left-6 z-20">
+          <SettingsButton />
+        </div>
+
         {/* Login Content */}
         <div className="relative z-10 flex min-h-screen items-center justify-center">
           <div className="w-full max-w-md rounded-lg border border-white/20 bg-white/10 p-8 text-center backdrop-blur-md">
@@ -106,27 +112,27 @@ function MainPage() {
         </header>
 
         {/* Weather and Music Card */}
-        <div className="transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02]">
+        <div>
           <WeatherMusicCard weatherData={displayData} />
         </div>
 
         {/* Queue Display */}
-        <div className="transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02]">
+        <div>
           <QueueCard />
         </div>
 
         {/* Spotify Search */}
-        <div className="transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02]">
+        <div>
           <SpotifySearchCard />
         </div>
 
         {/* 5-Day Forecast */}
-        <div className="transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02]">
+        <div>
           <ForecastCard />
         </div>
 
         {/* Favorites List */}
-        <div className="transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02]">
+        <div>
           <FavoritesCard />
         </div>
 

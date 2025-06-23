@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import {
   SettingsSection,
   SettingsButtonGroup,
-} from "@/components/shared/SettingsComponents";
+} from "@/components/settings/SettingsComponents";
 import { COLORS, TYPOGRAPHY, BUTTON_STYLES } from "@/lib";
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
@@ -19,7 +19,6 @@ export function SettingsCard({ isOpen, onClose }: SettingsCardProps) {
     settings,
     setTemperatureUnit,
     setTimeFormat,
-    setSpeedUnit,
     setThemeMode,
     resetToDefaults,
   } = useSettings();
@@ -107,22 +106,22 @@ export function SettingsCard({ isOpen, onClose }: SettingsCardProps) {
                       <SettingsButtonGroup
                         options={[
                           {
-                            value: "F",
+                            value: "imperial",
                             label: "°F",
-                            isSelected: settings.temperatureUnit === "F",
-                            onClick: () => setTemperatureUnit("F"),
+                            isSelected: settings.temperatureUnit === "imperial",
+                            onClick: () => setTemperatureUnit("imperial"),
                           },
                           {
-                            value: "C",
+                            value: "metric",
                             label: "°C",
-                            isSelected: settings.temperatureUnit === "C",
-                            onClick: () => setTemperatureUnit("C"),
+                            isSelected: settings.temperatureUnit === "metric",
+                            onClick: () => setTemperatureUnit("metric"),
                           },
                           {
-                            value: "K",
+                            value: "standard",
                             label: "K",
-                            isSelected: settings.temperatureUnit === "K",
-                            onClick: () => setTemperatureUnit("K"),
+                            isSelected: settings.temperatureUnit === "standard",
+                            onClick: () => setTemperatureUnit("standard"),
                           },
                         ]}
                       />
@@ -173,34 +172,6 @@ export function SettingsCard({ isOpen, onClose }: SettingsCardProps) {
                             label: "Dark",
                             isSelected: settings.themeMode === "dark",
                             onClick: () => setThemeMode("dark"),
-                          },
-                        ]}
-                      />
-                    </SettingsSection>
-                  </div>
-
-                  {/* Wind Speed Unit */}
-                  <div className="transition-all duration-300 hover:-translate-y-0.5">
-                    <SettingsSection label="Wind Speed Unit">
-                      <SettingsButtonGroup
-                        options={[
-                          {
-                            value: "mph",
-                            label: "mph",
-                            isSelected: settings.speedUnit === "mph",
-                            onClick: () => setSpeedUnit("mph"),
-                          },
-                          {
-                            value: "kmh",
-                            label: "km/h",
-                            isSelected: settings.speedUnit === "kmh",
-                            onClick: () => setSpeedUnit("kmh"),
-                          },
-                          {
-                            value: "ms",
-                            label: "m/s",
-                            isSelected: settings.speedUnit === "ms",
-                            onClick: () => setSpeedUnit("ms"),
                           },
                         ]}
                       />

@@ -39,20 +39,3 @@ export function useThemeManager(timePeriod?: TimePeriod | null) {
     }
   }, [settings.themeMode, timePeriod]);
 }
-
-/**
- * Weather-specific theme hook for components that only need weather-based theming
- * @deprecated Use useThemeManager instead for better integration with user settings
- */
-export function useThemeFromWeather(timePeriod: TimePeriod | null) {
-  useEffect(() => {
-    if (!timePeriod) return;
-
-    const root = window.document.documentElement;
-    if (timePeriod === "evening" || timePeriod === "night") {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
-  }, [timePeriod]);
-}

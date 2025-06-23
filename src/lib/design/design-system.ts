@@ -3,6 +3,20 @@
  * Ruthlessly simplified architecture while maintaining visual fidelity
  */
 
+import { cn } from "@/lib/core/dom.utils";
+
+export const ANIMATIONS = {
+  transition: {
+    standard: "transition-all duration-300 ease-in-out",
+    fast: "transition-all duration-150 ease-in-out",
+    slow: "transition-all duration-500 ease-in-out",
+  },
+  transform: {
+    scaleUp: "hover:scale-105 active:scale-100",
+    scaleDown: "hover:scale-95 active:scale-100",
+  },
+};
+
 // Core liquid glass styles - consolidated for maximum reuse
 const GLASS_BASE = "backdrop-blur-xl backdrop-saturate-[1.8] border";
 const GLASS_LIGHT = "bg-white/[0.05] border-white/[0.12]";
@@ -177,6 +191,7 @@ export const CARD_STYLES = {
   },
   // Add missing card styles
   interactive: `${COLORS.glass.interactive} ${CARD_BASE} hover:scale-[1.01] transition-transform cursor-pointer`,
+  sunken: `${ANIMATIONS.transition.standard} bg-black/[0.05] shadow-[inset_0_1px_2px_rgba(0,0,0,0.1)] dark:bg-black/[0.2] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] hover:bg-black/[0.08] dark:hover:bg-black/[0.25]`,
 };
 
 export const INPUT_STYLES = {
@@ -252,35 +267,8 @@ export const LAYOUT = {
     end: "flex items-center justify-end",
     col: "flex flex-col",
     colCenter: "flex flex-col items-center justify-center",
+    row: "flex flex-row items-center",
   },
-};
-
-export const ANIMATIONS = {
-  transition: {
-    fast: "transition-all duration-150 ease-in-out",
-    default: "transition-all duration-200 ease-in-out",
-    slow: "transition-all duration-300 ease-in-out",
-    // Add missing transition
-    standard: "transition-all duration-200 ease-in-out",
-  },
-  bounce: "animate-bounce",
-  pulse: "animate-pulse",
-  spin: "animate-spin",
-  ping: "animate-ping",
-  slideIn: {
-    left: "animate-slide-in-left",
-    right: "animate-slide-in-right",
-    up: "animate-slide-in-up",
-    down: "animate-slide-in-down",
-  },
-  fadeIn: "animate-fade-in",
-  fadeOut: "animate-fade-out",
-  scale: {
-    hover: "hover:scale-105 active:scale-95",
-    press: "active:scale-95",
-  },
-  glow: "animate-glow",
-  shimmer: "animate-shimmer",
 };
 
 // Weather-specific design tokens
@@ -316,7 +304,7 @@ export const MUSIC_STYLES = {
     knob: `${COLORS.glass.sliderKnob} rounded-full`,
   },
   queue: {
-    item: `${COLORS.glass.interactive} hover:scale-[1.02] ${ANIMATIONS.transition.default}`,
+    item: `${COLORS.glass.interactive} hover:scale-[1.02] ${ANIMATIONS.transition.standard}`,
     playing: `${COLORS.glass.enhanced} border-blue-500/50`,
   },
   album: {
@@ -402,40 +390,28 @@ export const createLiquidGlassButton = (
 export const createLiquidGlassCard = (
   variant: "default" | "elevated" | "floating" = "default",
 ) => {
-  const baseCard = `${CARD_STYLES.base}`;
-
-  switch (variant) {
-    case "elevated":
-      return `${baseCard} ${COLORS.glass.floating}`;
-    case "floating":
-      return `${baseCard} ${COLORS.glass.floating} shadow-2xl`;
-    default:
-      return `${baseCard} ${COLORS.glass.interactive}`;
-  }
+  const base = combineStyles(CARD_STYLES.base, CARD_STYLES.glass.default);
+  const variantStyle =
+    variant === "elevated"
+      ? CARD_STYLES.glass.elevated
+      : CARD_STYLES.glass.default;
+  return combineStyles(base, variantStyle);
 };
 
-// Helper function for creating error weather data (missing from hooks)
-export const createErrorWeatherData = (error: string) => ({
-  location: "Unknown Location",
-  temperature: 0,
-  condition: "Error",
-  humidity: 0,
-  windSpeed: 0,
-  pressure: 0,
-  visibility: 0,
-  uvIndex: 0,
-  feelsLike: 0,
-  dewPoint: 0,
-  icon: "error",
-  description: error,
-  sunrise: "",
-  sunset: "",
-  moonPhase: "",
-  airQuality: {
-    index: 0,
-    category: "Unknown",
-    pollutants: {},
-  },
-  alerts: [],
-  lastUpdated: new Date().toISOString(),
-});
+export const MISC = {
+  focusRing:
+    "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-900",
+};
+
+/**
+ * Creates a reusable style string for an interactive icon
+ * Bundles base styles, animations, and color transitions
+ */
+export const createInteractiveIcon = (size = 6) => {
+  return cn(
+    "rounded-full p-2",
+    ANIMATIONS.transition.standard,
+    ANIMATIONS.transform.scaleUp,
+    "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white",
+  );
+};

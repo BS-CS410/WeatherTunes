@@ -5,6 +5,15 @@
  * All main UI units are "Cards", with supporting components clearly named.
  */
 
+// === MAIN COMPONENTS ===
+// Primary components used directly in MainPage
+export { WeatherMusicCard } from "./WeatherMusicCard";
+export { default as ForecastCard } from "./ForecastCard";
+export { QueueCard } from "./QueueCard";
+export { FavoritesCard } from "./FavoritesCard";
+export { SpotifySearchCard } from "./SpotifySearchCard";
+export { SettingsCard } from "./SettingsCard";
+
 // === UI PRIMITIVES ===
 // Base shadcn/ui components with unified styling system
 export * from "./ui/button";
@@ -18,32 +27,30 @@ export { LoadingSpinner, ErrorDisplay } from "./shared/StatusComponents";
 export {
   SettingsSection,
   SettingsButtonGroup,
-} from "./shared/SettingsComponents";
+} from "./settings/SettingsComponents";
 export { ErrorBoundary, withErrorBoundary } from "./shared/ErrorBoundary";
 export { LoginPopup } from "./shared/LoginPopup";
-export { WeatherMusicCard } from "./shared/WeatherMusicCard";
+export { LiquidGlassContainer } from "./shared/LiquidGlassContainer";
 
 // === AUTH DOMAIN ===
 // Authentication components and flows
-export { OAuthCallback } from "./auth/OAuthCallback";
+export { OAuthCallback } from "./shared/OAuthCallback";
 
 // === WEATHER DOMAIN ===
 // Components related to weather display, forecast, and background visuals
 export { WeatherBackground } from "./weather/WeatherBackground";
-export { default as ForecastCard } from "./weather/ForecastCard";
 
 // === MUSIC DOMAIN ===
 // Components for music playback, queue management, and audio controls
-export { QueueCard } from "./music/QueueCard";
-export { FavoritesCard } from "./music/FavoritesCard";
-export { SpotifySearchCard } from "./music/SpotifySearchCard";
 export { SpotifyWebPlayer } from "./music/SpotifyWebPlayer";
 export { SpotifyMiniPlayer } from "./music/SpotifyMiniPlayer";
 
 // === SETTINGS DOMAIN ===
 // Settings interface and controls
 export { SettingsButton } from "./settings/SettingsButton";
-export { SettingsCard } from "./settings/SettingsCard";
+export { SettingsPanel } from "./settings/SettingsPanel";
+export { ThemeSwitcher } from "./settings/ThemeSwitcher";
+export { UnitSelector } from "./settings/UnitSelector";
 
 // === LAYOUT DOMAIN ===
 // Navigation, layout, and overall app structure
@@ -54,7 +61,3 @@ export { ThemeProvider } from "./layout/ThemeProvider";
 // === ICONS ===
 // Custom icon components with consistent styling
 export * from "./icons";
-
-// === LIQUID GLASS COMPONENTS ===
-// Advanced liquid glass effects inspired by Apple's design
-export * from "./liquid-glass";

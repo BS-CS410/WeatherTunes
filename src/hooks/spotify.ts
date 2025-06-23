@@ -3,11 +3,12 @@
  * Combines all Spotify-related functionality to reduce fragmentation
  */
 
-import { useState, useEffect, useCallback } from "react";
-import { useServices } from "./common";
-import type { SpotifyService } from "@/services/SpotifyService";
+import { useState, useCallback } from "react";
+import { useServices } from "@/hooks/common";
+import { SpotifyService } from "@/services/SpotifyService";
 import type { Track } from "@/types/spotify-api-types";
 import type { TrackMetadata } from "@/types/queue-types";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 // === SERVICE HOOK ===
 export function useSpotifyService(): SpotifyService {
@@ -138,39 +139,40 @@ interface UseSpotifyLikedTracksReturn {
   refetch: () => Promise<void>;
 }
 
-export function useSpotifyLikedTracks(limit = 50): UseSpotifyLikedTracksReturn {
+export function useSpotifyLikedTracks(
+  options: { limit?: number; enabled?: boolean } = {},
+): UseSpotifyLikedTracksReturn {
+  const { limit = 50, enabled = true } = options;
   const spotifyService = useSpotifyService();
-  const [tracks, setTracks] = useState<TrackMetadata[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
-  const fetchTracks = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      const response = await spotifyService.getSavedTracks(limit);
-      const transformedTracks =
-        response.items?.map((item) => transformTrack(item.track)) || [];
-      setTracks(transformedTracks);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to fetch liked tracks",
-      );
-      setTracks([]);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [spotifyService, limit]);
-
-  useEffect(() => {
-    fetchTracks();
-  }, [fetchTracks]);
-
-  return {
-    tracks,
+  const {
+    data: tracks,
     isLoading,
     error,
-    refetch: fetchTracks,
+  } = useQuery<TrackMetadata[], string>({
+    queryKey: ["spotifyLikedTracks", limit],
+    queryFn: async () => {
+      const response = await spotifyService.getSavedTracks(limit);
+      return response.items?.map((item) => transformTrack(item.track)) || [];
+    },
+    enabled: !!spotifyService && enabled,
+    staleTime: 1000 * 60 * 15, // 15 minutes
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  });
+
+  const refetch = useCallback(async () => {
+    await queryClient.invalidateQueries({
+      queryKey: ["spotifyLikedTracks", limit],
+    });
+  }, [queryClient, limit]);
+
+  return {
+    tracks: tracks || [],
+    isLoading,
+    error,
+    refetch,
   };
 }
 

@@ -1,11 +1,10 @@
 import type { TimePeriod } from "@/lib"; // Added import for TimePeriod
+import type { TemperatureUnit } from "./units-types";
 
 export interface WeatherApiResponse {
   name: string;
   main: {
     temp: number;
-    humidity: number;
-    pressure: number;
   };
   weather: {
     main: string;
@@ -28,12 +27,11 @@ export interface WeatherApiResponse {
 
 export interface WeatherDisplayData {
   location: string;
-  temperature: string;
+  temperature: number;
   condition: string;
-  unit: string;
-  isError?: boolean; // Added this line
-  sunrise?: string; // formatted time string
-  sunset?: string; // formatted time string
+  sunrise?: string;
+  sunset?: string;
+  unit: TemperatureUnit;
 }
 
 export interface EnhancedWeatherState {
@@ -53,8 +51,6 @@ export interface ForecastItem {
     temp: number;
     temp_min: number;
     temp_max: number;
-    humidity: number;
-    pressure: number;
   };
   weather: {
     main: string;

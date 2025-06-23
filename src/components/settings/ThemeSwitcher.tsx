@@ -1,7 +1,7 @@
 import {
   SettingsSection,
   SettingsButtonGroup,
-} from "../shared/SettingsComponents";
+} from "../settings/SettingsComponents";
 
 interface ThemeSwitcherProps {
   themeMode: "light" | "dark" | "auto";

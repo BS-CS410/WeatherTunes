@@ -1,0 +1,266 @@
+import { useState, useEffect } from "react";
+import { SunriseIcon, SunsetIcon } from "@/components/icons";
+import type { WeatherDisplayData } from "@/types/weather-types";
+import { SectionWrapper } from "@/components/layout/SectionWrapper";
+import { useAuth } from "@/hooks/useAuth";
+import { useSpotifyLikes, useSpotifyQueue } from "@/hooks/spotify";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { TYPOGRAPHY, COLORS } from "@/lib";
+import { cn } from "@/lib";
+import { SpotifyWebPlayer } from "@/components/music/SpotifyWebPlayer";
+
+interface WeatherMusicCardProps {
+  weatherData: WeatherDisplayData;
+  className?: string;
+}
+
+/**
+ * Unified weather and music display component using 2x2 grid layout
+ * Top row: weather info and album art
+ * Bottom row: Spotify player and control buttons
+ */
+export function WeatherMusicCard({
+  weatherData,
+  className = "",
+}: WeatherMusicCardProps) {
+  const [message, setMessage] = useState<string | null>(null);
+  const { currentTrack, upcomingTracks, isLoading, playNext } =
+    useSpotifyQueue();
+  const { user } = useAuth();
+  const { likeTrack, isLoading: isLiking } = useSpotifyLikes();
+
+  const {
+    location = "Loading...",
+    temperature = "--",
+    condition = "Loading...",
+    unit = "metric",
+    sunrise = "--",
+    sunset = "--",
+  } = weatherData || {};
+
+  // Use track metadata from context or fallback to placeholders
+  const isTrackLoading = isLoading || !currentTrack;
+  const songTitle =
+    currentTrack?.title ||
+    (isTrackLoading ? "Loading track..." : "Unknown Track");
+  const artistName =
+    currentTrack?.artist ||
+    (isTrackLoading ? "Finding music..." : "Unknown Artist");
+  const albumArtUrl = currentTrack?.albumArt || "/placeholder-album.svg";
+
+  // Preload album art images for all tracks in the queue
+  useEffect(() => {
+    if (!upcomingTracks || upcomingTracks.length === 0) return;
+    upcomingTracks.forEach((track) => {
+      if (track.albumArt) {
+        const img = new window.Image();
+        img.src = track.albumArt;
+      }
+    });
+  }, [upcomingTracks]);
+
+  const handleLikeClick = async () => {
+    if (!currentTrack || isLiking) return;
+    try {
+      await likeTrack(currentTrack.id);
+      setMessage("Track liked!");
+      setTimeout(() => setMessage(null), 2000);
+    } catch (error) {
+      console.error("Failed to like track:", error);
+      setMessage("Failed to like track");
+      setTimeout(() => setMessage(null), 3000);
+    }
+  };
+
+  const handleNext = async () => {
+    if (!user) {
+      setMessage("Please log in to control playback");
+      setTimeout(() => setMessage(null), 3000);
+      return;
+    }
+    await playNext();
+  };
+
+  return (
+    <Card variant="interactive" className={cn("w-full", className)}>
+      <div
+        className={cn(
+          "flex h-full w-full flex-col text-[clamp(1rem,3.5vw,1.6rem)]",
+        )}
+      >
+        {/* Top Section - Weather and Album Art (2x1 grid, same as original) */}
+        <div className="grid aspect-[2/1] h-full w-full grid-cols-2 grid-rows-1">
+          {/* Weather Section - Left Grid Cell */}
+          <div className="relative flex h-full flex-col justify-center">
+            <SectionWrapper scale={1.4} alignment="start" padding="0 0 0 1.5em">
+              {/* Location */}
+              <h1
+                className={`${COLORS.text.weather} -mt-1 leading-none font-medium uppercase`}
+              >
+                {location}
+              </h1>
+
+              {/* Temperature */}
+              <div
+                className={`-mt-3 -mb-1 -ml-2.5 leading-none font-light tracking-tighter ${COLORS.text.weather} ${String(temperature).length >= 3 ? "font-light" : ""}`}
+                style={{
+                  fontSize: "4.5em",
+                  transformOrigin: "left top",
+                  letterSpacing:
+                    String(temperature).length >= 3 ? "-0.09em" : undefined,
+                }}
+              >
+                {temperature}
+                <span
+                  className={
+                    String(temperature).length >= 3
+                      ? "ml-2.5 align-super text-[0.55em]"
+                      : "align-super text-[0.55em]"
+                  }
+                >
+                  {unit === "standard"
+                    ? "K"
+                    : `° ${unit === "imperial" ? "F" : "C"}`}
+                </span>
+              </div>
+
+              {/* Condition */}
+              <span
+                className={`leading-tight font-light lowercase ${COLORS.text.condition}`}
+              >
+                {condition}
+              </span>
+
+              {/* Sunrise/Sunset */}
+              <div
+                className={`mt-1 flex w-full max-w-full items-center gap-3 overflow-hidden pt-2 text-[0.95rem] whitespace-nowrap`}
+              >
+                <span
+                  className={`flex transform-gpu items-center ${COLORS.text.weather} whitespace-nowrap`}
+                >
+                  <SunriseIcon className="mr-1 h-[1em] w-[1em]" />
+                  {sunrise}
+                </span>
+                <span className={`mx-1 ${COLORS.text.muted}`}>|</span>
+                <span
+                  className={`flex transform-gpu items-center ${COLORS.text.weather} whitespace-nowrap`}
+                >
+                  <SunsetIcon className="mr-1 h-[1em] w-[1em]" />
+                  {sunset}
+                </span>
+              </div>
+            </SectionWrapper>
+
+            {/* Vertical divider */}
+            <div className="absolute top-[10%] right-0 bottom-[10%] w-px bg-gradient-to-b from-transparent via-gray-300/40 to-transparent dark:via-white/[0.1]"></div>
+          </div>
+
+          {/* Album Art Section - Right Grid Cell */}
+          <div className="relative flex h-full w-full items-center justify-center">
+            <SectionWrapper scale={1.1} alignment="center" padding="1em">
+              <div className="flex h-full w-full flex-col items-center justify-center">
+                <div
+                  className="flex-shrink-0 overflow-hidden rounded-xl bg-gray-200 dark:border dark:border-white/[0.08] dark:bg-black/20"
+                  style={{
+                    width: "82%",
+                    height: "82%",
+                    minWidth: 112,
+                    minHeight: 112,
+                    maxWidth: 320,
+                    maxHeight: 320,
+                  }}
+                >
+                  <img
+                    src={albumArtUrl}
+                    alt={`${songTitle} album art`}
+                    className="h-full w-full object-cover"
+                    loading="lazy"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src =
+                        "/placeholder-album.svg";
+                    }}
+                  />
+                </div>
+                <div className="mt-2 flex w-full flex-col items-center text-center">
+                  <h2
+                    className={`max-w-[10em] truncate overflow-hidden text-base font-semibold text-ellipsis whitespace-nowrap ${COLORS.text.primary} transform-gpu`}
+                    style={{ lineHeight: 1.3 }}
+                  >
+                    {songTitle}
+                  </h2>
+                  <p
+                    className={`max-w-[12em] truncate overflow-hidden text-xs text-ellipsis whitespace-nowrap ${COLORS.text.secondary} transform-gpu`}
+                    style={{ lineHeight: 1.3 }}
+                  >
+                    {artistName}
+                  </p>
+                </div>
+              </div>
+            </SectionWrapper>
+          </div>
+        </div>
+
+        {/* Bottom Section - Music Player and Controls (full width) */}
+        <div className="flex w-full flex-col space-y-4 px-6 pb-6">
+          {/* Spotify Player (full width) */}
+          {user && currentTrack ? (
+            <div className="w-full">
+              <SpotifyWebPlayer className="w-full" showQueueInfo={false} />
+            </div>
+          ) : (
+            <div className="w-full text-center">
+              <div className={cn(TYPOGRAPHY.body.sm, COLORS.text.muted)}>
+                {!user ? "Login to access player" : "No track selected"}
+              </div>
+            </div>
+          )}
+
+          {/* Control Buttons (full width) */}
+          <div className="flex w-full gap-2">
+            <Button
+              variant="ghost"
+              onClick={handleLikeClick}
+              disabled={isLiking}
+              className="opacity-70 hover:opacity-100"
+              aria-label={isLiking ? "Liking..." : "Like track"}
+            >
+              ♡ Like
+            </Button>
+
+            <Button
+              onClick={handleNext}
+              disabled={isLoading || upcomingTracks.length === 0 || !user}
+              variant="outline"
+              className="flex-1"
+            >
+              Next ▷
+            </Button>
+          </div>
+
+          {/* Queue Status */}
+          {upcomingTracks.length > 0 && (
+            <div className="w-full text-center">
+              <p className={cn("text-xs", COLORS.text.muted)}>
+                Queue: {upcomingTracks.length} track
+                {upcomingTracks.length !== 1 ? "s" : ""} ready
+              </p>
+            </div>
+          )}
+
+          {/* Message Display */}
+          {message && (
+            <div
+              className={cn(
+                "w-full rounded-lg border border-white/[0.15] bg-white/[0.07] p-2 text-center text-xs backdrop-blur-xl backdrop-saturate-[1.6] dark:border-white/[0.06] dark:bg-black/[0.15]",
+                COLORS.text.muted,
+              )}
+            >
+              {message}
+            </div>
+          )}
+        </div>
+      </div>
+    </Card>
+  );
+}

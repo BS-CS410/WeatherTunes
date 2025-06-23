@@ -35,15 +35,10 @@ export {
   CARD_STYLES,
   LAYOUT,
   ANIMATIONS,
-  WEATHER_STYLES,
   LIQUID_GLASS_STYLES,
   createLiquidGlassButton,
   createLiquidGlassCard,
-  createErrorWeatherData,
 } from "./design";
 export { fetchWeatherByCoords, getUserLocationAndFetch } from "./weather";
 export { spotifyApi, startSpotifyLogin, getValidAccessToken } from "./music";
 export { queryClient } from "./config";
-
-// Video asset mapping (from data directory)
-export * from "@/data/video-assets";

@@ -1,9 +1,7 @@
 import { LocalStorage } from "@/services/storage";
 import { fetchForecastByCoords } from "@/lib/weather/weather-api";
-import { formatTemperature } from "@/lib";
+import { formatTemperature, getUnitSymbol } from "@/lib";
 import type { TemperatureUnit } from "@/types/units-types";
-import { getTimePeriod } from "@/lib/core";
-import type { TimePeriod } from "@/lib/core";
 
 // Weather condition types and utilities
 export type WeatherType =
@@ -25,9 +23,10 @@ export interface DailyForecast {
   date: string;
   dayName: string;
   condition: string;
-  tempHigh: string;
-  tempLow: string;
+  tempHigh: number;
+  tempLow: number;
   icon: string;
+  unit: string;
 }
 
 export interface ForecastApiResponse {
@@ -176,6 +175,7 @@ export class WeatherService {
         tempHigh: formatTemperature(tempHigh, temperatureUnit),
         tempLow: formatTemperature(tempLow, temperatureUnit),
         icon: primaryCondition.icon,
+        unit: getUnitSymbol(temperatureUnit),
       };
     });
   }
@@ -201,7 +201,7 @@ export class WeatherService {
   }
 
   /**
-   * Caches the forecast data with a timestamp
+   * Caches forecast data with timestamp
    */
   private cacheForecast(key: string, data: ForecastApiResponse): void {
     try {
@@ -215,35 +215,30 @@ export class WeatherService {
   }
 
   /**
-   * Gets the appropriate weather type based on condition string
+   * Maps weather condition strings to our internal weather types
    */
   public getWeatherType(condition?: string): WeatherType {
     if (!condition) return this.DEFAULT_WEATHER;
 
-    const lowerCondition = condition.toLowerCase();
+    const conditionLower = condition.toLowerCase();
 
-    if (lowerCondition.includes("clear")) return "clear";
-    if (lowerCondition.includes("cloud")) return "clouds";
-    if (lowerCondition.includes("rain")) return "rain";
-    if (lowerCondition.includes("snow")) return "snow";
-    if (
-      lowerCondition.includes("fog") ||
-      lowerCondition.includes("mist") ||
-      lowerCondition.includes("haze")
-    ) {
+    if (conditionLower.includes("clear") || conditionLower.includes("sun")) {
+      return "clear";
+    }
+    if (conditionLower.includes("cloud")) {
+      return "clouds";
+    }
+    if (conditionLower.includes("rain") || conditionLower.includes("drizzle")) {
+      return "rain";
+    }
+    if (conditionLower.includes("snow")) {
+      return "snow";
+    }
+    if (conditionLower.includes("fog") || conditionLower.includes("mist")) {
       return "fog";
     }
-    if (
-      lowerCondition.includes("thunder") ||
-      lowerCondition.includes("storm")
-    ) {
+    if (conditionLower.includes("thunder")) {
       return "thunderstorm";
-    }
-    if (
-      lowerCondition.includes("drizzle") ||
-      lowerCondition.includes("shower")
-    ) {
-      return "drizzle";
     }
 
     return this.DEFAULT_WEATHER;

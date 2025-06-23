@@ -12,7 +12,7 @@ import { queryClient } from "./lib";
 import { AppLayout } from "./components";
 import MainPage from "./MainPage";
 import { ErrorBoundary } from "./components/shared/ErrorBoundary";
-import { OAuthCallback } from "./components/auth/OAuthCallback";
+import { OAuthCallback } from "./components/shared/OAuthCallback";
 
 function App() {
   return (

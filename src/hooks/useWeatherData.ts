@@ -2,10 +2,14 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import type {
   WeatherApiResponse,
   EnhancedWeatherState,
+  WeatherDisplayData,
 } from "@/types/weather-types";
-import { getUserLocationAndFetch, createErrorWeatherData } from "@/lib";
-import { getTimePeriod, formatUnixTimeToLocalString } from "@/lib";
-import { formatTemperature } from "@/lib";
+import { getUserLocationAndFetch } from "@/lib";
+import {
+  getTimePeriod,
+  formatUnixTimeToLocalString,
+  formatTemperature,
+} from "@/lib/core";
 import { useSettings } from "@/hooks/common";
 
 // Helper function to format weather condition for display
@@ -41,10 +45,9 @@ export function useWeatherData(): EnhancedWeatherState {
     () => ({
       displayData: {
         location: "Loading...",
-        temperature: "--",
+        temperature: 0,
         condition: "Loading...",
-        unit: `°${settings.temperatureUnit}`,
-        isError: false,
+        unit: settings.temperatureUnit,
       },
       timePeriod: null,
       isLoading: true,
@@ -60,15 +63,20 @@ export function useWeatherData(): EnhancedWeatherState {
   const processWeatherData = useCallback(
     (data: WeatherApiResponse | null, error?: Error) => {
       if (error || !data) {
-        const errorMessage = error?.message || "Failed to fetch weather data";
-        const errorData = createErrorWeatherData(errorMessage);
+        const errorData: WeatherDisplayData = {
+          location: "Unknown Location",
+          temperature: 0,
+          condition: "Error",
+          unit: "imperial",
+          sunrise: "",
+          sunset: "",
+        };
         setWeatherState({
           displayData: {
             location: errorData.location,
-            temperature: "--",
+            temperature: 0,
             condition: errorData.condition,
-            unit: `°${settings.temperatureUnit}`,
-            isError: true,
+            unit: settings.temperatureUnit,
           },
           timePeriod: getTimePeriod(new Date()),
           isLoading: false,
@@ -83,10 +91,9 @@ export function useWeatherData(): EnhancedWeatherState {
         setWeatherState({
           displayData: {
             location: data.name || "Unknown",
-            temperature: "--",
+            temperature: 0,
             condition: "Weather data unavailable",
-            unit: `°${settings.temperatureUnit}`,
-            isError: true,
+            unit: settings.temperatureUnit,
           },
           timePeriod: getTimePeriod(new Date()),
           isLoading: false,
@@ -111,11 +118,7 @@ export function useWeatherData(): EnhancedWeatherState {
             data.weather[0].main,
             data.weather[0].description,
           ),
-          unit:
-            settings.temperatureUnit === "K"
-              ? "K"
-              : `°${settings.temperatureUnit}`,
-          isError: false,
+          unit: settings.temperatureUnit,
           sunrise: formatUnixTimeToLocalString(
             data.sys?.sunrise,
             "en-US", // always use a valid locale
@@ -181,6 +184,3 @@ export function useWeatherData(): EnhancedWeatherState {
 
   return weatherState;
 }
-
-// Export useWeather as an alias for useWeatherData for backward compatibility
-export const useWeather = useWeatherData;

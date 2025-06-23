@@ -3,14 +3,9 @@ import { Search, Music, Plus, Loader2 } from "lucide-react";
 import { useSpotifySearch, useSpotifyQueue } from "@/hooks/spotify";
 import { useAuth } from "@/hooks/useAuth";
 import type { TrackMetadata } from "@/types/queue-types";
-import {
-  COLORS,
-  CARD_STYLES,
-  INPUT_STYLES,
-  BUTTON_STYLES,
-} from "@/lib";
+import { COLORS, CARD_STYLES, INPUT_STYLES, BUTTON_STYLES } from "@/lib";
 import { cn } from "@/lib";
-import { LiquidGlassContainer } from "@/components/liquid-glass";
+import { Card } from "@/components/ui/card";
 
 interface SpotifySearchCardProps {
   className?: string;
@@ -63,23 +58,25 @@ export function SpotifySearchCard({ className = "" }: SpotifySearchCardProps) {
 
   if (!user) {
     return (
-      <div className={cn(CARD_STYLES.interactive, "p-6", className)}>
-        <div className="mb-4 flex items-center gap-3">
-          <Search className="h-5 w-5 text-gray-400 dark:text-gray-300" />
-          <h3 className={cn("text-lg font-semibold", COLORS.text.primary)}>
-            Spotify Search
-          </h3>
+      <Card variant="interactive" className={cn("w-full", className)}>
+        <div className="p-6">
+          <div className="mb-4 flex items-center gap-3">
+            <Search className="h-5 w-5 text-gray-400 dark:text-gray-300" />
+            <h3 className={cn("text-lg font-semibold", COLORS.text.primary)}>
+              Spotify Search
+            </h3>
+          </div>
+          <p className={cn("py-8 text-center", COLORS.text.muted)}>
+            Please log in to search for tracks on Spotify
+          </p>
         </div>
-        <p className={cn("py-8 text-center", COLORS.text.muted)}>
-          Please log in to search for tracks on Spotify
-        </p>
-      </div>
+      </Card>
     );
   }
 
   return (
-    <LiquidGlassContainer variant="enhanced" className={className}>
-      <div className={cn(CARD_STYLES.interactive, "p-6")}>
+    <Card variant="interactive" className={cn("w-full", className)}>
+      <div className="p-6">
         <div className="mb-4 flex items-center gap-3">
           <Search className={cn("h-5 w-5", COLORS.text.secondary)} />
           <h3 className={cn("text-lg font-semibold", COLORS.text.primary)}>
@@ -103,9 +100,10 @@ export function SpotifySearchCard({ className = "" }: SpotifySearchCardProps) {
               placeholder="Search for songs, artists, or albums..."
               className={cn(
                 INPUT_STYLES.base,
+                INPUT_STYLES.glass,
+                INPUT_STYLES.size.md,
                 "flex-1",
-                COLORS.text.secondary,
-                "placeholder-opacity-100 placeholder:!text-inherit",
+                "placeholder-opacity-70",
               )}
               disabled={isSearching}
             />
@@ -113,8 +111,8 @@ export function SpotifySearchCard({ className = "" }: SpotifySearchCardProps) {
               type="submit"
               disabled={isSearching || !searchQuery.trim()}
               className={cn(
-                BUTTON_STYLES.liquidGlass,
-                "px-6 py-2 text-base font-semibold",
+                "rounded-lg px-6 py-2 text-base font-semibold",
+                BUTTON_STYLES.glass.primary,
               )}
             >
               Search
@@ -131,7 +129,7 @@ export function SpotifySearchCard({ className = "" }: SpotifySearchCardProps) {
                 onClick={() => handleMoodSearch(mood)}
                 disabled={isSearching}
                 className={cn(
-                  BUTTON_STYLES.ghost,
+                  BUTTON_STYLES.glass.secondary,
                   "rounded-full px-3 py-1 text-sm capitalize",
                 )}
               >
@@ -219,33 +217,13 @@ export function SpotifySearchCard({ className = "" }: SpotifySearchCardProps) {
         )}
 
         {/* Loading State */}
-        {isSearching && searchResults.length === 0 && !searchError && (
-          <div className="py-8 text-center">
-            <Loader2
-              className="mx-auto mb-2 h-6 w-6 animate-spin"
-              style={{ color: "var(--color-text-secondary)" }}
-            />
-            <p className={cn("text-sm", COLORS.text.muted)}>
-              Searching Spotify...
-            </p>
+        {isSearching && searchResults.length === 0 && (
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="h-6 w-6 animate-spin" />
+            <span className="ml-2 text-sm text-gray-500">Searching...</span>
           </div>
         )}
-
-        {/* Empty State */}
-        {!isSearching &&
-          searchResults.length === 0 &&
-          !searchError &&
-          searchQuery === "" && (
-            <div className="py-8 text-center">
-              <Music
-                className={cn("mx-auto mb-2 h-8 w-8", COLORS.text.secondary)}
-              />
-              <p className={cn("text-sm", COLORS.text.muted)}>
-                Search for tracks or try a mood to discover music
-              </p>
-            </div>
-          )}
       </div>
-    </LiquidGlassContainer>
+    </Card>
   );
 }

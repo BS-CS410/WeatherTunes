@@ -11,10 +11,10 @@ export { useAuth } from "./useAuth";
 
 // Specific feature hooks
 export { useLocationBasedDefaults } from "./useLocationBasedDefaults";
-export { useThemeManager, useThemeFromWeather } from "./useThemeManager";
-export { useWeatherData, useWeather } from "./useWeatherData";
-export { useWeatherQueue } from "./useWeatherQueue";
+export { useThemeManager } from "./useThemeManager";
+export { useWeatherData } from "./useWeatherData";
 export { useWeatherForecast } from "./useWeatherForecast";
+export { useWeatherQueue } from "./useWeatherQueue";
 
 // Consolidated Spotify hooks
 export * from "./spotify";

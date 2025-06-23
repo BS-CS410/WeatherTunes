@@ -5,7 +5,6 @@ import { SettingsService } from "@/services/SettingsService";
 import type {
   TemperatureUnit,
   TimeFormat,
-  SpeedUnit,
   ThemeMode,
 } from "@/types/units-types";
 import type { Settings, LocationDefaults } from "@/services/SettingsService";
@@ -14,7 +13,6 @@ interface SettingsContextType {
   settings: Settings;
   setTemperatureUnit: (unit: TemperatureUnit) => void;
   setTimeFormat: (format: TimeFormat) => void;
-  setSpeedUnit: (unit: SpeedUnit) => void;
   setThemeMode: (mode: ThemeMode) => void;
   toggleTemperatureUnit: () => void;
   toggleTimeFormat: () => void;
@@ -26,7 +24,9 @@ interface SettingsContextType {
 
 export type { SettingsContextType };
 
-const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
+const SettingsContext = createContext<SettingsContextType | undefined>(
+  undefined,
+);
 
 export { SettingsContext };
 
@@ -35,8 +35,11 @@ interface SettingsProviderProps {
 }
 
 export function SettingsProvider({ children }: SettingsProviderProps) {
-  const { locationDefaults, isLoading: locationLoading } = useLocationBasedDefaults();
-  const [settings, setSettings] = useState<Settings>(() => SettingsService.getInstance().getSettings());
+  const { locationDefaults, isLoading: locationLoading } =
+    useLocationBasedDefaults();
+  const [settings, setSettings] = useState<Settings>(() =>
+    SettingsService.getInstance().getSettings(),
+  );
   const [defaultsInitialized, setDefaultsInitialized] = useState(false);
   const settingsService = SettingsService.getInstance();
 
@@ -46,21 +49,18 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
       setSettings(settingsService.getSettings());
     };
 
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, [settingsService]);
 
   // Update defaults when location is determined (only if not already set)
   useEffect(() => {
     if (!locationLoading && locationDefaults && !defaultsInitialized) {
       // Only update if the user hasn't explicitly set their preferences
-      const hasExistingPrefs = 
-        localStorage.getItem('temperatureUnit') ||
-        localStorage.getItem('speedUnit');
+      const hasExistingPrefs = localStorage.getItem("temperatureUnit");
 
       if (!hasExistingPrefs) {
         settingsService.setTemperatureUnit(locationDefaults.temperatureUnit);
-        settingsService.setSpeedUnit(locationDefaults.speedUnit);
         setSettings(settingsService.getSettings());
       }
 
@@ -68,49 +68,51 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
     }
   }, [locationLoading, locationDefaults, defaultsInitialized, settingsService]);
 
-  const setTemperatureUnit = useCallback((unit: TemperatureUnit) => {
-    settingsService.setTemperatureUnit(unit);
-    setSettings(prev => ({ ...prev, temperatureUnit: unit }));
-  }, [settingsService]);
+  const setTemperatureUnit = useCallback(
+    (unit: TemperatureUnit) => {
+      settingsService.setTemperatureUnit(unit);
+      setSettings((prev) => ({ ...prev, temperatureUnit: unit }));
+    },
+    [settingsService],
+  );
 
-  const setTimeFormat = useCallback((format: TimeFormat) => {
-    settingsService.setTimeFormat(format);
-    setSettings(prev => ({ ...prev, timeFormat: format }));
-  }, [settingsService]);
+  const setTimeFormat = useCallback(
+    (format: TimeFormat) => {
+      settingsService.setTimeFormat(format);
+      setSettings((prev) => ({ ...prev, timeFormat: format }));
+    },
+    [settingsService],
+  );
 
-  const setSpeedUnit = useCallback((unit: SpeedUnit) => {
-    settingsService.setSpeedUnit(unit);
-    setSettings(prev => ({ ...prev, speedUnit: unit }));
-  }, [settingsService]);
-
-  const setThemeMode = useCallback((mode: ThemeMode) => {
-    settingsService.setThemeMode(mode);
-    setSettings(prev => ({ ...prev, themeMode: mode }));
-  }, [settingsService]);
+  const setThemeMode = useCallback(
+    (mode: ThemeMode) => {
+      settingsService.setThemeMode(mode);
+      setSettings((prev) => ({ ...prev, themeMode: mode }));
+    },
+    [settingsService],
+  );
 
   const toggleTemperatureUnit = useCallback(() => {
     const newUnit = settingsService.toggleTemperatureUnit();
-    setSettings(prev => ({ ...prev, temperatureUnit: newUnit }));
+    setSettings((prev) => ({ ...prev, temperatureUnit: newUnit }));
   }, [settingsService]);
 
   const toggleTimeFormat = useCallback(() => {
     const newFormat = settingsService.toggleTimeFormat();
-    setSettings(prev => ({ ...prev, timeFormat: newFormat }));
+    setSettings((prev) => ({ ...prev, timeFormat: newFormat }));
   }, [settingsService]);
 
   const resetToDefaults = useCallback(() => {
     const defaults = locationDefaults || {
-      temperatureUnit: 'F',
-      speedUnit: 'mph',
+      temperatureUnit: "metric",
     };
-    
+
     settingsService.resetToDefaults({
       temperatureUnit: defaults.temperatureUnit,
-      speedUnit: defaults.speedUnit,
-      timeFormat: '12h',
-      themeMode: 'auto',
+      timeFormat: "12h",
+      themeMode: "auto",
     });
-    
+
     setSettings(settingsService.getSettings());
   }, [locationDefaults, settingsService]);
 
@@ -120,7 +122,6 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
         settings,
         setTemperatureUnit,
         setTimeFormat,
-        setSpeedUnit,
         setThemeMode,
         toggleTemperatureUnit,
         toggleTimeFormat,

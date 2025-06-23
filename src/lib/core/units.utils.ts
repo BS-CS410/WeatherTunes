@@ -2,16 +2,13 @@
  * Unit conversion utilities for temperature, speed, etc.
  */
 
-import type { TemperatureUnit, SpeedUnit } from "@/types/units-types";
+import type { TemperatureUnit } from "@/types/units-types";
 
 /**
  * Default unit settings based on country
  */
 export interface UnitDefaults {
   temperatureUnit: TemperatureUnit;
-  speedUnit: SpeedUnit;
-  pressure: "hpa" | "inhg" | "mmhg";
-  distance: "km" | "mi";
 }
 
 /**
@@ -25,10 +22,7 @@ export function getDefaultUnitsForCountry(countryCode?: string): UnitDefaults {
     countryCode && imperialCountries.includes(countryCode.toUpperCase());
 
   return {
-    temperatureUnit: useImperial ? "F" : "C",
-    speedUnit: useImperial ? "mph" : "kmh",
-    pressure: "hpa", // Most commonly used worldwide
-    distance: useImperial ? "mi" : "km",
+    temperatureUnit: useImperial ? "imperial" : "metric",
   };
 }
 
@@ -45,10 +39,10 @@ export function convertTemperature(
   // Convert to Celsius first
   let celsius: number;
   switch (from) {
-    case "F":
+    case "imperial":
       celsius = ((temp - 32) * 5) / 9;
       break;
-    case "K":
+    case "standard":
       celsius = temp - 273.15;
       break;
     default:
@@ -57,9 +51,9 @@ export function convertTemperature(
 
   // Convert from Celsius to target
   switch (to) {
-    case "F":
+    case "imperial":
       return (celsius * 9) / 5 + 32;
-    case "K":
+    case "standard":
       return celsius + 273.15;
     default:
       return celsius;
@@ -67,63 +61,105 @@ export function convertTemperature(
 }
 
 /**
- * Convert wind speed between units
+ * Converts Kelvin to Celsius.
+ * @param kelvin - Temperature in Kelvin.
+ * @returns Temperature in Celsius.
  */
-export function convertSpeed(
-  speed: number,
-  from: SpeedUnit,
-  to: SpeedUnit,
+export function kelvinToCelsius(kelvin: number): number {
+  return kelvin - 273.15;
+}
+
+/**
+ * Converts Kelvin to Fahrenheit.
+ * @param kelvin - Temperature in Kelvin.
+ * @returns Temperature in Fahrenheit.
+ */
+export function kelvinToFahrenheit(kelvin: number): number {
+  return (kelvin - 273.15) * (9 / 5) + 32;
+}
+
+/**
+ * Returns the numeric temperature value for a given unit.
+ * @param kelvin - The temperature in Kelvin from the API.
+ * @param unit - The target unit ('imperial' for °F, 'metric' for °C, 'standard' for K).
+ * @returns The rounded numeric temperature.
+ */
+export function formatTemperature(
+  kelvin: number,
+  unit: TemperatureUnit,
 ): number {
-  if (from === to) return speed;
-
-  // Convert to m/s first
-  let ms: number;
-  switch (from) {
-    case "mph":
-      ms = speed * 0.44704;
-      break;
-    case "kmh":
-      ms = speed * 0.277778;
-      break;
-    default:
-      ms = speed;
+  if (unit === "imperial") {
+    return Math.round(kelvinToFahrenheit(kelvin));
   }
+  if (unit === "metric") {
+    return Math.round(kelvinToCelsius(kelvin));
+  }
+  return Math.round(kelvin);
+}
 
-  // Convert from m/s to target
-  switch (to) {
-    case "mph":
-      return ms * 2.237;
-    case "kmh":
-      return ms * 3.6;
+/**
+ * Returns the display symbol for a given temperature unit.
+ * @param unit - The temperature unit.
+ * @returns The corresponding symbol ('F', 'C', or 'K').
+ */
+export function getUnitSymbol(unit: TemperatureUnit): string {
+  switch (unit) {
+    case "imperial":
+      return "F";
+    case "metric":
+      return "C";
+    case "standard":
     default:
-      return ms;
+      return "K";
   }
 }
 
 /**
  * Format temperature with unit
  */
-export function formatTemperature(
+export function formatTemperatureWithUnit(
   temp: number,
   unit: TemperatureUnit,
   decimals = 0,
 ): string {
-  const symbol = unit === "K" ? "K" : `°${unit}`;
+  const symbol = getUnitSymbol(unit);
   return `${temp.toFixed(decimals)}${symbol}`;
 }
 
 /**
- * Format wind speed with unit
+ * Formats a Unix timestamp into a human-readable time string.
+ * @param unixTimestamp - The Unix timestamp in seconds.
+ * @param timezone - The IANA timezone name (e.g., 'America/New_York').
+ * @returns Formatted time string (e.g., "5:30 PM").
  */
-export function formatSpeed(
-  speed: number,
-  unit: SpeedUnit,
-  decimals = 1,
+export function formatUnixTime(
+  unixTimestamp: number,
+  timezone: string,
 ): string {
-  const labels = {
-    mph: "mph",
-    kmh: "km/h",
-    ms: "m/s",
-  };
-  return `${speed.toFixed(decimals)} ${labels[unit]}`;
+  return new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
+    timeZone: timezone,
+  }).format(new Date(unixTimestamp * 1000));
+}
+
+/**
+ * Formats a date from a forecast into a short month/day format.
+ * @param date - The date string from the weather forecast.
+ * @returns Formatted date string (e.g., "Jul 23").
+ */
+export function formatDate(date: string): string {
+  const d = new Date(date);
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
+/**
+ * Formats a date from a forecast into a day of the week.
+ * @param date - The date string from the weather forecast.
+ * @returns The abbreviated day of the week (e.g., "Mon").
+ */
+export function formatDay(date: string): string {
+  const d = new Date(date);
+  return d.toLocaleDateString("en-US", { weekday: "short" });
 }
