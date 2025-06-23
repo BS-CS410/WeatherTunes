@@ -5,48 +5,10 @@
 import { useWeatherData } from "./useWeatherData";
 import { useCallback } from "react";
 import { useSpotifyQueue, useSpotifyService } from "./spotify";
+import { useWeatherTime, useWeatherUtils } from "./common";
 import type { TrackMetadata } from "@/types/queue-types";
 import type { Track, RecommendationTrack } from "@/types/spotify-api-types";
 import { getVideoForCondition } from "@/data/video-assets";
-
-// Helper function to get tempo based on temperature
-function getTempoForTemperature(temperature: number): number {
-  // Warmer temperatures get higher tempo (BPM)
-  return Math.min(Math.max(60, Math.round(temperature * 2)), 180);
-}
-
-// Helper function to get genres based on weather and time of day
-function getGenresForWeather(condition: string, timeOfDay: string): string[] {
-  const conditionLower = condition.toLowerCase();
-  const isDaytime = ["morning", "afternoon"].includes(timeOfDay);
-
-  if (conditionLower.includes("rain") || conditionLower.includes("drizzle")) {
-    return isDaytime
-      ? ["chill", "acoustic", "piano"]
-      : ["rainy-day", "ambient", "sleep"];
-  }
-
-  if (conditionLower.includes("snow") || conditionLower.includes("sleet")) {
-    return ["winter", "christmas", "holidays"];
-  }
-
-  if (conditionLower.includes("sun") || conditionLower.includes("clear")) {
-    return isDaytime
-      ? ["pop", "indie-pop", "summer"]
-      : ["chill", "indie", "acoustic"];
-  }
-
-  if (conditionLower.includes("cloud") || conditionLower.includes("overcast")) {
-    return ["indie", "alternative", "indie-pop"];
-  }
-
-  if (conditionLower.includes("thunder") || conditionLower.includes("storm")) {
-    return ["rock", "alternative", "hard-rock"];
-  }
-
-  // Default genres
-  return ["pop", "indie", "chill"];
-}
 
 interface UseWeatherQueueReturn {
   generateWeatherQueue: (count?: number) => Promise<TrackMetadata[]>;
@@ -60,6 +22,8 @@ export function useWeatherQueue(): UseWeatherQueueReturn {
   const weatherState = useWeatherData();
   const { replaceQueue } = useSpotifyQueue();
   const spotifyService = useSpotifyService();
+  const { getCurrentTimeOfDay } = useWeatherTime();
+  const { getGenresForWeather, getTempoForTemperature } = useWeatherUtils();
 
   // Extract stable values to avoid unnecessary re-renders
   const condition = weatherState.displayData?.condition || "clear sky";
@@ -150,7 +114,14 @@ export function useWeatherQueue(): UseWeatherQueueReturn {
         return [];
       }
     },
-    [condition, temperature, spotifyService],
+    [
+      condition,
+      temperature,
+      spotifyService,
+      getCurrentTimeOfDay,
+      getGenresForWeather,
+      getTempoForTemperature,
+    ],
   );
 
   const replaceQueueWithWeatherTracks = useCallback(
@@ -167,18 +138,6 @@ export function useWeatherQueue(): UseWeatherQueueReturn {
     generateWeatherQueue,
     replaceQueueWithWeatherTracks,
   };
-}
-
-/**
- * Get current time of day
- */
-function getCurrentTimeOfDay(): "morning" | "afternoon" | "evening" | "night" {
-  const hour = new Date().getHours();
-
-  if (hour >= 6 && hour < 12) return "morning";
-  if (hour >= 12 && hour < 17) return "afternoon";
-  if (hour >= 17 && hour < 21) return "evening";
-  return "night";
 }
 
 /**

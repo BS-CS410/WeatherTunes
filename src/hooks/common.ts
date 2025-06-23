@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import { SettingsContext } from "@/contexts/SettingsProvider";
+import { ServiceContext } from "@/contexts/ServiceContext";
 
 /**
  * Consolidated hooks utility file
@@ -8,7 +9,6 @@ import { SettingsContext } from "@/contexts/SettingsProvider";
 
 // === SETTINGS HOOKS ===
 
-
 /**
  * Hook for accessing settings context
  */
@@ -16,6 +16,19 @@ export function useSettings() {
   const context = useContext(SettingsContext);
   if (context === undefined) {
     throw new Error("useSettings must be used within a SettingsProvider");
+  }
+  return context;
+}
+
+// === SERVICE HOOKS ===
+
+/**
+ * Hook for accessing service context - consolidated with other common hooks
+ */
+export function useServices() {
+  const context = useContext(ServiceContext);
+  if (!context) {
+    throw new Error("useServices must be used within a ServiceProvider");
   }
   return context;
 }
@@ -89,4 +102,85 @@ export function useToggle(initialValue = false) {
   const setFalse = () => setValue(false);
 
   return { value, toggle, setTrue, setFalse, setValue };
+}
+
+// === WEATHER UTILITY HOOKS ===
+
+/**
+ * Hook for weather-based time calculations
+ */
+export function useWeatherTime() {
+  const getCurrentTimeOfDay = () => {
+    const hour = new Date().getHours();
+    if (hour >= 6 && hour < 12) return "morning";
+    if (hour >= 12 && hour < 17) return "afternoon";
+    if (hour >= 17 && hour < 21) return "evening";
+    return "night";
+  };
+
+  return { getCurrentTimeOfDay };
+}
+
+/**
+ * Hook for weather condition utilities
+ */
+export function useWeatherUtils() {
+  const formatWeatherCondition = (
+    condition: string,
+    description?: string,
+  ): string => {
+    const displayCondition = description || condition;
+    if (!displayCondition || displayCondition.trim() === "") {
+      return "Unknown";
+    }
+    return (
+      displayCondition.charAt(0).toUpperCase() +
+      displayCondition.slice(1).toLowerCase()
+    );
+  };
+
+  const getTempoForTemperature = (temperature: number): number => {
+    return Math.min(Math.max(60, Math.round(temperature * 2)), 180);
+  };
+
+  const getGenresForWeather = (
+    condition: string,
+    timeOfDay: string,
+  ): string[] => {
+    const conditionLower = condition.toLowerCase();
+    const isDaytime = ["morning", "afternoon"].includes(timeOfDay);
+
+    if (conditionLower.includes("rain") || conditionLower.includes("drizzle")) {
+      return isDaytime
+        ? ["chill", "acoustic", "piano"]
+        : ["rainy-day", "ambient", "sleep"];
+    }
+    if (conditionLower.includes("snow") || conditionLower.includes("sleet")) {
+      return ["winter", "christmas", "holidays"];
+    }
+    if (conditionLower.includes("sun") || conditionLower.includes("clear")) {
+      return isDaytime
+        ? ["pop", "indie-pop", "summer"]
+        : ["chill", "indie", "acoustic"];
+    }
+    if (
+      conditionLower.includes("cloud") ||
+      conditionLower.includes("overcast")
+    ) {
+      return ["indie", "alternative", "indie-pop"];
+    }
+    if (
+      conditionLower.includes("thunder") ||
+      conditionLower.includes("storm")
+    ) {
+      return ["rock", "alternative", "hard-rock"];
+    }
+    return ["pop", "indie", "chill"];
+  };
+
+  return {
+    formatWeatherCondition,
+    getTempoForTemperature,
+    getGenresForWeather,
+  };
 }

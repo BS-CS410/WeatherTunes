@@ -21,12 +21,14 @@ export type User = {
 
 const TOKEN_STORAGE_KEY = "spotify_auth_tokens";
 const CODE_VERIFIER_KEY = "spotify_code_verifier";
+const STATE_KEY = "spotify_auth_state";
 
 export class AuthService {
   private clientId: string;
   private redirectUri: string;
   private scopes: string[];
   private refreshPromise: Promise<TokenData | null> | null = null;
+  private isProcessingCallback = false;
 
   constructor() {
     this.clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
@@ -42,15 +44,16 @@ export class AuthService {
   }
 
   async initiateLogin(): Promise<void> {
-    return this.startLogin();
-  }
+    // Clear any existing callback processing state
+    this.isProcessingCallback = false;
 
-  async startLogin(): Promise<void> {
     const codeVerifier = generateRandomString(64);
     const codeChallenge = await generateCodeChallenge(codeVerifier);
+    const state = generateRandomString(16);
 
-    // Store code verifier for the callback
+    // Store verifier and state for the callback
     localStorage.setItem(CODE_VERIFIER_KEY, codeVerifier);
+    localStorage.setItem(STATE_KEY, state);
 
     const params = new URLSearchParams({
       client_id: this.clientId,
@@ -59,39 +62,67 @@ export class AuthService {
       code_challenge_method: "S256",
       code_challenge: codeChallenge,
       scope: this.scopes.join(" "),
+      state: state,
     });
 
     window.location.href = `https://accounts.spotify.com/authorize?${params.toString()}`;
   }
 
-  async handleCallback(params: { code: string; state: string }): Promise<void> {
-    // The state parameter is not used but kept for future validation if needed
-    const { code } = params;
-    const codeVerifier = localStorage.getItem(CODE_VERIFIER_KEY);
-
-    if (!codeVerifier) {
-      throw new Error("No code verifier found in local storage");
+  async handleRedirectCallback(): Promise<void> {
+    // Prevent multiple simultaneous callback processing
+    if (this.isProcessingCallback) {
+      console.warn("Callback already being processed, skipping duplicate call");
+      return;
     }
 
-    // Exchange the authorization code for an access token
-    await this.exchangeCodeForToken(code, codeVerifier);
-  }
+    this.isProcessingCallback = true;
 
-  async handleCallbackFromUrl(): Promise<void> {
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get("code");
-    const state = params.get("state");
-    const error = params.get("error");
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get("code");
+      const receivedState = params.get("state");
+      const error = params.get("error");
 
-    if (error) {
-      throw new Error(`Spotify auth error: ${error}`);
+      // Retrieve stored state and verifier
+      const storedState = localStorage.getItem(STATE_KEY);
+      const codeVerifier = localStorage.getItem(CODE_VERIFIER_KEY);
+
+      if (error) {
+        // Clean up stored values on error
+        localStorage.removeItem(STATE_KEY);
+        localStorage.removeItem(CODE_VERIFIER_KEY);
+        throw new Error(`Spotify auth error: ${error}`);
+      }
+
+      if (!receivedState || receivedState !== storedState) {
+        // Clean up stored values on state mismatch
+        localStorage.removeItem(STATE_KEY);
+        localStorage.removeItem(CODE_VERIFIER_KEY);
+        throw new Error("State mismatch error. Potential CSRF attack.");
+      }
+
+      if (!code) {
+        // Clean up stored values on missing code
+        localStorage.removeItem(STATE_KEY);
+        localStorage.removeItem(CODE_VERIFIER_KEY);
+        throw new Error("Missing required 'code' authentication parameter.");
+      }
+
+      if (!codeVerifier) {
+        // Clean up stored values on missing verifier
+        localStorage.removeItem(STATE_KEY);
+        localStorage.removeItem(CODE_VERIFIER_KEY);
+        throw new Error("No code verifier found in local storage.");
+      }
+
+      // Clean up state after successful validation
+      localStorage.removeItem(STATE_KEY);
+
+      // Exchange the authorization code for an access token
+      await this.exchangeCodeForToken(code, codeVerifier);
+    } finally {
+      this.isProcessingCallback = false;
     }
-
-    if (!code || !state) {
-      throw new Error("Missing required authentication parameters");
-    }
-
-    return this.handleCallback({ code, state });
   }
 
   async exchangeCodeForToken(
@@ -169,23 +200,25 @@ export class AuthService {
     return this.refreshToken(tokens.refreshToken);
   }
 
-  async getUser(): Promise<User> {
-    const tokens = this.getTokens();
-    if (!tokens) {
-      throw new Error("Not authenticated");
+  async getUser(): Promise<User | null> {
+    try {
+      const accessToken = await this.getAccessToken();
+      const response = await fetch("https://api.spotify.com/v1/me", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch user data: ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Failed to get user:", error);
+      this.logout(); // Clear tokens on failure
+      return null;
     }
-
-    const response = await fetch("https://api.spotify.com/v1/me", {
-      headers: {
-        Authorization: `Bearer ${tokens.accessToken}`,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch user data");
-    }
-
-    return response.json();
   }
 
   private async refreshAccessToken(refreshToken: string): Promise<TokenData> {
@@ -253,9 +286,26 @@ export class AuthService {
     return this.getTokens();
   }
 
-  isAuthenticated(): boolean {
+  async isAuthenticated(): Promise<boolean> {
     const tokens = this.getTokens();
-    return tokens !== null && Date.now() < tokens.expiresAt;
+    if (!tokens) {
+      return false;
+    }
+
+    // If token is still valid, no need to refresh
+    if (Date.now() < tokens.expiresAt - 60000) {
+      return true;
+    }
+
+    // If token is expired, try to refresh it
+    try {
+      await this.refreshAccessToken(tokens.refreshToken);
+      return true; // Refresh was successful
+    } catch (error) {
+      console.error("Token refresh failed, user needs to log in again.", error);
+      this.logout(); // Clear tokens and log out user
+      return false; // Refresh failed
+    }
   }
 
   logout(): void {

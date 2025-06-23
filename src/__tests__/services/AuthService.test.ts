@@ -1,8 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { AuthService } from "../../services/AuthService";
 
+// Mock utilities and global fetch
 vi.mock("../../lib/core/crypto.utils", () => ({
-  generateRandomString: vi.fn().mockReturnValue("test_code_verifier"),
+  generateRandomString: vi
+    .fn()
+    .mockReturnValueOnce("test_code_verifier")
+    .mockReturnValueOnce("test_state"),
   generateCodeChallenge: vi.fn().mockResolvedValue("test_code_challenge"),
 }));
 
@@ -10,6 +14,7 @@ global.fetch = vi.fn();
 
 const TOKEN_STORAGE_KEY = "spotify_auth_tokens";
 const CODE_VERIFIER_KEY = "spotify_code_verifier";
+const STATE_KEY = "spotify_auth_state";
 
 function setTokens(tokens: Record<string, unknown>) {
   window.localStorage.setItem(TOKEN_STORAGE_KEY, JSON.stringify(tokens));
@@ -28,11 +33,20 @@ describe("AuthService", () => {
     authService = new AuthService();
   });
 
-  it("calls localStorage.setItem with the code verifier during login", async () => {
-    await authService.startLogin();
+  it("initiateLogin calls localStorage.setItem with the code verifier and state", async () => {
+    // Mock window.location.href to prevent navigation
+    Object.defineProperty(window, "location", {
+      value: { href: "" },
+      writable: true,
+    });
+    await authService.initiateLogin();
     expect(window.localStorage.setItem).toHaveBeenCalledWith(
       CODE_VERIFIER_KEY,
-      expect.any(String),
+      "test_code_verifier",
+    );
+    expect(window.localStorage.setItem).toHaveBeenCalledWith(
+      STATE_KEY,
+      "test_state",
     );
   });
 
@@ -43,29 +57,34 @@ describe("AuthService", () => {
       expiresAt: Date.now() + 10000,
     };
     setTokens(tokens);
-    expect(authService["getTokens"]()).toEqual(tokens);
+    // @ts-expect-error testing private method
+    expect(authService.getTokens()).toEqual(tokens);
   });
 
-  it("returns false for isAuthenticated if no tokens", () => {
-    expect(authService.isAuthenticated()).toBe(false);
+  it("returns false for isAuthenticated if no tokens", async () => {
+    await expect(authService.isAuthenticated()).resolves.toBe(false);
   });
 
-  it("returns false for isAuthenticated if token expired", () => {
+  it("returns false for isAuthenticated if token expired and refresh fails", async () => {
     setTokens({
       accessToken: "a",
       refreshToken: "r",
       expiresAt: Date.now() - 1000,
     });
-    expect(authService.isAuthenticated()).toBe(false);
+    // @ts-expect-error testing private method
+    vi.spyOn(authService, "refreshAccessToken").mockRejectedValue(
+      new Error("Refresh failed"),
+    );
+    await expect(authService.isAuthenticated()).resolves.toBe(false);
   });
 
-  it("returns true for isAuthenticated if token valid", () => {
+  it("returns true for isAuthenticated if token is valid", async () => {
     setTokens({
       accessToken: "a",
       refreshToken: "r",
-      expiresAt: Date.now() + 10000,
+      expiresAt: Date.now() + 3600 * 1000, // 1 hour
     });
-    expect(authService.isAuthenticated()).toBe(true);
+    await expect(authService.isAuthenticated()).resolves.toBe(true);
   });
 
   it("logout clears tokens", () => {
@@ -101,7 +120,7 @@ describe("AuthService", () => {
       refreshToken: "r",
       expiresAt: Date.now() - 1000,
     });
-    // @ts-expect-error: Testing error conditions
+    // @ts-expect-error: Testing private method
     vi.spyOn(authService, "refreshTokens").mockResolvedValue({
       accessToken: "new",
       refreshToken: "r",
@@ -116,7 +135,7 @@ describe("AuthService", () => {
       refreshToken: "r",
       expiresAt: Date.now() - 1000,
     });
-    // @ts-expect-error: Testing error conditions
+    // @ts-expect-error: Testing private method
     vi.spyOn(authService, "refreshTokens").mockRejectedValue(new Error("fail"));
     await expect(authService.getAccessToken()).rejects.toThrow(
       "Failed to refresh access token",
@@ -142,7 +161,7 @@ describe("AuthService", () => {
       refreshToken: "r",
       expiresAt: Date.now() - 1000,
     });
-    // @ts-expect-error: Testing error conditions
+    // @ts-expect-error: Testing private method
     vi.spyOn(authService, "refreshToken").mockResolvedValue("new");
     await expect(authService.getAccessTokenSafe()).resolves.toBe("new");
   });
@@ -174,69 +193,58 @@ describe("AuthService", () => {
     );
   });
 
-  it("handleCallback throws if no code verifier", async () => {
-    window.localStorage.removeItem(CODE_VERIFIER_KEY);
-    await expect(
-      authService.handleCallback({ code: "c", state: "s" }),
-    ).rejects.toThrow("No code verifier found");
-  });
+  describe("handleRedirectCallback", () => {
+    beforeEach(() => {
+      Object.defineProperty(window, "location", {
+        value: { search: "" },
+        writable: true,
+      });
+      localStorage.setItem(STATE_KEY, "test_state");
+      localStorage.setItem(CODE_VERIFIER_KEY, "test_verifier");
+    });
 
-  it("handleCallback calls exchangeCodeForToken", async () => {
-    window.localStorage.setItem(CODE_VERIFIER_KEY, "ver");
-    vi.spyOn(authService, "exchangeCodeForToken").mockResolvedValue({
-      accessToken: "a",
-      refreshToken: "r",
-      expiresAt: Date.now(),
+    it("throws if error param is present", async () => {
+      window.location.search = "?error=access_denied";
+      await expect(authService.handleRedirectCallback()).rejects.toThrow(
+        "Spotify auth error: access_denied",
+      );
     });
-    await authService.handleCallback({ code: "c", state: "s" });
-    expect(authService.exchangeCodeForToken).toHaveBeenCalledWith("c", "ver");
-  });
 
-  it("handleCallbackFromUrl throws if error param", async () => {
-    const orig = window.location.search;
-    Object.defineProperty(window, "location", {
-      value: { search: "?error=fail" },
-      writable: true,
+    it("throws if state does not match", async () => {
+      window.location.search = "?code=test_code&state=wrong_state";
+      await expect(authService.handleRedirectCallback()).rejects.toThrow(
+        "State mismatch error. Potential CSRF attack.",
+      );
     });
-    await expect(authService.handleCallbackFromUrl()).rejects.toThrow(
-      "Spotify auth error: fail",
-    );
-    Object.defineProperty(window, "location", {
-      value: { search: orig },
-      writable: true,
-    });
-  });
 
-  it("handleCallbackFromUrl throws if missing code or state", async () => {
-    const orig = window.location.search;
-    Object.defineProperty(window, "location", {
-      value: { search: "?code=abc" },
-      writable: true,
+    it("throws if code is missing", async () => {
+      window.location.search = "?state=test_state";
+      await expect(authService.handleRedirectCallback()).rejects.toThrow(
+        "Missing required 'code' authentication parameter.",
+      );
     });
-    await expect(authService.handleCallbackFromUrl()).rejects.toThrow(
-      "Missing required authentication parameters",
-    );
-    Object.defineProperty(window, "location", {
-      value: { search: orig },
-      writable: true,
-    });
-  });
 
-  it("handleCallbackFromUrl calls handleCallback", async () => {
-    const orig = window.location.search;
-    Object.defineProperty(window, "location", {
-      value: { search: "?code=c&state=s" },
-      writable: true,
+    it("throws if code verifier is missing", async () => {
+      window.location.search = "?code=test_code&state=test_state";
+      localStorage.removeItem(CODE_VERIFIER_KEY);
+      await expect(authService.handleRedirectCallback()).rejects.toThrow(
+        "No code verifier found in local storage.",
+      );
     });
-    vi.spyOn(authService, "handleCallback").mockResolvedValue();
-    await authService.handleCallbackFromUrl();
-    expect(authService.handleCallback).toHaveBeenCalledWith({
-      code: "c",
-      state: "s",
-    });
-    Object.defineProperty(window, "location", {
-      value: { search: orig },
-      writable: true,
+
+    it("calls exchangeCodeForToken on success", async () => {
+      window.location.search = "?code=test_code&state=test_state";
+      const exchangeSpy = vi
+        .spyOn(authService, "exchangeCodeForToken")
+        .mockResolvedValue({
+          accessToken: "a",
+          refreshToken: "r",
+          expiresAt: Date.now(),
+        });
+
+      await authService.handleRedirectCallback();
+
+      expect(exchangeSpy).toHaveBeenCalledWith("test_code", "test_verifier");
     });
   });
 });

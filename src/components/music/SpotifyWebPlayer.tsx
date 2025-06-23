@@ -28,7 +28,7 @@ export const SpotifyWebPlayer: React.FC<SpotifyWebPlayerProps> = ({
   showQueueInfo = true,
 }) => {
   const { state, controls, initialize } = useSpotifyPlayer();
-  const { user, login } = useAuth();
+  const { user, login, isAuthenticated, isLoading: isAuthLoading } = useAuth();
 
   // Get queue data from Spotify queue hook
   const { currentTrack, upcomingTracks, playNext } = useSpotifyQueue();
@@ -62,16 +62,14 @@ export const SpotifyWebPlayer: React.FC<SpotifyWebPlayerProps> = ({
    * Initialize player on mount
    */
   useEffect(() => {
-    if (!isInitialized && user) {
+    // Initialize player only when authenticated and not loading
+    if (isAuthenticated && !isAuthLoading && !isInitialized) {
       setAuthError(null);
       initialize()
         .then((success) => {
           setIsInitialized(success);
-          if (!success) {
-            // User check is already handled by useAuth hook
-            if (!user) {
-              setAuthError("Authentication expired. Please log in again.");
-            }
+          if (!success && !isAuthenticated) {
+            setAuthError("Authentication expired. Please log in again.");
           }
         })
         .catch((error) => {
@@ -90,7 +88,7 @@ export const SpotifyWebPlayer: React.FC<SpotifyWebPlayerProps> = ({
           }
         });
     }
-  }, [isInitialized, initialize, user]);
+  }, [isInitialized, initialize, isAuthenticated, isAuthLoading]);
 
   /**
    * Handle track advancement when song ends

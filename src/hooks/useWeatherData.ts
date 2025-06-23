@@ -4,16 +4,13 @@ import type {
   EnhancedWeatherState,
 } from "@/types/weather-types";
 import { getUserLocationAndFetch, createErrorWeatherData } from "@/lib";
-import {
-  getTimePeriod,
-  formatUnixTimeToLocalString,
-  type TimePeriod,
-} from "@/lib";
+import { getTimePeriod, formatUnixTimeToLocalString } from "@/lib";
 import { formatTemperature } from "@/lib";
-import { useSettings } from "@/hooks";
+import { useSettings } from "@/hooks/common";
 
 // Helper function to format weather condition for display
-function formatWeatherCondition(
+// Moved to common.ts - keeping here for backward compatibility
+function formatWeatherConditionLocal(
   condition: string,
   description?: string,
 ): string {
@@ -35,8 +32,9 @@ function formatWeatherCondition(
 /**
  * Unified weather data hook with enhanced error handling and memoization
  * Manages weather API calls, processing, and state management
+ * @returns EnhancedWeatherState with TimePeriod information
  */
-export function useWeatherData() {
+export function useWeatherData(): EnhancedWeatherState {
   const { settings } = useSettings();
 
   const initialState = useMemo<EnhancedWeatherState>(
@@ -109,7 +107,7 @@ export function useWeatherData() {
             data.main.temp,
             settings.temperatureUnit,
           ),
-          condition: formatWeatherCondition(
+          condition: formatWeatherConditionLocal(
             data.weather[0].main,
             data.weather[0].description,
           ),
@@ -186,20 +184,3 @@ export function useWeatherData() {
 
 // Export useWeather as an alias for useWeatherData for backward compatibility
 export const useWeather = useWeatherData;
-
-/**
- * Hook for managing theme based on weather time period
- * Separated for single responsibility and optional usage
- */
-export function useThemeFromWeather(timePeriod: TimePeriod | null) {
-  useEffect(() => {
-    if (!timePeriod) return;
-
-    const root = window.document.documentElement;
-    if (timePeriod === "evening" || timePeriod === "night") {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
-  }, [timePeriod]);
-}

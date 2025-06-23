@@ -5,7 +5,7 @@
 
 import * as React from "react";
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { useServices } from "../hooks/useServices";
+import { useServices } from "../hooks/common";
 import type { User } from "@/services/AuthService";
 
 // === AUTH CONTEXT TYPES ===
@@ -85,21 +85,7 @@ export function AuthProvider({
   const handleCallback = useCallback(async (): Promise<boolean> => {
     setState((prev) => ({ ...prev, isLoading: true, error: null }));
     try {
-      // Extract the code from the URL query parameters
-      const params = new URLSearchParams(window.location.search);
-      const code = params.get("code");
-      const state = params.get("state");
-      const error = params.get("error");
-
-      if (error) {
-        throw new Error(error);
-      }
-
-      if (!code || !state) {
-        throw new Error("Missing required authentication parameters");
-      }
-
-      await auth.handleCallback({ code, state });
+      await auth.handleRedirectCallback();
       const user = await auth.getUser();
 
       // Clear the URL parameters after successful authentication

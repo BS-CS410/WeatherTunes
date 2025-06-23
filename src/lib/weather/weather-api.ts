@@ -30,7 +30,11 @@ export function getUserLocationAndFetch(
 ): Promise<WeatherApiResponse> {
   return new Promise<WeatherApiResponse>((resolve, reject) => {
     if (!navigator.geolocation) {
-      return reject(new Error("Geolocation not supported"));
+      // Geolocation not supported, fallback to default coordinates
+      fetchWeatherByCoords(FALLBACK_COORDS.lat, FALLBACK_COORDS.lon, apiKey)
+        .then(resolve)
+        .catch(reject);
+      return;
     }
 
     navigator.geolocation.getCurrentPosition(
@@ -43,7 +47,7 @@ export function getUserLocationAndFetch(
         }
       },
       () => {
-        // fallback to Bellevue coordinates and hope no one notices
+        // Geolocation failed, fallback to default coordinates
         fetchWeatherByCoords(FALLBACK_COORDS.lat, FALLBACK_COORDS.lon, apiKey)
           .then(resolve)
           .catch(reject);
@@ -72,7 +76,11 @@ export function getUserLocationAndFetchForecast(
 ): Promise<ForecastApiResponse> {
   return new Promise<ForecastApiResponse>((resolve, reject) => {
     if (!navigator.geolocation) {
-      return reject(new Error("Geolocation not supported"));
+      // Geolocation not supported, fallback to default coordinates
+      fetchForecastByCoords(FALLBACK_COORDS.lat, FALLBACK_COORDS.lon, apiKey)
+        .then(resolve)
+        .catch(reject);
+      return;
     }
 
     navigator.geolocation.getCurrentPosition(
@@ -85,7 +93,7 @@ export function getUserLocationAndFetchForecast(
         }
       },
       () => {
-        // fallback to Bellevue coordinates
+        // Geolocation failed, fallback to default coordinates
         fetchForecastByCoords(FALLBACK_COORDS.lat, FALLBACK_COORDS.lon, apiKey)
           .then(resolve)
           .catch(reject);

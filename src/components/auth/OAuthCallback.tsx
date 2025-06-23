@@ -16,14 +16,35 @@ export function OAuthCallback() {
   useEffect(() => {
     const processCallback = async () => {
       try {
+        console.log("Processing OAuth callback...");
+
+        // Check if we have the required URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const hasCode = urlParams.has("code");
+        const hasState = urlParams.has("state");
+        const hasError = urlParams.has("error");
+
+        console.log("URL parameters:", { hasCode, hasState, hasError });
+
+        if (hasError) {
+          const error = urlParams.get("error");
+          throw new Error(`OAuth error: ${error}`);
+        }
+
+        if (!hasCode || !hasState) {
+          throw new Error("Missing required OAuth parameters");
+        }
+
         const success = await handleCallback();
         if (success) {
+          console.log("OAuth callback successful");
           setStatus("success");
           // Redirect after success
           setTimeout(() => {
             window.location.href = "/";
           }, 1000);
         } else {
+          console.error("OAuth callback returned false");
           setStatus("error");
           setErrorMsg("Authentication unsuccessful. Please try again.");
         }
@@ -42,7 +63,10 @@ export function OAuthCallback() {
   }, [handleCallback]);
 
   const handleRetry = () => {
-    window.location.href = "/login";
+    // Clear any stored auth data and redirect to login
+    localStorage.removeItem("spotify_auth_state");
+    localStorage.removeItem("spotify_code_verifier");
+    window.location.href = "/";
   };
 
   return (

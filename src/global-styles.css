@@ -380,6 +380,23 @@
   opacity: 1;
 }
 
+/* Background gradient utilities */
+.bg-gradient-radial {
+  background: radial-gradient(ellipse at center, var(--tw-gradient-stops));
+}
+
+/* Login page animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Mouse tracking utilities */
 .mouse-tracking {
   --mouse-x: 50%;

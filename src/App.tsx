@@ -5,13 +5,12 @@ import {
   Navigate,
 } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
-import LoginPage from "./pages/LoginPage";
 import { SettingsProvider } from "./contexts/SettingsProvider";
 import { AuthProvider } from "./contexts/AuthProvider";
 import { ServiceProvider } from "./contexts/ServiceContext";
 import { queryClient } from "./lib";
 import { AppLayout } from "./components";
-import MainPage from "./pages/MainPage";
+import MainPage from "./MainPage";
 import { ErrorBoundary } from "./components/shared/ErrorBoundary";
 import { OAuthCallback } from "./components/auth/OAuthCallback";
 
@@ -31,7 +30,6 @@ function App() {
                   <main>
                     <Routes>
                       <Route path="/" element={<MainPage />} />
-                      <Route path="/login" element={<LoginPage />} />
                       <Route path="/callback" element={<OAuthCallback />} />
                       {/* Fallback route: redirects unknown paths to the main page */}
                       <Route path="*" element={<Navigate to="/" replace />} />

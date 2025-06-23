@@ -3,9 +3,10 @@ import { useSettings } from "@/hooks";
 import type { TimePeriod } from "@/lib";
 
 /**
- * Hook that manages theme application based on settings and time period
+ * Consolidated theme management hook that handles all theme switching logic
+ * Combines both settings-based and weather-based theme management
  */
-export function useThemeManager(timePeriod: TimePeriod | null) {
+export function useThemeManager(timePeriod?: TimePeriod | null) {
   const { settings } = useSettings();
 
   useEffect(() => {
@@ -16,7 +17,7 @@ export function useThemeManager(timePeriod: TimePeriod | null) {
     } else if (settings.themeMode === "dark") {
       root.classList.add("dark");
     } else {
-      // Auto mode - use time period
+      // Auto mode - use time period if available, otherwise system preference
       if (!timePeriod) {
         // Fallback to system preference if no time period
         const systemDark = window.matchMedia(
@@ -37,4 +38,21 @@ export function useThemeManager(timePeriod: TimePeriod | null) {
       }
     }
   }, [settings.themeMode, timePeriod]);
+}
+
+/**
+ * Weather-specific theme hook for components that only need weather-based theming
+ * @deprecated Use useThemeManager instead for better integration with user settings
+ */
+export function useThemeFromWeather(timePeriod: TimePeriod | null) {
+  useEffect(() => {
+    if (!timePeriod) return;
+
+    const root = window.document.documentElement;
+    if (timePeriod === "evening" || timePeriod === "night") {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+  }, [timePeriod]);
 }

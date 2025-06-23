@@ -26,7 +26,6 @@ export { WeatherMusicCard } from "./shared/WeatherMusicCard";
 // === AUTH DOMAIN ===
 // Authentication components and flows
 export { OAuthCallback } from "./auth/OAuthCallback";
-export { SimpleLogin } from "./auth/SimpleLogin";
 
 // === WEATHER DOMAIN ===
 // Components related to weather display, forecast, and background visuals

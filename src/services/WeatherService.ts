@@ -1,6 +1,8 @@
-import { LocalStorage } from "./storage";
+import { LocalStorage } from "@/services/storage";
+import { fetchForecastByCoords } from "@/lib/weather/weather-api";
+import { formatTemperature } from "@/lib";
 import type { TemperatureUnit } from "@/types/units-types";
-import { formatTemperature } from "@/lib/core";
+import { getTimePeriod } from "@/lib/core";
 import type { TimePeriod } from "@/lib/core";
 
 // Weather condition types and utilities
@@ -18,9 +20,6 @@ export interface WeatherCondition {
   description: string;
   icon: string;
 }
-
-// Video asset mapping type
-type VideoAssetMap = Record<WeatherType, Record<TimePeriod, string>>;
 
 export interface DailyForecast {
   date: string;
@@ -53,7 +52,6 @@ export class WeatherService {
   private readonly CACHE_KEY = "weather_forecast";
   private readonly CACHE_TTL = 30 * 60 * 1000; // 30 minutes in milliseconds
   private readonly DEFAULT_WEATHER: WeatherType = "clear";
-  private readonly DEFAULT_TIME_PERIOD: TimePeriod = "day";
 
   private constructor() {
     this.localStorage = LocalStorage.getInstance();
@@ -86,15 +84,17 @@ export class WeatherService {
 
     // Fetch fresh data from API
     try {
-      const response = await fetch(
-        `/api/weather/forecast?lat=${location.lat}&lon=${location.lon}`,
-      );
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch forecast: ${response.statusText}`);
+      const apiKey = import.meta.env.VITE_PUBLIC_OPENWEATHER_API_KEY;
+      if (!apiKey) {
+        throw new Error("Weather API key is missing");
       }
 
-      const data: ForecastApiResponse = await response.json();
+      // Use the weather-api function with provided coordinates
+      const data: ForecastApiResponse = await fetchForecastByCoords(
+        location.lat,
+        location.lon,
+        apiKey,
+      );
 
       // Cache the response
       this.cacheForecast(cacheKey, data);
@@ -247,78 +247,5 @@ export class WeatherService {
     }
 
     return this.DEFAULT_WEATHER;
-  }
-
-  /**
-   * Gets the appropriate time period based on the current time
-   */
-  public getTimePeriod(hours: number): TimePeriod {
-    if (hours >= 5 && hours < 12) return "morning";
-    if (hours >= 12 && hours < 17) return "day";
-    if (hours >= 17 && hours < 21) return "evening";
-    return "night";
-  }
-
-  /**
-   * Gets the appropriate video source for the current weather and time
-   */
-  public getVideoSource(
-    condition?: string,
-    timePeriod?: TimePeriod | null,
-  ): string {
-    const weatherType = this.getWeatherType(condition);
-    const period = timePeriod || this.getTimePeriod(new Date().getHours());
-
-    // Default video map - in a real app, this would be dynamically imported
-    const defaultVideoMap: VideoAssetMap = {
-      clear: {
-        morning: "/videos/clear_morning.mp4",
-        day: "/videos/clear_day.mp4",
-        evening: "/videos/clear_evening.mp4",
-        night: "/videos/clear_night.mp4",
-      },
-      clouds: {
-        morning: "/videos/cloudy_morning.mp4",
-        day: "/videos/cloudy_day.mp4",
-        evening: "/videos/cloudy_evening.mp4",
-        night: "/videos/cloudy_night.mp4",
-      },
-      rain: {
-        morning: "/videos/rain_morning.mp4",
-        day: "/videos/rain_day.mp4",
-        evening: "/videos/rain_evening.mp4",
-        night: "/videos/rain_night.mp4",
-      },
-      snow: {
-        morning: "/videos/snow_morning.mp4",
-        day: "/videos/snow_day.mp4",
-        evening: "/videos/snow_evening.mp4",
-        night: "/videos/snow_night.mp4",
-      },
-      fog: {
-        morning: "/videos/fog_morning.mp4",
-        day: "/videos/fog_day.mp4",
-        evening: "/videos/fog_evening.mp4",
-        night: "/videos/fog_night.mp4",
-      },
-      // Fallbacks for other weather types
-      thunderstorm: {
-        morning: "/videos/rain_morning.mp4",
-        day: "/videos/rain_day.mp4",
-        evening: "/videos/rain_evening.mp4",
-        night: "/videos/rain_night.mp4",
-      },
-      drizzle: {
-        morning: "/videos/rain_morning.mp4",
-        day: "/videos/rain_day.mp4",
-        evening: "/videos/rain_evening.mp4",
-        night: "/videos/rain_night.mp4",
-      },
-    };
-
-    return (
-      defaultVideoMap[weatherType]?.[period] ||
-      defaultVideoMap[this.DEFAULT_WEATHER][this.DEFAULT_TIME_PERIOD]
-    );
   }
 }
