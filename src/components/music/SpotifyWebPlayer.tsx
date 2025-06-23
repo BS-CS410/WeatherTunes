@@ -4,7 +4,11 @@
  */
 
 import React, { useEffect, useState, useCallback, useRef } from "react";
-import { useSpotifyPlayer, useSpotifyQueue } from "@/hooks/spotify";
+import {
+  useSpotifyPlayer,
+  useSpotifyQueue,
+  useSpotifyService,
+} from "@/hooks/spotify"; // Added useSpotifyService
 import { useAuth } from "@/hooks/useAuth";
 import {
   Play,
@@ -29,6 +33,7 @@ export const SpotifyWebPlayer: React.FC<SpotifyWebPlayerProps> = ({
 }) => {
   const { state, controls, initialize } = useSpotifyPlayer();
   const { user, login, isAuthenticated, isLoading: isAuthLoading } = useAuth();
+  const spotifyService = useSpotifyService(); // Get SpotifyService
 
   // Get queue data from Spotify queue hook
   const { currentTrack, upcomingTracks, playNext } = useSpotifyQueue();
@@ -41,6 +46,40 @@ export const SpotifyWebPlayer: React.FC<SpotifyWebPlayerProps> = ({
   const [isMuted, setIsMuted] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
 
+  // Load Spotify Web Playback SDK script
+  useEffect(() => {
+    const scriptId = "spotify-playback-sdk";
+    if (document.getElementById(scriptId)) {
+      setIsInitialized(true);
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.id = scriptId;
+    script.src = "https://sdk.scdn.co/spotify-player.js";
+    script.async = true;
+    document.body.appendChild(script);
+
+    script.onload = () => {
+      console.log("Spotify Web Playback SDK loaded.");
+      setIsInitialized(true);
+    };
+
+    script.onerror = (e) => {
+      console.error("Failed to load Spotify Web Playback SDK:", e);
+      setAuthError(
+        "Failed to load Spotify player. Please check your connection.",
+      );
+    };
+
+    return () => {
+      // Clean up script if component unmounts before load
+      if (document.getElementById(scriptId)) {
+        document.body.removeChild(script);
+      }
+    };
+  }, []);
+
   /**
    * Handle next track - integrates with queue system
    */
@@ -50,9 +89,7 @@ export const SpotifyWebPlayer: React.FC<SpotifyWebPlayerProps> = ({
       await playNext();
 
       // If that fails, try player's next track
-      if (!(await controls.nextTrack())) {
-        console.warn("Failed to advance to next track");
-      }
+      await controls.nextTrack();
     } catch (error) {
       console.error("Error advancing to next track:", error);
     }
@@ -62,33 +99,34 @@ export const SpotifyWebPlayer: React.FC<SpotifyWebPlayerProps> = ({
    * Initialize player on mount
    */
   useEffect(() => {
-    // Initialize player only when authenticated and not loading
-    if (isAuthenticated && !isAuthLoading && !isInitialized) {
+    // Initialize player only when SDK is loaded, authenticated, and not loading
+    if (isInitialized && isAuthenticated && !isAuthLoading && spotifyService) {
       setAuthError(null);
       initialize()
         .then((success) => {
-          setIsInitialized(success);
-          if (!success && !isAuthenticated) {
+          if (!success) {
             setAuthError("Authentication expired. Please log in again.");
           }
         })
         .catch((error) => {
           console.error("Player initialization error:", error);
-          setIsInitialized(true); // Set to true to stop loading state
-
-          // Check for auth-related errors
           if (
             error.message.includes("not authenticated") ||
             error.message.includes("401")
           ) {
             setAuthError("Authentication required. Please log in again.");
-            // User needs to log in again
           } else {
             setAuthError("Player initialization failed. Please try again.");
           }
         });
     }
-  }, [isInitialized, initialize, isAuthenticated, isAuthLoading]);
+  }, [
+    isInitialized,
+    initialize,
+    isAuthenticated,
+    isAuthLoading,
+    spotifyService,
+  ]);
 
   /**
    * Handle track advancement when song ends
@@ -143,9 +181,7 @@ export const SpotifyWebPlayer: React.FC<SpotifyWebPlayerProps> = ({
    * Handle previous track
    */
   const handlePreviousTrack = useCallback(async () => {
-    if (!(await controls.previousTrack())) {
-      console.warn("Failed to go to previous track");
-    }
+    await controls.previousTrack();
   }, [controls]);
 
   /**

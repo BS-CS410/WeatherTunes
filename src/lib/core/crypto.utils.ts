@@ -5,21 +5,33 @@
 /**
  * Generate a random string for OAuth state parameter
  */
-export function generateRandomString(length: number): string {
-  const possible =
+/**
+ * Generate a cryptographically secure random string.
+ * @param length The desired length of the string.
+ * @returns A cryptographically secure random string.
+ */
+export function generateSecureRandomString(length: number): string {
+  const charset =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let text = "";
-  for (let i = 0; i < length; i++) {
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
-  return text;
+  const result = new Uint8Array(length);
+  window.crypto.getRandomValues(result);
+  return Array.from(result)
+    .map((byte) => charset[byte % charset.length])
+    .join("");
+}
+
+/**
+ * Generate a random string for OAuth state parameter (now cryptographically secure)
+ */
+export function generateRandomString(length: number): string {
+  return generateSecureRandomString(length);
 }
 
 /**
  * Generate code verifier for PKCE
  */
 export function generateCodeVerifier(): string {
-  return generateRandomString(128);
+  return generateSecureRandomString(128);
 }
 
 /**

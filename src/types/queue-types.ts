@@ -3,7 +3,7 @@
  */
 
 export interface TrackMetadata {
-  id: string;
+  id: string | null;
   title: string;
   artist: string;
   album: string;
@@ -14,12 +14,12 @@ export interface TrackMetadata {
   externalUrl: string;
   uri: string;
   tags?: string[];
-  
+
   /**
    * URL to a video asset that matches the track's mood/weather
    */
   videoUrl?: string;
-  
+
   /**
    * CSS class name for additional styling of the video
    */

@@ -3,7 +3,7 @@
  * Combines all Spotify-related functionality to reduce fragmentation
  */
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useServices } from "@/hooks/common";
 import { SpotifyService } from "@/services/SpotifyService";
 import type { Track } from "@/types/spotify-api-types";
@@ -224,6 +224,8 @@ interface UseSpotifyQueueReturn {
   clearQueue: () => Promise<void>;
 }
 
+const TARGET_QUEUE_LENGTH = 15; // The desired fixed length of the queue
+
 export function useSpotifyQueue(): UseSpotifyQueueReturn {
   const spotifyService = useSpotifyService();
   const [currentTrack, setCurrentTrack] = useState<TrackMetadata | null>(null);
@@ -246,29 +248,48 @@ export function useSpotifyQueue(): UseSpotifyQueueReturn {
   );
 
   const playTrack = useCallback(
-    async (trackUri: string) => {
+    async (trackId: string) => {
       try {
         setError(null);
-        await spotifyService.play([trackUri]);
-        // Update local state with placeholder track
-        setCurrentTrack({ uri: trackUri } as TrackMetadata);
+        const trackToPlay = upcomingTracks.find(
+          (track) => track.id === trackId,
+        );
+        if (trackToPlay) {
+          await spotifyService.play([trackToPlay.uri]);
+          setCurrentTrack(trackToPlay);
+          setUpcomingTracks((prev) =>
+            prev.filter((track) => track.id !== trackId),
+          );
+        } else {
+          console.warn("Track not found in upcoming queue:", trackId);
+          // If track not in upcoming, try playing directly (e.g., from search)
+          // This might require fetching track details first if only ID is available
+          // For now, assume it's from the queue.
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to play track");
       }
     },
-    [spotifyService],
+    [spotifyService, upcomingTracks],
   );
 
   const playNext = useCallback(async () => {
     try {
       setError(null);
-      await spotifyService.next();
+      if (upcomingTracks.length > 0) {
+        const nextTrack = upcomingTracks[0];
+        await spotifyService.play([nextTrack.uri]);
+        setCurrentTrack(nextTrack);
+        setUpcomingTracks((prev) => prev.slice(1));
+      } else {
+        console.log("Queue is empty, attempting to replenish.");
+      }
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Failed to skip to next track",
       );
     }
-  }, [spotifyService]);
+  }, [spotifyService, upcomingTracks]);
 
   const replaceQueue = useCallback(
     async (tracks: TrackMetadata[]) => {
@@ -409,15 +430,15 @@ interface UseSpotifyPlayerState {
 }
 
 interface UseSpotifyPlayerControls {
-  play: () => Promise<boolean>;
-  pause: () => Promise<boolean>;
-  resume: () => Promise<boolean>;
-  seek: (position: number) => Promise<boolean>;
-  nextTrack: () => Promise<boolean>;
-  previousTrack: () => Promise<boolean>;
-  setVolume: (volume: number) => Promise<boolean>;
-  togglePlay: () => Promise<boolean>;
-  playTrack: (trackId: string) => Promise<boolean>;
+  play: () => Promise<void>; // Changed to Promise<void>
+  pause: () => Promise<void>; // Changed to Promise<void>
+  resume: () => Promise<void>; // Changed to Promise<void>
+  seek: (position: number) => Promise<void>; // Changed to Promise<void>
+  nextTrack: () => Promise<void>; // Changed to Promise<void>
+  previousTrack: () => Promise<void>; // Changed to Promise<void>
+  setVolume: (volume: number) => Promise<void>; // Changed to Promise<void>
+  togglePlay: () => Promise<void>; // Changed to Promise<void>
+  playTrack: (trackId: string) => Promise<boolean>; // This one remains boolean as it's a custom implementation
 }
 
 interface UseSpotifyPlayerReturn {
@@ -427,6 +448,7 @@ interface UseSpotifyPlayerReturn {
 }
 
 export function useSpotifyPlayer(): UseSpotifyPlayerReturn {
+  const spotifyService = useSpotifyService();
   const [state, setState] = useState<UseSpotifyPlayerState>({
     isReady: false,
     isActive: false,
@@ -440,96 +462,244 @@ export function useSpotifyPlayer(): UseSpotifyPlayerReturn {
     error: null,
   });
 
+  const playerRef = useRef<Spotify.Player | null>(null);
+
   const initialize = useCallback(async (): Promise<boolean> => {
-    try {
-      // Web Playback SDK initialization logic would go here
-      // This is a placeholder for the actual implementation
-      console.log("Initializing Spotify Web Player...");
-      setState((prev) => ({ ...prev, isLoading: false, isReady: true }));
+    if (playerRef.current) {
+      console.log("Spotify player already initialized.");
       return true;
-    } catch (error) {
+    }
+
+    setState((prev) => ({ ...prev, isLoading: true, error: null }));
+
+    // Ensure Spotify SDK is loaded
+    if (!window.Spotify) {
+      console.error("Spotify SDK not loaded.");
       setState((prev) => ({
         ...prev,
         isLoading: false,
-        error: "Failed to initialize player",
+        error: "Spotify SDK not loaded.",
       }));
       return false;
     }
+
+    try {
+      const token = await spotifyService.getAccessToken();
+      if (!token) {
+        throw new Error("No Spotify access token available.");
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const player = new (window.Spotify.Player as any)({
+        // Cast to any
+        name: "WeatherTunes Player",
+        getOAuthToken: (cb: (token: string) => void) => {
+          // Explicitly type cb
+          cb(token);
+        },
+        volume: state.volume,
+      });
+
+      // Ready
+      player.addListener(
+        "ready",
+        ({ device_id }: Spotify.WebPlaybackInstance) => {
+          // Explicitly type data
+          console.log("Ready with Device ID", device_id);
+          setState((prev) => ({
+            ...prev,
+            isReady: true,
+            device_id,
+            isLoading: false,
+          }));
+          // Transfer playback to this device
+          spotifyService
+            .transferPlayback([device_id], true)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            .catch((err: any) => {
+              // Explicitly type err
+              console.error("Failed to transfer playback:", err);
+            });
+        },
+      );
+
+      // Not Ready
+      player.addListener(
+        "not_ready",
+        ({ device_id }: Spotify.WebPlaybackInstance) => {
+          // Explicitly type data
+          console.log("Device ID has gone offline", device_id);
+          setState((prev) => ({
+            ...prev,
+            isReady: false,
+            device_id: null,
+            isLoading: false,
+          }));
+        },
+      );
+
+      // Player State Changed
+      player.addListener(
+        "player_state_changed",
+        (playerState: Spotify.PlaybackState) => {
+          // Explicitly type playerState
+          if (!playerState) {
+            setState((prev) => ({
+              ...prev,
+              isPlaying: false,
+              currentTrack: null,
+              position: 0,
+              duration: 0,
+            }));
+            return;
+          }
+
+          const {
+            paused,
+            position,
+            duration,
+            track_window: { current_track },
+          } = playerState;
+
+          const newTrack: TrackMetadata | null = current_track
+            ? {
+                id: current_track.id,
+                title: current_track.name,
+                artist: current_track.artists[0]?.name || "Unknown Artist",
+                album: current_track.album.name,
+                albumArt: current_track.album.images[0]?.url || "",
+                albumArtFallback:
+                  current_track.album.images[
+                    current_track.album.images.length - 1
+                  ]?.url,
+                duration: current_track.duration_ms,
+                previewUrl: current_track.preview_url || undefined,
+                externalUrl: current_track.external_urls.spotify,
+                uri: current_track.uri,
+              }
+            : null;
+
+          setState((prev) => ({
+            ...prev,
+            isPlaying: !paused,
+            position: position,
+            duration: duration,
+            currentTrack: newTrack,
+            isReady: true, // Ensure ready state is maintained
+          }));
+        },
+      );
+
+      // Errors
+      player.addListener(
+        "initialization_error",
+        ({ message }: Spotify.Error) => {
+          // Explicitly type data
+          console.error("Failed to initialize:", message);
+          setState((prev) => ({ ...prev, error: message, isLoading: false }));
+        },
+      );
+      player.addListener(
+        "authentication_error",
+        ({ message }: Spotify.Error) => {
+          // Explicitly type data
+          console.error("Authentication error:", message);
+          setState((prev) => ({ ...prev, error: message, isLoading: false }));
+        },
+      );
+      player.addListener("account_error", ({ message }: Spotify.Error) => {
+        // Explicitly type data
+        console.error("Account error:", message);
+        setState((prev) => ({ ...prev, error: message, isLoading: false }));
+      });
+      player.addListener("playback_error", ({ message }: Spotify.Error) => {
+        // Explicitly type data
+        console.error("Playback error:", message);
+        setState((prev) => ({ ...prev, error: message, isLoading: false }));
+      });
+
+      await player.connect();
+      playerRef.current = player;
+      console.log("Spotify Web Player connected.");
+      return true;
+    } catch (error) {
+      console.error("Failed to initialize Spotify player:", error);
+      setState((prev) => ({
+        ...prev,
+        isLoading: false,
+        error: error instanceof Error ? error.message : "Unknown player error",
+      }));
+      return false;
+    }
+  }, [spotifyService, state.volume]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (playerRef.current) {
+        console.log("Disconnecting Spotify Web Player.");
+        playerRef.current.disconnect();
+        playerRef.current = null;
+      }
+    };
   }, []);
 
   const controls: UseSpotifyPlayerControls = {
     play: async () => {
-      try {
+      if (playerRef.current) {
+        await playerRef.current.resume();
         setState((prev) => ({ ...prev, isPlaying: true }));
-        return true;
-      } catch {
-        return false;
       }
     },
     pause: async () => {
-      try {
+      if (playerRef.current) {
+        await playerRef.current.pause();
         setState((prev) => ({ ...prev, isPlaying: false }));
-        return true;
-      } catch {
-        return false;
       }
     },
     resume: async () => {
-      try {
+      if (playerRef.current) {
+        await playerRef.current.resume();
         setState((prev) => ({ ...prev, isPlaying: true }));
-        return true;
-      } catch {
-        return false;
       }
     },
     seek: async (position: number) => {
-      try {
+      if (playerRef.current) {
+        await playerRef.current.seek(position);
         setState((prev) => ({ ...prev, position }));
-        return true;
-      } catch {
-        return false;
       }
     },
     nextTrack: async () => {
-      try {
-        console.log("Next track");
-        return true;
-      } catch {
-        return false;
+      if (playerRef.current) {
+        await playerRef.current.nextTrack();
       }
     },
     previousTrack: async () => {
-      try {
-        console.log("Previous track");
-        return true;
-      } catch {
-        return false;
+      if (playerRef.current) {
+        await playerRef.current.previousTrack();
       }
     },
     setVolume: async (volume: number) => {
-      try {
+      if (playerRef.current) {
+        await playerRef.current.setVolume(volume);
         setState((prev) => ({ ...prev, volume }));
-        return true;
-      } catch {
-        return false;
       }
     },
     togglePlay: async () => {
-      try {
+      if (playerRef.current) {
+        await playerRef.current.togglePlay();
         setState((prev) => ({ ...prev, isPlaying: !prev.isPlaying }));
-        return true;
-      } catch {
-        return false;
       }
     },
     playTrack: async (trackId: string) => {
-      try {
-        console.log("Playing track:", trackId);
-        setState((prev) => ({ ...prev, isPlaying: true }));
-        return true;
-      } catch {
-        return false;
-      }
+      // This method is typically handled by the SpotifyService.play method
+      // which takes URIs. The player itself doesn't have a direct playTrackById.
+      // If we need to play a specific track on this device, we'd use transferPlayback
+      // or the SpotifyService.play method.
+      console.warn(
+        "useSpotifyPlayer.playTrack is not directly implemented via SDK. Use spotifyService.play with URIs.",
+      );
+      return false; // Still returns boolean as it's a custom warning/fallback
     },
   };
 

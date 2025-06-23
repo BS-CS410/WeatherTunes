@@ -10,6 +10,12 @@ import type {
   WeatherRecommendationResponse,
   TrackMetadata,
 } from "./spotify-types";
+import {
+  WeatherMusicMapper,
+  getTimeBasedAdjustments,
+  getTemperatureBasedAdjustments,
+  AudioFeatures,
+} from "./recommendations";
 
 // Spotify API response types (minimal)
 interface SpotifyTrack {
@@ -186,13 +192,72 @@ class SpotifyApi {
     const token = await getValidAccessToken();
     if (!token) throw new Error("Not authenticated");
 
-    // Map weather conditions to seed genres and audio features
-    const seedMapping = this.getWeatherSeedMapping(request.weather_condition);
+    const weatherMapping = WeatherMusicMapper.getMapping(
+      request.weather_condition,
+    );
+    const timeAdjustments = getTimeBasedAdjustments(
+      request.time_of_day || "afternoon",
+    );
+    const tempAdjustments = getTemperatureBasedAdjustments(
+      request.temperature || 20,
+    );
+
+    // Apply adjustments to base audio features
+    const combinedAudioFeatures: AudioFeatures = {
+      ...weatherMapping.audioFeatures,
+    };
+
+    // Helper to apply adjustments
+    const applyAdjustments = (
+      features: AudioFeatures,
+      adjustments: Partial<AudioFeatures>,
+    ) => {
+      for (const key in adjustments) {
+        if (Object.prototype.hasOwnProperty.call(adjustments, key)) {
+          const featureKey = key as keyof AudioFeatures;
+          const currentValue = (features[featureKey] as number) || 0;
+          const adjustmentValue = (adjustments[featureKey] as number) || 0;
+          (features[featureKey] as number) = currentValue + adjustmentValue;
+        }
+      }
+    };
+
+    applyAdjustments(combinedAudioFeatures, timeAdjustments);
+    applyAdjustments(combinedAudioFeatures, tempAdjustments);
+
+    // Ensure values are within Spotify's expected range (0-1 for most, tempo can vary)
+    const normalizedAudioFeatures: Record<string, string> = {};
+    for (const key in combinedAudioFeatures) {
+      if (Object.prototype.hasOwnProperty.call(combinedAudioFeatures, key)) {
+        const value = combinedAudioFeatures[key as keyof AudioFeatures];
+        if (value === undefined) continue;
+
+        if (
+          key === "valence" ||
+          key === "energy" ||
+          key === "danceability" ||
+          key === "acousticness" ||
+          key === "instrumentalness"
+        ) {
+          normalizedAudioFeatures[key] = Math.min(
+            1,
+            Math.max(0, value),
+          ).toString();
+        } else if (key === "tempo") {
+          normalizedAudioFeatures[key] = Math.min(
+            200,
+            Math.max(50, value),
+          ).toString();
+        } else {
+          normalizedAudioFeatures[key] = value.toString();
+        }
+      }
+    }
 
     const params = new URLSearchParams({
       limit: (request.limit || 20).toString(),
-      seed_genres: seedMapping.genres.slice(0, 3).join(","), // Max 3 genres
-      ...seedMapping.audioFeatures,
+      seed_genres: weatherMapping.genres.slice(0, 5).join(","), // Max 5 genres
+      ...normalizedAudioFeatures,
     });
 
     const response = await fetch(`${this.baseUrl}/recommendations?${params}`, {
@@ -274,59 +339,6 @@ class SpotifyApi {
       externalUrl: track.external_urls.spotify,
       uri: track.uri,
     };
-  }
-
-  /**
-   * Get weather-based seed mapping
-   */
-  private getWeatherSeedMapping(weatherCondition: string) {
-    const mappings: Record<
-      string,
-      { genres: string[]; audioFeatures: Record<string, string> }
-    > = {
-      clear: {
-        genres: ["pop", "indie-pop", "funk", "disco"],
-        audioFeatures: {
-          target_valence: "0.8",
-          target_energy: "0.7",
-          target_danceability: "0.7",
-        },
-      },
-      cloudy: {
-        genres: ["indie", "alternative", "chill", "ambient"],
-        audioFeatures: {
-          target_valence: "0.5",
-          target_energy: "0.5",
-          target_acousticness: "0.6",
-        },
-      },
-      rain: {
-        genres: ["jazz", "blues", "lo-fi", "indie"],
-        audioFeatures: {
-          target_valence: "0.3",
-          target_energy: "0.4",
-          target_acousticness: "0.7",
-        },
-      },
-      snow: {
-        genres: ["classical", "ambient", "folk", "acoustic"],
-        audioFeatures: {
-          target_valence: "0.4",
-          target_energy: "0.3",
-          target_acousticness: "0.8",
-        },
-      },
-      stormy: {
-        genres: ["rock", "metal", "electronic", "industrial"],
-        audioFeatures: {
-          target_valence: "0.2",
-          target_energy: "0.9",
-          target_loudness: "-5",
-        },
-      },
-    };
-
-    return mappings[weatherCondition] || mappings.clear;
   }
 
   /**

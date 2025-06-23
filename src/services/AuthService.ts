@@ -1,4 +1,8 @@
-import { generateRandomString, generateCodeChallenge } from "../lib/core";
+import {
+  generateRandomString,
+  generateCodeChallenge,
+  generateSecureRandomString,
+} from "../lib/core";
 
 type TokenResponse = {
   access_token: string;
@@ -47,9 +51,9 @@ export class AuthService {
     // Clear any existing callback processing state
     this.isProcessingCallback = false;
 
-    const codeVerifier = generateRandomString(64);
+    const codeVerifier = generateSecureRandomString(128); // Use secure random for verifier
     const codeChallenge = await generateCodeChallenge(codeVerifier);
-    const state = generateRandomString(16);
+    const state = generateSecureRandomString(16); // Use secure random for state
 
     // Store verifier and state for the callback
     localStorage.setItem(CODE_VERIFIER_KEY, codeVerifier);
@@ -163,41 +167,11 @@ export class AuthService {
   }
 
   async getAccessToken(): Promise<string> {
-    const tokens = this.getTokens();
+    const tokens = await this._ensureValidAccessToken();
     if (!tokens) {
       throw new Error("Not authenticated");
     }
-
-    // If token is expired or about to expire, refresh it
-    if (Date.now() >= tokens.expiresAt - 60000) {
-      // Refresh if less than 1 minute until expiration
-      try {
-        const newTokens = await this.refreshTokens(tokens.refreshToken);
-        return newTokens.accessToken;
-      } catch (error) {
-        console.error("Failed to refresh token:", error);
-        throw new Error("Failed to refresh access token");
-      }
-    }
-
     return tokens.accessToken;
-  }
-
-  async getAccessTokenSafe(): Promise<string | null> {
-    const tokens = this.getStoredTokens();
-
-    if (!tokens) {
-      return null;
-    }
-
-    // If token is still valid, return it
-    if (Date.now() < tokens.expiresAt - 60000) {
-      // 1 minute buffer
-      return tokens.accessToken;
-    }
-
-    // Otherwise, refresh the token
-    return this.refreshToken(tokens.refreshToken);
   }
 
   async getUser(): Promise<User | null> {
@@ -236,12 +210,11 @@ export class AuthService {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
-          Authorization: `Basic ${btoa(`${this.clientId}:`)}`,
         },
         body: new URLSearchParams({
           grant_type: "refresh_token",
           refresh_token: refreshToken,
-          client_id: this.clientId,
+          client_id: this.clientId, // client_id is sent in the body for PKCE refresh
         }),
       });
 
@@ -282,29 +255,21 @@ export class AuthService {
     }
   }
 
-  private getStoredTokens(): TokenData | null {
-    return this.getTokens();
-  }
-
   async isAuthenticated(): Promise<boolean> {
     const tokens = this.getTokens();
     if (!tokens) {
       return false;
     }
-
-    // If token is still valid, no need to refresh
-    if (Date.now() < tokens.expiresAt - 60000) {
-      return true;
-    }
-
-    // If token is expired, try to refresh it
+    // Attempt to ensure token is valid, but don't throw if it fails
     try {
-      await this.refreshAccessToken(tokens.refreshToken);
-      return true; // Refresh was successful
+      await this._ensureValidAccessToken();
+      return true;
     } catch (error) {
-      console.error("Token refresh failed, user needs to log in again.", error);
-      this.logout(); // Clear tokens and log out user
-      return false; // Refresh failed
+      console.warn(
+        "Authentication check failed, user is not authenticated:",
+        error,
+      );
+      return false;
     }
   }
 
@@ -312,20 +277,41 @@ export class AuthService {
     this.clearTokens();
   }
 
-  // For backward compatibility
-  private async refreshToken(refreshToken: string): Promise<string | null> {
-    try {
-      const result = await this.refreshAccessToken(refreshToken);
-      return result?.accessToken || null;
-    } catch (error) {
-      console.error("Failed to refresh token:", error);
+  private async _ensureValidAccessToken(): Promise<TokenData | null> {
+    const tokens = this.getTokens();
+    if (!tokens) {
       return null;
     }
-  }
 
-  // For backward compatibility with older code
-  private async refreshTokens(refreshToken: string): Promise<TokenData> {
-    return this.refreshAccessToken(refreshToken);
+    // If token is still valid, return it
+    if (Date.now() < tokens.expiresAt - 60000) {
+      // 1 minute buffer
+      return tokens;
+    }
+
+    // If a refresh is already in progress, wait for it
+    if (this.refreshPromise) {
+      return this.refreshPromise;
+    }
+
+    // Otherwise, initiate a refresh
+    const refreshOperation = this.refreshAccessToken(tokens.refreshToken)
+      .then((newTokens) => {
+        this.refreshPromise = null; // Clear promise on success
+        return newTokens;
+      })
+      .catch((error) => {
+        this.refreshPromise = null; // Clear promise on failure
+        console.error(
+          "Token refresh failed, user needs to log in again.",
+          error,
+        );
+        this.logout(); // Clear tokens and log out user
+        throw error; // Re-throw to propagate the error
+      });
+
+    this.refreshPromise = refreshOperation;
+    return refreshOperation;
   }
 
   private storeTokens(tokens: TokenData): void {
@@ -336,6 +322,7 @@ export class AuthService {
     try {
       localStorage.removeItem(TOKEN_STORAGE_KEY);
       localStorage.removeItem(CODE_VERIFIER_KEY);
+      localStorage.removeItem(STATE_KEY); // Clear state key on logout
     } catch (error) {
       console.error("Failed to clear tokens:", error);
     }

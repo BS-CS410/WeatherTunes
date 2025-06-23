@@ -10,18 +10,54 @@ import {
 import { SettingsButton } from "@/components/settings/SettingsButton";
 import { WeatherBackground } from "@/components/weather/WeatherBackground";
 import { LoadingSpinner } from "@/components/shared/StatusComponents";
+import { useEffect } from "react";
 import { useWeatherData } from "@/hooks/useWeatherData";
 import { useThemeManager } from "@/hooks/useThemeManager";
 import { useAuth } from "@/hooks/useAuth";
+import { useWeatherQueue } from "@/hooks/useWeatherQueue";
+import { useSpotifyQueue } from "@/hooks/spotify"; // Import useSpotifyQueue
 import { LAYOUT, COLORS } from "@/lib";
 
 function MainPage() {
   const weatherState = useWeatherData();
   const { isAuthenticated, isLoading: authLoading, login } = useAuth();
   const { displayData, timePeriod, isLoading, error } = weatherState;
+  const { replaceQueueWithWeatherTracks, generateWeatherQueue } =
+    useWeatherQueue(); // Use the hook
+  const { upcomingTracks, addToQueue } = useSpotifyQueue();
 
   // Set theme based on time of day
   useThemeManager(timePeriod || "day");
+
+  // Generate queue on initial load if authenticated
+  useEffect(() => {
+    if (isAuthenticated && !authLoading) {
+      console.log("User authenticated, generating initial weather queue...");
+      replaceQueueWithWeatherTracks(15); // Generate a queue of 15 tracks
+    }
+  }, [isAuthenticated, authLoading, replaceQueueWithWeatherTracks]);
+
+  // Replenish queue when it falls below the target length
+  useEffect(() => {
+    if (isAuthenticated && !authLoading) {
+      if (upcomingTracks.length < 5) {
+        const tracksNeeded = 15 - upcomingTracks.length;
+        console.log(
+          `Queue length (${upcomingTracks.length}) below target, replenishing ${tracksNeeded} tracks...`,
+        );
+        generateWeatherQueue(tracksNeeded).then((newTracks) => {
+          addToQueue(newTracks);
+          console.log(`Replenished queue with ${newTracks.length} tracks.`);
+        });
+      }
+    }
+  }, [
+    isAuthenticated,
+    authLoading,
+    upcomingTracks,
+    generateWeatherQueue,
+    addToQueue,
+  ]);
 
   // Loading State
   if (isLoading || authLoading) {

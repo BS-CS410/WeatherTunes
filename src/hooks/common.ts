@@ -139,48 +139,7 @@ export function useWeatherUtils() {
     );
   };
 
-  const getTempoForTemperature = (temperature: number): number => {
-    return Math.min(Math.max(60, Math.round(temperature * 2)), 180);
-  };
-
-  const getGenresForWeather = (
-    condition: string,
-    timeOfDay: string,
-  ): string[] => {
-    const conditionLower = condition.toLowerCase();
-    const isDaytime = ["morning", "afternoon"].includes(timeOfDay);
-
-    if (conditionLower.includes("rain") || conditionLower.includes("drizzle")) {
-      return isDaytime
-        ? ["chill", "acoustic", "piano"]
-        : ["rainy-day", "ambient", "sleep"];
-    }
-    if (conditionLower.includes("snow") || conditionLower.includes("sleet")) {
-      return ["winter", "christmas", "holidays"];
-    }
-    if (conditionLower.includes("sun") || conditionLower.includes("clear")) {
-      return isDaytime
-        ? ["pop", "indie-pop", "summer"]
-        : ["chill", "indie", "acoustic"];
-    }
-    if (
-      conditionLower.includes("cloud") ||
-      conditionLower.includes("overcast")
-    ) {
-      return ["indie", "alternative", "indie-pop"];
-    }
-    if (
-      conditionLower.includes("thunder") ||
-      conditionLower.includes("storm")
-    ) {
-      return ["rock", "alternative", "hard-rock"];
-    }
-    return ["pop", "indie", "chill"];
-  };
-
   return {
     formatWeatherCondition,
-    getTempoForTemperature,
-    getGenresForWeather,
   };
 }
