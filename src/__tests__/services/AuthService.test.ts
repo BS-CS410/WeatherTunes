@@ -8,11 +8,13 @@ vi.mock("../../lib/core/crypto.utils", () => ({
     .mockReturnValueOnce("test_code_verifier")
     .mockReturnValueOnce("test_state"),
   generateCodeChallenge: vi.fn().mockResolvedValue("test_code_challenge"),
+  generateCodeVerifier: vi.fn().mockReturnValue("test_code_verifier"),
+  generateSecureRandomString: vi.fn().mockReturnValue("test_state"),
 }));
 
 global.fetch = vi.fn();
 
-const TOKEN_STORAGE_KEY = "spotify_auth_tokens";
+const TOKEN_STORAGE_KEY = "spotify_tokens";
 const CODE_VERIFIER_KEY = "spotify_code_verifier";
 const STATE_KEY = "spotify_auth_state";
 
@@ -99,7 +101,13 @@ describe("AuthService", () => {
     expect(window.localStorage.getItem(CODE_VERIFIER_KEY)).toBeNull();
   });
 
-  it("getAccessToken returns access token if valid", async () => {
+  it("getAccessToken throws if no tokens", async () => {
+    await expect(authService.getAccessToken()).rejects.toThrow(
+      "Not authenticated",
+    );
+  });
+
+  it("getAccessToken returns accessToken if valid", async () => {
     setTokens({
       accessToken: "a",
       refreshToken: "r",
@@ -108,20 +116,14 @@ describe("AuthService", () => {
     await expect(authService.getAccessToken()).resolves.toBe("a");
   });
 
-  it("getAccessToken throws if no tokens", async () => {
-    await expect(authService.getAccessToken()).rejects.toThrow(
-      "Not authenticated",
-    );
-  });
-
-  it("getAccessToken tries to refresh if expired", async () => {
+  it("getAccessToken refreshes if expired", async () => {
     setTokens({
       accessToken: "a",
       refreshToken: "r",
       expiresAt: Date.now() - 1000,
     });
     // @ts-expect-error: Testing private method
-    vi.spyOn(authService, "refreshTokens").mockResolvedValue({
+    vi.spyOn(authService, "refreshAccessToken").mockResolvedValue({
       accessToken: "new",
       refreshToken: "r",
       expiresAt: Date.now() + 10000,
@@ -136,34 +138,10 @@ describe("AuthService", () => {
       expiresAt: Date.now() - 1000,
     });
     // @ts-expect-error: Testing private method
-    vi.spyOn(authService, "refreshTokens").mockRejectedValue(new Error("fail"));
-    await expect(authService.getAccessToken()).rejects.toThrow(
-      "Failed to refresh access token",
+    vi.spyOn(authService, "refreshAccessToken").mockRejectedValue(
+      new Error("fail"),
     );
-  });
-
-  it("getAccessTokenSafe returns null if no tokens", async () => {
-    await expect(authService.getAccessTokenSafe()).resolves.toBeNull();
-  });
-
-  it("getAccessTokenSafe returns accessToken if valid", async () => {
-    setTokens({
-      accessToken: "a",
-      refreshToken: "r",
-      expiresAt: Date.now() + 120000,
-    });
-    await expect(authService.getAccessTokenSafe()).resolves.toBe("a");
-  });
-
-  it("getAccessTokenSafe refreshes if expired", async () => {
-    setTokens({
-      accessToken: "a",
-      refreshToken: "r",
-      expiresAt: Date.now() - 1000,
-    });
-    // @ts-expect-error: Testing private method
-    vi.spyOn(authService, "refreshToken").mockResolvedValue("new");
-    await expect(authService.getAccessTokenSafe()).resolves.toBe("new");
+    await expect(authService.getAccessToken()).rejects.toThrow("fail");
   });
 
   it("exchangeCodeForToken stores tokens and removes code verifier on success", async () => {

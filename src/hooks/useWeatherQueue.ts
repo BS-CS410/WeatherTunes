@@ -5,10 +5,12 @@
 import { useWeatherData } from "./useWeatherData";
 import { useCallback } from "react";
 import { useSpotifyQueue } from "./spotify";
-import { useWeatherTime } from "./common";
+import { useWeatherTime, useSettings } from "./common";
 import type { TrackMetadata } from "@/types/queue-types";
 import { getVideoForCondition } from "@/data/video-assets";
 import { generateWeatherPlaylist } from "@/lib/music/recommendations";
+import { formatTemperature, getUnitSymbol } from "@/lib/core";
+import { useServices } from "@/hooks/common";
 
 interface UseWeatherQueueReturn {
   generateWeatherQueue: (count?: number) => Promise<TrackMetadata[]>;
@@ -22,10 +24,17 @@ export function useWeatherQueue(): UseWeatherQueueReturn {
   const weatherState = useWeatherData();
   const { replaceQueue } = useSpotifyQueue();
   const { getCurrentTimeOfDay } = useWeatherTime();
+  const { settings } = useSettings();
 
   // Extract stable values to avoid unnecessary re-renders
   const condition = weatherState.displayData?.condition || "clear sky";
-  const temperature = weatherState.rawResponse?.main.temp || 20;
+  const rawTemperature = weatherState.rawResponse?.main.temp || 293.15; // Default to 20°C in Kelvin
+  const convertedTemperature = formatTemperature(
+    rawTemperature,
+    settings.temperatureUnit,
+  );
+  const unitSymbol = getUnitSymbol(settings.temperatureUnit);
+  const { spotify } = useServices();
 
   const generateWeatherQueue = useCallback(
     async (count = 15): Promise<TrackMetadata[]> => {
@@ -33,12 +42,13 @@ export function useWeatherQueue(): UseWeatherQueueReturn {
         const timeOfDay = getCurrentTimeOfDay();
 
         console.log(
-          `Generating weather queue: ${condition}, ${temperature}°C, ${timeOfDay}`,
+          `Generating weather queue: ${condition}, ${convertedTemperature}°${unitSymbol}, ${timeOfDay}`,
         );
 
         const tracks = await generateWeatherPlaylist(
+          spotify,
           condition,
-          temperature,
+          convertedTemperature,
           timeOfDay,
           count,
         );
@@ -61,7 +71,7 @@ export function useWeatherQueue(): UseWeatherQueueReturn {
         return [];
       }
     },
-    [condition, temperature, getCurrentTimeOfDay],
+    [condition, convertedTemperature, unitSymbol, getCurrentTimeOfDay],
   );
 
   const replaceQueueWithWeatherTracks = useCallback(

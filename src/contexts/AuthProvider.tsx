@@ -6,14 +6,7 @@
 import * as React from "react";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useServices } from "../hooks/common";
-import type { User } from "@/services/AuthService";
-
-// === AUTH CONTEXT TYPES ===
-export interface AuthState {
-  user: User | null;
-  isLoading: boolean;
-  error: string | null;
-}
+import type { User, AuthState } from "@/types/auth";
 
 export interface AuthContextValue extends AuthState {
   login: () => Promise<void>;

@@ -9,7 +9,7 @@ export interface Image {
 export interface SimplifiedArtist {
   id: string;
   name: string;
-  type: 'artist';
+  type: "artist";
   uri: string;
 }
 
@@ -17,7 +17,7 @@ export interface SimplifiedAlbum {
   id: string;
   name: string;
   images: Image[];
-  type: 'album';
+  type: "album";
   uri: string;
 }
 
@@ -32,7 +32,7 @@ export interface Track {
     spotify: string;
   };
   uri: string;
-  type: 'track';
+  type: "track";
   is_local: boolean;
   popularity: number;
 }
@@ -49,14 +49,14 @@ export interface PlaybackState {
     volume_percent: number | null;
   };
   shuffle_state: boolean;
-  repeat_state: 'off' | 'track' | 'context';
+  repeat_state: "off" | "track" | "context";
   timestamp: number;
   context: {
     external_urls: {
       spotify: string;
     };
     href: string;
-    type: 'playlist' | 'album' | 'artist' | 'show' | 'episode';
+    type: "playlist" | "album" | "artist" | "show" | "episode";
     uri: string;
   } | null;
 }
@@ -96,20 +96,14 @@ export interface SavedTracksResponse {
 export interface RecommendationSeed {
   id: string;
   href: string;
-  type: 'artist' | 'track' | 'genre';
+  type: "artist" | "track" | "genre";
   initialPoolSize: number;
   afterFilteringSize: number;
   afterRelinkingSize: number;
 }
 
-export interface RecommendationTrack extends Omit<Track, 'type' | 'is_local'> {
-  // Additional fields specific to recommendation tracks
+export interface RecommendationTrack extends Track {
   explicit: boolean;
-  external_urls: {
-    spotify: string;
-  };
-  type: 'track';
-  is_local: boolean;
 }
 
 export interface RecommendationsResponse {
@@ -135,4 +129,22 @@ export interface RecommendationOptions {
   min_popularity?: number;
   max_popularity?: number;
   target_popularity?: number;
+  min_acousticness?: number;
+  max_acousticness?: number;
+  target_acousticness?: number;
+  min_danceability?: number;
+  max_danceability?: number;
+  target_danceability?: number;
+  min_instrumentalness?: number;
+  max_instrumentalness?: number;
+  target_instrumentalness?: number;
+  min_liveness?: number;
+  max_liveness?: number;
+  target_liveness?: number;
+  min_loudness?: number;
+  max_loudness?: number;
+  target_loudness?: number;
+  min_speechiness?: number;
+  max_speechiness?: number;
+  target_speechiness?: number;
 }

@@ -10,6 +10,13 @@
  * @param length The desired length of the string.
  * @returns A cryptographically secure random string.
  */
+export function generateSecureRandomString(length: number): string;
+
+/**
+ * Generate a cryptographically secure random string.
+ * @param length The desired length of the string.
+ * @returns A cryptographically secure random string.
+ */
 export function generateSecureRandomString(length: number): string {
   const charset =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

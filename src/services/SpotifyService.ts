@@ -8,6 +8,7 @@ import type {
   RecommendationsResponse,
   RecommendationOptions,
 } from "@/types/spotify-api-types";
+import type { TrackMetadata } from "@/types/queue-types";
 
 export class SpotifyService {
   private baseUrl = "https://api.spotify.com/v1";
@@ -120,14 +121,29 @@ export class SpotifyService {
 
   // Search
   async searchTracks(query: string, limit = 20): Promise<SearchResponse> {
-    return this.request<SearchResponse>(
+    const response = await this.request<SearchResponse>(
       `/search?q=${encodeURIComponent(query)}&type=track&limit=${limit}`,
     );
+    return {
+      tracks: {
+        ...response.tracks,
+        items: response.tracks.items.map(SpotifyService.transformTrack),
+      },
+    };
   }
 
   // User Library
   async getSavedTracks(limit = 50): Promise<SavedTracksResponse> {
-    return this.request<SavedTracksResponse>(`/me/tracks?limit=${limit}`);
+    const response = await this.request<SavedTracksResponse>(
+      `/me/tracks?limit=${limit}`,
+    );
+    return {
+      ...response,
+      items: response.items.map((item) => ({
+        ...item,
+        track: SpotifyService.transformTrack(item.track),
+      })),
+    };
   }
 
   async saveTracks(ids: string[]): Promise<void> {
@@ -172,18 +188,36 @@ export class SpotifyService {
 
     // Add audio features
     const audioFeatureParams = [
+      "min_acousticness",
+      "max_acousticness",
+      "target_acousticness",
+      "min_danceability",
+      "max_danceability",
+      "target_danceability",
       "min_energy",
       "max_energy",
       "target_energy",
+      "min_instrumentalness",
+      "max_instrumentalness",
+      "target_instrumentalness",
+      "min_liveness",
+      "max_liveness",
+      "target_liveness",
+      "min_loudness",
+      "max_loudness",
+      "target_loudness",
+      "min_popularity",
+      "max_popularity",
+      "target_popularity",
+      "min_speechiness",
+      "max_speechiness",
+      "target_speechiness",
       "min_tempo",
       "max_tempo",
       "target_tempo",
       "min_valence",
       "max_valence",
       "target_valence",
-      "min_popularity",
-      "max_popularity",
-      "target_popularity",
     ] as const;
 
     for (const param of audioFeatureParams) {
@@ -193,9 +227,48 @@ export class SpotifyService {
       }
     }
 
-    return this.request<RecommendationsResponse>(
+    const response = await this.request<RecommendationsResponse>(
       `/recommendations?${params.toString()}`,
     );
+    return {
+      ...response,
+      tracks: response.tracks.map(SpotifyService.transformTrack),
+    };
+  }
+
+  async searchByGenreAndFeatures(
+    genre: string,
+    audioFeatures: Record<string, number>,
+    limit = 20,
+  ): Promise<SearchResponse> {
+    const options: RecommendationOptions = {
+      seed_genres: [genre],
+      limit,
+    };
+
+    for (const key in audioFeatures) {
+      if (Object.prototype.hasOwnProperty.call(audioFeatures, key)) {
+        // Assuming audioFeatures keys directly map to target_X or min_X/max_X
+        // For simplicity, mapping to target_X for now
+        options[`target_${key}` as keyof RecommendationOptions] =
+          audioFeatures[key];
+      }
+    }
+
+    const response = await this.getRecommendations(options);
+    return {
+      tracks: {
+        href: "", // Placeholder, as RecommendationResponse doesn't have href for tracks
+        items: response.tracks.map(SpotifyService.transformTrack),
+        limit: response.tracks.length, // Use actual count as limit
+        next: null,
+        offset: 0,
+        previous: null,
+        total: response.tracks.length,
+      },
+      query: `genre:${genre}`,
+      count: response.tracks.length,
+    };
   }
 
   // Player State
@@ -224,16 +297,17 @@ export class SpotifyService {
   }
 
   // Transform Spotify track to our TrackMetadata format
-  static transformTrack(track: Track) {
+  static transformTrack(track: Track): TrackMetadata {
     return {
       id: track.id,
       title: track.name,
-      artist: track.artists[0]?.name || "Unknown Artist",
+      artist: track.artists.map((a) => a.name).join(", "),
       album: track.album.name,
-      albumArt: track.album.images[0]?.url,
+      albumArt: track.album.images[0]?.url || "",
       duration: track.duration_ms,
-      uri: track.uri,
+      previewUrl: track.preview_url || undefined,
       externalUrl: track.external_urls.spotify,
+      uri: track.uri,
     };
   }
 }

@@ -4,26 +4,7 @@
  */
 
 import type { TrackMetadata } from "@/types/queue-types";
-
-// Authentication types
-export interface SpotifyUser {
-  id: string;
-  display_name: string;
-  email: string;
-  images: Array<{ url: string }>;
-}
-
-export interface SpotifyTokens {
-  access_token: string;
-  refresh_token: string;
-  expires_at: number;
-}
-
-export interface AuthState {
-  user: SpotifyUser | null;
-  isLoading: boolean;
-  error: string | null;
-}
+import type { SpotifyUser, SpotifyTokens, AuthState } from "@/types/auth";
 
 // API types
 export interface SpotifySearchResult {

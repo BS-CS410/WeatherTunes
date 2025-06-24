@@ -1,75 +1,82 @@
+import { generateSecureRandomString } from "../lib/core";
 import {
-  generateRandomString,
+  generateCodeVerifier,
   generateCodeChallenge,
-  generateSecureRandomString,
-} from "../lib/core";
+} from "../lib/core/crypto.utils";
+import type {
+  AuthResponse,
+  User,
+  TokenResponse,
+  TokenData,
+} from "@/types/auth";
 
-type TokenResponse = {
-  access_token: string;
-  refresh_token: string;
-  expires_in: number;
-};
+// Configuration constants
+const CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
+const REDIRECT_URI = window.location.origin + "/callback";
+const SCOPES = [
+  "user-read-private",
+  "user-read-email",
+  "user-read-playback-state",
+  "user-modify-playback-state",
+  "user-read-currently-playing",
+  "streaming",
+  "user-library-read",
+  "user-top-read",
+].join(" ");
 
-type TokenData = {
-  accessToken: string;
-  refreshToken: string;
-  expiresAt: number; // Timestamp in ms
-};
-
-export type User = {
-  id: string;
-  display_name: string;
-  email: string;
-  images?: Array<{ url: string }>;
-};
-
-const TOKEN_STORAGE_KEY = "spotify_auth_tokens";
+// Storage keys
+const TOKENS_KEY = "spotify_tokens";
 const CODE_VERIFIER_KEY = "spotify_code_verifier";
 const STATE_KEY = "spotify_auth_state";
 
 export class AuthService {
-  private clientId: string;
-  private redirectUri: string;
-  private scopes: string[];
+  private clientId: string = CLIENT_ID;
+  private redirectUri: string = REDIRECT_URI;
+  private scopes: string[] = SCOPES.split(" ");
   private refreshPromise: Promise<TokenData | null> | null = null;
   private isProcessingCallback = false;
 
   constructor() {
-    this.clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
-    this.redirectUri = `${window.location.origin}/callback`;
-    this.scopes = [
-      "user-read-private",
-      "user-read-email",
-      "user-read-playback-state",
-      "user-modify-playback-state",
-      "streaming",
-      "user-library-read",
-    ];
+    if (!this.clientId) {
+      throw new Error("Spotify CLIENT_ID is not configured");
+    }
   }
 
   async initiateLogin(): Promise<void> {
     // Clear any existing callback processing state
     this.isProcessingCallback = false;
 
-    const codeVerifier = generateSecureRandomString(128); // Use secure random for verifier
-    const codeChallenge = await generateCodeChallenge(codeVerifier);
-    const state = generateSecureRandomString(16); // Use secure random for state
+    try {
+      // Generate PKCE parameters
+      const codeVerifier = generateCodeVerifier();
+      const codeChallenge = await generateCodeChallenge(codeVerifier);
+      const state = generateSecureRandomString(16); // Use secure random for state
 
-    // Store verifier and state for the callback
-    localStorage.setItem(CODE_VERIFIER_KEY, codeVerifier);
-    localStorage.setItem(STATE_KEY, state);
+      // Store code verifier and state for the callback
+      this.storeCodeVerifier(codeVerifier);
+      localStorage.setItem(STATE_KEY, state);
 
-    const params = new URLSearchParams({
-      client_id: this.clientId,
-      response_type: "code",
-      redirect_uri: this.redirectUri,
-      code_challenge_method: "S256",
-      code_challenge: codeChallenge,
-      scope: this.scopes.join(" "),
-      state: state,
-    });
+      // Build authorization URL (exact parameters from Spotify docs)
+      const authUrl = new URL("https://accounts.spotify.com/authorize");
+      const params = {
+        response_type: "code",
+        client_id: this.clientId,
+        scope: this.scopes.join(" "),
+        code_challenge_method: "S256",
+        code_challenge: codeChallenge,
+        redirect_uri: this.redirectUri,
+        state: state,
+      };
 
-    window.location.href = `https://accounts.spotify.com/authorize?${params.toString()}`;
+      authUrl.search = new URLSearchParams(params).toString();
+
+      // Redirect to Spotify
+      window.location.href = authUrl.toString();
+    } catch (error) {
+      console.error("Failed to start login:", error);
+      this.clearCodeVerifier();
+      throw error;
+    }
   }
 
   async handleRedirectCallback(): Promise<void> {
@@ -89,33 +96,33 @@ export class AuthService {
 
       // Retrieve stored state and verifier
       const storedState = localStorage.getItem(STATE_KEY);
-      const codeVerifier = localStorage.getItem(CODE_VERIFIER_KEY);
+      const codeVerifier = this.getCodeVerifier();
 
       if (error) {
         // Clean up stored values on error
         localStorage.removeItem(STATE_KEY);
-        localStorage.removeItem(CODE_VERIFIER_KEY);
+        this.clearCodeVerifier();
         throw new Error(`Spotify auth error: ${error}`);
       }
 
       if (!receivedState || receivedState !== storedState) {
         // Clean up stored values on state mismatch
         localStorage.removeItem(STATE_KEY);
-        localStorage.removeItem(CODE_VERIFIER_KEY);
+        this.clearCodeVerifier();
         throw new Error("State mismatch error. Potential CSRF attack.");
       }
 
       if (!code) {
         // Clean up stored values on missing code
         localStorage.removeItem(STATE_KEY);
-        localStorage.removeItem(CODE_VERIFIER_KEY);
+        this.clearCodeVerifier();
         throw new Error("Missing required 'code' authentication parameter.");
       }
 
       if (!codeVerifier) {
         // Clean up stored values on missing verifier
         localStorage.removeItem(STATE_KEY);
-        localStorage.removeItem(CODE_VERIFIER_KEY);
+        this.clearCodeVerifier();
         throw new Error("No code verifier found in local storage.");
       }
 
@@ -133,37 +140,42 @@ export class AuthService {
     code: string,
     codeVerifier: string,
   ): Promise<TokenData> {
-    const response = await fetch("https://accounts.spotify.com/api/token", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: new URLSearchParams({
-        client_id: this.clientId,
-        grant_type: "authorization_code",
-        code,
-        redirect_uri: this.redirectUri,
-        code_verifier: codeVerifier,
-      }),
-    });
+    try {
+      const response = await fetch("https://accounts.spotify.com/api/token", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          client_id: this.clientId,
+          grant_type: "authorization_code",
+          code,
+          redirect_uri: this.redirectUri,
+          code_verifier: codeVerifier,
+        }),
+      });
 
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
-      throw new Error(
-        error.error_description || "Failed to authenticate with Spotify",
-      );
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        throw new Error(
+          error.error_description || "Failed to authenticate with Spotify",
+        );
+      }
+
+      const data: TokenResponse = await response.json();
+      const tokenData: TokenData = {
+        accessToken: data.access_token,
+        refreshToken: data.refresh_token,
+        expiresAt: Date.now() + data.expires_in * 1000 - 60000, // 1 minute buffer
+      };
+
+      this.storeTokens(tokenData);
+      this.clearCodeVerifier();
+      return tokenData;
+    } catch (error) {
+      this.clearCodeVerifier();
+      throw error;
     }
-
-    const data: TokenResponse = await response.json();
-    const tokenData: TokenData = {
-      accessToken: data.access_token,
-      refreshToken: data.refresh_token,
-      expiresAt: Date.now() + data.expires_in * 1000,
-    };
-
-    this.storeTokens(tokenData);
-    localStorage.removeItem(CODE_VERIFIER_KEY);
-    return tokenData;
   }
 
   async getAccessToken(): Promise<string> {
@@ -184,7 +196,11 @@ export class AuthService {
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch user data: ${response.statusText}`);
+        if (response.status === 401) {
+          this.clearTokens();
+          return null;
+        }
+        throw new Error("Failed to fetch user info");
       }
 
       return await response.json();
@@ -244,14 +260,58 @@ export class AuthService {
   }
 
   private getTokens(): TokenData | null {
-    const tokenString = localStorage.getItem(TOKEN_STORAGE_KEY);
-    if (!tokenString) return null;
-
     try {
-      return JSON.parse(tokenString);
+      const stored = localStorage.getItem(TOKENS_KEY);
+      if (!stored) return null;
+
+      const tokens = JSON.parse(stored);
+
+      // Validate token structure
+      if (!tokens.accessToken || !tokens.refreshToken || !tokens.expiresAt) {
+        console.warn("Invalid token structure found, clearing storage");
+        this.clearTokens();
+        return null;
+      }
+
+      return tokens;
     } catch (error) {
-      console.error("Failed to parse stored tokens", error);
+      console.error("Failed to parse stored tokens:", error);
+      this.clearTokens();
       return null;
+    }
+  }
+
+  private storeTokens(tokens: TokenData): void {
+    try {
+      localStorage.setItem(TOKENS_KEY, JSON.stringify(tokens));
+    } catch (error) {
+      console.error("Failed to store tokens:", error);
+      // Continue without storage - user will need to re-login
+    }
+  }
+
+  private getCodeVerifier(): string | null {
+    try {
+      return localStorage.getItem(CODE_VERIFIER_KEY);
+    } catch (error) {
+      console.error("Failed to get code verifier:", error);
+      return null;
+    }
+  }
+
+  private storeCodeVerifier(codeVerifier: string): void {
+    try {
+      localStorage.setItem(CODE_VERIFIER_KEY, codeVerifier);
+    } catch (error) {
+      console.error("Failed to store code verifier:", error);
+    }
+  }
+
+  private clearCodeVerifier(): void {
+    try {
+      localStorage.removeItem(CODE_VERIFIER_KEY);
+    } catch (error) {
+      console.error("Failed to clear code verifier:", error);
     }
   }
 
@@ -314,13 +374,9 @@ export class AuthService {
     return refreshOperation;
   }
 
-  private storeTokens(tokens: TokenData): void {
-    localStorage.setItem(TOKEN_STORAGE_KEY, JSON.stringify(tokens));
-  }
-
   private clearTokens(): void {
     try {
-      localStorage.removeItem(TOKEN_STORAGE_KEY);
+      localStorage.removeItem(TOKENS_KEY);
       localStorage.removeItem(CODE_VERIFIER_KEY);
       localStorage.removeItem(STATE_KEY); // Clear state key on logout
     } catch (error) {

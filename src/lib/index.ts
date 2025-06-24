@@ -40,5 +40,4 @@ export {
   createLiquidGlassCard,
 } from "./design";
 export { fetchWeatherByCoords, getUserLocationAndFetch } from "./weather";
-export { spotifyApi, startSpotifyLogin, getValidAccessToken } from "./music";
 export { queryClient } from "./config";

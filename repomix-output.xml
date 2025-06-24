@@ -1,0 +1,5366 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+The content has been processed where content has been compressed (code blocks are separated by ⋮---- delimiter).
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Content has been compressed - code blocks are separated by ⋮---- delimiter
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+public/
+  favicon.svg
+  placeholder-album.svg
+src/
+  __tests__/
+    services/
+      AuthService.test.ts
+  assets/
+    videos/
+      README.md
+  components/
+    icons/
+      index.ts
+      SettingsIcon.tsx
+      SunriseIcon.tsx
+      SunsetIcon.tsx
+    layout/
+      AppLayout.tsx
+      SectionWrapper.tsx
+      ThemeProvider.tsx
+    music/
+      SpotifyMiniPlayer.tsx
+      SpotifyWebPlayer.tsx
+    settings/
+      SettingsButton.tsx
+      SettingsComponents.tsx
+      SettingsPanel.tsx
+      ThemeSwitcher.tsx
+      UnitSelector.tsx
+    shared/
+      ErrorBoundary.tsx
+      LiquidGlassContainer.tsx
+      LoginPopup.tsx
+      OAuthCallback.tsx
+      StatusComponents.tsx
+    ui/
+      button.tsx
+      card.tsx
+      segmented-control.tsx
+      slider.tsx
+    weather/
+      WeatherBackground.tsx
+    FavoritesCard.tsx
+    ForecastCard.tsx
+    index.ts
+    QueueCard.tsx
+    SettingsCard.tsx
+    SpotifySearchCard.tsx
+    WeatherMusicCard.tsx
+  contexts/
+    AuthProvider.tsx
+    ServiceContext.tsx
+    SettingsProvider.tsx
+  data/
+    video-assets.ts
+  hooks/
+    common.ts
+    index.ts
+    spotify.ts
+    useAuth.ts
+    useLocationBasedDefaults.ts
+    useThemeManager.ts
+    useWeatherData.ts
+    useWeatherForecast.ts
+    useWeatherQueue.ts
+  lib/
+    config/
+      index.ts
+      query-client.ts
+    core/
+      array.utils.ts
+      crypto.utils.ts
+      dom.utils.ts
+      index.ts
+      string.utils.ts
+      time.utils.ts
+      units.utils.ts
+      validation.utils.ts
+    design/
+      design-system.ts
+      index.ts
+      mui-theme.ts
+    music/
+      index.ts
+      recommendations.ts
+      spotify-api.ts
+      spotify-types.ts
+    weather/
+      index.ts
+      weather-api.ts
+    index.ts
+  services/
+    storage/
+      index.ts
+      local-storage.ts
+    AuthService.ts
+    SettingsService.ts
+    SpotifyService.ts
+    WeatherService.ts
+  test/
+    test-setup.ts
+  types/
+    auth-types.ts
+    queue-types.ts
+    spotify-api-types.ts
+    spotify-player-types.ts
+    spotify-player.d.ts
+    units-types.ts
+    weather-types.ts
+  App.tsx
+  global-styles.css
+  main.tsx
+  MainPage.tsx
+  vite-env.d.ts
+tests/
+  api-queue-comprehensive.spec.ts
+  auth-comprehensive.spec.ts
+  frontend-auth.spec.ts
+  frontend-complete.spec.ts
+  frontend-integration.spec.ts
+  README.md
+.env.example
+.gitignore
+.prettierignore
+.prettierrc
+auth_docs.json
+components.json
+dev.sh
+eslint.config.js
+index.html
+package.json
+playwright.config.ts
+README.md
+tailwind.config.ts
+test-comprehensive.sh
+tsconfig.app.json
+tsconfig.json
+tsconfig.node.json
+vite.config.ts
+vitest.config.ts
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="src/vite-env.d.ts">
+/// <reference types="vite/client" />
+</file>
+
+<file path=".prettierignore">
+# Ignore artifacts:
+build
+coverage
+</file>
+
+<file path=".prettierrc">
+{
+  "plugins": ["prettier-plugin-tailwindcss"]
+}
+</file>
+
+<file path="components.json">
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "new-york",
+  "rsc": false,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "src/index.css",
+    "baseColor": "slate",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "aliases": {
+    "components": "@/components",
+    "utils": "@/lib/utils",
+    "ui": "@/components/ui",
+    "lib": "@/lib",
+    "hooks": "@/hooks"
+  },
+  "iconLibrary": "lucide"
+}
+</file>
+
+<file path="eslint.config.js">
+...tseslint.config(
+</file>
+
+<file path="public/favicon.svg">
+<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6zm-2 16c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>
+</file>
+
+<file path="public/placeholder-album.svg">
+<svg width="400" height="400" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="400" fill="#f3f4f6"/>
+  <circle cx="200" cy="160" r="40" fill="#9ca3af"/>
+  <path d="M160 200h80v80c0 22.091-17.909 40-40 40s-40-17.909-40-40v-80z" fill="#9ca3af"/>
+  <rect x="150" y="240" width="100" height="8" rx="4" fill="#d1d5db"/>
+  <rect x="170" y="260" width="60" height="6" rx="3" fill="#d1d5db"/>
+  <text x="200" y="340" text-anchor="middle" fill="#6b7280" font-family="Arial, sans-serif" font-size="14">No Album Art</text>
+</svg>
+</file>
+
+<file path="src/assets/videos/README.md">
+# Video Assets Structure
+
+This folder contains weather-specific background videos organized by weather condition and time of day.
+
+## File Naming Convention
+
+Videos follow the pattern: `{weather}_{timeOfDay}.mp4`
+
+### Weather Types:
+
+- `clear` - Clear/sunny skies
+- `rain` - Rain, drizzle, thunderstorm conditions
+- `snow` - Snow conditions
+- `fog` - Fog, mist conditions
+- `cloudy` - Heavy cloud cover (>70%)
+
+### Time Periods:
+
+- `night` - Night time
+- `morning` - Morning hours
+- `day` - Daytime hours
+- `evening` - Evening hours
+
+## Current Status
+
+**Complete video set: 24 files (5 weather types × 4 time periods)**
+
+All videos are properly named and follow the established naming convention. This provides comprehensive coverage for weather-based background video selection.
+
+### Available Videos:
+
+**Clear Weather:**
+
+- `clear_night.mp4`
+- `clear_morning.mp4`
+- `clear_day.mp4`
+- `clear_evening.mp4`
+
+**Rain Weather:**
+
+- `rain_night.mp4`
+- `rain_morning.mp4`
+- `rain_day.mp4`
+- `rain_evening.mp4`
+
+**Snow Weather:**
+
+- `snow_night.mp4`
+- `snow_morning.mp4`
+- `snow_day.mp4`
+- `snow_evening.mp4`
+
+**Fog Weather:**
+
+- `fog_night.mp4`
+- `fog_morning.mp4`
+- `fog_day.mp4`
+- `fog_evening.mp4`
+
+**Cloudy Weather:**
+
+- `cloudy_night.mp4`
+- `cloudy_morning.mp4`
+- `cloudy_day.mp4`
+- `cloudy_evening.mp4`
+
+## Notes
+
+- All videos should be in MP4 format
+- Videos are automatically selected based on current weather conditions and time
+- Placeholder files (0 bytes) will use fallback videos until replaced with actual content
+- The VideoBackground component imports all these files for seamless weather transitions
+</file>
+
+<file path="src/components/icons/SettingsIcon.tsx">
+interface SettingsIconProps {
+  className?: string;
+  size?: number;
+}
+⋮----
+export function SettingsIcon(
+</file>
+
+<file path="src/components/icons/SunriseIcon.tsx">
+interface SunriseIconProps {
+  className?: string;
+  size?: number;
+}
+⋮----
+export function SunriseIcon(
+</file>
+
+<file path="src/components/icons/SunsetIcon.tsx">
+interface SunsetIconProps {
+  className?: string;
+  size?: number;
+}
+⋮----
+export function SunsetIcon(
+</file>
+
+<file path="src/components/layout/AppLayout.tsx">
+import { Container, useMediaQuery, useTheme } from "@mui/material";
+import { type ReactNode } from "react";
+⋮----
+interface AppLayoutProps {
+  children: ReactNode;
+  maxWidth?: "xs" | "sm" | "md" | "lg" | "xl";
+  className?: string;
+}
+⋮----
+/**
+ * Responsive layout wrapper that provides consistent spacing and breakpoints
+ * Integrates MUI's responsive system with existing design
+ */
+⋮----
+px: isMobile ? 2 : 4, // responsive padding
+py: isMobile ? 1 : 2, // responsive vertical spacing
+</file>
+
+<file path="src/components/settings/SettingsComponents.tsx">
+import React from "react";
+⋮----
+interface SettingsSectionProps {
+  label?: string;
+  title?: string;
+  children: React.ReactNode;
+}
+⋮----
+export function SettingsSection({
+  label,
+  title,
+  children,
+}: SettingsSectionProps)
+⋮----
+interface ButtonOption {
+  value: string;
+  label: string;
+  isSelected: boolean;
+  onClick: () => void;
+}
+⋮----
+interface SettingsButtonGroupProps {
+  options?: ButtonOption[];
+  children?: React.ReactNode;
+}
+</file>
+
+<file path="src/components/shared/LiquidGlassContainer.tsx">
+import React from "react";
+⋮----
+interface LiquidGlassContainerProps {
+  variant?: "enhanced" | "floating" | "chromatic" | "elastic" | "interactive";
+  mouseResponsive?: boolean;
+  elasticity?: number;
+  chromatic?: boolean;
+  className?: string;
+  children: React.ReactNode;
+}
+⋮----
+export const LiquidGlassContainer: React.FC<LiquidGlassContainerProps> = ({
+  variant = "enhanced",
+  mouseResponsive = false,
+  elasticity = 0.1,
+  chromatic = false,
+  className = "",
+  children,
+}) =>
+⋮----
+// Placeholder for actual effect logic
+// In a real implementation, hooks and event handlers would be added here
+</file>
+
+<file path="src/components/shared/OAuthCallback.tsx">
+import React, { useEffect } from "react";
+import { useAuth } from "@/hooks/useAuth";
+⋮----
+const OAuthCallback: React.FC = () =>
+⋮----
+// eslint-disable-next-line
+</file>
+
+<file path="src/components/FavoritesCard.tsx">
+import { useState } from "react";
+⋮----
+import { COLORS, TYPOGRAPHY, CARD_STYLES } from "@/lib";
+import { cn } from "@/lib";
+import { useAuth } from "@/hooks/useAuth";
+import { SpotifyMiniPlayer } from "@/components/music/SpotifyMiniPlayer";
+import { useSpotifyLikedTracks, useSpotifyQueue } from "@/hooks/spotify";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import type { TrackMetadata } from "@/types/queue-types";
+import { LoadingSpinner } from "@/components/shared/StatusComponents";
+import { ErrorDisplay } from "@/components/shared/StatusComponents";
+⋮----
+interface FavoritesCardProps {
+  className?: string;
+}
+⋮----
+/**
+ * Renders a card that displays the user's liked Spotify tracks.
+ * Features a horizontally scrollable list of tracks.
+ * Handles loading, error, and empty states gracefully.
+ */
+⋮----
+const handleTrackPlay = async (track: TrackMetadata) =>
+</file>
+
+<file path="src/components/QueueCard.tsx">
+/**
+ * QueueCard component for displaying and managing the music queue
+ * Uses the new Spotify Web Playback SDK and service architecture
+ */
+⋮----
+import { useState } from "react";
+import { COLORS, TYPOGRAPHY, LAYOUT, ANIMATIONS, CARD_STYLES } from "@/lib";
+import { useAuth } from "@/hooks/useAuth";
+import { useSpotifyQueue } from "@/hooks/spotify";
+import { cn } from "@/lib";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import type { TrackMetadata } from "@/types/queue-types";
+⋮----
+const handleMouseEnter = (id: string) =>
+⋮----
+const handleMouseLeave = () =>
+⋮----
+const handlePlayTrack = async (trackId: string) =>
+⋮----
+const handleClearQueue = async () =>
+⋮----
+<div className=
+<p className=
+⋮----
+{/* Header */}
+⋮----
+{/* Queue Display */}
+⋮----
+className=
+⋮----
+{/* Next Up Indicator */}
+⋮----
+{/* Play Button Overlay */}
+</file>
+
+<file path="src/components/SettingsCard.tsx">
+import { cn } from "@/lib";
+import { useSettings } from "@/hooks";
+import { useAuth } from "@/hooks/useAuth";
+import {
+  SettingsSection,
+  SettingsButtonGroup,
+} from "@/components/settings/SettingsComponents";
+import { COLORS, TYPOGRAPHY, BUTTON_STYLES } from "@/lib";
+import { useState } from "react";
+import { Card } from "@/components/ui/card";
+⋮----
+interface SettingsCardProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+⋮----
+const handleLogout = async () =>
+⋮----
+onClose(); // Close settings menu after successful logout
+⋮----
+{/* Backdrop with subtle blur */}
+⋮----
+{/* Left Sidebar Panel */}
+⋮----
+{/* Main Settings Panel */}
+⋮----
+{/* Header */}
+⋮----
+// Center the X perfectly in the circle
+⋮----
+{/* Scrollable Content */}
+⋮----
+{/* Temperature Unit */}
+⋮----
+{/* Time Format */}
+⋮----
+{/* Theme Mode */}
+⋮----
+{/* Footer Actions */}
+⋮----
+{/* Action Buttons */}
+⋮----
+{/* Authentication Section */}
+⋮----
+className=
+</file>
+
+<file path="src/components/SpotifySearchCard.tsx">
+import React, { useState } from "react";
+import { Search, Music, Plus, Loader2 } from "lucide-react";
+import { useSpotifySearch, useSpotifyQueue } from "@/hooks/spotify";
+import { useAuth } from "@/hooks/useAuth";
+import type { TrackMetadata } from "@/types/queue-types";
+import { COLORS, CARD_STYLES, INPUT_STYLES, BUTTON_STYLES } from "@/lib";
+import { cn } from "@/lib";
+import { Card } from "@/components/ui/card";
+⋮----
+interface SpotifySearchCardProps {
+  className?: string;
+}
+⋮----
+/**
+ * Component for searching Spotify tracks and adding them to queue
+ * Uses the new queue system for better performance
+ */
+⋮----
+const handleSearch = async (e: React.FormEvent) =>
+⋮----
+const handleMoodSearch = async (mood: string) =>
+⋮----
+const handleAddToQueue = async (track: TrackMetadata) =>
+⋮----
+const handleClear = () =>
+⋮----
+<h3 className=
+⋮----
+{/* Search Form */}
+⋮----
+onChange=
+⋮----
+className=
+⋮----
+{/* Mood Search Buttons */}
+⋮----
+{/* Clear Results */}
+⋮----
+{/* Error Display */}
+⋮----
+{/* Search Results */}
+⋮----
+<p className=
+⋮----
+{/* Loading State */}
+</file>
+
+<file path="src/components/WeatherMusicCard.tsx">
+import { useState, useEffect } from "react";
+import { SunriseIcon, SunsetIcon } from "@/components/icons";
+import type { WeatherDisplayData } from "@/types/weather-types";
+import { SectionWrapper } from "@/components/layout/SectionWrapper";
+import { useAuth } from "@/hooks/useAuth";
+import { useSpotifyLikes, useSpotifyQueue } from "@/hooks/spotify";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { TYPOGRAPHY, COLORS } from "@/lib";
+import { cn } from "@/lib";
+import { SpotifyWebPlayer } from "@/components/music/SpotifyWebPlayer";
+⋮----
+interface WeatherMusicCardProps {
+  weatherData: WeatherDisplayData;
+  className?: string;
+}
+⋮----
+/**
+ * Unified weather and music display component using 2x2 grid layout
+ * Top row: weather info and album art
+ * Bottom row: Spotify player and control buttons
+ */
+⋮----
+// Use track metadata from context or fallback to placeholders
+⋮----
+// Preload album art images for all tracks in the queue
+⋮----
+const handleLikeClick = async () =>
+⋮----
+const handleNext = async () =>
+⋮----
+{/* Top Section - Weather and Album Art (2x1 grid, same as original) */}
+⋮----
+{/* Weather Section - Left Grid Cell */}
+⋮----
+{/* Location */}
+⋮----
+{/* Temperature */}
+⋮----
+{/* Condition */}
+⋮----
+{/* Sunrise/Sunset */}
+⋮----
+{/* Vertical divider */}
+⋮----
+{/* Album Art Section - Right Grid Cell */}
+⋮----
+{/* Bottom Section - Music Player and Controls (full width) */}
+⋮----
+{/* Spotify Player (full width) */}
+⋮----
+<div className=
+⋮----
+{/* Control Buttons (full width) */}
+⋮----
+{/* Queue Status */}
+⋮----
+{/* Message Display */}
+⋮----
+className=
+</file>
+
+<file path="src/contexts/ServiceContext.tsx">
+import { createContext, useMemo, ReactNode, Context } from 'react';
+import { AuthService } from '@/services/AuthService';
+import { SpotifyService } from '@/services/SpotifyService';
+⋮----
+// Define and export the Services interface
+export interface Services {
+  auth: AuthService;
+  spotify: SpotifyService;
+}
+⋮----
+// Create and export the context
+⋮----
+// Define and export the ServiceProvider component
+export const ServiceProvider = (
+⋮----
+// Create services only once
+⋮----
+// Export the context and types
+⋮----
+// Services type is already exported at the interface level
+</file>
+
+<file path="src/data/video-assets.ts">
+/**
+ * Video assets mapped to weather conditions
+ */
+export interface VideoAsset {
+  id: string;
+  path: string;
+  className: string;
+}
+⋮----
+/**
+ * Map of weather conditions to video assets
+ * Key: OpenWeatherMap condition code
+ */
+⋮----
+// Clear sky
+⋮----
+// Few clouds
+⋮----
+// Scattered clouds
+⋮----
+// Broken clouds
+⋮----
+// Showers (light rain)
+⋮----
+// Rain
+⋮----
+// Thunderstorm
+⋮----
+// Snow
+⋮----
+// Mist/Fog
+⋮----
+/**
+ * Get video asset for a specific weather condition
+ * @param condition OpenWeatherMap condition code (e.g., '01d', '09n')
+ * @returns VideoAsset for the condition or default clear sky if not found
+ */
+export function getVideoForCondition(condition: string): VideoAsset
+⋮----
+// Default to clear sky day if condition not found
+⋮----
+/**
+ * Get all video assets as an array
+ * @returns Array of VideoAsset objects
+ */
+export function getAllVideoAssets(): VideoAsset[]
+⋮----
+/**
+ * Get all video paths as an array
+ * Useful for preloading videos
+ * @returns Array of unique video paths
+ * @example
+ * ```typescript
+ * // Preload all video assets
+ * const videoPaths = getAllVideoPaths();
+ * videoPaths.forEach(path => {
+ *   const video = document.createElement('video');
+ *   video.src = path;
+ *   video.preload = 'auto';
+ * });
+ * ```
+ */
+export function getAllVideoPaths(): string[]
+⋮----
+// Use a Set to ensure unique paths in case multiple conditions use the same video
+⋮----
+// Add all video paths to the Set
+⋮----
+/**
+ * Get a list of all unique weather condition codes
+ * @returns Array of weather condition codes (e.g., ['01d', '01n', '02d', ...])
+ */
+export function getAllWeatherConditionCodes(): string[]
+⋮----
+/**
+ * Check if a weather condition code is valid
+ * @param condition Weather condition code to check
+ * @returns boolean indicating if the condition code is valid
+ */
+export function isValidWeatherCondition(condition: string): boolean
+</file>
+
+<file path="src/lib/config/index.ts">
+/**
+ * Configuration utilities - Application setup and configuration
+ * Centralized access to all configuration and setup utilities
+ */
+⋮----
+// React Query client configuration
+</file>
+
+<file path="src/lib/config/query-client.ts">
+import { QueryClient } from "@tanstack/react-query";
+⋮----
+staleTime: 5 * 60 * 1000, // 5 minutes
+⋮----
+// Don't retry on 4xx errors
+⋮----
+return failureCount < 3; // Only retry up to 3 times
+</file>
+
+<file path="src/lib/core/array.utils.ts">
+/**
+ * Array manipulation utilities
+ */
+⋮----
+/**
+ * Remove duplicates from array based on key
+ */
+export function uniqueBy<T>(array: T[], key: keyof T): T[]
+⋮----
+/**
+ * Chunk array into smaller arrays
+ */
+export function chunk<T>(array: T[], size: number): T[][]
+⋮----
+/**
+ * Shuffle array randomly
+ */
+export function shuffle<T>(array: T[]): T[]
+</file>
+
+<file path="src/lib/core/dom.utils.ts">
+/**
+ * DOM utilities for element manipulation and styling
+ */
+⋮----
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+⋮----
+/**
+ * Utility for conditionally joining classNames
+ * Combines clsx with tailwind-merge for optimal class handling
+ */
+export function cn(...inputs: ClassValue[])
+⋮----
+/**
+ * Simple debounce function
+ */
+export function debounce<T extends (...args: unknown[]) => unknown>(
+  func: T,
+  wait: number,
+): (...args: Parameters<T>) => void
+⋮----
+/**
+ * Get element by ID with type safety
+ */
+export function getElementById<T extends HTMLElement = HTMLElement>(
+  id: string,
+): T | null
+</file>
+
+<file path="src/lib/core/index.ts">
+/**
+ * Core utilities - Consolidated exports
+ * Centralized access to all core utility functions
+ */
+⋮----
+// DOM utilities
+⋮----
+// Cryptographic utilities
+⋮----
+// Time and date utilities
+⋮----
+// Validation utilities
+⋮----
+// Array utilities
+⋮----
+// String utilities
+⋮----
+// Unit conversion utilities
+</file>
+
+<file path="src/lib/core/string.utils.ts">
+/**
+ * String manipulation utilities
+ */
+⋮----
+/**
+ * Capitalize first letter
+ */
+export function capitalize(str: string): string
+⋮----
+/**
+ * Convert string to title case
+ */
+export function toTitleCase(str: string): string
+⋮----
+/**
+ * Truncate string with ellipsis
+ */
+export function truncate(str: string, length: number): string
+⋮----
+/**
+ * Remove HTML tags from string
+ */
+export function stripHtml(html: string): string
+</file>
+
+<file path="src/lib/core/time.utils.ts">
+/**
+ * Time and date utilities
+ */
+⋮----
+export type TimePeriod = "morning" | "day" | "evening" | "night";
+⋮----
+/**
+ * Determine time period based on current hour
+ */
+export function getTimePeriod(date: Date = new Date()): TimePeriod
+⋮----
+/**
+ * Format time for display
+ */
+export function formatTime(
+  date: Date,
+  format: "12h" | "24h" = "12h",
+  showSeconds = false,
+): string
+⋮----
+/**
+ * Format duration in milliseconds to readable format
+ */
+export function formatDuration(ms: number): string
+⋮----
+/**
+ * Format Unix timestamp to local string
+ */
+export function formatUnixTimeToLocalString(
+  timestamp: number,
+  locale?: string,
+  options?: Intl.DateTimeFormatOptions,
+): string;
+export function formatUnixTimeToLocalString(
+  timestamp: number,
+  format?: "short" | "long" | "time",
+): string;
+export function formatUnixTimeToLocalString(
+  timestamp: number,
+  localeOrFormat?: string | "short" | "long" | "time",
+  options?: Intl.DateTimeFormatOptions,
+): string
+⋮----
+// If called with locale and options (new signature)
+⋮----
+// If called with format only (old signature)
+</file>
+
+<file path="src/lib/core/validation.utils.ts">
+/**
+ * Validation utilities for input sanitization and checks
+ */
+⋮----
+/**
+ * Check if a value is a valid email
+ */
+export function isValidEmail(email: string): boolean
+⋮----
+/**
+ * Check if a string is a valid URL
+ */
+export function isValidUrl(url: string): boolean
+⋮----
+/**
+ * Safely parse JSON with fallback
+ */
+export function safeJsonParse<T>(json: string, fallback: T): T
+</file>
+
+<file path="src/lib/design/index.ts">
+/**
+ * Design system exports - Consolidated UI components and theming
+ * Centralized access to all design system utilities
+ */
+⋮----
+// Core design system
+⋮----
+// Material-UI theme integration
+</file>
+
+<file path="src/lib/design/mui-theme.ts">
+import { createTheme } from "@mui/material/styles";
+⋮----
+// Material UI theme that integrates with existing WeatherTunes design
+⋮----
+main: "#3b82f6", // blue-500 - matches existing blue theme
+light: "#60a5fa", // blue-400
+dark: "#1d4ed8", // blue-700
+⋮----
+main: "#6b7280", // gray-500 - neutral secondary
+light: "#9ca3af", // gray-400
+dark: "#374151", // gray-700
+⋮----
+default: "transparent", // Use transparent for liquid glass effect
+paper: "transparent", // Use transparent for liquid glass effect
+⋮----
+primary: "#1f2937", // gray-800 - matches existing text
+secondary: "#6b7280", // gray-500
+⋮----
+fontFamily: "inherit", // Use existing font stack
+⋮----
+borderRadius: 8, // matches existing rounded-lg
+⋮----
+sm: 640, // matches Tailwind sm
+md: 768, // matches Tailwind md
+lg: 1024, // matches Tailwind lg
+xl: 1280, // matches Tailwind xl
+⋮----
+// Customize components to match existing design
+⋮----
+backgroundImage: "none", // remove default gradient
+⋮----
+textTransform: "none", // keep normal case
+⋮----
+"0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)", // matches existing shadow
+⋮----
+// Dark theme variant
+⋮----
+main: "#60a5fa", // blue-400 - lighter for dark mode
+light: "#93c5fd", // blue-300
+dark: "#3b82f6", // blue-500
+⋮----
+default: "transparent", // Use transparent for liquid glass effect
+paper: "transparent", // Use transparent for liquid glass effect
+⋮----
+primary: "#ffffff", // white text for dark mode
+secondary: "#d1d5db", // gray-300
+</file>
+
+<file path="src/lib/music/index.ts">
+/**
+ * Music and Spotify utilities - Consolidated music functionality
+ * Centralized access to all music-related APIs and utilities
+ */
+⋮----
+// Spotify API client
+⋮----
+// Spotify types
+⋮----
+// Music recommendations and playlist generation
+</file>
+
+<file path="src/lib/music/recommendations.ts">
+import {
+  getWeatherRecommendations,
+  searchByGenreAndFeatures,
+} from "./spotify-api";
+import type { TrackMetadata } from "@/types/queue-types";
+import type { SpotifyService } from "@/services/SpotifyService";
+import type { RecommendationOptions } from "@/types/spotify-api-types";
+⋮----
+/**
+ * Music utilities for track management and queue generation
+ */
+⋮----
+// === WEATHER-TO-MUSIC MAPPING ===
+⋮----
+export interface AudioFeatures {
+  valence?: number; // 0.0-1.0 (sadness-happiness)
+  energy?: number; // 0.0-1.0 (low-high energy)
+  danceability?: number; // 0.0-1.0 (less-more danceable)
+  acousticness?: number; // 0.0-1.0 (electric-acoustic)
+  instrumentalness?: number; // 0.0-1.0 (vocal-instrumental)
+  tempo?: number; // BPM range
+}
+⋮----
+valence?: number; // 0.0-1.0 (sadness-happiness)
+energy?: number; // 0.0-1.0 (low-high energy)
+danceability?: number; // 0.0-1.0 (less-more danceable)
+acousticness?: number; // 0.0-1.0 (electric-acoustic)
+instrumentalness?: number; // 0.0-1.0 (vocal-instrumental)
+tempo?: number; // BPM range
+⋮----
+export interface WeatherMusicMapping {
+  genres: string[];
+  audioFeatures: AudioFeatures;
+  seedKeywords: string[];
+}
+⋮----
+class WeatherMusicMapper
+⋮----
+// Clear/Sunny Weather
+⋮----
+valence: 0.7, // High happiness
+energy: 0.8, // High energy
+danceability: 0.7, // Danceable
+acousticness: 0.3, // More electric
+tempo: 120, // Upbeat tempo
+⋮----
+// Cloudy Weather
+⋮----
+valence: 0.5, // Neutral mood
+energy: 0.5, // Medium energy
+danceability: 0.4, // Less danceable
+acousticness: 0.6, // More acoustic
+tempo: 90, // Slower tempo
+⋮----
+// Rainy Weather
+⋮----
+valence: 0.3, // Melancholic
+energy: 0.4, // Lower energy
+danceability: 0.3, // Not very danceable
+acousticness: 0.7, // Acoustic preference
+tempo: 80, // Slower tempo
+⋮----
+// Snow Weather
+⋮----
+valence: 0.4, // Peaceful but neutral
+energy: 0.3, // Low energy
+danceability: 0.2, // Not danceable
+acousticness: 0.8, // Very acoustic
+tempo: 65, // Very slow
+⋮----
+// Thunderstorm Weather
+⋮----
+valence: 0.2, // Dark mood
+energy: 0.9, // Very high energy
+danceability: 0.4, // Moderate danceability
+acousticness: 0.2, // Electric/synthetic
+tempo: 140, // Fast tempo
+⋮----
+// Fog/Mist Weather
+⋮----
+valence: 0.3, // Mysterious
+energy: 0.2, // Very low energy
+danceability: 0.1, // Not danceable
+acousticness: 0.6, // Moderate acoustic
+tempo: 55, // Very slow
+⋮----
+// Extreme Weather
+⋮----
+// Default fallback
+⋮----
+/**
+   * Get music mapping for weather condition
+   */
+static getMapping(condition: string): WeatherMusicMapping
+⋮----
+/**
+   * Get all available weather conditions
+   */
+static getAvailableConditions(): string[]
+⋮----
+/**
+   * Search for similar weather conditions
+   */
+static findSimilarCondition(condition: string): string | null
+⋮----
+// Direct match
+⋮----
+// Partial match
+⋮----
+// Keyword matching
+⋮----
+// === MUSIC QUEUE MANAGEMENT ===
+⋮----
+/**
+ * Create a mixed playlist combining multiple sources
+ */
+export async function generateWeatherPlaylist(
+  spotifyService: SpotifyService,
+  weatherCondition: string,
+  temperature?: number,
+  timeOfDay?: string,
+  additionalGenres: string[] = [],
+  limit = 30,
+): Promise<TrackMetadata[]>
+⋮----
+// Apply adjustments to base audio features
+⋮----
+// Helper to apply adjustments
+const applyAdjustments = (
+      features: AudioFeatures,
+      adjustments: Partial<AudioFeatures>,
+) =>
+⋮----
+seed_genres: mapping.genres.slice(0, 5), // Max 5 genres
+⋮----
+// Map to target_X for SpotifyService.getRecommendations
+⋮----
+// Get tracks from primary weather mapping
+⋮----
+// Add variety from additional genres
+⋮----
+// Remove duplicates and shuffle
+⋮----
+// === UTILITY FUNCTIONS ===
+⋮----
+/**
+ * Shuffle array using Fisher-Yates algorithm
+ */
+function shuffleArray<T>(array: T[]): T[]
+⋮----
+/**
+ * Get time-based audio feature adjustments
+ */
+export function getTimeBasedAdjustments(
+  timeOfDay: string,
+): Partial<AudioFeatures>
+⋮----
+valence: 0.1, // Slightly more positive
+energy: 0.1, // Slightly more energetic
+tempo: 10, // Slightly faster
+⋮----
+valence: 0.0, // No change
+energy: 0.0, // No change
+tempo: 0, // No change
+⋮----
+valence: -0.1, // Slightly more mellow
+energy: -0.2, // Less energetic
+tempo: -15, // Slower
+⋮----
+valence: -0.2, // More mellow
+energy: -0.3, // Much less energetic
+tempo: -25, // Much slower
+⋮----
+/**
+ * Get temperature-based audio feature adjustments
+ */
+export function getTemperatureBasedAdjustments(
+  temperature: number,
+): Partial<AudioFeatures>
+⋮----
+// Temperature in Celsius for consistency
+⋮----
+// Hot weather - high energy, tropical
+⋮----
+// Warm weather - positive, moderate energy
+⋮----
+// Cool weather - neutral
+⋮----
+// Cold weather - more mellow
+⋮----
+// Freezing weather - very mellow, acoustic
+⋮----
+// Export the mapper class for direct access
+</file>
+
+<file path="src/lib/music/spotify-types.ts">
+/**
+ * Spotify types for authentication and API
+ * Single source of truth for all Spotify-related interfaces
+ */
+⋮----
+import type { TrackMetadata } from "@/types/queue-types";
+⋮----
+// Authentication types
+export interface SpotifyUser {
+  id: string;
+  display_name: string;
+  email: string;
+  images: Array<{ url: string }>;
+}
+⋮----
+export interface SpotifyTokens {
+  access_token: string;
+  refresh_token: string;
+  expires_at: number;
+}
+⋮----
+export interface AuthState {
+  user: SpotifyUser | null;
+  isLoading: boolean;
+  error: string | null;
+}
+⋮----
+// API types
+export interface SpotifySearchResult {
+  tracks: TrackMetadata[];
+  query: string;
+  count: number;
+}
+⋮----
+export interface WeatherRecommendationRequest {
+  weather_condition: string;
+  temperature: number;
+  time_of_day?: "morning" | "afternoon" | "evening" | "night";
+  limit?: number;
+}
+⋮----
+export interface WeatherRecommendationResponse {
+  tracks: TrackMetadata[];
+  weather_condition: string;
+  temperature: number;
+  time_of_day: string;
+  count: number;
+}
+⋮----
+// Re-export TrackMetadata for convenience
+</file>
+
+<file path="src/lib/weather/index.ts">
+/**
+ * Weather utilities - Consolidated weather-related functionality
+ * Centralized access to all weather API and utility functions
+ */
+⋮----
+// Weather API functions
+</file>
+
+<file path="src/services/storage/index.ts">
+
+</file>
+
+<file path="src/services/storage/local-storage.ts">
+interface StorageItem<T> {
+  value: T;
+  timestamp: number;
+}
+⋮----
+export class LocalStorage
+⋮----
+private constructor()
+⋮----
+public static getInstance(): LocalStorage
+⋮----
+private getKey(key: string): string
+⋮----
+public getItem<T>(key: string): T | null
+⋮----
+public setItem<T>(key: string, value: T): void
+⋮----
+public removeItem(key: string): void
+⋮----
+public clear(): void
+⋮----
+// Only clear items with our prefix
+⋮----
+// Helper methods for specific data types
+public getString(key: string, defaultValue: string = ''): string
+⋮----
+public getNumber(key: string, defaultValue: number = 0): number
+⋮----
+public getBoolean(key: string, defaultValue: boolean = false): boolean
+⋮----
+public getObject<T>(key: string, defaultValue: T): T
+</file>
+
+<file path="src/types/auth-types.ts">
+export interface AuthTokens {
+  accessToken: string;
+  refreshToken: string;
+  expiresAt: number;
+}
+⋮----
+export interface User {
+  id: string;
+  display_name: string;
+  email: string;
+  images?: Array<{ url: string }>;
+}
+⋮----
+export interface AuthResponse {
+  access_token: string;
+  refresh_token: string;
+  expires_in: number;
+  token_type: string;
+}
+⋮----
+export interface AuthCallbackParams {
+  code: string;
+  state: string;
+}
+</file>
+
+<file path="src/types/spotify-api-types.ts">
+// Common types for Spotify API responses
+⋮----
+export interface Image {
+  url: string;
+  height: number | null;
+  width: number | null;
+}
+⋮----
+export interface SimplifiedArtist {
+  id: string;
+  name: string;
+  type: "artist";
+  uri: string;
+}
+⋮----
+export interface SimplifiedAlbum {
+  id: string;
+  name: string;
+  images: Image[];
+  type: "album";
+  uri: string;
+}
+⋮----
+export interface Track {
+  id: string;
+  name: string;
+  artists: SimplifiedArtist[];
+  album: SimplifiedAlbum;
+  duration_ms: number;
+  preview_url: string | null;
+  external_urls: {
+    spotify: string;
+  };
+  uri: string;
+  type: "track";
+  is_local: boolean;
+  popularity: number;
+}
+⋮----
+export interface PlaybackState {
+  is_playing: boolean;
+  item: Track | null;
+  progress_ms: number;
+  device: {
+    id: string | null;
+    is_active: boolean;
+    name: string;
+    type: string;
+    volume_percent: number | null;
+  };
+  shuffle_state: boolean;
+  repeat_state: "off" | "track" | "context";
+  timestamp: number;
+  context: {
+    external_urls: {
+      spotify: string;
+    };
+    href: string;
+    type: "playlist" | "album" | "artist" | "show" | "episode";
+    uri: string;
+  } | null;
+}
+⋮----
+export interface QueueState {
+  currently_playing: Track | null;
+  queue: Track[];
+}
+⋮----
+export interface SearchResponse {
+  tracks: {
+    href: string;
+    items: Track[];
+    limit: number;
+    next: string | null;
+    offset: number;
+    previous: string | null;
+    total: number;
+  };
+}
+⋮----
+export interface SavedTrack {
+  added_at: string;
+  track: Track;
+}
+⋮----
+export interface SavedTracksResponse {
+  href: string;
+  items: SavedTrack[];
+  limit: number;
+  next: string | null;
+  offset: number;
+  previous: string | null;
+  total: number;
+}
+⋮----
+export interface RecommendationSeed {
+  id: string;
+  href: string;
+  type: "artist" | "track" | "genre";
+  initialPoolSize: number;
+  afterFilteringSize: number;
+  afterRelinkingSize: number;
+}
+⋮----
+export interface RecommendationTrack extends Track {
+  explicit: boolean;
+}
+⋮----
+export interface RecommendationsResponse {
+  tracks: RecommendationTrack[];
+  seeds: RecommendationSeed[];
+}
+⋮----
+export interface RecommendationOptions {
+  seed_artists?: string[];
+  seed_genres?: string[];
+  seed_tracks?: string[];
+  limit?: number;
+  market?: string;
+  min_energy?: number;
+  max_energy?: number;
+  target_energy?: number;
+  min_tempo?: number;
+  max_tempo?: number;
+  target_tempo?: number;
+  min_valence?: number;
+  max_valence?: number;
+  target_valence?: number;
+  min_popularity?: number;
+  max_popularity?: number;
+  target_popularity?: number;
+  min_acousticness?: number;
+  max_acousticness?: number;
+  target_acousticness?: number;
+  min_danceability?: number;
+  max_danceability?: number;
+  target_danceability?: number;
+  min_instrumentalness?: number;
+  max_instrumentalness?: number;
+  target_instrumentalness?: number;
+  min_liveness?: number;
+  max_liveness?: number;
+  target_liveness?: number;
+  min_loudness?: number;
+  max_loudness?: number;
+  target_loudness?: number;
+  min_speechiness?: number;
+  max_speechiness?: number;
+  target_speechiness?: number;
+}
+</file>
+
+<file path="src/types/spotify-player-types.ts">
+/**
+ * Spotify Web Playback SDK types for testing and future implementation
+ */
+⋮----
+export interface SpotifyTrack {
+  id: string;
+  name: string;
+  artists: Array<{
+    name: string;
+    uri: string;
+  }>;
+  album: {
+    name: string;
+    images: Array<{
+      url: string;
+      height: number;
+      width: number;
+    }>;
+  };
+  duration_ms: number;
+  uri: string;
+  preview_url: string | null;
+}
+⋮----
+export interface SpotifyPlaybackState {
+  context: {
+    uri: string;
+    metadata: Record<string, unknown>;
+  };
+  disallows: {
+    pausing: boolean;
+    peeking_next: boolean;
+    peeking_prev: boolean;
+    resuming: boolean;
+    seeking: boolean;
+    skipping_next: boolean;
+    skipping_prev: boolean;
+  };
+  paused: boolean;
+  position: number;
+  repeat_mode: number;
+  shuffle: boolean;
+  track_window: {
+    current_track: SpotifyTrack;
+    next_tracks: SpotifyTrack[];
+    previous_tracks: SpotifyTrack[];
+  };
+}
+⋮----
+export interface SpotifyPlayer {
+  connect(): Promise<boolean>;
+  disconnect(): void;
+  addListener(event: string, callback: (data: unknown) => void): void;
+  removeListener(event: string, callback?: (data: unknown) => void): void;
+  getCurrentState(): Promise<SpotifyPlaybackState | null>;
+  setName(name: string): Promise<void>;
+  getVolume(): Promise<number>;
+  setVolume(volume: number): Promise<void>;
+  pause(): Promise<void>;
+  resume(): Promise<void>;
+  togglePlay(): Promise<void>;
+  seek(position: number): Promise<void>;
+  previousTrack(): Promise<void>;
+  nextTrack(): Promise<void>;
+  _options: {
+    name: string;
+    getOAuthToken: (callback: (token: string) => void) => void;
+    volume?: number;
+  };
+}
+⋮----
+connect(): Promise<boolean>;
+disconnect(): void;
+addListener(event: string, callback: (data: unknown)
+removeListener(event: string, callback?: (data: unknown)
+getCurrentState(): Promise<SpotifyPlaybackState | null>;
+setName(name: string): Promise<void>;
+getVolume(): Promise<number>;
+setVolume(volume: number): Promise<void>;
+pause(): Promise<void>;
+resume(): Promise<void>;
+togglePlay(): Promise<void>;
+seek(position: number): Promise<void>;
+previousTrack(): Promise<void>;
+nextTrack(): Promise<void>;
+⋮----
+export interface SpotifyWebPlaybackState extends SpotifyPlaybackState {
+  duration: number;
+  position: number;
+  loading: boolean;
+}
+⋮----
+export interface SpotifyWebPlaybackError {
+  message: string;
+  type:
+    | "account_error"
+    | "authentication_error"
+    | "initialization_error"
+    | "playback_error";
+}
+⋮----
+export interface SpotifyDevice {
+  device_id: string;
+  name: string;
+  type: string;
+  volume_percent: number;
+  is_active: boolean;
+  is_private_session: boolean;
+  is_restricted: boolean;
+}
+⋮----
+export interface SpotifyPlaybackDevice extends SpotifyDevice {
+  supports_volume: boolean;
+}
+⋮----
+export interface SpotifyPlayerConstructor {
+  new (options: {
+    name: string;
+    getOAuthToken: (callback: (token: string) => void) => void;
+    volume?: number;
+  }): SpotifyPlayer;
+}
+⋮----
+export interface SpotifySDK {
+  Player: SpotifyPlayerConstructor;
+}
+⋮----
+export interface SpotifyPlaylist {
+  id: string;
+  name: string;
+  description: string;
+  images: Array<{
+    url: string;
+    height: number;
+    width: number;
+  }>;
+  tracks: {
+    total: number;
+    items: Array<{
+      track: SpotifyTrack;
+    }>;
+  };
+}
+⋮----
+export interface SpotifyRecommendations {
+  tracks: SpotifyTrack[];
+  seeds: Array<{
+    afterFilteringSize: number;
+    afterRelinkingSize: number;
+    href: string;
+    id: string;
+    initialPoolSize: number;
+    type: string;
+  }>;
+}
+⋮----
+export interface SpotifyAudioFeatures {
+  danceability: number;
+  energy: number;
+  key: number;
+  loudness: number;
+  mode: number;
+  speechiness: number;
+  acousticness: number;
+  instrumentalness: number;
+  liveness: number;
+  valence: number;
+  tempo: number;
+  duration_ms: number;
+  time_signature: number;
+}
+⋮----
+// Music recommendation types based on weather
+export interface WeatherMusicMapping {
+  clear: string[];
+  clouds: string[];
+  rain: string[];
+  snow: string[];
+  thunderstorm: string[];
+  drizzle: string[];
+  mist: string[];
+  fog: string[];
+}
+⋮----
+export interface MusicPreferences {
+  genres: string[];
+  audioFeatures: Partial<SpotifyAudioFeatures>;
+  explicitContent: boolean;
+  market: string;
+}
+⋮----
+// Extend global to include Spotify SDK
+⋮----
+interface Window {
+    Spotify?: SpotifySDK;
+  }
+</file>
+
+<file path="src/types/spotify-player.d.ts">
+interface Window {
+    onSpotifyWebPlaybackSDKReady?: () => void;
+    Spotify: Spotify.Spotify;
+  }
+⋮----
+interface Spotify {
+    Player: typeof Player; // Reference the class directly
+  }
+⋮----
+Player: typeof Player; // Reference the class directly
+⋮----
+interface WebPlaybackInstance {
+    device_id: string;
+  }
+⋮----
+interface Error {
+    message: string;
+  }
+⋮----
+interface PlayerOptions {
+    name: string;
+    getOAuthToken: (callback: (token: string) => void) => void;
+    volume?: number;
+  }
+⋮----
+// Declare Player as a class
+class Player
+⋮----
+constructor(options: PlayerOptions);
+addListener(
+      event: "ready",
+      callback: (data: WebPlaybackInstance) => void,
+    ): boolean;
+addListener(
+      event: "not_ready",
+      callback: (data: WebPlaybackInstance) => void,
+    ): boolean;
+addListener(
+      event: "player_state_changed",
+      callback: (state: PlaybackState) => void,
+    ): boolean;
+addListener(
+      event: "initialization_error",
+      callback: (data: Error) => void,
+    ): boolean;
+addListener(
+      event: "authentication_error",
+      callback: (data: Error) => void,
+    ): boolean;
+addListener(
+      event: "account_error",
+      callback: (data: Error) => void,
+    ): boolean;
+addListener(
+      event: "playback_error",
+      callback: (data: Error) => void,
+    ): boolean;
+connect(): Promise<boolean>;
+disconnect(): void;
+getCurrentState(): Promise<PlaybackState | null>;
+getVolume(): Promise<number>;
+pause(): Promise<void>;
+play(): Promise<void>;
+resume(): Promise<void>;
+seek(position_ms: number): Promise<void>;
+setVolume(volume: number): Promise<void>;
+nextTrack(): Promise<void>;
+previousTrack(): Promise<void>;
+togglePlay(): Promise<void>;
+⋮----
+interface PlaybackState {
+    context: {
+      uri: string | null;
+      metadata: Record<string, unknown> | null;
+    };
+    disallows: {
+      pausing: boolean;
+      peeking_next: boolean;
+      peeking_prev: boolean;
+      resuming: boolean;
+      seeking: boolean;
+      skipping_next: boolean;
+      skipping_prev: boolean;
+      toggling_repeat_context: boolean;
+      toggling_shuffle: boolean;
+      toggling_repeat_track: boolean;
+      transferring_playback: boolean;
+    };
+    duration: number;
+    paused: boolean;
+    position: number;
+    repeat_mode: number;
+    shuffle: boolean;
+    timestamp: number;
+    track_window: {
+      current_track: Track;
+      previous_tracks: Track[];
+      next_tracks: Track[];
+    };
+    playback_id: string;
+  }
+⋮----
+interface Track {
+    uri: string;
+    id: string | null;
+    type: "track" | "episode" | "ad";
+    media_type: "audio" | "video";
+    name: string;
+    is_playable: boolean;
+    album: {
+      uri: string;
+      name: string;
+      images: Image[];
+    };
+    artists: Artist[];
+    duration_ms: number;
+    explicit: boolean;
+    external_urls: {
+      spotify: string;
+    };
+    linked_from: {
+      uri: string | null;
+      id: string | null;
+    };
+    is_local: boolean;
+    preview_url: string | null;
+    track_number: number;
+  }
+⋮----
+interface Artist {
+    uri: string;
+    name: string;
+  }
+⋮----
+interface Image {
+    url: string;
+    size?: "small" | "medium" | "large";
+    height?: number;
+    width?: number;
+  }
+</file>
+
+<file path="tests/frontend-auth.spec.ts">
+import { test, expect } from "@playwright/test";
+⋮----
+// Clear localStorage before each test
+⋮----
+// Check that the page loads
+⋮----
+// Look for login button
+⋮----
+// Click login button and check for redirect to Spotify
+⋮----
+// Intercept the redirect to Spotify
+⋮----
+// Wait for redirect to Spotify OAuth
+⋮----
+// Verify we're on Spotify's OAuth page
+⋮----
+// Check for URL-encoded response_type=code
+⋮----
+// The callback page should load (even without auth code)
+⋮----
+// Should show some kind of processing message or redirect
+⋮----
+// Either processing or error message should be visible (since we don't have a real auth code)
+⋮----
+// Try to access a protected feature (like liking a track)
+⋮----
+// Should see a login prompt or error message
+⋮----
+// Check that environment variables are loaded in the build
+// This tests the build-time environment variable injection
+⋮----
+// Check if Vite has injected the environment variables
+⋮----
+// Check that localStorage is available
+⋮----
+// Simulate a music interaction
+⋮----
+// Verify the interaction was stored
+</file>
+
+<file path="tests/frontend-complete.spec.ts">
+import { test, expect } from "@playwright/test";
+⋮----
+// Step 1: Visit login page
+⋮----
+// Step 2: Verify login button exists
+⋮----
+// Step 3: Visit callback page
+⋮----
+// Step 4: Verify the auth system is in place
+⋮----
+// Mock authentication
+⋮----
+// Mock Spotify API responses
+⋮----
+// Should show weather and music recommendations
+⋮----
+// Should be able to get music recommendations
+⋮----
+// Check if the frontend API service is available
+⋮----
+// Block all requests to backend
+⋮----
+// Allow only Spotify API and static assets
+⋮----
+// Allow these requests
+⋮----
+// Block backend requests
+⋮----
+// Allow other requests (like weather API)
+⋮----
+// App should load and work without backend
+⋮----
+// Should not see any backend errors
+⋮----
+// Filter for backend-related errors
+</file>
+
+<file path="tests/frontend-integration.spec.ts">
+import { test, expect } from "@playwright/test";
+⋮----
+// Page should load successfully
+⋮----
+// Should not see any backend error messages
+⋮----
+// Weather information should be visible
+⋮----
+// Mock Spotify API to avoid authentication
+⋮----
+// Try to search for music (if search functionality is visible)
+⋮----
+// Should see search results
+⋮----
+// Monitor network requests
+⋮----
+// Navigate around the app
+⋮----
+// Try clicking various elements
+⋮----
+// Ignore click failures
+⋮----
+// Should have no backend calls
+⋮----
+// Monitor network requests to Spotify
+⋮----
+// Click login to trigger OAuth
+⋮----
+// Should have made calls to Spotify (OAuth)
+⋮----
+// App should work with only static files
+// Check for any server-side rendering dependencies
+⋮----
+// JavaScript should be loaded and working
+⋮----
+// Check that the application loads and works (indicating proper env configuration)
+⋮----
+// The app should not have backend environment variables in the source code
+</file>
+
+<file path="auth_docs.json">
+{
+  "modules": [
+    {
+      "title": "Getting Started",
+      "source_url": "https://developer.spotify.com/documentation/web-api/tutorials/getting-started",
+      "purpose": "Fetch public artist metadata using Client Credentials flow",
+      "tasks": [
+        "Obtain client_id and client_secret from Spotify Developer Dashboard",
+        "Request access token using POST to /api/token with grant_type=client_credentials",
+        "Store access_token and expires_in",
+        "Make GET request to https://api.spotify.com/v1/artists/{artist_id} with Authorization header"
+      ],
+      "key_steps": {
+        "token_request": "curl -X POST https://accounts.spotify.com/api/token -d grant_type=client_credentials&client_id=...&client_secret=...",
+        "api_call": "curl https://api.spotify.com/v1/artists/{id} -H 'Authorization: Bearer {access_token}'"
+      },
+      "limitations": "Client Credentials flow cannot access user-specific data"
+    },
+    {
+      "title": "Authorization Concepts",
+      "source_url": "https://developer.spotify.com/documentation/web-api/concepts/authorization",
+      "purpose": "Understand supported OAuth flows and their tradeoffs",
+      "tasks": [
+        "Enumerate client-side vs server-side OAuth flows",
+        "List required combos of user access, client_secret storage, and refresh token availability"
+      ],
+      "definitions": {
+        "Authorization Code": {
+          "user_access": true,
+          "requires_secret": true,
+          "refresh": true
+        },
+        "Authorization Code + PKCE": {
+          "user_access": true,
+          "requires_secret": false,
+          "refresh": true
+        },
+        "Client Credentials": {
+          "user_access": false,
+          "requires_secret": true,
+          "refresh": false
+        },
+        "Implicit Grant": { "deprecated": true }
+      }
+    },
+    {
+      "title": "Authorization Code + PKCE Flow",
+      "source_url": "https://developer.spotify.com/documentation/web-api/tutorials/code-pkce-flow",
+      "purpose": "Implement secure OAuth flow in browser or mobile without exposing client_secret",
+      "tasks": [
+        "Generate code_verifier (43–128 char random string)",
+        "Compute code_challenge via SHA-256 + base64url",
+        "Redirect user to /authorize with client_id, code_challenge, code_challenge_method=S256, scope, redirect_uri, state",
+        "On callback, parse ?code and ?state",
+        "Exchange code for access_token, refresh_token using code_verifier via POST to /api/token",
+        "Store access_token, refresh_token securely client-side"
+      ],
+      "snippets": {
+        "generate_verifier": "crypto.getRandomValues(...)",
+        "compute_challenge": "window.crypto.subtle.digest('SHA-256',...) => base64url",
+        "authorization_redirect": "GET https://accounts.spotify.com/authorize?response_type=code&client_id=...&code_challenge=...&code_challenge_method=S256&redirect_uri=...",
+        "token_exchange": "POST https://accounts.spotify.com/api/token with body { grant_type:'authorization_code', code, redirect_uri, client_id, code_verifier }"
+      }
+    },
+    {
+      "title": "Access Token",
+      "source_url": "https://developer.spotify.com/documentation/web-api/concepts/access-token",
+      "purpose": "Explain token format, expiration, and usage in API calls",
+      "tasks": [
+        "Include 'Authorization: Bearer <token>' in all API calls",
+        "Track token expiry (3600 seconds)",
+        "Implement refresh token exchange when expired"
+      ],
+      "definitions": {
+        "access_token": "Bearer token string valid for 3600 seconds",
+        "expires_in": "seconds until expiry",
+        "refresh_token": "token to request new access_token (for auth & PKCE flows)"
+      },
+      "snippets": {
+        "curl_example": "curl 'https://api.spotify.com/v1/tracks/{id}' -H 'Authorization: Bearer <token>'",
+        "js_example": "fetch('https://api.spotify.com/v1/me', { headers: { Authorization: 'Bearer ' + accessToken } })"
+      }
+    },
+    {
+      "title": "API Calls",
+      "source_url": "https://developer.spotify.com/documentation/web-api/concepts/api-calls",
+      "purpose": "Define HTTP standards, status codes, pagination, conditional requests",
+      "tasks": [
+        "Use base URL https://api.spotify.com/v1",
+        "Support GET, POST, PUT, DELETE verbs",
+        "Interpret status codes: 200,201,204,400–404,429,5xx",
+        "Handle Authentication Error and Regular Error JSON formats",
+        "Use ETag + If-None-Match to support caching",
+        "Implement pagination via offset & limit"
+      ],
+      "definitions": {
+        "Authentication Error": "{ error, error_description } per RFC 6749",
+        "Regular Error": "{ error: { status, message } }"
+      },
+      "snippets": {
+        "conditional": "Include 'If-None-Match' header",
+        "pagination_example": "?offset=20&limit=10"
+      }
+    },
+    {
+      "title": "Redirect URIs",
+      "source_url": "https://developer.spotify.com/documentation/web-api/concepts/redirect_uri",
+      "purpose": "Validate and secure callback endpoints",
+      "tasks": [
+        "Use exact string match with registered redirect URIs",
+        "Enforce HTTPS except for loopback IPs",
+        "Disallow 'localhost', allow IP literals with optional dynamic port for loopback"
+      ],
+      "requirements": [
+        "HTTPS URI or loopback IP literal (127.0.0.1 or [::1])",
+        "Match registrations exactly including slash, case",
+        "Dynamic ports permitted only for loopback"
+      ],
+      "examples": [
+        "https://example.com/callback",
+        "http://127.0.0.1:8000/callback",
+        "http://[::1]:8000/callback"
+      ]
+    },
+    {
+      "title": "Spotify URIs & IDs",
+      "source_url": "https://developer.spotify.com/documentation/web-api/concepts/spotify-uris-ids",
+      "purpose": "Normalize entity references across URIs, URLs, and IDs",
+      "tasks": [
+        "Support parsing spotify:track:{ID}, spotify:artist:{ID}, etc.",
+        "Extract ID portion for API calls",
+        "Convert URLs (open.spotify.com) to IDs",
+        "Use IDs in API requests; URIs for linking"
+      ],
+      "definitions": {
+        "Spotify URI": "spotify:entity:ID",
+        "Spotify ID": "base-62 string, e.g. 6rqhFgbbKwnb9MLmUQDhG6",
+        "Spotify URL": "https://open.spotify.com/track/ID"
+      },
+      "examples": {
+        "URI_example": "spotify:track:6rqhFgbbKwnb9MLmUQDhG6",
+        "URL_example": "http://open.spotify.com/track/6rqhFgbbKwnb9MLmUQDhG6"
+      }
+    }
+  ]
+}
+</file>
+
+<file path="playwright.config.ts">
+import { defineConfig, devices } from "@playwright/test";
+</file>
+
+<file path="test-comprehensive.sh">
+#!/bin/bash
+
+# Comprehensive Authentication and API Test Suite
+# Runs all authentication and API tests to verify system integrity
+
+echo "🧪 Running Comprehensive Authentication & API Test Suite"
+echo "=================================================="
+
+# Start the development server in the background
+echo "📡 Starting development server..."
+npm run dev &
+DEV_PID=$!
+
+# Wait for server to start
+echo "⏳ Waiting for server to start..."
+sleep 5
+
+# Function to cleanup on exit
+cleanup() {
+    echo "🧹 Cleaning up..."
+    kill $DEV_PID 2>/dev/null
+    exit
+}
+
+# Trap exit signals
+trap cleanup EXIT INT TERM
+
+# Run comprehensive Playwright tests
+echo "🎭 Running Playwright Authentication Tests..."
+npx playwright test tests/auth-comprehensive.spec.ts --reporter=list
+
+echo ""
+echo "🎭 Running Playwright API & Queue Tests..."
+npx playwright test tests/api-queue-comprehensive.spec.ts --reporter=list
+
+echo ""
+echo "🎭 Running Existing Frontend Tests..."
+npx playwright test tests/frontend-auth.spec.ts --reporter=list
+
+echo ""
+echo "🎭 Running All Integration Tests..."
+npx playwright test tests/frontend-integration.spec.ts --reporter=list
+
+echo ""
+echo "🎭 Running Complete Flow Tests..."
+npx playwright test tests/frontend-complete.spec.ts --reporter=list
+
+echo ""
+echo "✅ All tests completed!"
+echo "📊 Test Summary:"
+echo "- Authentication flow tests ✓"
+echo "- API request tests ✓"
+echo "- Queue management tests ✓"
+echo "- Integration tests ✓"
+echo "- Complete flow tests ✓"
+
+cleanup
+</file>
+
+<file path="tsconfig.node.json">
+{
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
+    "target": "ES2022",
+    "lib": ["ES2023"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true,
+    "composite": true
+  },
+  "include": ["vite.config.ts"]
+}
+</file>
+
+<file path="src/components/layout/SectionWrapper.tsx">
+import React from "react";
+⋮----
+/**
+ * Reusable section wrapper component for grid-based layouts
+ * Provides consistent scaling and line-height to prevent spacing issues during responsive resizing
+ */
+interface SectionWrapperProps {
+  scale: number;
+  alignment: "start" | "center";
+  padding?: string;
+  children: React.ReactNode;
+}
+⋮----
+export const SectionWrapper: React.FC<SectionWrapperProps> = ({
+  scale,
+  alignment,
+  padding = "1em",
+  children,
+}) =>
+⋮----
+lineHeight: 1.5, // Unitless line-height for consistent scaling
+</file>
+
+<file path="src/components/settings/ThemeSwitcher.tsx">
+import {
+  SettingsSection,
+  SettingsButtonGroup,
+} from "../settings/SettingsComponents";
+⋮----
+interface ThemeSwitcherProps {
+  themeMode: "light" | "dark" | "auto";
+  onThemeChange: (mode: "light" | "dark" | "auto") => void;
+}
+⋮----
+export function ThemeSwitcher({
+  themeMode,
+  onThemeChange,
+}: ThemeSwitcherProps)
+</file>
+
+<file path="src/components/settings/UnitSelector.tsx">
+import {
+  SettingsSection,
+  SettingsButtonGroup,
+} from "../settings/SettingsComponents";
+import type { TemperatureUnit } from "@/types/units-types";
+⋮----
+interface UnitSelectorProps {
+  temperatureUnit: TemperatureUnit;
+  onTemperatureChange: (unit: TemperatureUnit) => void;
+}
+⋮----
+export function UnitSelector({
+  temperatureUnit,
+  onTemperatureChange,
+}: UnitSelectorProps)
+</file>
+
+<file path="src/hooks/useWeatherForecast.ts">
+import { useState, useEffect, useCallback } from "react";
+import { useSettings } from "@/hooks/common";
+import { useAuth } from "@/hooks/useAuth";
+import { WeatherService } from "@/services/WeatherService";
+import type { DailyForecast } from "@/services/WeatherService";
+⋮----
+interface ForecastState {
+  forecast: DailyForecast[];
+  isLoading: boolean;
+  error: string | null;
+}
+⋮----
+export function useWeatherForecast()
+⋮----
+// Effect to handle location changes
+⋮----
+const getLocation = () =>
+⋮----
+// Default to a fallback location if geolocation is denied
+fetchForecast({ lat: 40.7128, lon: -74.006 }); // New York as fallback
+⋮----
+// Fallback if geolocation is not supported
+fetchForecast({ lat: 40.7128, lon: -74.006 }); // New York as fallback
+</file>
+
+<file path="src/lib/core/crypto.utils.ts">
+/**
+ * Cryptographic utilities for secure operations
+ */
+⋮----
+/**
+ * Generate a random string for OAuth state parameter
+ */
+/**
+ * Generate a cryptographically secure random string.
+ * @param length The desired length of the string.
+ * @returns A cryptographically secure random string.
+ */
+export function generateSecureRandomString(length: number): string
+⋮----
+/**
+ * Generate a random string for OAuth state parameter (now cryptographically secure)
+ */
+export function generateRandomString(length: number): string
+⋮----
+/**
+ * Generate code verifier for PKCE
+ */
+export function generateCodeVerifier(): string
+⋮----
+/**
+ * Generate code challenge from verifier
+ */
+export async function generateCodeChallenge(verifier: string): Promise<string>
+</file>
+
+<file path="src/lib/core/units.utils.ts">
+/**
+ * Unit conversion utilities for temperature, speed, etc.
+ */
+⋮----
+import type { TemperatureUnit } from "@/types/units-types";
+⋮----
+/**
+ * Default unit settings based on country
+ */
+export interface UnitDefaults {
+  temperatureUnit: TemperatureUnit;
+}
+⋮----
+/**
+ * Get default unit settings based on country code
+ */
+export function getDefaultUnitsForCountry(countryCode?: string): UnitDefaults
+⋮----
+// Countries that use imperial units
+const imperialCountries = ["US", "LR", "MM"]; // USA, Liberia, Myanmar
+⋮----
+/**
+ * Convert temperature between units
+ */
+export function convertTemperature(
+  temp: number,
+  from: TemperatureUnit,
+  to: TemperatureUnit,
+): number
+⋮----
+// Convert to Celsius first
+⋮----
+// Convert from Celsius to target
+⋮----
+/**
+ * Converts Kelvin to Celsius.
+ * @param kelvin - Temperature in Kelvin.
+ * @returns Temperature in Celsius.
+ */
+export function kelvinToCelsius(kelvin: number): number
+⋮----
+/**
+ * Converts Kelvin to Fahrenheit.
+ * @param kelvin - Temperature in Kelvin.
+ * @returns Temperature in Fahrenheit.
+ */
+export function kelvinToFahrenheit(kelvin: number): number
+⋮----
+/**
+ * Returns the numeric temperature value for a given unit.
+ * @param kelvin - The temperature in Kelvin from the API.
+ * @param unit - The target unit ('imperial' for °F, 'metric' for °C, 'standard' for K).
+ * @returns The rounded numeric temperature.
+ */
+export function formatTemperature(
+  kelvin: number,
+  unit: TemperatureUnit,
+): number
+⋮----
+/**
+ * Returns the display symbol for a given temperature unit.
+ * @param unit - The temperature unit.
+ * @returns The corresponding symbol ('F', 'C', or 'K').
+ */
+export function getUnitSymbol(unit: TemperatureUnit): string
+⋮----
+/**
+ * Format temperature with unit
+ */
+export function formatTemperatureWithUnit(
+  temp: number,
+  unit: TemperatureUnit,
+  decimals = 0,
+): string
+⋮----
+/**
+ * Formats a Unix timestamp into a human-readable time string.
+ * @param unixTimestamp - The Unix timestamp in seconds.
+ * @param timezone - The IANA timezone name (e.g., 'America/New_York').
+ * @returns Formatted time string (e.g., "5:30 PM").
+ */
+export function formatUnixTime(
+  unixTimestamp: number,
+  timezone: string,
+): string
+⋮----
+/**
+ * Formats a date from a forecast into a short month/day format.
+ * @param date - The date string from the weather forecast.
+ * @returns Formatted date string (e.g., "Jul 23").
+ */
+export function formatDate(date: string): string
+⋮----
+/**
+ * Formats a date from a forecast into a day of the week.
+ * @param date - The date string from the weather forecast.
+ * @returns The abbreviated day of the week (e.g., "Mon").
+ */
+export function formatDay(date: string): string
+</file>
+
+<file path="src/lib/design/design-system.ts">
+/**
+ * Comprehensive Design System - Preserving Liquid Glass Visual Effects
+ * Ruthlessly simplified architecture while maintaining visual fidelity
+ */
+⋮----
+import { cn } from "@/lib/core/dom.utils";
+⋮----
+// Core liquid glass styles - consolidated for maximum reuse
+⋮----
+// Chromatic aberration effect
+⋮----
+// Add missing sizes
+⋮----
+// Add missing sizes
+⋮----
+// Add weather-specific typography
+⋮----
+// Add missing button styles
+⋮----
+// Add missing card styles
+⋮----
+// Add missing container styles
+⋮----
+// Add missing spacing
+⋮----
+// Add missing padding styles
+⋮----
+// Weather-specific design tokens
+⋮----
+// Add missing forecast styles
+⋮----
+// Music-specific design tokens
+⋮----
+// Responsive utilities
+⋮----
+// Accessibility utilities
+⋮----
+// Export convenience functions
+export const combineStyles = (...styles: string[])
+export const conditionalStyle = (
+  condition: boolean,
+  trueStyle: string,
+  falseStyle = "",
+)
+⋮----
+// Liquid Glass Utility Styles - Direct exports for components
+⋮----
+// Add missing styles for liquid glass container
+⋮----
+// Liquid Glass Factory Functions
+export const createLiquidGlassButton = (
+  variant: "primary" | "secondary" | "ghost" = "primary",
+) =>
+⋮----
+export const createLiquidGlassCard = (
+  variant: "default" | "elevated" | "floating" = "default",
+) =>
+⋮----
+/**
+ * Creates a reusable style string for an interactive icon
+ * Bundles base styles, animations, and color transitions
+ */
+export const createInteractiveIcon = (size = 6) =>
+</file>
+
+<file path="src/lib/music/spotify-api.ts">
+/**
+ * Spotify API client - Functional implementation
+ * Makes direct API calls to Spotify using functional auth
+ */
+⋮----
+import type {
+  SpotifySearchResult,
+  WeatherRecommendationRequest,
+  WeatherRecommendationResponse,
+  TrackMetadata,
+} from "./spotify-types";
+import {
+  WeatherMusicMapper,
+  getTimeBasedAdjustments,
+  getTemperatureBasedAdjustments,
+  AudioFeatures,
+} from "./recommendations";
+import type { AuthService } from "@/services/AuthService";
+⋮----
+// Spotify API response types (minimal)
+interface SpotifyTrack {
+  id: string;
+  name: string;
+  artists: Array<{ name: string }>;
+  album: {
+    name: string;
+    images: Array<{ url: string }>;
+  };
+  duration_ms: number;
+  preview_url: string | null;
+  external_urls: { spotify: string };
+  uri: string;
+  popularity: number;
+  explicit: boolean;
+}
+⋮----
+interface SpotifyAudioFeatures {
+  id: string;
+  danceability: number;
+  energy: number;
+  key: number;
+  loudness: number;
+  mode: number;
+  speechiness: number;
+  acousticness: number;
+  instrumentalness: number;
+  liveness: number;
+  valence: number;
+  tempo: number;
+  duration_ms: number;
+  time_signature: number;
+}
+⋮----
+/**
+ * Spotify API client
+ */
+⋮----
+/**
+ * Search for tracks
+ */
+export const searchTracks = async (
+  authService: AuthService,
+  query: string,
+  limit = 20,
+): Promise<SpotifySearchResult> =>
+⋮----
+/**
+ * Get track by ID
+ */
+export const getTrack = async (
+  authService: AuthService,
+  id: string,
+): Promise<TrackMetadata> =>
+⋮----
+/**
+ * Get multiple tracks by IDs
+ */
+export const getTracks = async (
+  authService: AuthService,
+  ids: string[],
+): Promise<TrackMetadata[]> =>
+⋮----
+// Spotify API allows max 50 IDs per request
+⋮----
+/**
+ * Get audio features for tracks
+ */
+export const getAudioFeatures = async (
+  authService: AuthService,
+  ids: string[],
+): Promise<Record<string, SpotifyAudioFeatures>> =>
+⋮----
+/**
+ * Get recommendations based on weather
+ */
+export const getWeatherRecommendations = async (
+  authService: AuthService,
+  request: WeatherRecommendationRequest,
+): Promise<WeatherRecommendationResponse> =>
+⋮----
+// Apply adjustments to base audio features
+⋮----
+// Helper to apply adjustments
+const applyAdjustments = (
+    features: AudioFeatures,
+    adjustments: Partial<AudioFeatures>,
+) =>
+⋮----
+// Ensure values are within Spotify's expected range (0-1 for most, tempo can vary)
+⋮----
+seed_genres: weatherMapping.genres.slice(0, 5).join(","), // Max 5 genres
+⋮----
+/**
+ * Search for tracks by genre and audio features
+ */
+export const searchByGenreAndFeatures = async (
+  authService: AuthService,
+  genre: string,
+  audioFeatures: Record<string, number>,
+  limit = 20,
+): Promise<SpotifySearchResult> =>
+⋮----
+/**
+ * Transform Spotify track to our TrackMetadata format
+ */
+const transformTrack = (track: SpotifyTrack): TrackMetadata =>
+⋮----
+/**
+ * Utility to chunk array
+ */
+const chunkArray = <T>(array: T[], size: number): T[][] =>
+</file>
+
+<file path="src/lib/weather/weather-api.ts">
+import type {
+  WeatherApiResponse,
+  ForecastApiResponse,
+} from "@/types/weather-types";
+⋮----
+// Fallback to Bellevue, WA and hope no one notices
+⋮----
+// Fetch weather from OpenWeatherMap API using given coordinates
+export async function fetchWeatherByCoords(
+  lat: number,
+  lon: number,
+  apiKey: string,
+): Promise<WeatherApiResponse>
+⋮----
+// Request user's location from browser and then send the coordinates to fetchWeatherByCoords
+export function getUserLocationAndFetch(
+  apiKey: string,
+): Promise<WeatherApiResponse>
+⋮----
+// Geolocation not supported, fallback to default coordinates
+⋮----
+// Geolocation failed, fallback to default coordinates
+⋮----
+// Fetch forecast data from OpenWeatherMap API
+export async function fetchForecastByCoords(
+  lat: number,
+  lon: number,
+  apiKey: string,
+): Promise<ForecastApiResponse>
+⋮----
+// Get user location and fetch forecast
+export function getUserLocationAndFetchForecast(
+  apiKey: string,
+): Promise<ForecastApiResponse>
+⋮----
+// Geolocation not supported, fallback to default coordinates
+⋮----
+// Geolocation failed, fallback to default coordinates
+⋮----
+// Weather condition mapping utilities
+⋮----
+"01d": "☀️", // clear sky day
+"01n": "🌙", // clear sky night
+"02d": "⛅", // few clouds day
+"02n": "☁️", // few clouds night
+"03d": "☁️", // scattered clouds
+"03n": "☁️", // scattered clouds
+"04d": "☁️", // broken clouds
+"04n": "☁️", // broken clouds
+"09d": "🌧️", // shower rain
+"09n": "🌧️", // shower rain
+"10d": "🌦️", // rain day
+"10n": "🌧️", // rain night
+"11d": "⛈️", // thunderstorm
+"11n": "⛈️", // thunderstorm
+"13d": "❄️", // snow
+"13n": "❄️", // snow
+"50d": "🌫️", // mist
+"50n": "🌫️", // mist
+⋮----
+export function getWeatherIcon(iconCode: string): string
+⋮----
+export function getWeatherCondition(weatherMain: string): string
+</file>
+
+<file path="src/services/SettingsService.ts">
+import { LocalStorage } from "./storage";
+import type {
+  TemperatureUnit,
+  TimeFormat,
+  ThemeMode,
+} from "@/types/units-types";
+⋮----
+export interface Settings {
+  temperatureUnit: TemperatureUnit;
+  timeFormat: TimeFormat;
+  themeMode: ThemeMode;
+}
+⋮----
+export interface LocationDefaults {
+  temperatureUnit: TemperatureUnit;
+}
+⋮----
+export class SettingsService
+⋮----
+private constructor()
+⋮----
+public static getInstance(): SettingsService
+⋮----
+public getSettings(): Settings
+⋮----
+public updateSetting<K extends keyof Settings>(
+    key: K,
+    value: Settings[K],
+): void
+⋮----
+public resetToDefaults(defaults?: Partial<Settings>): Settings
+⋮----
+// Update all settings to their default values
+⋮----
+private getSetting<T>(key: string, defaultValue: T): T
+⋮----
+// Helper methods for specific settings
+public getTemperatureUnit(): TemperatureUnit
+⋮----
+public setTemperatureUnit(unit: TemperatureUnit): void
+⋮----
+public getTimeFormat(): TimeFormat
+⋮----
+public setTimeFormat(format: TimeFormat): void
+⋮----
+public getThemeMode(): ThemeMode
+⋮----
+public setThemeMode(mode: ThemeMode): void
+⋮----
+// Helper methods for toggling
+public toggleTemperatureUnit(): TemperatureUnit
+⋮----
+public toggleTimeFormat(): TimeFormat
+</file>
+
+<file path="src/services/SpotifyService.ts">
+import { AuthService } from "./AuthService";
+import type {
+  Track,
+  QueueState,
+  SearchResponse,
+  PlaybackState,
+  SavedTracksResponse,
+  RecommendationsResponse,
+  RecommendationOptions,
+} from "@/types/spotify-api-types";
+import type { TrackMetadata } from "@/types/queue-types";
+⋮----
+export class SpotifyService
+⋮----
+constructor(authService: AuthService)
+⋮----
+public async getAccessToken(): Promise<string | null>
+⋮----
+private async request<T>(
+    endpoint: string,
+    options: RequestInit = {},
+): Promise<T>
+⋮----
+// Token might be expired, try to refresh
+⋮----
+// Retry the request with the new token
+⋮----
+// For 204 No Content responses
+⋮----
+// Queue Operations
+async getQueue(): Promise<QueueState>
+⋮----
+async addToQueue(uri: string): Promise<void>
+⋮----
+async playNext(): Promise<void>
+⋮----
+// Player Controls
+async play(urisToPlay?: string[]): Promise<void>
+⋮----
+async pause(): Promise<void>
+⋮----
+async next(): Promise<void>
+⋮----
+async previous(): Promise<void>
+⋮----
+async seek(positionMs: number): Promise<void>
+⋮----
+async setVolume(volumePercent: number): Promise<void>
+⋮----
+// Search
+async searchTracks(query: string, limit = 20): Promise<SearchResponse>
+⋮----
+// User Library
+async getSavedTracks(limit = 50): Promise<SavedTracksResponse>
+⋮----
+async saveTracks(ids: string[]): Promise<void>
+⋮----
+async removeSavedTracks(ids: string[]): Promise<void>
+⋮----
+// Recommendations
+async getRecommendations(
+    options: RecommendationOptions,
+): Promise<RecommendationsResponse>
+⋮----
+// Convert options to query parameters
+⋮----
+// Add seed parameters
+⋮----
+// Add limit and market
+⋮----
+// Add audio features
+⋮----
+async searchByGenreAndFeatures(
+    genre: string,
+    audioFeatures: Record<string, number>,
+    limit = 20,
+): Promise<SearchResponse>
+⋮----
+// Assuming audioFeatures keys directly map to target_X or min_X/max_X
+// For simplicity, mapping to target_X for now
+⋮----
+href: "", // Placeholder, as RecommendationResponse doesn't have href for tracks
+⋮----
+limit: response.tracks.length, // Use actual count as limit
+⋮----
+// Player State
+async getPlaybackState(): Promise<PlaybackState | null>
+⋮----
+async transferPlayback(deviceIds: string[], play = false): Promise<void>
+⋮----
+// Transform Spotify track to our TrackMetadata format
+static transformTrack(track: Track): TrackMetadata
+</file>
+
+<file path="src/types/units-types.ts">
+/**
+ * Shared types for measurement units
+ */
+⋮----
+export type TemperatureUnit = "imperial" | "metric" | "standard";
+export type TimeFormat = "12h" | "24h";
+export type ThemeMode = "auto" | "light" | "dark";
+⋮----
+export interface UnitDefaults {
+  temperatureUnit: TemperatureUnit;
+}
+</file>
+
+<file path="src/global-styles.css">
+@theme inline {
+⋮----
+:root {
+⋮----
+--radius: 0.75rem; /* Increased for more Apple-like rounded corners */
+⋮----
+.dark {
+⋮----
+@layer base {
+⋮----
+* {
+body {
+⋮----
+/* === ADVANCED LIQUID GLASS EFFECTS === */
+/* Inspired by Apple's design and rdev/liquid-glass-react */
+⋮----
+/* Gentle Liquid Glass morphing animation */
+⋮----
+/* Gentle Liquid Glass breathing effect */
+⋮----
+/* Gentle Liquid Glass shimmer */
+⋮----
+.animate-glow {
+⋮----
+.animate-glow-simple {
+⋮----
+.animate-glow-hover {
+⋮----
+/* Liquid Glass utility classes */
+.liquid-glass-morph {
+⋮----
+.liquid-glass-breathe {
+⋮----
+.liquid-glass-shimmer {
+⋮----
+/* Advanced Liquid Glass Utility Classes */
+.liquid-glass-hover {
+⋮----
+.liquid-glass-hover:hover {
+⋮----
+.liquid-glass-interactive {
+⋮----
+.liquid-glass-interactive::before {
+⋮----
+.liquid-glass-interactive:hover::before {
+⋮----
+/* Background gradient utilities */
+.bg-gradient-radial {
+⋮----
+/* Login page animations */
+⋮----
+/* Mouse tracking utilities */
+.mouse-tracking {
+⋮----
+.elastic-mouse-response {
+⋮----
+/* Animation classes for easy application */
+.animate-liquid-morph {
+⋮----
+.animate-liquid-breathe {
+⋮----
+.animate-liquid-shimmer {
+⋮----
+.animate-chromatic-shift {
+⋮----
+.animate-elastic-deform {
+⋮----
+.animate-displacement-wave {
+⋮----
+/* Gentle Apple-style depth for controls */
+.apple-depth {
+⋮----
+.apple-depth:hover {
+⋮----
+.dark .apple-depth {
+⋮----
+.dark .apple-depth:hover {
+⋮----
+/* Gentle segmented control styling */
+.segmented-control-container {
+⋮----
+.segmented-control-item {
+⋮----
+.segmented-control-item.active {
+⋮----
+.dark .segmented-control-container {
+⋮----
+.dark .segmented-control-item {
+⋮----
+.dark .segmented-control-item.active {
+⋮----
+/* Gentle Liquid Glass hover effects */
+⋮----
+/* Gentle liquid glass for interactive elements */
+⋮----
+.liquid-glass-interactive:hover {
+⋮----
+.liquid-glass-interactive:active {
+⋮----
+/* Dark mode specific liquid glass enhancements */
+.dark .liquid-glass-hover:hover {
+⋮----
+.dark .liquid-glass-interactive:hover {
+⋮----
+.dark .liquid-glass-interactive:active {
+⋮----
+/* Dark mode hexagonal icon style */
+.dark-hex-icon {
+⋮----
+/* Enhanced dark mode glow effects */
+.dark .animate-glow-simple {
+⋮----
+.dark .animate-glow-hover {
+⋮----
+/* Advanced glassmorphism with enhanced backdrop effects */
+.advanced-glassmorphism {
+⋮----
+.dark .advanced-glassmorphism {
+⋮----
+/* Chromatic aberration simulation */
+.chromatic-glass {
+⋮----
+.chromatic-glass::before {
+⋮----
+.dark .chromatic-glass {
+⋮----
+.dark .chromatic-glass::before {
+⋮----
+/* Elastic container with deformation */
+.elastic-container {
+⋮----
+.elastic-container:hover {
+⋮----
+/* Frosted glass with texture simulation */
+.frosted-glass {
+⋮----
+.frosted-glass::before {
+⋮----
+.dark .frosted-glass {
+</file>
+
+<file path="tests/api-queue-comprehensive.spec.ts">
+/**
+ * API and Queue Functionality Test Suite
+ * Tests all Spotify API interactions and queue management
+ */
+⋮----
+import { test, expect, Page } from "@playwright/test";
+⋮----
+// Mock valid tokens for API testing
+⋮----
+expires_at: Date.now() + 3600000, // 1 hour from now
+⋮----
+// Clear storage and set up mock tokens
+⋮----
+// Set up mock tokens
+⋮----
+// Monitor API requests
+⋮----
+// Trigger an API request (search for music)
+⋮----
+// Verify API requests have proper authentication headers
+⋮----
+// Mock rate limit responses
+⋮----
+// Trigger API request and verify graceful handling
+⋮----
+// Should not crash the application
+⋮----
+// Should show appropriate error state or retry mechanism
+⋮----
+// Note: This might not always be visible depending on UI, but app shouldn't crash
+⋮----
+// Mock network failures
+⋮----
+// Should handle network errors without crashing
+⋮----
+// Wait a bit to see if any errors surface
+⋮----
+// Application should remain stable
+⋮----
+// Even if no specific error message, app should not crash
+⋮----
+// Look for queue-related UI elements
+⋮----
+// Should have some queue-related UI (exact count depends on implementation)
+⋮----
+// Check for queue state in localStorage/sessionStorage
+⋮----
+// Queue state should be manageable (not necessarily present initially)
+⋮----
+// Look for add-to-queue buttons or similar functionality
+⋮----
+// Click first available add/play button
+⋮----
+// Should not cause authentication errors
+⋮----
+// Look for any error states
+⋮----
+// Simulate adding items to queue (if possible)
+⋮----
+// Get initial queue state
+⋮----
+// Reload page
+⋮----
+// Get queue state after reload
+⋮----
+// Queue state should persist (or at least not cause errors)
+⋮----
+// Mock weather API response
+⋮----
+// Wait for weather data to load
+⋮----
+// Look for weather-based music recommendations
+⋮----
+// Should have weather and music content
+⋮----
+// Mock weather API failure
+⋮----
+// Should not crash due to weather API failure
+⋮----
+// Should provide fallback or error state
+⋮----
+// App should remain functional
+⋮----
+// Should have some interactive elements (even if weather fails)
+⋮----
+// Mock intermittent failures
+⋮----
+// Fail first 2 requests
+⋮----
+// Succeed on subsequent requests
+⋮----
+// Trigger API requests and verify recovery
+⋮----
+// Should handle failures and eventual success
+⋮----
+// App should remain stable
+⋮----
+// Perform rapid interactions
+⋮----
+// Rapidly click multiple buttons
+⋮----
+// Ignore click failures for this stress test
+⋮----
+// App should remain stable
+⋮----
+// Should not have crashed
+</file>
+
+<file path="tests/auth-comprehensive.spec.ts">
+/**
+ * Comprehensive Authentication Test Suite
+ * Tests all authentication scenarios with certainty
+ */
+⋮----
+import { test, expect, Page } from "@playwright/test";
+⋮----
+// Clear all storage before each test
+⋮----
+// 1. Start at login page
+⋮----
+// 2. Verify login button exists and is functional
+⋮----
+// 3. Intercept OAuth initiation
+⋮----
+// 4. Click login and verify OAuth parameters
+⋮----
+// 5. Verify PKCE parameters are present
+⋮----
+// Test callback page with mock parameters
+⋮----
+// Should show some kind of state (processing initially, then error or success)
+⋮----
+// Should handle the callback (will fail without real tokens, but should not crash)
+⋮----
+// Should show appropriate error or success state (since mock auth will fail)
+⋮----
+// Test callback with error parameter
+⋮----
+// Should show error state
+⋮----
+// Should provide retry option
+⋮----
+// Wait for app to load
+⋮----
+// Check that authentication context is properly initialized
+⋮----
+// Corrupt localStorage with invalid JSON
+⋮----
+// Refresh page and verify app still loads
+⋮----
+// Should have cleared corrupted data
+⋮----
+// Set valid mock tokens
+⋮----
+expires_at: Date.now() + 3600000, // 1 hour from now
+⋮----
+// Refresh page and verify tokens persist
+⋮----
+// Set expired tokens
+⋮----
+expires_at: Date.now() - 1000, // Expired 1 second ago
+⋮----
+// Navigate to a page that would trigger auth check
+⋮----
+// Should handle expired tokens gracefully (no crashes)
+⋮----
+// Set up expired tokens
+⋮----
+// Monitor network requests for duplicates
+⋮----
+// Trigger multiple auth checks simultaneously
+⋮----
+// Simulate multiple concurrent auth checks
+⋮----
+// Should not have made multiple concurrent refresh requests
+</file>
+
+<file path="dev.sh">
+#!/bin/zsh
+# Simple development script for frontend-only WeatherTunes
+
+echo "🌪️🎸 Starting WeatherTunes development server..."
+
+# Kill any existing dev server
+if lsof -i :5173 | grep LISTEN; then
+  echo "🛑 Stopping existing dev server..."
+  lsof -ti :5173 | xargs kill -9
+fi
+
+# Note: No backend server needed! Using Spotify Authorization Code + PKCE flow
+echo "✨ Using frontend-only authentication (no backend required)"
+
+# Start the development server
+echo "🚀 Starting Vite dev server..."
+npm run dev
+</file>
+
+<file path="index.html">
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + React + TS</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      window.onSpotifyWebPlaybackSDKReady = window.onSpotifyWebPlaybackSDKReady || function() {};
+    </script>
+    <script src="https://sdk.scdn.co/spotify-player.js"></script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+</file>
+
+<file path="vitest.config.ts">
+import { defineConfig } from "vitest/config";
+import react from "@vitejs/plugin-react";
+import path from "path";
+</file>
+
+<file path="src/__tests__/services/AuthService.test.ts">
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { AuthService } from "../../services/AuthService";
+⋮----
+// Mock utilities and global fetch
+⋮----
+function setTokens(tokens: Record<string, unknown>)
+⋮----
+// Mock window.location.href to prevent navigation
+⋮----
+// @ts-expect-error testing private method
+⋮----
+// @ts-expect-error testing private method
+⋮----
+expiresAt: Date.now() + 3600 * 1000, // 1 hour
+⋮----
+// @ts-expect-error: Testing private method
+⋮----
+// @ts-expect-error: Testing private method
+⋮----
+// @ts-expect-error: Testing private method
+</file>
+
+<file path="src/components/icons/index.ts">
+// Export all your icons from here for easy importing
+⋮----
+// You can add more icons here as you create them:
+</file>
+
+<file path="src/components/settings/SettingsPanel.tsx">
+import { UnitSelector } from "./UnitSelector.tsx";
+import { ThemeSwitcher } from "./ThemeSwitcher.tsx";
+import { useSettings } from "@/hooks/common";
+⋮----
+export function SettingsPanel()
+</file>
+
+<file path="src/components/shared/ErrorBoundary.tsx">
+import React, { Component } from "react";
+import type { ErrorInfo, ReactNode } from "react";
+import { ErrorDisplay } from "./StatusComponents";
+⋮----
+interface Props {
+  children: ReactNode;
+  fallback?: ReactNode;
+}
+⋮----
+interface State {
+  hasError: boolean;
+  error?: Error;
+}
+⋮----
+/**
+ * Error boundary component to catch and handle React errors gracefully
+ * Provides fallback UI when components fail to render
+ */
+export class ErrorBoundary extends Component<Props, State>
+⋮----
+public static getDerivedStateFromError(error: Error): State
+⋮----
+public componentDidCatch(_error: Error, _errorInfo: ErrorInfo)
+⋮----
+// console.error("Uncaught error:", error, errorInfo); // Logging can be handled by a dedicated logging service or removed if not essential for production monitoring
+// Parameters are unused after removing console.error, prefix with underscore
+⋮----
+public render()
+⋮----
+/**
+ * Higher-order component to wrap components with error boundary
+ */
+export function withErrorBoundary<P extends object>(
+  Component: React.ComponentType<P>,
+  fallback?: ReactNode,
+)
+</file>
+
+<file path="src/types/queue-types.ts">
+/**
+ * Unified track data types for the queue system
+ */
+⋮----
+export interface TrackMetadata {
+  id: string | null;
+  title: string;
+  artist: string;
+  album: string;
+  albumArt: string;
+  albumArtFallback?: string;
+  duration: number;
+  previewUrl?: string;
+  externalUrl: string;
+  uri: string;
+  tags?: string[];
+
+  /**
+   * URL to a video asset that matches the track's mood/weather
+   */
+  videoUrl?: string;
+
+  /**
+   * CSS class name for additional styling of the video
+   */
+  videoClass?: string;
+}
+⋮----
+/**
+   * URL to a video asset that matches the track's mood/weather
+   */
+⋮----
+/**
+   * CSS class name for additional styling of the video
+   */
+⋮----
+export interface QueueResponse {
+  queue: TrackMetadata[];
+  message?: string;
+}
+⋮----
+export interface NextTrackResponse {
+  next_track: TrackMetadata | null; // Changed from next_track_id: string | null
+  queue: TrackMetadata[];
+  message?: string;
+}
+⋮----
+next_track: TrackMetadata | null; // Changed from next_track_id: string | null
+⋮----
+export interface AddTrackResponse {
+  message: string;
+  queue: TrackMetadata[];
+}
+⋮----
+export interface ClearQueueResponse {
+  message: string;
+  queue: TrackMetadata[]; // Technically, the queue will be empty, but type consistency is good
+}
+⋮----
+queue: TrackMetadata[]; // Technically, the queue will be empty, but type consistency is good
+⋮----
+export interface ReplaceQueueResponse {
+  message: string;
+  queue: TrackMetadata[];
+}
+</file>
+
+<file path="src/MainPage.tsx">
+import {
+  ErrorDisplay,
+  WeatherMusicCard,
+  ForecastCard,
+  QueueCard,
+  FavoritesCard,
+  SpotifySearchCard,
+  SettingsCard,
+} from "@/components";
+import { SettingsButton } from "@/components/settings/SettingsButton";
+import { WeatherBackground } from "@/components/weather/WeatherBackground";
+import { LoadingSpinner } from "@/components/shared/StatusComponents";
+import { useEffect } from "react";
+import { useWeatherData } from "@/hooks/useWeatherData";
+import { useThemeManager } from "@/hooks/useThemeManager";
+import { useAuth } from "@/hooks/useAuth";
+import { useWeatherQueue } from "@/hooks/useWeatherQueue";
+import { useSpotifyQueue } from "@/hooks/spotify"; // Import useSpotifyQueue
+import { LAYOUT, COLORS } from "@/lib";
+⋮----
+useWeatherQueue(); // Use the hook
+⋮----
+// Set theme based on time of day
+⋮----
+// Generate queue on initial load if authenticated
+⋮----
+replaceQueueWithWeatherTracks(15); // Generate a queue of 15 tracks
+⋮----
+// Replenish queue when it falls below the target length
+⋮----
+// Loading State
+⋮----
+// Error State
+⋮----
+// If no display data is available
+⋮----
+// Don't render main content if user is not authenticated
+⋮----
+{/* Dynamic Weather Background */}
+⋮----
+{/* Settings Button - Always visible */}
+⋮----
+{/* Login Content */}
+⋮----
+{/* Video Background */}
+⋮----
+{/* Main Content Area (centered column) */}
+⋮----
+{/* App Header with Settings Button (top-left) */}
+⋮----
+{/* Weather and Music Card */}
+⋮----
+{/* Queue Display */}
+⋮----
+{/* Spotify Search */}
+⋮----
+{/* 5-Day Forecast */}
+⋮----
+{/* Favorites List */}
+⋮----
+{/* Bottom Padding */}
+⋮----
+{/* Footer */}
+</file>
+
+<file path=".env.example">
+# WeatherTunes Frontend-Only Configuration
+# Copy this file to .env and fill in your values
+
+# OpenWeather API Key (required for weather data)
+VITE_PUBLIC_OPENWEATHER_API_KEY=your_openweather_api_key_here
+
+# Frontend-only Spotify Configuration (PKCE)
+VITE_SPOTIFY_CLIENT_ID=your_spotify_client_id_here
+</file>
+
+<file path="tailwind.config.ts">
+import type { Config } from "tailwindcss";
+⋮----
+darkMode: "class", // Enable class-based dark mode
+⋮----
+liquid: "0.75rem", // 12px - matches Apple's design
+"liquid-lg": "1rem", // 16px - for larger elements
+"liquid-xl": "1.25rem", // 20px - for prominent elements
+"liquid-2xl": "1.5rem", // 24px - for hero elements
+</file>
+
+<file path="tsconfig.app.json">
+{
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "jsx": "react-jsx",
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true,
+    /* Paths */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["src"]
+}
+</file>
+
+<file path="vite.config.ts">
+import path from "path";
+import tailwindcss from "@tailwindcss/vite";
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+⋮----
+// https://vite.dev/config/
+⋮----
+// Prevent WebSocket connection issues during auth flows
+⋮----
+overlay: false, // Disable error overlay to prevent interference with auth
+⋮----
+exclude: ["*.mp4", "*.webm", "*.ogg"], // Don't optimize video files
+⋮----
+assetsInlineLimit: 0, // Don't inline any assets, copy them as files
+⋮----
+// Handle video files
+⋮----
+return `assets/videos/[name][extname]`; // Keep original filenames for videos
+⋮----
+// Handle other assets
+⋮----
+// Explicitly include video file types as assets
+</file>
+
+<file path="src/contexts/AuthProvider.tsx">
+/**
+ * AuthProvider - Manages authentication state using the AuthService
+ * Single source of truth for auth state using React Context
+ */
+⋮----
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { useServices } from "../hooks/common";
+import type { User } from "@/services/AuthService";
+⋮----
+// === AUTH CONTEXT TYPES ===
+export interface AuthState {
+  user: User | null;
+  isLoading: boolean;
+  error: string | null;
+}
+⋮----
+export interface AuthContextValue extends AuthState {
+  login: () => Promise<void>;
+  logout: () => void;
+  handleCallback: () => Promise<boolean>;
+  getAccessToken: () => Promise<string | null>;
+  isAuthenticated: boolean;
+}
+⋮----
+// === CONTEXT CREATION ===
+⋮----
+type AuthProviderProps = {
+  children: React.ReactNode;
+};
+⋮----
+export function AuthProvider({
+  children,
+}: AuthProviderProps): React.ReactElement
+⋮----
+// Check if user is authenticated
+⋮----
+// Initialize auth state on mount
+⋮----
+// Clear the URL parameters after successful authentication
+</file>
+
+<file path="src/hooks/spotify.ts">
+/**
+ * Consolidated Spotify hooks
+ * Combines all Spotify-related functionality to reduce fragmentation
+ */
+⋮----
+import { useState, useCallback, useEffect, useRef } from "react";
+import { useServices } from "@/hooks/common";
+import { SpotifyService } from "@/services/SpotifyService";
+import type { Track } from "@/types/spotify-api-types";
+import type { TrackMetadata } from "@/types/queue-types";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+⋮----
+// === SERVICE HOOK ===
+export function useSpotifyService(): SpotifyService
+⋮----
+// === SEARCH HOOK ===
+interface UseSpotifySearchState {
+  query: string;
+  results: TrackMetadata[];
+  isLoading: boolean;
+  error: string | null;
+  hasSearched: boolean;
+}
+⋮----
+interface UseSpotifySearchReturn extends UseSpotifySearchState {
+  setQuery: (query: string) => void;
+  performSearch: () => Promise<void>;
+  clearResults: () => void;
+  // Additional methods for compatibility
+  searchResults: TrackMetadata[];
+  isSearching: boolean;
+  searchError: string | null;
+  searchTracks: (query: string, limit?: number) => Promise<void>;
+  searchByMood: (mood: string, limit?: number) => Promise<void>;
+  clearSearchResults: () => void;
+}
+⋮----
+// Additional methods for compatibility
+⋮----
+// Helper to transform Spotify track to TrackMetadata
+const transformTrack = (track: Track): TrackMetadata => (
+⋮----
+export function useSpotifySearch(): UseSpotifySearchReturn
+⋮----
+// Compatibility aliases
+⋮----
+// === LIKED TRACKS HOOK ===
+interface UseSpotifyLikedTracksReturn {
+  tracks: TrackMetadata[];
+  isLoading: boolean;
+  error: string | null;
+  refetch: () => Promise<void>;
+}
+⋮----
+export function useSpotifyLikedTracks(
+  options: { limit?: number; enabled?: boolean } = {},
+): UseSpotifyLikedTracksReturn
+⋮----
+staleTime: 1000 * 60 * 15, // 15 minutes
+⋮----
+// === LIKES MANAGEMENT HOOK ===
+interface UseSpotifyLikesReturn {
+  likeTrack: (trackId: string) => Promise<void>;
+  isLoading: boolean;
+  error: string | null;
+}
+⋮----
+export function useSpotifyLikes(): UseSpotifyLikesReturn
+⋮----
+// === QUEUE MANAGEMENT HOOK ===
+interface UseSpotifyQueueReturn {
+  currentTrack: TrackMetadata | null;
+  upcomingTracks: TrackMetadata[];
+  isLoading: boolean;
+  error: string | null;
+  addToQueue: (tracks: TrackMetadata[]) => Promise<void>;
+  playTrack: (trackUri: string) => Promise<void>;
+  playNext: () => Promise<void>;
+  replaceQueue: (tracks: TrackMetadata[]) => Promise<void>;
+  clearQueue: () => Promise<void>;
+}
+⋮----
+const TARGET_QUEUE_LENGTH = 15; // The desired fixed length of the queue
+⋮----
+export function useSpotifyQueue(): UseSpotifyQueueReturn
+⋮----
+// If track not in upcoming, try playing directly (e.g., from search)
+// This might require fetching track details first if only ID is available
+// For now, assume it's from the queue.
+⋮----
+// Clear the local queue state
+⋮----
+// If there's a method to clear the Spotify queue, call it here
+// For now, just clear the local state
+⋮----
+// === PLAYBACK CONTROL HOOK ===
+interface PlaybackState {
+  is_playing: boolean;
+  isPlaying: boolean; // Alias for compatibility
+  position_ms: number;
+  duration_ms: number;
+  track: TrackMetadata | null;
+  currentTrack: TrackMetadata | null; // Alias for compatibility
+  device: {
+    id: string;
+    name: string;
+    type: string;
+    volume_percent: number;
+  } | null;
+  shuffle_state: boolean;
+  repeat_state: string;
+}
+⋮----
+isPlaying: boolean; // Alias for compatibility
+⋮----
+currentTrack: TrackMetadata | null; // Alias for compatibility
+⋮----
+interface UseSpotifyPlaybackReturn {
+  state: PlaybackState;
+  controls: {
+    play: () => Promise<void>;
+    pause: () => Promise<void>;
+    next: () => Promise<void>;
+    previous: () => Promise<void>;
+    seek: (position_ms: number) => Promise<void>;
+    setVolume: (volume: number) => Promise<void>;
+    togglePlay: () => Promise<void>;
+    playTrack: (trackId: string) => Promise<void>;
+  };
+}
+⋮----
+export function useSpotifyPlayback(): UseSpotifyPlaybackReturn
+⋮----
+// Implementation would depend on SpotifyService having a playTrack method
+⋮----
+// === PLAYER HOOK ===
+interface UseSpotifyPlayerState {
+  isReady: boolean;
+  isActive: boolean;
+  currentTrack: TrackMetadata | null;
+  position: number;
+  duration: number;
+  isPlaying: boolean;
+  volume: number;
+  device_id: string | null;
+  isLoading: boolean;
+  error: string | null;
+}
+⋮----
+interface UseSpotifyPlayerControls {
+  play: () => Promise<void>; // Changed to Promise<void>
+  pause: () => Promise<void>; // Changed to Promise<void>
+  resume: () => Promise<void>; // Changed to Promise<void>
+  seek: (position: number) => Promise<void>; // Changed to Promise<void>
+  nextTrack: () => Promise<void>; // Changed to Promise<void>
+  previousTrack: () => Promise<void>; // Changed to Promise<void>
+  setVolume: (volume: number) => Promise<void>; // Changed to Promise<void>
+  togglePlay: () => Promise<void>; // Changed to Promise<void>
+  playTrack: (trackId: string) => Promise<boolean>; // This one remains boolean as it's a custom implementation
+}
+⋮----
+play: () => Promise<void>; // Changed to Promise<void>
+pause: () => Promise<void>; // Changed to Promise<void>
+resume: () => Promise<void>; // Changed to Promise<void>
+seek: (position: number) => Promise<void>; // Changed to Promise<void>
+nextTrack: () => Promise<void>; // Changed to Promise<void>
+previousTrack: () => Promise<void>; // Changed to Promise<void>
+setVolume: (volume: number) => Promise<void>; // Changed to Promise<void>
+togglePlay: () => Promise<void>; // Changed to Promise<void>
+playTrack: (trackId: string) => Promise<boolean>; // This one remains boolean as it's a custom implementation
+⋮----
+interface UseSpotifyPlayerReturn {
+  state: UseSpotifyPlayerState;
+  controls: UseSpotifyPlayerControls;
+  initialize: () => Promise<boolean>;
+}
+⋮----
+export function useSpotifyPlayer(): UseSpotifyPlayerReturn
+⋮----
+// Ensure Spotify SDK is loaded
+⋮----
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+⋮----
+// Cast to any
+⋮----
+// Explicitly type cb
+⋮----
+// Ready
+⋮----
+// Explicitly type data
+⋮----
+// Transfer playback to this device
+⋮----
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+⋮----
+// Explicitly type err
+⋮----
+// Not Ready
+⋮----
+// Explicitly type data
+⋮----
+// Player State Changed
+⋮----
+// Explicitly type playerState
+⋮----
+isReady: true, // Ensure ready state is maintained
+⋮----
+// Errors
+⋮----
+// Explicitly type data
+⋮----
+// Explicitly type data
+⋮----
+// Explicitly type data
+⋮----
+// Explicitly type data
+⋮----
+// Cleanup on unmount
+⋮----
+// This method is typically handled by the SpotifyService.play method
+// which takes URIs. The player itself doesn't have a direct playTrackById.
+// If we need to play a specific track on this device, we'd use transferPlayback
+// or the SpotifyService.play method.
+⋮----
+return false; // Still returns boolean as it's a custom warning/fallback
+</file>
+
+<file path="src/hooks/useWeatherData.ts">
+import { useState, useEffect, useCallback, useMemo } from "react";
+import type {
+  WeatherApiResponse,
+  EnhancedWeatherState,
+  WeatherDisplayData,
+} from "@/types/weather-types";
+import { getUserLocationAndFetch } from "@/lib";
+import {
+  getTimePeriod,
+  formatUnixTimeToLocalString,
+  formatTemperature,
+} from "@/lib/core";
+import { useSettings } from "@/hooks/common";
+⋮----
+// Helper function to format weather condition for display
+// Moved to common.ts - keeping here for backward compatibility
+function formatWeatherConditionLocal(
+  condition: string,
+  description?: string,
+): string
+⋮----
+// Use the more descriptive description if available, otherwise use main condition
+⋮----
+// Safety check for empty/undefined values
+⋮----
+// Capitalize first letter and make it more user-friendly
+⋮----
+/**
+ * Unified weather data hook with enhanced error handling and memoization
+ * Manages weather API calls, processing, and state management
+ * @returns EnhancedWeatherState with TimePeriod information
+ */
+export function useWeatherData(): EnhancedWeatherState
+⋮----
+// Validate essential data fields
+⋮----
+// Process successful data
+⋮----
+"en-US", // always use a valid locale
+⋮----
+"en-US", // always use a valid locale
+⋮----
+// Fetch weather data on mount and when settings change
+⋮----
+const fetchWeather = async () =>
+</file>
+
+<file path="src/services/AuthService.ts">
+import { generateSecureRandomString } from "../lib/core";
+⋮----
+type TokenResponse = {
+  access_token: string;
+  refresh_token: string;
+  expires_in: number;
+};
+⋮----
+type TokenData = {
+  accessToken: string;
+  refreshToken: string;
+  expiresAt: number; // Timestamp in ms
+};
+⋮----
+expiresAt: number; // Timestamp in ms
+⋮----
+export type User = {
+  id: string;
+  display_name: string;
+  email: string;
+  images?: Array<{ url: string }>;
+};
+⋮----
+// Configuration constants
+⋮----
+// Storage keys
+⋮----
+// Token refresh debouncing
+⋮----
+/**
+ * Generate PKCE code verifier (exact implementation from Spotify docs)
+ */
+function generateCodeVerifier(): string
+⋮----
+const generateRandomString = (length: number): string =>
+⋮----
+/**
+ * Generate PKCE code challenge (exact implementation from Spotify docs)
+ */
+async function generateCodeChallenge(codeVerifier: string): Promise<string>
+⋮----
+const sha256 = async (plain: string): Promise<ArrayBuffer> =>
+⋮----
+const base64encode = (input: ArrayBuffer): string =>
+⋮----
+export class AuthService
+⋮----
+constructor()
+⋮----
+async initiateLogin(): Promise<void>
+⋮----
+// Clear any existing callback processing state
+⋮----
+// Generate PKCE parameters
+⋮----
+const state = generateSecureRandomString(16); // Use secure random for state
+⋮----
+// Store code verifier and state for the callback
+⋮----
+// Build authorization URL (exact parameters from Spotify docs)
+⋮----
+// Redirect to Spotify
+⋮----
+async handleRedirectCallback(): Promise<void>
+⋮----
+// Prevent multiple simultaneous callback processing
+⋮----
+// Retrieve stored state and verifier
+⋮----
+// Clean up stored values on error
+⋮----
+// Clean up stored values on state mismatch
+⋮----
+// Clean up stored values on missing code
+⋮----
+// Clean up stored values on missing verifier
+⋮----
+// Clean up state after successful validation
+⋮----
+// Exchange the authorization code for an access token
+⋮----
+async exchangeCodeForToken(
+    code: string,
+    codeVerifier: string,
+): Promise<TokenData>
+⋮----
+expiresAt: Date.now() + data.expires_in * 1000 - 60000, // 1 minute buffer
+⋮----
+async getAccessToken(): Promise<string>
+⋮----
+async getUser(): Promise<User | null>
+⋮----
+this.logout(); // Clear tokens on failure
+⋮----
+private async refreshAccessToken(refreshToken: string): Promise<TokenData>
+⋮----
+// If a refresh is already in progress, wait for it
+⋮----
+client_id: this.clientId, // client_id is sent in the body for PKCE refresh
+⋮----
+refreshToken: data.refresh_token || refreshToken, // Use new refresh token if provided, otherwise keep the old one
+⋮----
+private getTokens(): TokenData | null
+⋮----
+// Validate token structure
+⋮----
+private storeTokens(tokens: TokenData): void
+⋮----
+// Continue without storage - user will need to re-login
+⋮----
+private getCodeVerifier(): string | null
+⋮----
+private storeCodeVerifier(codeVerifier: string): void
+⋮----
+private clearCodeVerifier(): void
+⋮----
+async isAuthenticated(): Promise<boolean>
+⋮----
+// Attempt to ensure token is valid, but don't throw if it fails
+⋮----
+logout(): void
+⋮----
+private async _ensureValidAccessToken(): Promise<TokenData | null>
+⋮----
+// If token is still valid, return it
+⋮----
+// 1 minute buffer
+⋮----
+// If a refresh is already in progress, wait for it
+⋮----
+// Otherwise, initiate a refresh
+⋮----
+this.refreshPromise = null; // Clear promise on success
+⋮----
+this.refreshPromise = null; // Clear promise on failure
+⋮----
+this.logout(); // Clear tokens and log out user
+throw error; // Re-throw to propagate the error
+⋮----
+private clearTokens(): void
+⋮----
+localStorage.removeItem(STATE_KEY); // Clear state key on logout
+</file>
+
+<file path="src/services/WeatherService.ts">
+import { LocalStorage } from "@/services/storage";
+import { fetchForecastByCoords } from "@/lib/weather/weather-api";
+import { formatTemperature, getUnitSymbol } from "@/lib";
+import type { TemperatureUnit } from "@/types/units-types";
+⋮----
+// Weather condition types and utilities
+export type WeatherType =
+  | "clear"
+  | "clouds"
+  | "rain"
+  | "snow"
+  | "fog"
+  | "thunderstorm"
+  | "drizzle";
+⋮----
+export interface WeatherCondition {
+  main: string;
+  description: string;
+  icon: string;
+}
+⋮----
+export interface DailyForecast {
+  date: string;
+  dayName: string;
+  condition: string;
+  tempHigh: number;
+  tempLow: number;
+  icon: string;
+  unit: string;
+}
+⋮----
+export interface ForecastApiResponse {
+  list: Array<{
+    dt: number;
+    main: {
+      temp: number;
+      temp_min: number;
+      temp_max: number;
+    };
+    weather: Array<{
+      main: string;
+      description: string;
+      icon: string;
+    }>;
+  }>;
+}
+⋮----
+export class WeatherService
+⋮----
+private readonly CACHE_TTL = 30 * 60 * 1000; // 30 minutes in milliseconds
+⋮----
+private constructor()
+⋮----
+public static getInstance(): WeatherService
+⋮----
+/**
+   * Fetches forecast data from the API or cache if still valid
+   */
+public async getForecast(
+    location: { lat: number; lon: number },
+    temperatureUnit: TemperatureUnit,
+    forceRefresh = false,
+): Promise<DailyForecast[]>
+⋮----
+// Try to get from cache first if not forcing refresh
+⋮----
+// Fetch fresh data from API
+⋮----
+// Use the weather-api function with provided coordinates
+⋮----
+// Cache the response
+⋮----
+/**
+   * Processes raw forecast API response into a more usable format
+   */
+private processForecastData(
+    data: ForecastApiResponse,
+    temperatureUnit: TemperatureUnit,
+): DailyForecast[]
+⋮----
+// Sort entries by date and take first 5 days
+⋮----
+/**
+   * Gets cached forecast if it exists and is not expired
+   */
+private getCachedForecast(key: string): ForecastApiResponse | null
+⋮----
+/**
+   * Caches forecast data with timestamp
+   */
+private cacheForecast(key: string, data: ForecastApiResponse): void
+⋮----
+/**
+   * Maps weather condition strings to our internal weather types
+   */
+public getWeatherType(condition?: string): WeatherType
+</file>
+
+<file path="src/types/weather-types.ts">
+import type { TimePeriod } from "@/lib"; // Added import for TimePeriod
+import type { TemperatureUnit } from "./units-types";
+⋮----
+export interface WeatherApiResponse {
+  name: string;
+  main: {
+    temp: number;
+  };
+  weather: {
+    main: string;
+    description: string;
+    id: number;
+  }[];
+  wind?: {
+    speed: number;
+  };
+  clouds?: {
+    all: number;
+  };
+  visibility?: number;
+  sys: {
+    sunrise: number;
+    sunset: number;
+    country?: string;
+  };
+}
+⋮----
+export interface WeatherDisplayData {
+  location: string;
+  temperature: number;
+  condition: string;
+  sunrise?: string;
+  sunset?: string;
+  unit: TemperatureUnit;
+}
+⋮----
+export interface EnhancedWeatherState {
+  displayData: WeatherDisplayData;
+  timePeriod: TimePeriod | null;
+  isLoading: boolean;
+  error: Error | null;
+  rawResponse: WeatherApiResponse | null;
+}
+⋮----
+export type WeatherType = "clear" | "rain" | "snow" | "fog" | "cloudy";
+⋮----
+// Forecast API types
+export interface ForecastItem {
+  dt: number; // Unix timestamp
+  main: {
+    temp: number;
+    temp_min: number;
+    temp_max: number;
+  };
+  weather: {
+    main: string;
+    description: string;
+    id: number;
+    icon: string;
+  }[];
+  dt_txt: string; // Date time text "YYYY-MM-DD HH:mm:ss"
+}
+⋮----
+dt: number; // Unix timestamp
+⋮----
+dt_txt: string; // Date time text "YYYY-MM-DD HH:mm:ss"
+⋮----
+export interface ForecastApiResponse {
+  list: ForecastItem[];
+  city: {
+    name: string;
+    country: string;
+    sunrise: number;
+    sunset: number;
+  };
+}
+⋮----
+export interface DailyForecast {
+  date: string; // Formatted date string
+  dayName: string; // e.g., "Monday", "Tuesday"
+  condition: string;
+  tempHigh: string;
+  tempLow: string;
+  icon: string;
+}
+⋮----
+date: string; // Formatted date string
+dayName: string; // e.g., "Monday", "Tuesday"
+⋮----
+export interface ForecastState {
+  forecast: DailyForecast[];
+  isLoading: boolean;
+  error: Error | null;
+}
+</file>
+
+<file path="tests/README.md">
+# WeatherTunes Test Suite
+
+## Overview
+Comprehensive test suite ensuring authentication system and API integration reliability.
+
+## Test Structure
+
+### Existing Tests (17 tests)
+- `tests/frontend-auth.spec.ts` - Basic authentication flow
+- `tests/frontend-integration.spec.ts` - Integration scenarios
+- `tests/frontend-complete.spec.ts` - Complete application flow
+
+### Comprehensive Tests (20 additional tests)
+- `tests/auth-comprehensive.spec.ts` - Complete OAuth PKCE flow verification
+- `tests/api-queue-comprehensive.spec.ts` - API integration and queue management
+
+## Running Tests
+
+### Individual Test Suites
+```bash
+# Run specific test suite
+npx playwright test tests/auth-comprehensive.spec.ts
+npx playwright test tests/api-queue-comprehensive.spec.ts
+
+# Run all tests
+npx playwright test
+```
+
+### Comprehensive Test Runner
+```bash
+# Run complete test suite with development server
+chmod +x test-comprehensive.sh
+./test-comprehensive.sh
+```
+
+## Test Coverage
+
+### Authentication (8 scenarios)
+- OAuth PKCE flow initiation
+- Callback handling (success/error)
+- State persistence and corruption recovery
+- Token expiration and refresh
+
+### API Integration (12 scenarios)
+- Authenticated Spotify API requests
+- Rate limiting and network error handling
+- Queue operations and state management
+- Weather API integration and fallbacks
+
+### System Reliability
+- Error recovery and graceful degradation
+- App stability under rapid interactions
+- Memory management and cleanup
+
+## Success Criteria
+✅ 37/37 tests passing
+✅ No authentication infinite loops
+✅ Proper error handling and recovery
+✅ Production-ready reliability
+</file>
+
+<file path="tsconfig.json">
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true,
+    /* Paths */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "types": ["vite/client", "node"]
+  },
+  "include": ["src"],
+  "references": [{ "path": "./tsconfig.node.json" }],
+  "exclude": ["node_modules"]
+}
+</file>
+
+<file path="src/components/layout/ThemeProvider.tsx">
+import { ThemeProvider as MuiThemeProvider } from "@mui/material/styles";
+import { CssBaseline } from "@mui/material";
+import { type ReactNode } from "react";
+import { muiTheme, muiDarkTheme } from "@/lib";
+import { useSettings } from "@/hooks";
+⋮----
+interface ThemeProviderProps {
+  children: ReactNode;
+}
+⋮----
+/**
+ * Material UI theme provider that integrates with existing settings context
+ * Automatically switches between light and dark themes based on user preferences
+ */
+export function ThemeProvider(
+⋮----
+// Determine which theme to use based on settings
+</file>
+
+<file path="src/components/music/SpotifyMiniPlayer.tsx">
+/**
+ * Spotify Mini Player Component
+ * Compact player for favorites and search results
+ * Uses the new Spotify Web Playback SDK and service architecture
+ */
+⋮----
+import React, { useCallback } from "react";
+import type { TrackMetadata } from "@/types/queue-types";
+import { useSpotifyPlayback } from "@/hooks/spotify";
+import { cn } from "@/lib";
+import { TYPOGRAPHY, COLORS } from "@/lib";
+⋮----
+interface SpotifyMiniPlayerProps {
+  track: TrackMetadata;
+  className?: string;
+  onClick?: () => void;
+}
+⋮----
+/**
+ * Redesigned, simplified, and elegant Spotify player for individual tracks.
+ * Adopts a clean, vertical layout.
+ */
+⋮----
+{/* Album Art */}
+⋮----
+{/* Track Info */}
+⋮----
+className=
+</file>
+
+<file path="src/components/shared/StatusComponents.tsx">
+import { COLORS, TYPOGRAPHY, LAYOUT } from "@/lib";
+import { cn } from "@/lib";
+⋮----
+interface LoadingSpinnerProps {
+  message?: string;
+  className?: string;
+}
+⋮----
+className=
+</file>
+
+<file path="src/contexts/SettingsProvider.tsx">
+import { createContext, useEffect, useState, useCallback } from "react";
+import type { ReactNode } from "react";
+import { useLocationBasedDefaults } from "@/hooks/useLocationBasedDefaults";
+import { SettingsService } from "@/services/SettingsService";
+import type {
+  TemperatureUnit,
+  TimeFormat,
+  ThemeMode,
+} from "@/types/units-types";
+import type { Settings, LocationDefaults } from "@/services/SettingsService";
+⋮----
+interface SettingsContextType {
+  settings: Settings;
+  setTemperatureUnit: (unit: TemperatureUnit) => void;
+  setTimeFormat: (format: TimeFormat) => void;
+  setThemeMode: (mode: ThemeMode) => void;
+  toggleTemperatureUnit: () => void;
+  toggleTimeFormat: () => void;
+  resetToDefaults: () => void;
+  // Location-based defaults info for debugging
+  locationDefaults: LocationDefaults | null;
+  isLocationLoading: boolean;
+}
+⋮----
+// Location-based defaults info for debugging
+⋮----
+interface SettingsProviderProps {
+  children: ReactNode;
+}
+⋮----
+export function SettingsProvider(
+⋮----
+// Update settings state when they change in localStorage
+⋮----
+const handleStorageChange = () =>
+⋮----
+// Update defaults when location is determined (only if not already set)
+⋮----
+// Only update if the user hasn't explicitly set their preferences
+</file>
+
+<file path="src/hooks/common.ts">
+import { useState, useEffect, useContext } from "react";
+import { SettingsContext } from "@/contexts/SettingsProvider";
+import { ServiceContext } from "@/contexts/ServiceContext";
+⋮----
+/**
+ * Consolidated hooks utility file
+ * Contains commonly used hooks to reduce file fragmentation
+ */
+⋮----
+// === SETTINGS HOOKS ===
+⋮----
+/**
+ * Hook for accessing settings context
+ */
+export function useSettings()
+⋮----
+// === SERVICE HOOKS ===
+⋮----
+/**
+ * Hook for accessing service context - consolidated with other common hooks
+ */
+export function useServices()
+⋮----
+// === UTILITY HOOKS ===
+⋮----
+/**
+ * Simple debounce hook
+ */
+export function useDebounce<T>(value: T, delay: number): T
+⋮----
+/**
+ * Hook for handling async operations
+ */
+export function useAsync<T, E = Error>(
+  asyncFunction: () => Promise<T>,
+  immediate = false,
+)
+⋮----
+const execute = async () =>
+⋮----
+// eslint-disable-next-line react-hooks/exhaustive-deps
+⋮----
+/**
+ * Hook for managing boolean states (toggles, modals, etc.)
+ */
+export function useToggle(initialValue = false)
+⋮----
+const toggle = ()
+const setTrue = ()
+const setFalse = ()
+⋮----
+// === WEATHER UTILITY HOOKS ===
+⋮----
+/**
+ * Hook for weather-based time calculations
+ */
+export function useWeatherTime()
+⋮----
+const getCurrentTimeOfDay = () =>
+⋮----
+/**
+ * Hook for weather condition utilities
+ */
+export function useWeatherUtils()
+⋮----
+const formatWeatherCondition = (
+    condition: string,
+    description?: string,
+): string =>
+</file>
+
+<file path=".gitignore">
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependency directories
+node_modules
+dist
+dist-ssr
+*.local
+.env
+.env.test
+
+# TypeScript
+tsconfig.tsbuildinfo
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+.git-backup
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Documentation backup files
+*-old.md
+*-new.md
+docs/**/*-old.md
+docs/**/*-new.md
+
+# Test report directories
+playwright-report
+test-results
+</file>
+
+<file path="src/components/ui/segmented-control.tsx">
+import { cn } from "@/lib";
+⋮----
+interface SegmentedControlProps {
+  options: {
+    value: string;
+    label: string;
+  }[];
+  value: string;
+  onValueChange: (value: string) => void;
+  className?: string;
+}
+⋮----
+/**
+ * Apple-style segmented control with liquid glass design
+ * Matches the "For You / Library" style from Apple's design
+ */
+⋮----
+// Inlined segmentedControl styles - preserving exact visual appearance
+⋮----
+? // Active state - inlined segmentedActive styles
+⋮----
+: // Inactive state - inlined segmented styles
+</file>
+
+<file path="src/components/weather/WeatherBackground.tsx">
+import { useRef, useEffect, useState } from 'react';
+import type { TimePeriod } from '@/lib';
+⋮----
+// Use Vite's import.meta.glob for dynamic asset imports
+⋮----
+type WeatherConditionKey = keyof typeof videoMap;
+⋮----
+function getWeatherType(condition = ''): WeatherConditionKey
+⋮----
+function getTimePeriod(hours: number): TimePeriod
+⋮----
+interface VideoBackgroundProps {
+  condition?: string;
+  timePeriod?: TimePeriod | null;
+}
+⋮----
+const loadVideo = async () =>
+</file>
+
+<file path="src/hooks/useWeatherQueue.ts">
+/**
+ * Weather-aware queue generation using the new queue system
+ */
+⋮----
+import { useWeatherData } from "./useWeatherData";
+import { useCallback } from "react";
+import { useSpotifyQueue } from "./spotify";
+import { useWeatherTime, useSettings } from "./common";
+import type { TrackMetadata } from "@/types/queue-types";
+import { getVideoForCondition } from "@/data/video-assets";
+import { generateWeatherPlaylist } from "@/lib/music/recommendations";
+import { formatTemperature, getUnitSymbol } from "@/lib/core";
+import { useServices } from "@/hooks/common";
+⋮----
+interface UseWeatherQueueReturn {
+  generateWeatherQueue: (count?: number) => Promise<TrackMetadata[]>;
+  replaceQueueWithWeatherTracks: (count?: number) => Promise<void>;
+}
+⋮----
+/**
+ * Hook for generating weather-based queues
+ */
+export function useWeatherQueue(): UseWeatherQueueReturn
+⋮----
+// Extract stable values to avoid unnecessary re-renders
+⋮----
+const rawTemperature = weatherState.rawResponse?.main.temp || 293.15; // Default to 20°C in Kelvin
+⋮----
+// Add video metadata to tracks
+</file>
+
+<file path="src/main.tsx">
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+⋮----
+import App from "./App.tsx";
+</file>
+
+<file path="package.json">
+{
+  "name": "weathertunes",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test tests/frontend-auth.spec.ts tests/frontend-integration.spec.ts",
+    "test:e2e-headed": "playwright test tests/frontend-auth.spec.ts tests/frontend-integration.spec.ts --headed",
+    "test:e2e-ui": "playwright test tests/frontend-auth.spec.ts tests/frontend-integration.spec.ts --ui"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^7.1.1",
+    "@mui/material": "^7.1.1",
+    "@mui/system": "^7.1.1",
+    "@radix-ui/react-label": "^2.1.7",
+    "@radix-ui/react-navigation-menu": "^1.2.13",
+    "@radix-ui/react-scroll-area": "^1.2.9",
+    "@radix-ui/react-slot": "^1.2.3",
+    "@tailwindcss/vite": "^4.1.8",
+    "@tanstack/react-query": "^5.81.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "lucide-react": "^0.513.0",
+    "node-fetch": "^3.3.2",
+    "radix-ui": "^1.4.2",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-router-dom": "^7.6.2",
+    "tailwind-merge": "^3.3.0",
+    "tailwindcss": "^4.1.8"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.25.0",
+    "@playwright/test": "^1.53.1",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.15.32",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "@vitejs/plugin-react": "^4.4.1",
+    "@vitest/coverage-v8": "^3.2.4",
+    "@vitest/ui": "^3.2.4",
+    "dotenv": "^16.5.0",
+    "eslint": "^9.25.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^16.0.0",
+    "jsdom": "^26.1.0",
+    "playwright": "^1.53.1",
+    "prettier": "^3.5.3",
+    "prettier-plugin-tailwindcss": "^0.6.12",
+    "tw-animate-css": "^1.3.4",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.30.1",
+    "vite": "^6.3.5",
+    "vitest": "^3.2.4"
+  }
+}
+</file>
+
+<file path="src/components/ui/button.tsx">
+import { Slot } from "@radix-ui/react-slot";
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "@/lib";
+⋮----
+// Inlined primary button styles
+⋮----
+// Inlined secondary button styles
+⋮----
+// Inlined ghost button styles
+</file>
+
+<file path="src/components/ui/slider.tsx">
+import { cn } from "@/lib";
+⋮----
+interface SliderProps {
+  value: number;
+  min?: number;
+  max?: number;
+  step?: number;
+  onValueChange: (value: number) => void;
+  className?: string;
+  label?: string;
+}
+⋮----
+/**
+ * Apple-style liquid glass slider with blue progress and white knob
+ * Matches the slider design from Apple's liquid glass examples
+ */
+⋮----
+const handleChange = (event: React.ChangeEvent<HTMLInputElement>) =>
+⋮----
+{/* Track - inlined slider.track styles */}
+⋮----
+className=
+⋮----
+{/* Progress - inlined slider.range styles */}
+⋮----
+{/* Hidden input for accessibility */}
+⋮----
+{/* Custom thumb - inlined slider.thumb styles */}
+</file>
+
+<file path="src/hooks/useAuth.ts">
+/**
+ * useAuth hook - Simple interface to auth context
+ * Provides access to authentication state and methods
+ */
+⋮----
+import { useContext } from "react";
+import { AuthContext, type AuthContextValue } from "@/contexts/AuthProvider";
+⋮----
+/**
+ * Hook to access the authentication context
+ * @returns Authentication context value with user, loading, and auth methods
+ * @throws Error if used outside of an AuthProvider
+ */
+export function useAuth(): AuthContextValue
+</file>
+
+<file path="src/hooks/useLocationBasedDefaults.ts">
+import { useEffect, useState } from "react";
+import { getDefaultUnitsForCountry, type UnitDefaults } from "@/lib";
+⋮----
+type LocationBasedDefaults = UnitDefaults;
+⋮----
+/**
+ * Hook to determine default units based on user's location
+ * This hook will try to get the user's country from their geolocation
+ * and return appropriate default units
+ */
+export function useLocationBasedDefaults():
+⋮----
+async function determineLocationDefaults()
+⋮----
+// Try to get user's location
+⋮----
+maximumAge: 300000, // 5 minutes
+⋮----
+// Use reverse geocoding to get country from coordinates
+⋮----
+// Fetch weather data to get country code
+⋮----
+// Fallback to metric if API call fails
+⋮----
+// Fallback to metric units
+</file>
+
+<file path="src/hooks/useThemeManager.ts">
+import { useEffect } from "react";
+import { useSettings } from "@/hooks";
+import type { TimePeriod } from "@/lib";
+⋮----
+/**
+ * Consolidated theme management hook that handles all theme switching logic
+ * Combines both settings-based and weather-based theme management
+ */
+export function useThemeManager(timePeriod?: TimePeriod | null)
+⋮----
+// Auto mode - use time period if available, otherwise system preference
+⋮----
+// Fallback to system preference if no time period
+⋮----
+// Use time period for auto mode
+</file>
+
+<file path="src/test/test-setup.ts">
+import { expect, vi, beforeAll } from 'vitest';
+⋮----
+// Extend Vitest's expect with jest-dom matchers
+⋮----
+// @ts-expect-error - dynamically add matchers
+⋮----
+// Mock global objects
+⋮----
+// Mock crypto.subtle for PKCE
+⋮----
+// Prototype-based, spy-compatible localStorage mock for tests
+class LocalStorageMock
+⋮----
+getItem(key: string): string | null
+⋮----
+removeItem(key: string): void
+⋮----
+clear(): void
+⋮----
+key(index: number): string | null
+⋮----
+get length(): number
+⋮----
+// Mock sessionStorage
+⋮----
+// Mock fetch
+⋮----
+// Mock the global crypto API
+⋮----
+// Set environment variables for testing
+⋮----
+// Mock react-router-dom
+</file>
+
+<file path="src/components/ForecastCard.tsx">
+import { useWeatherForecast } from "@/hooks/useWeatherForecast";
+import { Card } from "@/components/ui/card";
+import {
+  LoadingSpinner,
+  ErrorDisplay,
+} from "@/components/shared/StatusComponents";
+import {
+  WEATHER_STYLES,
+  COLORS,
+  TYPOGRAPHY,
+  ANIMATIONS,
+  CARD_STYLES,
+} from "@/lib";
+import { memo } from "react";
+import { cn } from "@/lib";
+⋮----
+interface ForecastDayProps {
+  dayName: string;
+  date: string;
+  condition: string;
+  tempHigh: number;
+  tempLow: number;
+  icon: string;
+  unit: string;
+}
+⋮----
+// Memoized forecast day component for performance
+⋮----
+className=
+⋮----
+<div className=
+⋮----
+/**
+ * Optimized 5-day weather forecast component
+ * Uses shared components and proper memoization for performance
+ */
+⋮----
+date=
+</file>
+
+<file path="README.md">
+# WeatherTunes 🌪️🎸😎👍
+
+WeatherTunes is a React web application that displays real-time weather information alongside music interface components. The application uses modern web development patterns including React hooks for state management, TypeScript for type safety, and Tailwind CSS for styling.
+
+**Architecture**: Frontend-only application using direct Spotify Web API integration. No backend server required.
+
+## Documentation
+
+This project maintains comprehensive documentation in the `docs/` directory to help developers understand the system architecture and implementation details. The documentation is also synced to the project's GitHub Wiki.
+
+### Syncing Local Docs to GitHub Wiki
+
+The `sync-docs-to-wiki.sh` script is used to synchronize the content of the `docs/` folder with the GitHub Wiki.
+
+**Workflow:**
+
+1.  **Make changes** to files in the `docs/` folder.
+2.  **Test locally** that your documentation looks correct.
+3.  **Run the sync script** from the project root to push changes to the GitHub wiki:
+    ```bash
+    ./sync-docs-to-wiki.sh
+    ```
+4.  **Verify on GitHub** that the wiki pages updated correctly.
+
+**File Mapping:**
+
+The sync script automatically converts the hierarchical `docs/` structure to GitHub's flat wiki format:
+
+| Local File                              | Wiki Page                       |
+| --------------------------------------- | ------------------------------- |
+| `docs/README.md`                        | `Home`                          |
+| `docs/architecture/overview.md`         | `Architecture-Overview`         |
+| `docs/architecture/components.md`       | `Architecture-Components`       |
+| `docs/architecture/state-management.md` | `Architecture-State-Management` |
+| `docs/features/weather.md`              | `Features-Weather`              |
+| `docs/features/settings.md`             | `Features-Settings`             |
+| `docs/features/video-backgrounds.md`    | `Features-Video-Backgrounds`    |
+| `docs/features/music.md`                | `Features-Music`                |
+| `docs/development/getting-started.md`   | `Development-Getting-Started`   |
+| `docs/development/setup.md`             | `Development-Setup`             |
+| `docs/backend/api-requirements.md`      | `Backend-API-Requirements`      |
+
+**Notes on Syncing:**
+
+- The script automatically updates internal links to work with the wiki format.
+- Missing files in the `docs/` directory are skipped and won't cause errors during the sync.
+- The script checks for changes and only commits to the wiki repository if there are actual modifications.
+- You can run the script multiple times safely.
+
+### Available Documentation
+
+- [Getting Started](docs/development/getting-started.md) - Installation and setup instructions
+- [System Overview](docs/architecture/overview.md) - Architecture and technical details
+- [Weather System](docs/features/weather.md) - Weather integration implementation
+- [API Requirements](docs/backend/api-requirements.md) - Backend integration specifications
+
+## Quick Start
+
+### Prerequisites
+
+- Node.js 18 or higher (JavaScript runtime environment)
+- OpenWeatherMap API key (weather data service)
+
+### Installation
+
+Clone the repository and install dependencies using npm (Node Package Manager):
+
+```bash
+git clone https://github.com/cpond8/weathertunes.git
+cd weathertunes
+npm install
+```
+
+### Configuration
+
+Create a `.env` file in the project root directory to store environment variables:
+
+```bash
+VITE_PUBLIC_OPENWEATHER_API_KEY=your_api_key_here
+```
+
+### Development Server
+
+Start the Vite development server with hot module replacement:
+
+```bash
+npm run dev
+```
+
+The application runs at `http://localhost:5173` with automatic browser refresh during development.
+
+## Current Features
+
+### Weather System
+
+The application integrates with the OpenWeatherMap API to provide current weather conditions and forecasts:
+
+- Real-time weather data fetching using HTTP requests
+- 5-day weather forecast display with daily summaries
+- Sunrise and sunset times with automatic calculation
+- Weather metrics including humidity percentage, barometric pressure, and wind speed
+- Dynamic video backgrounds that change based on current weather conditions and time of day
+
+### Settings Management
+
+The application provides user preference controls with persistent storage:
+
+- Temperature units (Fahrenheit or Celsius conversion)
+- Time format (12-hour or 24-hour display)
+- Speed units (miles per hour, kilometers per hour, or meters per second)
+- Theme mode (automatic, light, or dark theme selection)
+- Location-based default unit selection using geolocation
+- Persistent settings storage using browser localStorage API
+
+### User Interface
+
+The interface uses modern web development techniques for responsive design:
+
+- Responsive layout that adapts to desktop and mobile screen sizes
+- Automatic theme switching based on time of day detection
+- Video backgrounds that update dynamically based on weather and time
+- Glassmorphism design effects using CSS backdrop filters
+- Accessibility support through Radix UI component library
+
+### Music Interface Components
+
+The application includes user interface components for music controls that display placeholder data:
+
+- Current track display component with song and artist information
+- Music queue interface showing upcoming tracks
+- Play, pause, and skip control buttons
+- Navigation component with authentication placeholders
+
+## Technology Stack
+
+### Core Framework
+
+The application uses React 19 as the primary JavaScript library for building user interfaces:
+
+- React 19 with functional components and React hooks for state management
+- TypeScript for static type checking and improved developer experience
+- Vite as the build tool and development server with fast hot module replacement
+- React Router DOM for client-side navigation between application pages
+
+### Styling and UI Components
+
+The interface uses utility-first CSS and accessible component libraries:
+
+- Tailwind CSS for rapid styling with utility classes
+- Radix UI for accessible, unstyled component primitives
+- Lucide React for consistent icon components
+- Class Variance Authority for managing component style variants
+
+### Code Quality Tools
+
+The project maintains code quality through automated tools:
+
+- ESLint 9.25.0 for identifying and fixing JavaScript code issues
+- Prettier 3.5.3 for consistent code formatting across the project
+- TypeScript ESLint for TypeScript-specific linting rules
+
+## Project Structure
+
+The application follows React best practices for organizing components and logic:
+
+```
+src/
+├── components/         # Reusable UI components organized by purpose
+│   ├── ui/            # Base UI primitives (button, card, input)
+│   ├── icons/         # Custom SVG icon components
+│   └── ...            # Feature-specific components for weather and music
+├── contexts/          # React Context providers for global state management
+├── hooks/             # Custom React hooks for reusable logic
+├── lib/               # Utility functions and external service integrations
+├── pages/             # Top-level route components that render full pages
+├── types/             # TypeScript type definitions and interfaces
+└── assets/            # Static assets including video files for backgrounds
+```
+
+### Key Components
+
+#### Main Application Structure
+
+- `src/App.tsx` - Root component that configures React Router for navigation
+- `src/pages/MainPage.tsx` - Primary application interface combining weather and music components
+- `src/pages/Login.tsx` - Authentication page structure with placeholder content
+
+#### Weather System Components
+
+- `src/components/WeatherDisplay.tsx` - Current weather information display with real API data
+- `src/components/ForecastCard.tsx` - 5-day weather forecast component using OpenWeatherMap
+- `src/components/VideoBackground.tsx` - Dynamic video backgrounds based on weather conditions
+
+#### Settings and State Management
+
+- `src/components/SettingsMenu.tsx` - User preferences interface for units and theme selection
+- `src/contexts/SettingsContext.tsx` - React Context for global settings state management
+- `src/hooks/useSettings.ts` - Custom hook that provides settings state to components
+
+#### Music Interface Components
+
+- `src/components/CurrentlyPlaying.tsx` - Current track display with placeholder data structure
+- `src/components/UpNext.tsx` - Music queue interface ready for backend integration
+- `src/components/NavBar.tsx` - Navigation component with authentication placeholder buttons
+
+## Development
+
+### Available Scripts
+
+The project includes npm scripts for common development tasks:
+
+- `npm run dev` - Start Vite development server with hot module replacement
+- `npm run build` - Create optimized production build in the `dist/` directory
+- `npm run lint` - Run ESLint code analysis to identify potential issues
+- `npm run preview` - Preview the production build locally before deployment
+
+### Code Organization Patterns
+
+The project implements several React and TypeScript patterns for maintainable code:
+
+- **Component composition** - Building complex interfaces from smaller, focused components
+- **Custom hooks** - Extracting reusable logic into hooks like `useWeather` and `useSettings`
+- **Context providers** - Managing global application state through React Context API
+- **TypeScript interfaces** - Ensuring type safety for weather data structures and component props
+
+### Code Quality and Testing
+
+The development workflow includes automated tools for consistent code quality:
+
+- TypeScript strict mode enabled for compile-time error detection
+- ESLint configuration enforcing consistent code style and best practices
+- Prettier integration for automatic code formatting on save
+- Component isolation pattern that simplifies testing and maintenance
+
+## Implementation Status
+
+### Completed Features
+
+WeatherTunes is now a fully frontend-only application with the following implemented features:
+
+- **Weather Integration**: OpenWeatherMap API integration with error handling and location services
+- **Spotify Integration**: Direct Spotify Web API integration using PKCE OAuth flow (no backend required)
+- **Music Recommendations**: Weather-based music recommendations using Spotify's recommendation engine
+- **Settings System**: localStorage persistence and user preference management
+- **Responsive UI**: Automatic theme switching based on time of day with modern design
+- **Video Backgrounds**: 24 weather and time combinations for immersive experience
+- **Queue Management**: Local music queue with automatic replenishment
+- **Authentication**: Frontend-only Spotify OAuth with token management
+
+### Technology Stack
+
+- **Frontend**: React 19+ with TypeScript and Vite
+- **Styling**: Tailwind CSS with custom components
+- **Authentication**: Spotify PKCE OAuth (frontend-only)
+- **State Management**: React Context and localStorage
+- **Music API**: Direct Spotify Web API calls
+- **Weather API**: OpenWeatherMap API
+</file>
+
+<file path="src/components/settings/SettingsButton.tsx">
+import React, { useState } from "react";
+import { SettingsCard } from "@/components/SettingsCard";
+⋮----
+export function SettingsButton()
+</file>
+
+<file path="src/components/music/SpotifyWebPlayer.tsx">
+/**
+ * Spotify Web Player Component
+ * Custom playback interface with full controls and queue integration
+ */
+⋮----
+import React, { useEffect, useState, useCallback, useRef } from "react";
+import {
+  useSpotifyPlayer,
+  useSpotifyQueue,
+  useSpotifyService,
+} from "@/hooks/spotify"; // Added useSpotifyService
+⋮----
+} from "@/hooks/spotify"; // Added useSpotifyService
+import { useAuth } from "@/hooks/useAuth";
+import {
+  Play,
+  Pause,
+  SkipForward,
+  SkipBack,
+  Volume2,
+  VolumeX,
+} from "lucide-react";
+⋮----
+interface SpotifyWebPlayerProps {
+  className?: string;
+  showQueueInfo?: boolean;
+}
+⋮----
+/**
+ * Main Spotify Web Player component with full playback controls
+ */
+⋮----
+const spotifyService = useSpotifyService(); // Get SpotifyService
+⋮----
+// Get queue data from Spotify queue hook
+⋮----
+// Load Spotify Web Playback SDK script
+⋮----
+// Clean up script if component unmounts before load
+⋮----
+/**
+   * Handle next track - integrates with queue system
+   */
+⋮----
+// Use CurrentTrackProvider's queue management
+⋮----
+// If that fails, try player's next track
+⋮----
+/**
+   * Initialize player on mount
+   */
+⋮----
+// Initialize player only when SDK is loaded, authenticated, and not loading
+⋮----
+/**
+   * Handle track advancement when song ends
+   */
+⋮----
+// Check if track finished (position near duration)
+⋮----
+/**
+   * Sync with CurrentTrackProvider when track changes externally
+   * Using refs to prevent infinite loops
+   */
+⋮----
+// Only trigger if track ID actually changed
+⋮----
+// Check if we need to play a new track
+⋮----
+// Track changes are handled through the queue system
+⋮----
+/**
+   * Handle previous track
+   */
+⋮----
+/**
+   * Handle play/pause toggle
+   */
+⋮----
+/**
+   * Handle seek
+   */
+⋮----
+/**
+   * Handle volume change
+   */
+⋮----
+/**
+   * Handle mute toggle
+   */
+⋮----
+/**
+   * Format time for display
+   */
+const formatTime = (ms: number): string =>
+⋮----
+/**
+   * Render loading state
+   */
+⋮----
+/**
+   * Render error state
+   */
+⋮----
+login();
+⋮----
+/**
+   * Render no track state
+   */
+⋮----
+{/* Track Info */}
+⋮----
+{/* Progress Bar */}
+⋮----
+{/* Controls */}
+⋮----
+{/* Previous Track */}
+⋮----
+{/* Play/Pause */}
+⋮----
+{/* Next Track */}
+⋮----
+{/* Volume Control */}
+⋮----
+{/* Queue Info */}
+</file>
+
+<file path="src/components/shared/LoginPopup.tsx">
+import { useAuth } from "@/hooks/useAuth";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { COLORS } from "@/lib";
+import { cn } from "@/lib";
+import { useState } from "react";
+⋮----
+interface LoginPopupProps {
+  isOpen: boolean;
+}
+⋮----
+{/* Backdrop */}
+⋮----
+{/* Popup Content */}
+</file>
+
+<file path="src/components/ui/card.tsx">
+import React from "react";
+import { CARD_STYLES, LAYOUT } from "@/lib";
+import { cn } from "@/lib";
+import { LiquidGlassContainer } from "@/components/shared/LiquidGlassContainer";
+⋮----
+interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: React.ReactNode;
+  variant?: keyof typeof CARD_STYLES | "modal";
+  className?: string;
+  contentClassName?: string;
+  withPadding?: boolean;
+  enableLiquidGlass?: boolean;
+}
+⋮----
+interface CardContentProps {
+  children: React.ReactNode;
+  className?: string;
+  withPadding?: boolean;
+}
+⋮----
+// Use overflow-visible for interactive and base variants to prevent clipping
+⋮----
+// Handle modal variant
+⋮----
+className=
+⋮----
+{/* Gentle Apple-style depth with very subtle white outline */}
+</file>
+
+<file path="src/lib/index.ts">
+/**
+ * Comprehensive Library Exports - Refactored and Consolidated
+ * Centralized access to all utility functions and services
+ *
+ * Architecture:
+ * - /core: Core utilities (DOM, crypto, validation, arrays, strings, units, time)
+ * - /design: Design system and theming (components, Material-UI)
+ * - /weather: Weather-related APIs and utilities
+ * - /music: Music/Spotify integration (auth, API, recommendations)
+ * - /config: Configuration and setup (React Query, etc.)
+ */
+⋮----
+// === CORE UTILITIES ===
+⋮----
+// === DESIGN SYSTEM ===
+⋮----
+// === WEATHER UTILITIES ===
+⋮----
+// === MUSIC UTILITIES ===
+⋮----
+// === CONFIGURATION ===
+⋮----
+// === LEGACY COMPATIBILITY ===
+// Re-export commonly used utilities at the root level for backwards compatibility
+</file>
+
+<file path="src/App.tsx">
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { SettingsProvider } from "./contexts/SettingsProvider";
+import { AuthProvider } from "./contexts/AuthProvider";
+import { ServiceProvider } from "./contexts/ServiceContext";
+import { queryClient } from "./lib";
+import { AppLayout } from "./components";
+import MainPage from "./MainPage";
+import { ErrorBoundary } from "./components/shared/ErrorBoundary";
+import { OAuthCallback } from "./components/shared/OAuthCallback";
+⋮----
+{/* Page Content */}
+⋮----
+{/* Fallback route: redirects unknown paths to the main page */}
+</file>
+
+<file path="src/hooks/index.ts">
+/**
+ * Consolidated hooks exports
+ * Centralized access to all custom hooks
+ */
+⋮----
+// Common utility hooks (includes useSettings, useServices, and weather utilities)
+⋮----
+// Auth hooks
+⋮----
+// Specific feature hooks
+⋮----
+// Consolidated Spotify hooks
+</file>
+
+<file path="src/components/index.ts">
+/**
+ * Component Exports - WeatherTunes Component Library
+ *
+ * Card-centric hierarchy where names immediately reveal component purpose.
+ * All main UI units are "Cards", with supporting components clearly named.
+ */
+⋮----
+// === MAIN COMPONENTS ===
+// Primary components used directly in MainPage
+⋮----
+// === UI PRIMITIVES ===
+// Base shadcn/ui components with unified styling system
+⋮----
+// === SHARED COMPONENTS ===
+// Reusable components used across multiple domains
+⋮----
+// === AUTH DOMAIN ===
+// Authentication components and flows
+⋮----
+// === WEATHER DOMAIN ===
+// Components related to weather display, forecast, and background visuals
+⋮----
+// === MUSIC DOMAIN ===
+// Components for music playback, queue management, and audio controls
+⋮----
+// === SETTINGS DOMAIN ===
+// Settings interface and controls
+⋮----
+// === LAYOUT DOMAIN ===
+// Navigation, layout, and overall app structure
+⋮----
+// === ICONS ===
+// Custom icon components with consistent styling
+</file>
+
+</files>

@@ -1,5 +1,10 @@
-import { spotifyApi } from "./spotify-api";
+import {
+  getWeatherRecommendations,
+  searchByGenreAndFeatures,
+} from "./spotify-api";
 import type { TrackMetadata } from "@/types/queue-types";
+import type { SpotifyService } from "@/services/SpotifyService";
+import type { RecommendationOptions } from "@/types/spotify-api-types";
 
 /**
  * Music utilities for track management and queue generation
@@ -341,72 +346,10 @@ class WeatherMusicMapper {
 // === MUSIC QUEUE MANAGEMENT ===
 
 /**
- * Generate music recommendations based on weather
- */
-export async function generateWeatherPlaylist(
-  weatherCondition: string,
-  temperature?: number,
-  timeOfDay?: string,
-  limit = 20,
-): Promise<TrackMetadata[]> {
-  try {
-    // Use Spotify API to get recommendations
-    const response = await spotifyApi.getWeatherRecommendations({
-      weather_condition: weatherCondition,
-      temperature: temperature || 20,
-      time_of_day: timeOfDay as "morning" | "afternoon" | "evening" | "night",
-      limit,
-    });
-
-    return response.tracks;
-  } catch (error) {
-    console.error("Failed to generate weather playlist:", error);
-    // Return empty array as fallback
-    return [];
-  }
-}
-
-/**
- * Search for tracks with specific criteria
- */
-export async function searchTracks(
-  query: string,
-  limit = 20,
-): Promise<TrackMetadata[]> {
-  try {
-    const response = await spotifyApi.searchTracks(query, limit);
-    return response.tracks;
-  } catch (error) {
-    console.error("Failed to search tracks:", error);
-    return [];
-  }
-}
-
-/**
- * Get tracks by genre and audio features
- */
-export async function getTracksByGenreAndFeatures(
-  genre: string,
-  audioFeatures: AudioFeatures,
-  limit = 20,
-): Promise<TrackMetadata[]> {
-  try {
-    const response = await spotifyApi.searchByGenreAndFeatures(
-      genre,
-      audioFeatures as Record<string, number>,
-      limit,
-    );
-    return response.tracks;
-  } catch (error) {
-    console.error("Failed to get tracks by genre and features:", error);
-    return [];
-  }
-}
-
-/**
  * Create a mixed playlist combining multiple sources
  */
-export async function createMixedPlaylist(
+export async function generateWeatherPlaylist(
+  spotifyService: SpotifyService,
   weatherCondition: string,
   temperature?: number,
   timeOfDay?: string,
@@ -415,25 +358,92 @@ export async function createMixedPlaylist(
 ): Promise<TrackMetadata[]> {
   try {
     const mapping = WeatherMusicMapper.getMapping(weatherCondition);
-    const tracks: TrackMetadata[] = [];
+    let tracks: TrackMetadata[] = [];
+
+    // Apply adjustments to base audio features
+    const combinedAudioFeatures: AudioFeatures = {
+      ...mapping.audioFeatures,
+    };
+
+    // Helper to apply adjustments
+    const applyAdjustments = (
+      features: AudioFeatures,
+      adjustments: Partial<AudioFeatures>,
+    ) => {
+      for (const key in adjustments) {
+        if (Object.prototype.hasOwnProperty.call(adjustments, key)) {
+          const featureKey = key as keyof AudioFeatures;
+          const currentValue = (features[featureKey] as number) || 0;
+          const adjustmentValue = (adjustments[featureKey] as number) || 0;
+          (features[featureKey] as number) = currentValue + adjustmentValue;
+        }
+      }
+    };
+
+    applyAdjustments(
+      combinedAudioFeatures,
+      getTimeBasedAdjustments(timeOfDay || "afternoon"),
+    );
+    applyAdjustments(
+      combinedAudioFeatures,
+      getTemperatureBasedAdjustments(temperature || 20),
+    );
+
+    const recommendationOptions: RecommendationOptions = {
+      limit: Math.floor(limit * 0.6),
+      seed_genres: mapping.genres.slice(0, 5), // Max 5 genres
+    };
+
+    for (const key in combinedAudioFeatures) {
+      if (Object.prototype.hasOwnProperty.call(combinedAudioFeatures, key)) {
+        const value = combinedAudioFeatures[key as keyof AudioFeatures];
+        if (value !== undefined) {
+          // Map to target_X for SpotifyService.getRecommendations
+          recommendationOptions[
+            `target_${key}` as keyof RecommendationOptions
+          ] = value;
+        }
+      }
+    }
 
     // Get tracks from primary weather mapping
-    const weatherTracks = await generateWeatherPlaylist(
-      weatherCondition,
-      temperature,
-      timeOfDay,
-      Math.floor(limit * 0.6),
+    const weatherTracksResponse = await spotifyService.getRecommendations(
+      recommendationOptions,
     );
-    tracks.push(...weatherTracks);
+    tracks = tracks.concat(
+      weatherTracksResponse.tracks.map((track) => ({
+        id: track.id,
+        title: track.name,
+        artist: track.artists.map((a) => a.name).join(", "),
+        album: track.album.name,
+        albumArt: track.album.images[0]?.url || "",
+        duration: track.duration_ms,
+        previewUrl: track.preview_url || undefined,
+        externalUrl: track.external_urls.spotify,
+        uri: track.uri,
+      })),
+    );
 
     // Add variety from additional genres
     for (const genre of additionalGenres.slice(0, 2)) {
-      const genreTracks = await getTracksByGenreAndFeatures(
+      const genreTracksResponse = await spotifyService.searchByGenreAndFeatures(
         genre,
-        mapping.audioFeatures,
+        mapping.audioFeatures as Record<string, number>,
         Math.floor(limit * 0.2),
       );
-      tracks.push(...genreTracks);
+      tracks = tracks.concat(
+        genreTracksResponse.tracks.items.map((track) => ({
+          id: track.id,
+          title: track.name,
+          artist: track.artists.map((a) => a.name).join(", "),
+          album: track.album.name,
+          albumArt: track.album.images[0]?.url || "",
+          duration: track.duration_ms,
+          previewUrl: track.preview_url || undefined,
+          externalUrl: track.external_urls.spotify,
+          uri: track.uri,
+        })),
+      );
     }
 
     // Remove duplicates and shuffle

@@ -15,6 +15,10 @@ interface FavoritesCardProps {
   className?: string;
 }
 
+function isError(obj: unknown): obj is Error {
+  return obj instanceof Error && typeof obj.message === "string";
+}
+
 /**
  * Renders a card that displays the user's liked Spotify tracks.
  * Features a horizontally scrollable list of tracks.
@@ -26,12 +30,17 @@ export function FavoritesCard({ className = "" }: FavoritesCardProps) {
     tracks: likedTracks,
     isLoading,
     error,
-  } = useSpotifyLikedTracks({ enabled: user !== null, limit: 50 });
+  } = useSpotifyLikedTracks({ enabled: user !== null, limit: 50 }) as {
+    tracks: TrackMetadata[];
+    isLoading: boolean;
+    error: unknown;
+  };
   const { playTrack } = useSpotifyQueue();
   const [playError, setPlayError] = useState<string | null>(null);
 
   const handleTrackPlay = async (track: TrackMetadata) => {
     try {
+      if (!track.id) throw new Error("Track ID is missing.");
       await playTrack(track.id);
       setPlayError(null);
     } catch (err) {
@@ -67,7 +76,13 @@ export function FavoritesCard({ className = "" }: FavoritesCardProps) {
       return (
         <ErrorDisplay
           title="Could not load liked tracks"
-          message={error}
+          message={
+            typeof error === "string"
+              ? error
+              : isError(error)
+                ? error.message
+                : "Unknown error"
+          }
           className="h-48"
         />
       );
