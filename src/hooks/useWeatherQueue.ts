@@ -8,7 +8,6 @@ import { useSpotifyQueue } from "./spotify";
 import { useWeatherTime, useSettings } from "./common";
 import type { TrackMetadata } from "@/types/queue-types";
 import { getVideoForCondition } from "@/data/video-assets";
-import { generateWeatherPlaylist } from "@/lib/music/recommendations";
 import { formatTemperature, getUnitSymbol } from "@/lib/core";
 import { useServices } from "@/hooks/common";
 
@@ -27,8 +26,8 @@ export function useWeatherQueue(): UseWeatherQueueReturn {
   const { settings } = useSettings();
 
   // Extract stable values to avoid unnecessary re-renders
-  const condition = weatherState.displayData?.condition || "clear sky";
-  const rawTemperature = weatherState.rawResponse?.main.temp || 293.15; // Default to 20°C in Kelvin
+  const condition = weatherState.data?.displayData?.condition || "clear sky";
+  const rawTemperature = weatherState.data?.rawResponse?.main.temp || 293.15; // Default to 20°C in Kelvin
   const convertedTemperature = formatTemperature(
     rawTemperature,
     settings.temperatureUnit,
@@ -45,11 +44,11 @@ export function useWeatherQueue(): UseWeatherQueueReturn {
           `Generating weather queue: ${condition}, ${convertedTemperature}°${unitSymbol}, ${timeOfDay}`,
         );
 
-        const tracks = await generateWeatherPlaylist(
-          spotify,
+        const tracks = await spotify.getWeatherPlaylist(
           condition,
           convertedTemperature,
           timeOfDay,
+          [],
           count,
         );
 
@@ -58,7 +57,7 @@ export function useWeatherQueue(): UseWeatherQueueReturn {
         );
 
         // Add video metadata to tracks
-        return tracks.map((track) => {
+        return tracks.map((track: TrackMetadata) => {
           const videoAsset = getVideoForCondition(condition);
           return {
             ...track,
@@ -71,7 +70,7 @@ export function useWeatherQueue(): UseWeatherQueueReturn {
         return [];
       }
     },
-    [condition, convertedTemperature, unitSymbol, getCurrentTimeOfDay],
+    [spotify, condition, convertedTemperature, unitSymbol, getCurrentTimeOfDay],
   );
 
   const replaceQueueWithWeatherTracks = useCallback(

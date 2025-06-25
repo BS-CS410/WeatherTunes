@@ -4,9 +4,8 @@
  * Uses the new Spotify Web Playback SDK and service architecture
  */
 
-import React, { useCallback } from "react";
+import React from "react";
 import type { TrackMetadata } from "@/types/queue-types";
-import { useSpotifyPlayback } from "@/hooks/spotify";
 import { cn } from "@/lib";
 import { TYPOGRAPHY, COLORS } from "@/lib";
 

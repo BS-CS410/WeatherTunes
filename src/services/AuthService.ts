@@ -3,12 +3,13 @@ import {
   generateCodeVerifier,
   generateCodeChallenge,
 } from "../lib/core/crypto.utils";
-import type {
-  AuthResponse,
-  User,
-  TokenResponse,
-  TokenData,
-} from "@/types/auth";
+import type { User, TokenInfo } from "@/types/auth";
+
+interface SpotifyTokenResponse {
+  access_token: string;
+  refresh_token: string;
+  expires_in: number;
+}
 
 // Configuration constants
 const CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
@@ -33,7 +34,7 @@ export class AuthService {
   private clientId: string = CLIENT_ID;
   private redirectUri: string = REDIRECT_URI;
   private scopes: string[] = SCOPES.split(" ");
-  private refreshPromise: Promise<TokenData | null> | null = null;
+  private refreshPromise: Promise<TokenInfo | null> | null = null;
   private isProcessingCallback = false;
 
   constructor() {
@@ -89,46 +90,73 @@ export class AuthService {
     this.isProcessingCallback = true;
 
     try {
+      console.log(
+        "handleRedirectCallback - Current URL:",
+        window.location.href,
+      );
+      console.log(
+        "handleRedirectCallback - Current Origin:",
+        window.location.origin,
+      );
+
       const params = new URLSearchParams(window.location.search);
       const code = params.get("code");
       const receivedState = params.get("state");
       const error = params.get("error");
 
+      console.log("handleRedirectCallback - URL Params:", {
+        code,
+        receivedState,
+        error,
+      });
+
       // Retrieve stored state and verifier
       const storedState = localStorage.getItem(STATE_KEY);
       const codeVerifier = this.getCodeVerifier();
 
+      console.log("handleRedirectCallback - Stored Values:", {
+        storedState,
+        codeVerifier,
+      });
+
       if (error) {
+        console.error("handleRedirectCallback - Spotify auth error:", error);
         // Clean up stored values on error
         localStorage.removeItem(STATE_KEY);
-        this.clearCodeVerifier();
+        this.clearTokens();
         throw new Error(`Spotify auth error: ${error}`);
       }
 
       if (!receivedState || receivedState !== storedState) {
+        console.error("handleRedirectCallback - State mismatch:", {
+          receivedState,
+          storedState,
+        });
         // Clean up stored values on state mismatch
         localStorage.removeItem(STATE_KEY);
-        this.clearCodeVerifier();
+        this.clearTokens();
         throw new Error("State mismatch error. Potential CSRF attack.");
       }
 
       if (!code) {
+        console.error("handleRedirectCallback - Missing code parameter.");
         // Clean up stored values on missing code
         localStorage.removeItem(STATE_KEY);
-        this.clearCodeVerifier();
+        this.clearTokens();
         throw new Error("Missing required 'code' authentication parameter.");
       }
 
       if (!codeVerifier) {
+        console.error("handleRedirectCallback - No code verifier found.");
         // Clean up stored values on missing verifier
         localStorage.removeItem(STATE_KEY);
-        this.clearCodeVerifier();
+        this.clearTokens();
         throw new Error("No code verifier found in local storage.");
       }
 
-      // Clean up state after successful validation
-      localStorage.removeItem(STATE_KEY);
-
+      console.log(
+        "handleRedirectCallback - All checks passed, exchanging code for token.",
+      );
       // Exchange the authorization code for an access token
       await this.exchangeCodeForToken(code, codeVerifier);
     } finally {
@@ -139,8 +167,11 @@ export class AuthService {
   async exchangeCodeForToken(
     code: string,
     codeVerifier: string,
-  ): Promise<TokenData> {
+  ): Promise<TokenInfo> {
     try {
+      console.log("Exchange Code for Token - Client ID:", this.clientId);
+      console.log("Exchange Code for Token - Redirect URI:", this.redirectUri);
+
       const response = await fetch("https://accounts.spotify.com/api/token", {
         method: "POST",
         headers: {
@@ -156,14 +187,19 @@ export class AuthService {
       });
 
       if (!response.ok) {
-        const error = await response.json().catch(() => ({}));
+        const errorText = await response.text();
+        console.error(
+          "Token exchange failed (HTTP error):",
+          response.status,
+          errorText,
+        );
         throw new Error(
-          error.error_description || "Failed to authenticate with Spotify",
+          `Failed to authenticate with Spotify: ${response.status} - ${errorText}`,
         );
       }
 
-      const data: TokenResponse = await response.json();
-      const tokenData: TokenData = {
+      const data: SpotifyTokenResponse = await response.json();
+      const tokenData: TokenInfo = {
         accessToken: data.access_token,
         refreshToken: data.refresh_token,
         expiresAt: Date.now() + data.expires_in * 1000 - 60000, // 1 minute buffer
@@ -171,9 +207,10 @@ export class AuthService {
 
       this.storeTokens(tokenData);
       this.clearCodeVerifier();
+      localStorage.removeItem(STATE_KEY); // Clear state key after successful token exchange
       return tokenData;
     } catch (error) {
-      this.clearCodeVerifier();
+      this.clearTokens();
       throw error;
     }
   }
@@ -189,6 +226,10 @@ export class AuthService {
   async getUser(): Promise<User | null> {
     try {
       const accessToken = await this.getAccessToken();
+      console.log(
+        "getUser: Attempting to fetch user info with accessToken (first 10 chars):",
+        accessToken ? accessToken.substring(0, 10) + "..." : "N/A",
+      );
       const response = await fetch("https://api.spotify.com/v1/me", {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -196,11 +237,19 @@ export class AuthService {
       });
 
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error(
+          "Failed to fetch user info (HTTP error):",
+          response.status,
+          errorText,
+        );
         if (response.status === 401) {
           this.clearTokens();
           return null;
         }
-        throw new Error("Failed to fetch user info");
+        throw new Error(
+          `Failed to fetch user info: ${response.status} - ${errorText}`,
+        );
       }
 
       return await response.json();
@@ -211,7 +260,7 @@ export class AuthService {
     }
   }
 
-  private async refreshAccessToken(refreshToken: string): Promise<TokenData> {
+  private async refreshAccessToken(refreshToken: string): Promise<TokenInfo> {
     // If a refresh is already in progress, wait for it
     if (this.refreshPromise) {
       const result = await this.refreshPromise;
@@ -238,8 +287,8 @@ export class AuthService {
         throw new Error("Failed to refresh token");
       }
 
-      const data: TokenResponse = await response.json();
-      const tokenData: TokenData = {
+      const data: SpotifyTokenResponse = await response.json();
+      const tokenData: TokenInfo = {
         accessToken: data.access_token,
         refreshToken: data.refresh_token || refreshToken, // Use new refresh token if provided, otherwise keep the old one
         expiresAt: Date.now() + data.expires_in * 1000,
@@ -259,16 +308,22 @@ export class AuthService {
     }
   }
 
-  private getTokens(): TokenData | null {
+  private getTokens(): TokenInfo | null {
     try {
       const stored = localStorage.getItem(TOKENS_KEY);
-      if (!stored) return null;
+      if (!stored) {
+        console.log("getTokens: No tokens found in localStorage.");
+        return null;
+      }
 
       const tokens = JSON.parse(stored);
+      console.log("getTokens: Tokens retrieved from localStorage.");
 
       // Validate token structure
       if (!tokens.accessToken || !tokens.refreshToken || !tokens.expiresAt) {
-        console.warn("Invalid token structure found, clearing storage");
+        console.warn(
+          "getTokens: Invalid token structure found, clearing storage",
+        );
         this.clearTokens();
         return null;
       }
@@ -281,11 +336,12 @@ export class AuthService {
     }
   }
 
-  private storeTokens(tokens: TokenData): void {
+  private storeTokens(tokens: TokenInfo): void {
     try {
       localStorage.setItem(TOKENS_KEY, JSON.stringify(tokens));
+      console.log("storeTokens: Tokens successfully stored in localStorage.");
     } catch (error) {
-      console.error("Failed to store tokens:", error);
+      console.error("storeTokens: Failed to store tokens:", error);
       // Continue without storage - user will need to re-login
     }
   }
@@ -337,17 +393,24 @@ export class AuthService {
     this.clearTokens();
   }
 
-  private async _ensureValidAccessToken(): Promise<TokenData | null> {
+  private async _ensureValidAccessToken(): Promise<TokenInfo | null> {
     const tokens = this.getTokens();
     if (!tokens) {
+      console.log("_ensureValidAccessToken: No tokens found.");
       return null;
     }
 
+    console.log("_ensureValidAccessToken: Tokens found, checking expiry.");
     // If token is still valid, return it
     if (Date.now() < tokens.expiresAt - 60000) {
       // 1 minute buffer
+      console.log("_ensureValidAccessToken: Access token is still valid.");
       return tokens;
     }
+
+    console.log(
+      "_ensureValidAccessToken: Access token expired, attempting refresh.",
+    );
 
     // If a refresh is already in progress, wait for it
     if (this.refreshPromise) {
@@ -379,8 +442,11 @@ export class AuthService {
       localStorage.removeItem(TOKENS_KEY);
       localStorage.removeItem(CODE_VERIFIER_KEY);
       localStorage.removeItem(STATE_KEY); // Clear state key on logout
+      console.log(
+        "clearTokens: All authentication related items cleared from localStorage.",
+      );
     } catch (error) {
-      console.error("Failed to clear tokens:", error);
+      console.error("clearTokens: Failed to clear tokens:", error);
     }
   }
 }

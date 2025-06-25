@@ -34,15 +34,27 @@ export interface WeatherDisplayData {
   unit: TemperatureUnit;
 }
 
-export interface EnhancedWeatherState {
+import { AsyncState } from '.';
+
+export type EnhancedWeatherState = AsyncState<{
   displayData: WeatherDisplayData;
   timePeriod: TimePeriod | null;
-  isLoading: boolean;
-  error: Error | null;
   rawResponse: WeatherApiResponse | null;
-}
+}>;
 
 export type WeatherType = "clear" | "rain" | "snow" | "fog" | "cloudy";
+
+// Music recommendation types based on weather
+export interface WeatherMusicMapping {
+  clear: string[];
+  clouds: string[];
+  rain: string[];
+  snow: string[];
+  thunderstorm: string[];
+  drizzle: string[];
+  mist: string[];
+  fog: string[];
+}
 
 // Forecast API types
 export interface ForecastItem {
@@ -80,8 +92,4 @@ export interface DailyForecast {
   icon: string;
 }
 
-export interface ForecastState {
-  forecast: DailyForecast[];
-  isLoading: boolean;
-  error: Error | null;
-}
+export type ForecastState = AsyncState<DailyForecast[]>;

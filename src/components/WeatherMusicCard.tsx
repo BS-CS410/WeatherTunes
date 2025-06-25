@@ -61,7 +61,7 @@ export function WeatherMusicCard({
   }, [upcomingTracks]);
 
   const handleLikeClick = async () => {
-    if (!currentTrack || isLiking) return;
+    if (!currentTrack || !currentTrack.id || isLiking) return;
     try {
       await likeTrack(currentTrack.id);
       setMessage("Track liked!");

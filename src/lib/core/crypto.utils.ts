@@ -28,13 +28,6 @@ export function generateSecureRandomString(length: number): string {
 }
 
 /**
- * Generate a random string for OAuth state parameter (now cryptographically secure)
- */
-export function generateRandomString(length: number): string {
-  return generateSecureRandomString(length);
-}
-
-/**
  * Generate code verifier for PKCE
  */
 export function generateCodeVerifier(): string {

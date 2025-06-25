@@ -6,7 +6,6 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useServices } from "@/hooks/common";
 import { SpotifyService } from "@/services/SpotifyService";
-import type { Track } from "@/types/spotify-api-types";
 import type { TrackMetadata } from "@/types/queue-types";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -37,20 +36,6 @@ interface UseSpotifySearchReturn extends UseSpotifySearchState {
   searchByMood: (mood: string, limit?: number) => Promise<void>;
   clearSearchResults: () => void;
 }
-
-// Helper to transform Spotify track to TrackMetadata
-const transformTrack = (track: Track): TrackMetadata => ({
-  id: track.id,
-  title: track.name,
-  artist: track.artists[0]?.name || "Unknown Artist",
-  album: track.album?.name || "Unknown Album",
-  albumArt: track.album?.images[0]?.url || "",
-  albumArtFallback: track.album?.images[track.album?.images?.length - 1]?.url,
-  duration: track.duration_ms,
-  previewUrl: track.preview_url || undefined,
-  externalUrl: track.external_urls.spotify,
-  uri: track.uri,
-});
 
 export function useSpotifySearch(): UseSpotifySearchReturn {
   const spotifyService = useSpotifyService();
@@ -85,7 +70,7 @@ export function useSpotifySearch(): UseSpotifySearchReturn {
         const results = await spotifyService.searchTracks(searchQuery, limit);
         setState((prev) => ({
           ...prev,
-          results: results.tracks?.items?.map(transformTrack) || [],
+          results: results,
           isLoading: false,
           hasSearched: true,
         }));
@@ -154,7 +139,7 @@ export function useSpotifyLikedTracks(
     queryKey: ["spotifyLikedTracks", limit],
     queryFn: async () => {
       const response = await spotifyService.getSavedTracks(limit);
-      return response.items?.map((item) => transformTrack(item.track)) || [];
+      return response;
     },
     enabled: !!spotifyService && enabled,
     staleTime: 1000 * 60 * 15, // 15 minutes
@@ -223,8 +208,6 @@ interface UseSpotifyQueueReturn {
   replaceQueue: (tracks: TrackMetadata[]) => Promise<void>;
   clearQueue: () => Promise<void>;
 }
-
-const TARGET_QUEUE_LENGTH = 15; // The desired fixed length of the queue
 
 export function useSpotifyQueue(): UseSpotifyQueueReturn {
   const spotifyService = useSpotifyService();
@@ -367,7 +350,7 @@ interface UseSpotifyPlaybackReturn {
     seek: (position_ms: number) => Promise<void>;
     setVolume: (volume: number) => Promise<void>;
     togglePlay: () => Promise<void>;
-    playTrack: (trackId: string) => Promise<void>;
+    playTrack: () => Promise<void>;
   };
 }
 
@@ -405,9 +388,9 @@ export function useSpotifyPlayback(): UseSpotifyPlaybackReturn {
         await controls.play();
       }
     },
-    playTrack: async (trackId: string) => {
+    playTrack: async () => {
       // Implementation would depend on SpotifyService having a playTrack method
-      console.log("Playing track:", trackId);
+      console.log("Playing track");
       setState((prev) => ({ ...prev, is_playing: true, isPlaying: true }));
     },
   };
@@ -691,7 +674,7 @@ export function useSpotifyPlayer(): UseSpotifyPlayerReturn {
         setState((prev) => ({ ...prev, isPlaying: !prev.isPlaying }));
       }
     },
-    playTrack: async (trackId: string) => {
+    playTrack: async () => {
       // This method is typically handled by the SpotifyService.play method
       // which takes URIs. The player itself doesn't have a direct playTrackById.
       // If we need to play a specific track on this device, we'd use transferPlayback

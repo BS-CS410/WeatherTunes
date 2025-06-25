@@ -140,9 +140,9 @@ export function QueueCard() {
                         isNextUpOrHovered &&
                           "scale-105 bg-white/20 dark:bg-black/30",
                       )}
-                      onMouseEnter={() => handleMouseEnter(track.id)}
+                      onMouseEnter={() => track.id && handleMouseEnter(track.id)}
                       onMouseLeave={handleMouseLeave}
-                      onClick={() => handlePlayTrack(track.id)}
+                      onClick={() => track.id && handlePlayTrack(track.id)}
                     >
                       <div className="relative">
                         <div

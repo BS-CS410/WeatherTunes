@@ -407,7 +407,7 @@ export const MISC = {
  * Creates a reusable style string for an interactive icon
  * Bundles base styles, animations, and color transitions
  */
-export const createInteractiveIcon = (size = 6) => {
+export const createInteractiveIcon = () => {
   return cn(
     "rounded-full p-2",
     ANIMATIONS.transition.standard,

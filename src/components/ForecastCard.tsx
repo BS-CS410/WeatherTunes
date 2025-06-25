@@ -5,7 +5,6 @@ import {
   ErrorDisplay,
 } from "@/components/shared/StatusComponents";
 import {
-  WEATHER_STYLES,
   COLORS,
   TYPOGRAPHY,
   ANIMATIONS,

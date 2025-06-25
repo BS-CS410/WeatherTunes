@@ -26,28 +26,17 @@ export interface TrackMetadata {
   videoClass?: string;
 }
 
-export interface QueueResponse {
-  queue: TrackMetadata[];
-  message?: string;
-}
+import { ApiResponse } from '.';
 
-export interface NextTrackResponse {
-  next_track: TrackMetadata | null; // Changed from next_track_id: string | null
-  queue: TrackMetadata[];
-  message?: string;
-}
+export type QueueResponse = ApiResponse<{ queue: TrackMetadata[] }>;
 
-export interface AddTrackResponse {
-  message: string;
+export type NextTrackResponse = ApiResponse<{
+  nextTrack: TrackMetadata | null;
   queue: TrackMetadata[];
-}
+}>;
 
-export interface ClearQueueResponse {
-  message: string;
-  queue: TrackMetadata[]; // Technically, the queue will be empty, but type consistency is good
-}
+export type AddTrackResponse = ApiResponse<{ queue: TrackMetadata[] }>;
 
-export interface ReplaceQueueResponse {
-  message: string;
-  queue: TrackMetadata[];
-}
+export type ClearQueueResponse = ApiResponse<{ queue: TrackMetadata[] }>;
+
+export type ReplaceQueueResponse = ApiResponse<{ queue: TrackMetadata[] }>;

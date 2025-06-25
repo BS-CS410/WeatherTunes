@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import type {
   WeatherApiResponse,
   EnhancedWeatherState,
-  WeatherDisplayData,
 } from "@/types/weather-types";
 import { getUserLocationAndFetch } from "@/lib";
 import {
@@ -43,16 +42,18 @@ export function useWeatherData(): EnhancedWeatherState {
 
   const initialState = useMemo<EnhancedWeatherState>(
     () => ({
-      displayData: {
-        location: "Loading...",
-        temperature: 0,
-        condition: "Loading...",
-        unit: settings.temperatureUnit,
+      data: {
+        displayData: {
+          location: "Loading...",
+          temperature: 0,
+          condition: "Loading...",
+          unit: settings.temperatureUnit,
+        },
+        timePeriod: null,
+        rawResponse: null,
       },
-      timePeriod: null,
       isLoading: true,
       error: null,
-      rawResponse: null,
     }),
     [settings.temperatureUnit],
   );
@@ -63,25 +64,10 @@ export function useWeatherData(): EnhancedWeatherState {
   const processWeatherData = useCallback(
     (data: WeatherApiResponse | null, error?: Error) => {
       if (error || !data) {
-        const errorData: WeatherDisplayData = {
-          location: "Unknown Location",
-          temperature: 0,
-          condition: "Error",
-          unit: "imperial",
-          sunrise: "",
-          sunset: "",
-        };
         setWeatherState({
-          displayData: {
-            location: errorData.location,
-            temperature: 0,
-            condition: errorData.condition,
-            unit: settings.temperatureUnit,
-          },
-          timePeriod: getTimePeriod(new Date()),
+          data: null,
           isLoading: false,
-          error: error || new Error("Failed to fetch weather data"),
-          rawResponse: null,
+          error: error?.message || "Failed to fetch weather data",
         });
         return;
       }
@@ -89,16 +75,9 @@ export function useWeatherData(): EnhancedWeatherState {
       // Validate essential data fields
       if (!data.weather?.length) {
         setWeatherState({
-          displayData: {
-            location: data.name || "Unknown",
-            temperature: 0,
-            condition: "Weather data unavailable",
-            unit: settings.temperatureUnit,
-          },
-          timePeriod: getTimePeriod(new Date()),
+          data: null,
           isLoading: false,
-          error: new Error("Invalid weather data format"),
-          rawResponse: null,
+          error: "Invalid weather data format",
         });
         return;
       }
@@ -108,40 +87,42 @@ export function useWeatherData(): EnhancedWeatherState {
 
       // Process successful data
       setWeatherState({
-        displayData: {
-          location: data.name || "Unknown Location",
-          temperature: formatTemperature(
-            data.main.temp,
-            settings.temperatureUnit,
-          ),
-          condition: formatWeatherConditionLocal(
-            data.weather[0].main,
-            data.weather[0].description,
-          ),
-          unit: settings.temperatureUnit,
-          sunrise: formatUnixTimeToLocalString(
-            data.sys?.sunrise,
-            "en-US", // always use a valid locale
-            {
-              hour: "numeric",
-              minute: "2-digit",
-              hour12: settings.timeFormat === "12h",
-            },
-          ),
-          sunset: formatUnixTimeToLocalString(
-            data.sys?.sunset,
-            "en-US", // always use a valid locale
-            {
-              hour: "numeric",
-              minute: "2-digit",
-              hour12: settings.timeFormat === "12h",
-            },
-          ),
+        data: {
+          displayData: {
+            location: data.name || "Unknown Location",
+            temperature: formatTemperature(
+              data.main.temp,
+              settings.temperatureUnit,
+            ),
+            condition: formatWeatherConditionLocal(
+              data.weather[0].main,
+              data.weather[0].description,
+            ),
+            unit: settings.temperatureUnit,
+            sunrise: formatUnixTimeToLocalString(
+              data.sys?.sunrise,
+              "en-US", // always use a valid locale
+              {
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: settings.timeFormat === "12h",
+              },
+            ),
+            sunset: formatUnixTimeToLocalString(
+              data.sys?.sunset,
+              "en-US", // always use a valid locale
+              {
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: settings.timeFormat === "12h",
+              },
+            ),
+          },
+          timePeriod: period,
+          rawResponse: data,
         },
-        timePeriod: period,
         isLoading: false,
         error: null,
-        rawResponse: data,
       });
     },
     [settings.temperatureUnit, settings.timeFormat],

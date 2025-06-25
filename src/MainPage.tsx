@@ -5,7 +5,6 @@ import {
   QueueCard,
   FavoritesCard,
   SpotifySearchCard,
-  SettingsCard,
 } from "@/components";
 import { SettingsButton } from "@/components/settings/SettingsButton";
 import { WeatherBackground } from "@/components/weather/WeatherBackground";
@@ -21,7 +20,8 @@ import { LAYOUT, COLORS } from "@/lib";
 function MainPage() {
   const weatherState = useWeatherData();
   const { isAuthenticated, isLoading: authLoading, login } = useAuth();
-  const { displayData, timePeriod, isLoading, error } = weatherState;
+  const { data: weatherData, isLoading, error } = weatherState;
+  const { displayData, timePeriod } = weatherData || {};
   const { replaceQueueWithWeatherTracks, generateWeatherQueue } =
     useWeatherQueue(); // Use the hook
   const { upcomingTracks, addToQueue } = useSpotifyQueue();
@@ -72,14 +72,14 @@ function MainPage() {
   if (error) {
     return (
       <ErrorDisplay
-        title={error.message || "Could not load weather data."}
+        title={error || "Could not load weather data."}
         message="Please try again later or check your connection."
       />
     );
   }
 
-  // If no display data is available
-  if (!displayData) {
+  // If no weather data is available
+  if (!weatherData || !displayData) {
     return (
       <ErrorDisplay
         title="No weather data available"
@@ -97,11 +97,6 @@ function MainPage() {
           condition={displayData?.condition}
           timePeriod={timePeriod}
         />
-
-        {/* Settings Button - Always visible */}
-        <div className="absolute top-6 left-6 z-20">
-          <SettingsButton />
-        </div>
 
         {/* Login Content */}
         <div className="relative z-10 flex min-h-screen items-center justify-center">

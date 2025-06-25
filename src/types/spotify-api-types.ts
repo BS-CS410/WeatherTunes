@@ -66,16 +66,10 @@ export interface QueueState {
   queue: Track[];
 }
 
+import { PaginatedResponse, ApiResponse } from '.';
+
 export interface SearchResponse {
-  tracks: {
-    href: string;
-    items: Track[];
-    limit: number;
-    next: string | null;
-    offset: number;
-    previous: string | null;
-    total: number;
-  };
+  tracks: PaginatedResponse<Track>;
 }
 
 export interface SavedTrack {
@@ -83,32 +77,63 @@ export interface SavedTrack {
   track: Track;
 }
 
-export interface SavedTracksResponse {
-  href: string;
-  items: SavedTrack[];
-  limit: number;
-  next: string | null;
-  offset: number;
-  previous: string | null;
-  total: number;
-}
+export type SavedTracksResponse = PaginatedResponse<SavedTrack>;
 
 export interface RecommendationSeed {
   id: string;
   href: string;
-  type: "artist" | "track" | "genre";
+  type: 'artist' | 'track' | 'genre';
   initialPoolSize: number;
   afterFilteringSize: number;
   afterRelinkingSize: number;
 }
 
-export interface RecommendationTrack extends Track {
-  explicit: boolean;
+export type RecommendationsResponse = ApiResponse<{
+  tracks: Track[];
+  seeds: RecommendationSeed[];
+}>;
+
+export interface SpotifyDevice {
+  id: string;
+  is_active: boolean;
+  is_private_session: boolean;
+  is_restricted: boolean;
+  name: string;
+  type: string;
+  volume_percent: number;
+  supports_volume: boolean;
 }
 
-export interface RecommendationsResponse {
-  tracks: RecommendationTrack[];
-  seeds: RecommendationSeed[];
+export interface SpotifyWebPlaybackError {
+  message: string;
+  type:
+    | 'account_error'
+    | 'authentication_error'
+    | 'initialization_error'
+    | 'playback_error';
+}
+
+export interface SpotifyAudioFeatures {
+  danceability: number;
+  energy: number;
+  key: number;
+  loudness: number;
+  mode: number;
+  speechiness: number;
+  acousticness: number;
+  instrumentalness: number;
+  liveness: number;
+  valence: number;
+  tempo: number;
+  duration_ms: number;
+  time_signature: number;
+}
+
+export interface MusicPreferences {
+  genres: string[];
+  audioFeatures: Partial<SpotifyAudioFeatures>;
+  explicitContent: boolean;
+  market: string;
 }
 
 export interface RecommendationOptions {
@@ -147,4 +172,5 @@ export interface RecommendationOptions {
   min_speechiness?: number;
   max_speechiness?: number;
   target_speechiness?: number;
+  [key: string]: unknown; // Add index signature
 }

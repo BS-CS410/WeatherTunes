@@ -160,7 +160,10 @@ describe("AuthService", () => {
     expect(window.localStorage.getItem(CODE_VERIFIER_KEY)).toBeNull();
   });
 
-  it("exchangeCodeForToken throws on error", async () => {
+  it("exchangeCodeForToken clears all auth storage keys on error", async () => {
+    window.localStorage.setItem(TOKEN_STORAGE_KEY, "should_clear");
+    window.localStorage.setItem(CODE_VERIFIER_KEY, "should_clear");
+    window.localStorage.setItem(STATE_KEY, "should_clear");
     const mockFetch = global.fetch as ReturnType<typeof vi.fn>;
     mockFetch.mockResolvedValue({
       ok: false,
@@ -169,6 +172,9 @@ describe("AuthService", () => {
     await expect(authService.exchangeCodeForToken("c", "v")).rejects.toThrow(
       "fail",
     );
+    expect(window.localStorage.getItem(TOKEN_STORAGE_KEY)).toBeNull();
+    expect(window.localStorage.getItem(CODE_VERIFIER_KEY)).toBeNull();
+    expect(window.localStorage.getItem(STATE_KEY)).toBeNull();
   });
 
   describe("handleRedirectCallback", () => {
@@ -179,35 +185,48 @@ describe("AuthService", () => {
       });
       localStorage.setItem(STATE_KEY, "test_state");
       localStorage.setItem(CODE_VERIFIER_KEY, "test_verifier");
+      localStorage.setItem(TOKEN_STORAGE_KEY, "test_token");
     });
 
-    it("throws if error param is present", async () => {
+    it("clears all auth storage keys if error param is present", async () => {
       window.location.search = "?error=access_denied";
       await expect(authService.handleRedirectCallback()).rejects.toThrow(
         "Spotify auth error: access_denied",
       );
+      expect(window.localStorage.getItem(TOKEN_STORAGE_KEY)).toBeNull();
+      expect(window.localStorage.getItem(CODE_VERIFIER_KEY)).toBeNull();
+      expect(window.localStorage.getItem(STATE_KEY)).toBeNull();
     });
 
-    it("throws if state does not match", async () => {
+    it("clears all auth storage keys if state does not match", async () => {
       window.location.search = "?code=test_code&state=wrong_state";
       await expect(authService.handleRedirectCallback()).rejects.toThrow(
         "State mismatch error. Potential CSRF attack.",
       );
+      expect(window.localStorage.getItem(TOKEN_STORAGE_KEY)).toBeNull();
+      expect(window.localStorage.getItem(CODE_VERIFIER_KEY)).toBeNull();
+      expect(window.localStorage.getItem(STATE_KEY)).toBeNull();
     });
 
-    it("throws if code is missing", async () => {
+    it("clears all auth storage keys if code is missing", async () => {
       window.location.search = "?state=test_state";
       await expect(authService.handleRedirectCallback()).rejects.toThrow(
         "Missing required 'code' authentication parameter.",
       );
+      expect(window.localStorage.getItem(TOKEN_STORAGE_KEY)).toBeNull();
+      expect(window.localStorage.getItem(CODE_VERIFIER_KEY)).toBeNull();
+      expect(window.localStorage.getItem(STATE_KEY)).toBeNull();
     });
 
-    it("throws if code verifier is missing", async () => {
+    it("clears all auth storage keys if code verifier is missing", async () => {
       window.location.search = "?code=test_code&state=test_state";
       localStorage.removeItem(CODE_VERIFIER_KEY);
       await expect(authService.handleRedirectCallback()).rejects.toThrow(
         "No code verifier found in local storage.",
       );
+      expect(window.localStorage.getItem(TOKEN_STORAGE_KEY)).toBeNull();
+      expect(window.localStorage.getItem(CODE_VERIFIER_KEY)).toBeNull();
+      expect(window.localStorage.getItem(STATE_KEY)).toBeNull();
     });
 
     it("calls exchangeCodeForToken on success", async () => {
